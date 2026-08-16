@@ -1,0 +1,27 @@
+{
+  "format": "framer-f1-device-candidate-v1",
+  "status": "AWAITING_MAIN_APPROVAL",
+  "target": {
+    "device": "knob_f1",
+    "firmware": "0.4.1",
+    "chip": "ESP32-S3",
+    "mac": "a4:cb:8f:af:32:10"
+  },
+  "write": {
+    "offset": "0x10000",
+    "scope": "factory-app-only",
+    "hardwareWriteApproved": false
+  },
+  "app": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-music-fast-gradient/framer-0.4.1-combined-music-id1-wpm-id7-app.bin",
+    "bytes": 2032368,
+    "sha256": "b9b8eec6250392f593ae664fa8b8cba64bf861f5ef49a427c65be79e6f355817"
+  },
+  "rollback": {
+    "sha256": "dd8edaaa2c3aa98a1cbdbda319255cc7d1a0e02d0069f543dd574ef040db4b83"
+  },
+  "runtime": {
+    "allAssetBytesBelow": "0x3c1d0000",
+    "headroomBytes": 3220
+  }
+}

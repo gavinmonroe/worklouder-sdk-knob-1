@@ -1,0 +1,15 @@
+{
+  "name": "framer-f1-music-player-contract-example",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:preview": "node scripts/build-preview.mjs",
+    "build:on-device": "node on-device/build-candidate.mjs",
+    "inspect:host": "node scripts/inspect-input-media.mjs",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

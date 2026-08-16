@@ -1,0 +1,210 @@
+{
+  "behavior": {
+    "albumArt": "64x64 RGB565, generated into controller-owned RAM",
+    "background": "root edge color plus seven nested rounded LVGL glow panels",
+    "durationMs": 240000,
+    "logicalCanvas": {
+      "height": 310,
+      "width": 100
+    },
+    "positionMs": 102000,
+    "progressPermille": 425,
+    "progressPixels": 34,
+    "track": "Midnight Circuit — Static Bloom (deterministic fixture)"
+  },
+  "code": {
+    "bytes": 1117,
+    "deterministicRebuilds": 2,
+    "entry": "music_id1_register",
+    "finalAddressOwnedByCombinedLinker": true,
+    "integrationHarness": {
+      "bytes": 1198,
+      "relocations": 0,
+      "setupLiteralSourceCount": 1,
+      "sha256": "dc38beae3122641f6d4775c918d6b86c58e73858e4767bd7acf69a50eb1238d1",
+      "wpmRegistrationStub": true
+    },
+    "provisionalVirtualAddress": "0x42118000",
+    "relocations": 0,
+    "sha256": "fd956e4a9b7bad822c618939f05f8b4be9fb07033709eda46a0599a223a522db"
+  },
+  "format": "framer-f1-music-id1-offline-candidate-v1",
+  "integration": {
+    "assetBudget": {
+      "musicAlbumFormat": "RGB565 64x64 controller-owned RAM",
+      "musicDromBytes": 0,
+      "musicRuntimeAlbumDescriptorBytes": 24,
+      "musicRuntimeAlbumPixelBytes": 8192,
+      "runtimeReadableDromUpperBoundExclusive": "0x3c1d0000"
+    },
+    "forbiddenHooks": [
+      "stock key callback",
+      "native WPM tick",
+      "Timer getter",
+      "global input bubble"
+    ],
+    "format": "framer-f1-combined-registration-contract-v1",
+    "registrations": [
+      {
+        "arguments": [
+          "screenRegistry",
+          "navigationManager"
+        ],
+        "callsStockSetup": false,
+        "name": "music-player",
+        "screenId": 1,
+        "symbol": "music_id1_register"
+      },
+      {
+        "arguments": [
+          "screenRegistry",
+          "navigationManager"
+        ],
+        "callsStockSetup": false,
+        "name": "wpm-pet",
+        "screenId": 7,
+        "status": "symbol-and-final-ABI-owned-by-wpm-module",
+        "symbol": "stage3e3_register_wpm"
+      }
+    ],
+    "requiredOrder": [
+      "stock setup",
+      "music ID1 registration",
+      "WPM ID7 registration"
+    ],
+    "target": "Framer F1 firmware 0.4.1",
+    "topLevelSetup": {
+      "callsStockSetup": 1,
+      "owner": "combined builder",
+      "preservesStockReturn": true,
+      "setupPointerPatchCount": 1
+    }
+  },
+  "memory": {
+    "appendedDromBytes": 0,
+    "controllerAllocationBytes": 8424,
+    "nativeDescriptorBytes": 24,
+    "nativeDescriptorOffset": 208,
+    "pixelBytes": 8192,
+    "pixelOffset": 232,
+    "runtimeReadableDromUpperBoundExclusive": "0x3c1d0000"
+  },
+  "safety": {
+    "appImageProduced": false,
+    "callsStockSetup": false,
+    "flashCommandProvided": false,
+    "hardwareAccess": false,
+    "littleFsTouched": false,
+    "nativeWpmTickTouched": false,
+    "setupPointerPatched": false,
+    "stockKeyCallbackTouched": false,
+    "timerGetterTouched": false
+  },
+  "screenId": 1,
+  "status": "OFFLINE_ABI_CANDIDATE_NOT_LINKED_NOT_HARDWARE_APPROVED",
+  "stockWindows": [
+    {
+      "address": "0x420e7c04",
+      "bytes": 16,
+      "purpose": "operator new",
+      "sha256": "3414948f9d5fefc040714fdee428ff559e501097826268628de6d36a1c75cf81"
+    },
+    {
+      "address": "0x3c1acc34",
+      "bytes": 16,
+      "purpose": "controller base vtable",
+      "sha256": "c9128709a6bfab7a00768221964b9af618a643239186be59a3a805431cff239e"
+    },
+    {
+      "address": "0x4204da84",
+      "bytes": 16,
+      "purpose": "registry add controller",
+      "sha256": "f3820932cac4b57f5e8111645cb0e01183623bb16119bd44086f598fe82fbb66"
+    },
+    {
+      "address": "0x420293a8",
+      "bytes": 16,
+      "purpose": "navigation add ID",
+      "sha256": "129929f12eb7726028927fdac27d624df1c0e558873fde489dc49f7d08b47c8c"
+    },
+    {
+      "address": "0x420ae8a0",
+      "bytes": 16,
+      "purpose": "LVGL image create",
+      "sha256": "257132ed2e582d49cb814b0e709239b5968badb8a3143a08e5ab324830f260f8"
+    },
+    {
+      "address": "0x420aeef0",
+      "bytes": 16,
+      "purpose": "LVGL image set source",
+      "sha256": "a8fa32979cc2e8239796b00154f07376910b6815f175613d9743cd78d3008d7f"
+    },
+    {
+      "address": "0x4204f170",
+      "bytes": 16,
+      "purpose": "label create",
+      "sha256": "fc7a0a882d28271d5080af908166fb1a7b4a6982e4f366295117eb57c1b860fa"
+    },
+    {
+      "address": "0x4204f018",
+      "bytes": 16,
+      "purpose": "label font",
+      "sha256": "2d9620e1ad1826bf06e06a93ee7c30e090e1cf9b1969d0a8332c345466b51f21"
+    },
+    {
+      "address": "0x4204ee30",
+      "bytes": 16,
+      "purpose": "label text",
+      "sha256": "211965b244a4642b1b68722494b300e507a4e2084de1ce01298da4cceaf357fb"
+    },
+    {
+      "address": "0x4204ef44",
+      "bytes": 16,
+      "purpose": "label text color",
+      "sha256": "9abeca42351ef686a3b278b10b34de73f9b9424bbd013821082c16b0246a309a"
+    },
+    {
+      "address": "0x4209d154",
+      "bytes": 16,
+      "purpose": "LVGL object size",
+      "sha256": "e940da1caedb9ec2f7b45583790084196769881d1cc8284345bb0655e5a67480"
+    },
+    {
+      "address": "0x4204f0d0",
+      "bytes": 16,
+      "purpose": "LVGL object alignment",
+      "sha256": "77671ad32016ce758110635db0efc813ce0f8fd36b1bc26c052a50918ebc9dac"
+    },
+    {
+      "address": "0x4204ef10",
+      "bytes": 16,
+      "purpose": "background color",
+      "sha256": "a7ec82aa4a21c87c6b9cfdc48ce2d1a9484d8cfbd09e35ef29d5bce7b9096a06"
+    },
+    {
+      "address": "0x4204efd0",
+      "bytes": 16,
+      "purpose": "background opacity",
+      "sha256": "d6cee49ec8631e76a417cba4c5c63eb643bc33732e752c07e76dbe210b7a8619"
+    },
+    {
+      "address": "0x420a0f38",
+      "bytes": 16,
+      "purpose": "style radius property 12",
+      "sha256": "b5c80591ff1e74051710a0159373e78e7cdcaaf101b8126cca7ba432bb8f582d"
+    },
+    {
+      "address": "0x3c18e960",
+      "bytes": 16,
+      "purpose": "small ASCII font",
+      "sha256": "0c4c96c92c3de5cf5b76713b51d9a32281e51afe42a5d573880a0071f46b5a17"
+    }
+  ],
+  "target": "Framer F1 firmware 0.4.1",
+  "transport": {
+    "firstProofSource": "compiled deterministic fixture",
+    "futureDirection": "versioned host transaction into a bounded RAM asset channel after device ABI proof",
+    "implemented": false,
+    "nativeMediaRpcProven": false
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "framer-f1-readonly-cli",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Read-only inspection and backup CLI for the Framer F1 / Work Louder Knob F1",
+  "type": "module",
+  "bin": {
+    "f1-readonly": "./bin/f1-readonly.mjs"
+  },
+  "scripts": {
+    "inspect": "node ./bin/f1-readonly.mjs inspect",
+    "backup": "node ./bin/f1-readonly.mjs backup",
+    "self-test": "node ./bin/f1-readonly.mjs self-test",
+    "recovery:ports": "node ./recovery/detect-ports.mjs",
+    "recovery:dry-run": "node ./recovery/audit.mjs --port /dev/cu.usbmodem-FRAMER-F1 --confirm-device FRAMER-F1 --dry-run",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

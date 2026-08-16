@@ -1,0 +1,33 @@
+{
+  "abiFingerprint": "fac2376573285ad8b7b236de01d3cf45a23c245fb96f06124f11b81d92d54b8e",
+  "abiVerification": {
+    "format": "elf32-xtensa-le",
+    "relocations": 0,
+    "literalAddress": "0x42116f10",
+    "literalBytes": 212,
+    "textAddress": "0x42116fe4",
+    "textBytes": 1460,
+    "endAddress": "0x42117598",
+    "binaryBytes": 1672,
+    "sha256": "67f5ff528d691c7a5f5fb685e16b0f857ef291670f450b5eb03f5e347cb77992",
+    "objectFields": {
+      "pet": 84,
+      "wpm": 88,
+      "stats": 92,
+      "stars": [
+        96,
+        100,
+        104
+      ],
+      "species": 124,
+      "renderedSpecies": 128,
+      "renderedState": 132,
+      "starPhase": 136
+    },
+    "imageScale": "0x200 once after create",
+    "cacheDrop": false
+  },
+  "buildFingerprint": "b3f3a751105593fc482883a779f4ef6d89293dfb6c9399dc949a31e4ea718b50",
+  "appSha256": "e7af67227d3969e3fefb5e9d3cc093fc20509f81c0426a4442ea87100f3dae44",
+  "mergedSha256": "5264c98ac765a794d4e6fe0c9518d561604e76beaf0881fe25b0c2418a09f41c"
+}

@@ -1,0 +1,42 @@
+{
+  "name": "framer-f1-research-widget-sdk",
+  "version": "0.3.0",
+  "private": true,
+  "type": "module",
+  "description": "Unofficial guarded Framer F1 0.4.1 widget research and opt-in app-only deployment toolchain.",
+  "bin": {
+    "f1-widget": "bin/f1-widget.mjs"
+  },
+  "exports": {
+    "./renderer": {
+      "types": "./src/render/index.d.ts",
+      "import": "./src/render/index.mjs"
+    },
+    "./media-transport": {
+      "types": "./src/media-transport/index.d.ts",
+      "import": "./src/media-transport/index.mjs"
+    },
+    "./input-lab": {
+      "import": "./input-lab/lib/index.mjs"
+    }
+  },
+  "scripts": {
+    "test": "node --test",
+    "sample:init": "node bin/f1-widget.mjs init examples/night-cat --force-internal-test-only",
+    "sample:validate": "node bin/f1-widget.mjs validate examples/night-cat",
+    "sample:build": "node bin/f1-widget.mjs build examples/night-cat",
+    "stage3e3": "node bin/f1-widget.mjs stage3e3",
+    "renderer:matrix": "node examples/jp-matrix/build.mjs",
+    "renderer:raster-example": "node examples/less-but-better/build.mjs",
+    "media:status": "node bin/f1-widget.mjs media status",
+    "media:mock": "node bin/f1-widget.mjs media mock",
+    "media:live": "node examples/music-player/tools/run-live-media.mjs",
+    "input-lab": "node input-lab/server.mjs",
+    "input-lab:test": "node --test input-lab/test/*.test.mjs",
+    "input-lab:prepare-app": "node input-lab/tools/prepare-lab-app.mjs",
+    "input-lab:build-app": "node input-lab/tools/build-lab-app.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

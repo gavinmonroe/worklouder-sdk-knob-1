@@ -1,0 +1,26 @@
+{
+  "name": "input",
+  "version": "0.18.2",
+  "main": "dist-electron/main/index.js",
+  "description": "Input App - Work Louder",
+  "author": "Work Louder",
+  "license": "none",
+  "private": true,
+  "debug": {
+    "env": {
+      "VITE_DEV_SERVER_URL": "http://127.0.0.1:7777/"
+    }
+  },
+  "type": "module",
+  "dependencies": {
+    "@worklouder/wl-device-kit": "^0.1.28",
+    "electron-dl": "^4.0.0",
+    "electron-edge-js": "^40.0.1",
+    "electron-log": "^5.2.0",
+    "electron-updater": "^6.1.8",
+    "gifwrap": "^0.10.1",
+    "jimp": "^1.6.0",
+    "lokijs": "^1.5.12"
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+}

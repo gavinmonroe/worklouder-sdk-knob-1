@@ -1,0 +1,36 @@
+{
+  "format": "framer-f1-combined-registration-contract-v1",
+  "target": "Framer F1 firmware 0.4.1",
+  "topLevelSetup": {
+    "owner": "combined builder",
+    "callsStockSetup": 1,
+    "preservesStockReturn": true,
+    "setupPointerPatchCount": 1
+  },
+  "registrations": [
+    {
+      "screenId": 1,
+      "name": "music-player",
+      "symbol": "music_id1_register",
+      "arguments": ["screenRegistry", "navigationManager"],
+      "callsStockSetup": false
+    },
+    {
+      "screenId": 7,
+      "name": "wpm-pet",
+      "symbol": "stage3e34_register_wpm",
+      "arguments": ["screenRegistry", "navigationManager"],
+      "callsStockSetup": false,
+      "status": "symbol-and-final-ABI-owned-by-wpm-module"
+    }
+  ],
+  "requiredOrder": ["stock setup", "music ID1 registration", "WPM ID7 registration"],
+  "forbiddenHooks": ["stock key callback", "native WPM tick", "Timer getter", "global input bubble"],
+  "assetBudget": {
+    "runtimeReadableDromUpperBoundExclusive": "0x3c1d0000",
+    "musicDromBytes": 0,
+    "musicRuntimeAlbumDescriptorBytes": 24,
+    "musicRuntimeAlbumPixelBytes": 8192,
+    "musicAlbumFormat": "RGB565 64x64 controller-owned RAM"
+  }
+}

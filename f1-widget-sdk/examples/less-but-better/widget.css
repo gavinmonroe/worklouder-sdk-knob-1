@@ -1,0 +1,61 @@
+html,
+body {
+  width: 100px;
+  height: 310px;
+  margin: 0;
+  overflow: hidden;
+  background: #151310;
+}
+
+.poster {
+  position: relative;
+  width: 100px;
+  height: 310px;
+  overflow: hidden;
+  background: #151310;
+  color: #ede7dc;
+}
+
+.orb {
+  position: absolute;
+  width: 128px;
+  height: 128px;
+  left: -14px;
+  top: 70px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 42% 38%,
+    #d97757 0 12%,
+    #8f3f2b 38%,
+    #151310 72%
+  );
+  animation: breathe 2s ease-in-out infinite;
+}
+
+.grain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  mix-blend-mode: soft-light;
+}
+
+.poster:hover .orb {
+  filter: saturate(1.18);
+}
+
+.poster p {
+  position: absolute;
+  left: 10px;
+  bottom: 18px;
+  margin: 0;
+  font: 700 18px/0.92 ui-monospace, monospace;
+  letter-spacing: -1px;
+}
+
+@keyframes breathe {
+  50% {
+    transform: scale(1.08);
+    filter: saturate(1.18);
+  }
+}

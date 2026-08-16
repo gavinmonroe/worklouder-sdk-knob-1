@@ -1,0 +1,23 @@
+ENTRY(stage3e31_screen_setup_wrapper)
+
+SECTIONS
+{
+  . = 0x42116f10;
+
+  .stage3e31_literal : ALIGN(4)
+  {
+    KEEP(*(.literal.stage3e31_wpm_sprite))
+  }
+
+  .stage3e31_text : ALIGN(4)
+  {
+    KEEP(*(.text.stage3e31_wpm_sprite))
+  }
+
+  /DISCARD/ :
+  {
+    *(.comment)
+    *(.xtensa.info)
+  }
+}
+

@@ -1,0 +1,47 @@
+/*
+ * Integration template only. The final combined linker must resolve both
+ * registration symbols and own the one setup-pointer patch.
+ *
+ * The WPM module may provide a thin adapter if its frozen public registration
+ * entry takes a root rather than the registry/navigation pair below.
+ */
+    .section .literal.f1_combined_setup, "a", @progbits
+    .balign 4
+.Lcombined_original_setup:        .long 0x4202c108
+.Lcombined_root_getter:           .long 0x42004e1c
+.Lcombined_registry_from_root:    .long 0x4210ad9c
+.Lcombined_navigation_getter:     .long 0x42006888
+
+    .section .text.f1_combined_setup, "ax", @progbits
+    .balign 4
+    .global f1_combined_setup_wrapper
+    .type f1_combined_setup_wrapper, @function
+f1_combined_setup_wrapper:
+    entry   a1, 48
+
+    mov     a10, a2
+    l32r    a8, .Lcombined_original_setup
+    callx8  a8
+    mov     a4, a10                      /* Preserve stock return. */
+
+    l32r    a8, .Lcombined_root_getter
+    callx8  a8
+    l32r    a8, .Lcombined_registry_from_root
+    callx8  a8
+    mov     a7, a10                      /* Shared registry. */
+
+    l32r    a8, .Lcombined_navigation_getter
+    callx8  a8
+    mov     a6, a10                      /* Shared navigation manager. */
+
+    mov     a10, a7
+    mov     a11, a6
+    call8   music_id1_register
+
+    mov     a10, a7
+    mov     a11, a6
+    call8   stage3e34_register_wpm
+
+    mov     a2, a4
+    retw.n
+    .size f1_combined_setup_wrapper, . - f1_combined_setup_wrapper

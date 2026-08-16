@@ -1,0 +1,1184 @@
+{
+  "format": "framer-css-scene-v1",
+  "viewport": {
+    "width": 100,
+    "height": 310
+  },
+  "tickMs": 100,
+  "layout": {
+    "columns": 5,
+    "rows": 15,
+    "cellWidth": 20,
+    "cellHeight": 20,
+    "top": 5
+  },
+  "background": {
+    "rgba": {
+      "r": 5,
+      "g": 5,
+      "b": 10,
+      "a": 255
+    },
+    "color565": 33,
+    "deviceRgba": {
+      "r": 0,
+      "g": 4,
+      "b": 8,
+      "a": 255
+    }
+  },
+  "baseColor": {
+    "r": 0,
+    "g": 150,
+    "b": 255,
+    "a": 102
+  },
+  "glyphs": [
+    "ア",
+    "イ",
+    "ウ",
+    "エ",
+    "オ",
+    "カ",
+    "キ",
+    "ク",
+    "ケ",
+    "コ",
+    "サ",
+    "シ",
+    "ス",
+    "セ",
+    "ソ",
+    "タ",
+    "チ",
+    "ツ",
+    "テ",
+    "ト",
+    "ナ",
+    "ニ",
+    "ヌ",
+    "ネ",
+    "ノ",
+    "ハ",
+    "ヒ",
+    "フ",
+    "ヘ",
+    "ホ",
+    "マ",
+    "ミ",
+    "ム",
+    "メ",
+    "モ",
+    "ヤ",
+    "ユ",
+    "ヨ",
+    "ラ",
+    "リ",
+    "ル",
+    "レ",
+    "ロ",
+    "ワ",
+    "ヲ",
+    "ン",
+    "ガ",
+    "ギ",
+    "グ",
+    "ゲ",
+    "ゴ",
+    "ザ",
+    "ジ",
+    "ズ",
+    "ゼ",
+    "ゾ",
+    "ダ",
+    "ヂ",
+    "ヅ",
+    "デ",
+    "ド",
+    "バ",
+    "ビ",
+    "ブ",
+    "ベ",
+    "ボ",
+    "パ",
+    "ピ",
+    "プ",
+    "ペ",
+    "ポ"
+  ],
+  "cells": [
+    {
+      "index": 0,
+      "glyph": "ア",
+      "glyphId": 0,
+      "x": 0,
+      "y": 5,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 0
+    },
+    {
+      "index": 1,
+      "glyph": "イ",
+      "glyphId": 1,
+      "x": 20,
+      "y": 5,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 1
+    },
+    {
+      "index": 2,
+      "glyph": "ウ",
+      "glyphId": 2,
+      "x": 40,
+      "y": 5,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 3,
+      "glyph": "エ",
+      "glyphId": 3,
+      "x": 60,
+      "y": 5,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 2
+    },
+    {
+      "index": 4,
+      "glyph": "オ",
+      "glyphId": 4,
+      "x": 80,
+      "y": 5,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 3
+    },
+    {
+      "index": 5,
+      "glyph": "カ",
+      "glyphId": 5,
+      "x": 0,
+      "y": 25,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 4
+    },
+    {
+      "index": 6,
+      "glyph": "キ",
+      "glyphId": 6,
+      "x": 20,
+      "y": 25,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 7,
+      "glyph": "ク",
+      "glyphId": 7,
+      "x": 40,
+      "y": 25,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 8,
+      "glyph": "ケ",
+      "glyphId": 8,
+      "x": 60,
+      "y": 25,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 5
+    },
+    {
+      "index": 9,
+      "glyph": "コ",
+      "glyphId": 9,
+      "x": 80,
+      "y": 25,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 6
+    },
+    {
+      "index": 10,
+      "glyph": "サ",
+      "glyphId": 10,
+      "x": 0,
+      "y": 45,
+      "color565": 19574,
+      "glowRadius": 1,
+      "animationId": 7
+    },
+    {
+      "index": 11,
+      "glyph": "シ",
+      "glyphId": 11,
+      "x": 20,
+      "y": 45,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 12,
+      "glyph": "ス",
+      "glyphId": 12,
+      "x": 40,
+      "y": 45,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 13,
+      "glyph": "セ",
+      "glyphId": 13,
+      "x": 60,
+      "y": 45,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 14,
+      "glyph": "ソ",
+      "glyphId": 14,
+      "x": 80,
+      "y": 45,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 8
+    },
+    {
+      "index": 15,
+      "glyph": "タ",
+      "glyphId": 15,
+      "x": 0,
+      "y": 65,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 16,
+      "glyph": "チ",
+      "glyphId": 16,
+      "x": 20,
+      "y": 65,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 17,
+      "glyph": "ツ",
+      "glyphId": 17,
+      "x": 40,
+      "y": 65,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 9
+    },
+    {
+      "index": 18,
+      "glyph": "テ",
+      "glyphId": 18,
+      "x": 60,
+      "y": 65,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 4
+    },
+    {
+      "index": 19,
+      "glyph": "ト",
+      "glyphId": 19,
+      "x": 80,
+      "y": 65,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 10
+    },
+    {
+      "index": 20,
+      "glyph": "ナ",
+      "glyphId": 20,
+      "x": 0,
+      "y": 85,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 1
+    },
+    {
+      "index": 21,
+      "glyph": "ニ",
+      "glyphId": 21,
+      "x": 20,
+      "y": 85,
+      "color565": 19574,
+      "glowRadius": 1,
+      "animationId": 7
+    },
+    {
+      "index": 22,
+      "glyph": "ヌ",
+      "glyphId": 22,
+      "x": 40,
+      "y": 85,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 23,
+      "glyph": "ネ",
+      "glyphId": 23,
+      "x": 60,
+      "y": 85,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 24,
+      "glyph": "ノ",
+      "glyphId": 24,
+      "x": 80,
+      "y": 85,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 25,
+      "glyph": "ハ",
+      "glyphId": 25,
+      "x": 0,
+      "y": 105,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 5
+    },
+    {
+      "index": 26,
+      "glyph": "ヒ",
+      "glyphId": 26,
+      "x": 20,
+      "y": 105,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 27,
+      "glyph": "フ",
+      "glyphId": 27,
+      "x": 40,
+      "y": 105,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 28,
+      "glyph": "ヘ",
+      "glyphId": 28,
+      "x": 60,
+      "y": 105,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 29,
+      "glyph": "ホ",
+      "glyphId": 29,
+      "x": 80,
+      "y": 105,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 11
+    },
+    {
+      "index": 30,
+      "glyph": "マ",
+      "glyphId": 30,
+      "x": 0,
+      "y": 125,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 31,
+      "glyph": "ミ",
+      "glyphId": 31,
+      "x": 20,
+      "y": 125,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 4
+    },
+    {
+      "index": 32,
+      "glyph": "ム",
+      "glyphId": 32,
+      "x": 40,
+      "y": 125,
+      "color565": 19574,
+      "glowRadius": 1,
+      "animationId": 7
+    },
+    {
+      "index": 33,
+      "glyph": "メ",
+      "glyphId": 33,
+      "x": 60,
+      "y": 125,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 34,
+      "glyph": "モ",
+      "glyphId": 34,
+      "x": 80,
+      "y": 125,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 2
+    },
+    {
+      "index": 35,
+      "glyph": "ヤ",
+      "glyphId": 35,
+      "x": 0,
+      "y": 145,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 36,
+      "glyph": "ユ",
+      "glyphId": 36,
+      "x": 20,
+      "y": 145,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 37,
+      "glyph": "ヨ",
+      "glyphId": 37,
+      "x": 40,
+      "y": 145,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 38,
+      "glyph": "ラ",
+      "glyphId": 38,
+      "x": 60,
+      "y": 145,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 39,
+      "glyph": "リ",
+      "glyphId": 39,
+      "x": 80,
+      "y": 145,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 1
+    },
+    {
+      "index": 40,
+      "glyph": "ル",
+      "glyphId": 40,
+      "x": 0,
+      "y": 165,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 9
+    },
+    {
+      "index": 41,
+      "glyph": "レ",
+      "glyphId": 41,
+      "x": 20,
+      "y": 165,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 0
+    },
+    {
+      "index": 42,
+      "glyph": "ロ",
+      "glyphId": 42,
+      "x": 40,
+      "y": 165,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 5
+    },
+    {
+      "index": 43,
+      "glyph": "ワ",
+      "glyphId": 43,
+      "x": 60,
+      "y": 165,
+      "color565": 19574,
+      "glowRadius": 1,
+      "animationId": 7
+    },
+    {
+      "index": 44,
+      "glyph": "ヲ",
+      "glyphId": 44,
+      "x": 80,
+      "y": 165,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 4
+    },
+    {
+      "index": 45,
+      "glyph": "ン",
+      "glyphId": 45,
+      "x": 0,
+      "y": 185,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 46,
+      "glyph": "ガ",
+      "glyphId": 46,
+      "x": 20,
+      "y": 185,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 6
+    },
+    {
+      "index": 47,
+      "glyph": "ギ",
+      "glyphId": 47,
+      "x": 40,
+      "y": 185,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 48,
+      "glyph": "グ",
+      "glyphId": 48,
+      "x": 60,
+      "y": 185,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 49,
+      "glyph": "ゲ",
+      "glyphId": 49,
+      "x": 80,
+      "y": 185,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 50,
+      "glyph": "ゴ",
+      "glyphId": 50,
+      "x": 0,
+      "y": 205,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 51,
+      "glyph": "ザ",
+      "glyphId": 51,
+      "x": 20,
+      "y": 205,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 52,
+      "glyph": "ジ",
+      "glyphId": 52,
+      "x": 40,
+      "y": 205,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 53,
+      "glyph": "ズ",
+      "glyphId": 53,
+      "x": 60,
+      "y": 205,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 54,
+      "glyph": "ゼ",
+      "glyphId": 54,
+      "x": 80,
+      "y": 205,
+      "color565": 19574,
+      "glowRadius": 1,
+      "animationId": 7
+    },
+    {
+      "index": 55,
+      "glyph": "ゾ",
+      "glyphId": 55,
+      "x": 0,
+      "y": 225,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 56,
+      "glyph": "ダ",
+      "glyphId": 56,
+      "x": 20,
+      "y": 225,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 57,
+      "glyph": "ヂ",
+      "glyphId": 57,
+      "x": 40,
+      "y": 225,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 3
+    },
+    {
+      "index": 58,
+      "glyph": "ヅ",
+      "glyphId": 58,
+      "x": 60,
+      "y": 225,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 11
+    },
+    {
+      "index": 59,
+      "glyph": "デ",
+      "glyphId": 59,
+      "x": 80,
+      "y": 225,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 5
+    },
+    {
+      "index": 60,
+      "glyph": "ド",
+      "glyphId": 60,
+      "x": 0,
+      "y": 245,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 61,
+      "glyph": "バ",
+      "glyphId": 61,
+      "x": 20,
+      "y": 245,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 8
+    },
+    {
+      "index": 62,
+      "glyph": "ビ",
+      "glyphId": 62,
+      "x": 40,
+      "y": 245,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 10
+    },
+    {
+      "index": 63,
+      "glyph": "ブ",
+      "glyphId": 63,
+      "x": 60,
+      "y": 245,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 9
+    },
+    {
+      "index": 64,
+      "glyph": "ベ",
+      "glyphId": 64,
+      "x": 80,
+      "y": 245,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 65,
+      "glyph": "ボ",
+      "glyphId": 65,
+      "x": 0,
+      "y": 265,
+      "color565": 19574,
+      "glowRadius": 1,
+      "animationId": 2
+    },
+    {
+      "index": 66,
+      "glyph": "パ",
+      "glyphId": 66,
+      "x": 20,
+      "y": 265,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 67,
+      "glyph": "ピ",
+      "glyphId": 67,
+      "x": 40,
+      "y": 265,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 68,
+      "glyph": "プ",
+      "glyphId": 68,
+      "x": 60,
+      "y": 265,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 69,
+      "glyph": "ペ",
+      "glyphId": 69,
+      "x": 80,
+      "y": 265,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 70,
+      "glyph": "ポ",
+      "glyphId": 70,
+      "x": 0,
+      "y": 285,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 4
+    },
+    {
+      "index": 71,
+      "glyph": "ア",
+      "glyphId": 0,
+      "x": 20,
+      "y": 285,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 72,
+      "glyph": "イ",
+      "glyphId": 1,
+      "x": 40,
+      "y": 285,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 73,
+      "glyph": "ウ",
+      "glyphId": 2,
+      "x": 60,
+      "y": 285,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    },
+    {
+      "index": 74,
+      "glyph": "エ",
+      "glyphId": 3,
+      "x": 80,
+      "y": 285,
+      "color565": 493,
+      "glowRadius": 1,
+      "animationId": 255
+    }
+  ],
+  "animations": [
+    {
+      "name": "smooth-pulse",
+      "durationTicks": 39,
+      "delayTicks": 4,
+      "easing": "ease-in-out",
+      "trackId": 0
+    },
+    {
+      "name": "smooth-pulse",
+      "durationTicks": 35,
+      "delayTicks": 2,
+      "easing": "ease-in-out",
+      "trackId": 0
+    },
+    {
+      "name": "smooth-pulse",
+      "durationTicks": 56,
+      "delayTicks": 1,
+      "easing": "ease-in-out",
+      "trackId": 0
+    },
+    {
+      "name": "smooth-pulse",
+      "durationTicks": 49,
+      "delayTicks": 5,
+      "easing": "ease-in-out",
+      "trackId": 0
+    },
+    {
+      "name": "smooth-pulse",
+      "durationTicks": 32,
+      "delayTicks": 12,
+      "easing": "ease-in-out",
+      "trackId": 0
+    },
+    {
+      "name": "smooth-pulse",
+      "durationTicks": 28,
+      "delayTicks": 9,
+      "easing": "ease-in-out",
+      "trackId": 0
+    },
+    {
+      "name": "smooth-pulse",
+      "durationTicks": 53,
+      "delayTicks": 15,
+      "easing": "ease-in-out",
+      "trackId": 0
+    },
+    {
+      "name": "smooth-pulse",
+      "durationTicks": 29,
+      "delayTicks": 11,
+      "easing": "ease-in-out",
+      "trackId": 0
+    },
+    {
+      "name": "smooth-pulse",
+      "durationTicks": 59,
+      "delayTicks": 10,
+      "easing": "ease-in-out",
+      "trackId": 0
+    },
+    {
+      "name": "smooth-pulse",
+      "durationTicks": 43,
+      "delayTicks": 13,
+      "easing": "ease-in-out",
+      "trackId": 0
+    },
+    {
+      "name": "smooth-pulse",
+      "durationTicks": 36,
+      "delayTicks": 18,
+      "easing": "ease-in-out",
+      "trackId": 0
+    },
+    {
+      "name": "smooth-pulse",
+      "durationTicks": 41,
+      "delayTicks": 7,
+      "easing": "ease-in-out",
+      "trackId": 0
+    }
+  ],
+  "tracks": [
+    {
+      "name": "smooth-pulse",
+      "stops": [
+        {
+          "percent": 0,
+          "rgba": {
+            "r": 0,
+            "g": 150,
+            "b": 255,
+            "a": 102
+          },
+          "color565": 493,
+          "glowRadius": 1
+        },
+        {
+          "percent": 30,
+          "rgba": {
+            "r": 100,
+            "g": 200,
+            "b": 255,
+            "a": 255
+          },
+          "color565": 26207,
+          "glowRadius": 3
+        },
+        {
+          "percent": 50,
+          "rgba": {
+            "r": 255,
+            "g": 105,
+            "b": 180,
+            "a": 255
+          },
+          "color565": 64342,
+          "glowRadius": 3
+        },
+        {
+          "percent": 70,
+          "rgba": {
+            "r": 255,
+            "g": 255,
+            "b": 255,
+            "a": 255
+          },
+          "color565": 65535,
+          "glowRadius": 3
+        },
+        {
+          "percent": 100,
+          "rgba": {
+            "r": 0,
+            "g": 150,
+            "b": 255,
+            "a": 102
+          },
+          "color565": 493,
+          "glowRadius": 1
+        }
+      ]
+    }
+  ],
+  "diagnostics": [
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_LOWERED",
+      "selector": ".jp-matrix",
+      "property": "width",
+      "message": "width is lowered by the 100x310 device profile."
+    },
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_LOWERED",
+      "selector": ".jp-matrix",
+      "property": "height",
+      "message": "height is lowered by the 100x310 device profile."
+    },
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_LOWERED",
+      "selector": ".jp-matrix",
+      "property": "overflow",
+      "message": "overflow is lowered by the 100x310 device profile."
+    },
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_LOWERED",
+      "selector": ".jp-matrix",
+      "property": "display",
+      "message": "display is lowered by the 100x310 device profile."
+    },
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_LOWERED",
+      "selector": ".jp-matrix",
+      "property": "grid-template-columns",
+      "message": "grid-template-columns is lowered by the 100x310 device profile."
+    },
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_LOWERED",
+      "selector": ".jp-matrix",
+      "property": "grid-auto-rows",
+      "message": "grid-auto-rows is lowered by the 100x310 device profile."
+    },
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_LOWERED",
+      "selector": ".jp-matrix",
+      "property": "min-width",
+      "message": "min-width is lowered by the 100x310 device profile."
+    },
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_LOWERED",
+      "selector": ".jp-matrix",
+      "property": "min-height",
+      "message": "min-height is lowered by the 100x310 device profile."
+    },
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_LOWERED",
+      "selector": ".jp-matrix",
+      "property": "font-size",
+      "message": "font-size is lowered by the 100x310 device profile."
+    },
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_LOWERED",
+      "selector": ".jp-matrix",
+      "property": "font-family",
+      "message": "font-family is lowered by the 100x310 device profile."
+    },
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_LOWERED",
+      "selector": ".jp-matrix",
+      "property": "justify-content",
+      "message": "justify-content is lowered by the 100x310 device profile."
+    },
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_LOWERED",
+      "selector": ".jp-matrix",
+      "property": "align-content",
+      "message": "align-content is lowered by the 100x310 device profile."
+    },
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_LOWERED",
+      "selector": ".jp-matrix > span",
+      "property": "text-align",
+      "message": "text-align is lowered by the 100x310 device profile."
+    },
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_LOWERED",
+      "selector": ".jp-matrix > span",
+      "property": "text-shadow",
+      "message": "text-shadow is lowered by the 100x310 device profile."
+    },
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_IGNORED",
+      "selector": ".jp-matrix > span",
+      "property": "user-select",
+      "message": "user-select is ignored by the 100x310 device profile."
+    },
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_IGNORED",
+      "selector": ".jp-matrix > span",
+      "property": "transition",
+      "message": "transition is ignored by the 100x310 device profile."
+    },
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_LOWERED",
+      "selector": ".jp-matrix > span",
+      "property": "line-height",
+      "message": "line-height is lowered by the 100x310 device profile."
+    },
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_LOWERED",
+      "selector": "@keyframes smooth-pulse 0%",
+      "property": "text-shadow",
+      "message": "text-shadow is lowered by the 100x310 device profile."
+    },
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_LOWERED",
+      "selector": "@keyframes smooth-pulse 30%",
+      "property": "text-shadow",
+      "message": "text-shadow is lowered by the 100x310 device profile."
+    },
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_LOWERED",
+      "selector": "@keyframes smooth-pulse 50%",
+      "property": "text-shadow",
+      "message": "text-shadow is lowered by the 100x310 device profile."
+    },
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_LOWERED",
+      "selector": "@keyframes smooth-pulse 70%",
+      "property": "text-shadow",
+      "message": "text-shadow is lowered by the 100x310 device profile."
+    },
+    {
+      "severity": "warning",
+      "code": "CSS_PROPERTY_LOWERED",
+      "selector": "@keyframes smooth-pulse 100%",
+      "property": "text-shadow",
+      "message": "text-shadow is lowered by the 100x310 device profile."
+    }
+  ],
+  "lowerings": [
+    "The 1920x1080 minimum and 40px browser grid are replaced by a 5x15 device grid on 100x310.",
+    "Courier New/fallback glyphs become a pinned 1-bit bitmap atlas; stock Katakana font coverage is not assumed.",
+    "Multiple Gaussian text shadows become a bounded 0..3px software halo.",
+    "CSS cubic ease-in-out becomes deterministic smoothstep interpolation at 100ms ticks.",
+    "Only the first 75 overflow-hidden cells are materialized; the remaining HTML is virtualized away.",
+    "Transitions, selection, browser reflow, and the CSS cascade outside the supported selectors are host-only."
+  ],
+  "budget": {
+    "sceneBytes": 1048,
+    "frameBufferBytes": 62000,
+    "descriptorBytes": 48,
+    "glyphAtlasBytes": 1988,
+    "cellScratchBytes": 800,
+    "totalPersistentEstimate": 65084,
+    "animatedCells": 35,
+    "maxDirtyPixelsPerTick": 14000
+  },
+  "sha256": "97b0e81d6554ba8725bba8418219af0d2a5182bdbff3f9ab34752af0bb59baad"
+}

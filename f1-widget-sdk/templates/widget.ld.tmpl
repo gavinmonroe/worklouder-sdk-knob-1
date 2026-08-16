@@ -1,0 +1,24 @@
+ENTRY(f1_widget_screen_setup_wrapper)
+
+SECTIONS
+{
+  . = {{CODE_BASE_ADDRESS}};
+
+  .f1_widget_literal : ALIGN(4)
+  {
+    KEEP(*(.literal.f1_widget))
+  }
+
+  .f1_widget_text : ALIGN(4)
+  {
+    KEEP(*(.text.f1_widget))
+  }
+
+  . = ALIGN(4);
+
+  /DISCARD/ :
+  {
+    *(.comment)
+    *(.xtensa.info)
+  }
+}

@@ -1,0 +1,36 @@
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: #121212;
+}
+
+body {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+}
+
+main {
+  width: 100px;
+  height: 310px;
+  border: 1px solid #343434;
+  overflow: hidden;
+}
+
+.jp-matrix {
+  width: 100px;
+  height: 310px;
+  min-width: 0;
+  min-height: 0;
+  grid-template-columns: repeat(5, 20px);
+  grid-auto-rows: 20px;
+  align-content: center;
+  font-family: ui-monospace, "Hiragino Kaku Gothic ProN", monospace;
+  font-size: 14px;
+}
+
+.jp-matrix > span {
+  display: grid;
+  place-items: center;
+}

@@ -1,0 +1,773 @@
+{
+  "format": "framer-f1-wpm-pet-species-frames-v1",
+  "extractor": "Version: ImageMagick 7.1.2-21 Q16-HDRI aarch64 23940 https://imagemagick.org; exact 4x2 floor-divided cells; alpha trim; Lanczos contain; 68x56 RGBA extent",
+  "rosterOrder": [
+    "Belgian Tervuren",
+    "Pepe",
+    "Angry owl",
+    "Cute ferret",
+    "Cat",
+    "Lazy cow"
+  ],
+  "stateOrder": [
+    "ready",
+    "curious",
+    "happy",
+    "zooming",
+    "fire",
+    "tired",
+    "waiting",
+    "sleeping"
+  ],
+  "output": {
+    "width": 68,
+    "height": 56,
+    "format": "PNG32 RGBA"
+  },
+  "species": [
+    {
+      "id": 0,
+      "slug": "belgian-tervuren",
+      "label": "Belgian Tervuren",
+      "source": "framer-widgets/assets/wpm-belgian-tervuren-sprite-concept-v1.png",
+      "sourceSha256": "7bae61f604f9c3d9f7e89ebda02c34e7f55e2d13f5d9323dadab3ae0692aa5a3",
+      "width": 1774,
+      "height": 887,
+      "frames": [
+        {
+          "stateId": 0,
+          "state": "ready",
+          "crop": {
+            "x": 0,
+            "y": 0,
+            "width": 443,
+            "height": 443
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/belgian-tervuren/frame-00.png",
+          "pngSha256": "033ca0994e2776467dd679f0195f544fca998312417df81b5bbc0a56f3c340c9",
+          "alphaBounds": "50x55+12+1",
+          "bytes": 6941
+        },
+        {
+          "stateId": 1,
+          "state": "curious",
+          "crop": {
+            "x": 443,
+            "y": 0,
+            "width": 444,
+            "height": 443
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/belgian-tervuren/frame-01.png",
+          "pngSha256": "23dee8201d14b3561e48a8d1c9059984ab7be5f6d62eea94812711c0944bb9c6",
+          "alphaBounds": "50x56+10+0",
+          "bytes": 7438
+        },
+        {
+          "stateId": 2,
+          "state": "happy",
+          "crop": {
+            "x": 887,
+            "y": 0,
+            "width": 443,
+            "height": 443
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/belgian-tervuren/frame-02.png",
+          "pngSha256": "11250df075aa0a63a511906174d62f4f0fcbb6bbccf20bb74775743879b6f57f",
+          "alphaBounds": "60x56+4+0",
+          "bytes": 8119
+        },
+        {
+          "stateId": 3,
+          "state": "zooming",
+          "crop": {
+            "x": 1330,
+            "y": 0,
+            "width": 444,
+            "height": 443
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/belgian-tervuren/frame-03.png",
+          "pngSha256": "8c07661f77314f29243e094e857bcc4f1483288850746b5b6c9fcafab0d5f573",
+          "alphaBounds": "57x53+5+3",
+          "bytes": 7647
+        },
+        {
+          "stateId": 4,
+          "state": "fire",
+          "crop": {
+            "x": 0,
+            "y": 443,
+            "width": 443,
+            "height": 444
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/belgian-tervuren/frame-04.png",
+          "pngSha256": "2fdfcaf58b6b97dca9b479859fb61aa85ae9d82147459d0e0d43ba027b4c3b4d",
+          "alphaBounds": "57x56+5+0",
+          "bytes": 9506
+        },
+        {
+          "stateId": 5,
+          "state": "tired",
+          "crop": {
+            "x": 443,
+            "y": 443,
+            "width": 444,
+            "height": 444
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/belgian-tervuren/frame-05.png",
+          "pngSha256": "efe05f363b0061a5bfa3f419f09d5b4fc7d5dc452dc81aeb280c4e30bb9f556e",
+          "alphaBounds": "58x54+5+2",
+          "bytes": 6849
+        },
+        {
+          "stateId": 6,
+          "state": "waiting",
+          "crop": {
+            "x": 887,
+            "y": 443,
+            "width": 443,
+            "height": 444
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/belgian-tervuren/frame-06.png",
+          "pngSha256": "c5e8d23375c9a717d4977f1912372e269a8f06f048a6ccc7fbfe6849f353ec0c",
+          "alphaBounds": "58x56+3+0",
+          "bytes": 7987
+        },
+        {
+          "stateId": 7,
+          "state": "sleeping",
+          "crop": {
+            "x": 1330,
+            "y": 443,
+            "width": 444,
+            "height": 444
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/belgian-tervuren/frame-07.png",
+          "pngSha256": "ca6cd11a5ffbb8850cd1e2d5dd344190508dd5b561e775069a0b38479c5875a9",
+          "alphaBounds": "62x54+3+2",
+          "bytes": 8069
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "slug": "pepe",
+      "label": "Pepe",
+      "source": "framer-widgets/assets/wpm-pepe-sprite-concept-v2-transparent.png",
+      "sourceSha256": "a4bbfffa888206e1c13c6d9fb30300f3422f2fe1db2adb1f8973ae063bb38821",
+      "width": 1844,
+      "height": 853,
+      "frames": [
+        {
+          "stateId": 0,
+          "state": "ready",
+          "crop": {
+            "x": 0,
+            "y": 0,
+            "width": 461,
+            "height": 426
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/pepe/frame-00.png",
+          "pngSha256": "c339bdb6e6b579a837c0ff542f9868d1713e3bf49522f5e534c6a5784c42d0e0",
+          "alphaBounds": "51x56+5+0",
+          "bytes": 7521
+        },
+        {
+          "stateId": 1,
+          "state": "curious",
+          "crop": {
+            "x": 461,
+            "y": 0,
+            "width": 461,
+            "height": 426
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/pepe/frame-01.png",
+          "pngSha256": "6ded871697f00b3709c1fcd3d3b7305e9ded09e041830208c5a587914c554973",
+          "alphaBounds": "60x56+4+0",
+          "bytes": 7432
+        },
+        {
+          "stateId": 2,
+          "state": "happy",
+          "crop": {
+            "x": 922,
+            "y": 0,
+            "width": 461,
+            "height": 426
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/pepe/frame-02.png",
+          "pngSha256": "f8141a8827352323c42bf3cb3f704db9621fa17019ce80179a53fb7eed2c0e72",
+          "alphaBounds": "63x53+0+1",
+          "bytes": 7780
+        },
+        {
+          "stateId": 3,
+          "state": "zooming",
+          "crop": {
+            "x": 1383,
+            "y": 0,
+            "width": 461,
+            "height": 426
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/pepe/frame-03.png",
+          "pngSha256": "4981828d90c7e8cb85c693603b30496f3631614856ddfc967f722b9f53a8156c",
+          "alphaBounds": "68x47+0+4",
+          "bytes": 9268
+        },
+        {
+          "stateId": 4,
+          "state": "fire",
+          "crop": {
+            "x": 0,
+            "y": 426,
+            "width": 461,
+            "height": 427
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/pepe/frame-04.png",
+          "pngSha256": "ede70e6e6ed7da507f21b65cf5b96e016b1da50ed33fd3322397e3f7c82599d0",
+          "alphaBounds": "62x56+3+0",
+          "bytes": 9880
+        },
+        {
+          "stateId": 5,
+          "state": "tired",
+          "crop": {
+            "x": 461,
+            "y": 426,
+            "width": 461,
+            "height": 427
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/pepe/frame-05.png",
+          "pngSha256": "e4a6a51b7ec0892376beba9bd504426c5842060f1d652472b8498157e57b6978",
+          "alphaBounds": "63x55+0+0",
+          "bytes": 8475
+        },
+        {
+          "stateId": 6,
+          "state": "waiting",
+          "crop": {
+            "x": 922,
+            "y": 426,
+            "width": 461,
+            "height": 427
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/pepe/frame-06.png",
+          "pngSha256": "4918f07b3c4dd6c149804a926149b20bcc6207752bb30a58de2da07dc46feb09",
+          "alphaBounds": "63x56+2+0",
+          "bytes": 8210
+        },
+        {
+          "stateId": 7,
+          "state": "sleeping",
+          "crop": {
+            "x": 1383,
+            "y": 426,
+            "width": 461,
+            "height": 427
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/pepe/frame-07.png",
+          "pngSha256": "9f45afdd250be8f2997445ecf9c89b863904d95db0d292252abbdb49c3230606",
+          "alphaBounds": "62x52+3+4",
+          "bytes": 7371
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "slug": "angry-owl",
+      "label": "Angry owl",
+      "source": "framer-widgets/assets/wpm-angry-owl-sprite-concept-v1.png",
+      "sourceSha256": "82e273428a4f3ecbef36af51f097202a9941702ae6e79f56febb40404bd55097",
+      "width": 1672,
+      "height": 941,
+      "frames": [
+        {
+          "stateId": 0,
+          "state": "ready",
+          "crop": {
+            "x": 0,
+            "y": 0,
+            "width": 418,
+            "height": 470
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/angry-owl/frame-00.png",
+          "pngSha256": "d2b1624764ee6096cd5e89bddce0b39a4ab7721d90e151d40ce7a5972ba4060f",
+          "alphaBounds": "42x45+13+8",
+          "bytes": 5339
+        },
+        {
+          "stateId": 1,
+          "state": "curious",
+          "crop": {
+            "x": 418,
+            "y": 0,
+            "width": 418,
+            "height": 470
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/angry-owl/frame-01.png",
+          "pngSha256": "4d1b23dfa4ce4dbfbda241c2e46b7d73f701b5f38b25e5d42d8b258fedf7c907",
+          "alphaBounds": "50x51+9+3",
+          "bytes": 6422
+        },
+        {
+          "stateId": 2,
+          "state": "happy",
+          "crop": {
+            "x": 836,
+            "y": 0,
+            "width": 418,
+            "height": 470
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/angry-owl/frame-02.png",
+          "pngSha256": "e7c10e831112e4b07b5aebdcfbd7e383a4dcb9f22daa9f000d2308ee341fc974",
+          "alphaBounds": "53x49+7+3",
+          "bytes": 6666
+        },
+        {
+          "stateId": 3,
+          "state": "zooming",
+          "crop": {
+            "x": 1254,
+            "y": 0,
+            "width": 418,
+            "height": 470
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/angry-owl/frame-03.png",
+          "pngSha256": "ce1f442d4912f4f1c3f1caf5221b0eaa75f21ea35c22a45b4e0b541177fc2bd8",
+          "alphaBounds": "56x54+6+2",
+          "bytes": 6861
+        },
+        {
+          "stateId": 4,
+          "state": "fire",
+          "crop": {
+            "x": 0,
+            "y": 470,
+            "width": 418,
+            "height": 471
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/angry-owl/frame-04.png",
+          "pngSha256": "d21a49fd7a2d82cbc6ac1d7c612f072dc7e25a2ec50897f34a67ebc2871f8db1",
+          "alphaBounds": "49x53+9+0",
+          "bytes": 8064
+        },
+        {
+          "stateId": 5,
+          "state": "tired",
+          "crop": {
+            "x": 418,
+            "y": 470,
+            "width": 418,
+            "height": 471
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/angry-owl/frame-05.png",
+          "pngSha256": "33f7d19c41f067ab2a910ffddeb65be4950738ef4a253abc2316b99da4f145c2",
+          "alphaBounds": "46x46+10+5",
+          "bytes": 5880
+        },
+        {
+          "stateId": 6,
+          "state": "waiting",
+          "crop": {
+            "x": 836,
+            "y": 470,
+            "width": 418,
+            "height": 471
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/angry-owl/frame-06.png",
+          "pngSha256": "2a36ee7e06b48d233c55687fdd068fd6fc1447426ad1fc15db48492f2a71d670",
+          "alphaBounds": "47x47+12+4",
+          "bytes": 6074
+        },
+        {
+          "stateId": 7,
+          "state": "sleeping",
+          "crop": {
+            "x": 1254,
+            "y": 470,
+            "width": 418,
+            "height": 471
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/angry-owl/frame-07.png",
+          "pngSha256": "d3fa455f747ad11035bae1e25c19b9d0aaf2ca3296fb79ca937dc8870eb26937",
+          "alphaBounds": "52x48+8+5",
+          "bytes": 6238
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "slug": "cute-ferret",
+      "label": "Cute ferret",
+      "source": "framer-widgets/assets/wpm-cute-ferret-sprite-concept-v1.png",
+      "sourceSha256": "68fafb76f08d2fc6c5c665d8b89314907ee8142d26b59f906ebbaf410e83c5d9",
+      "width": 1672,
+      "height": 941,
+      "frames": [
+        {
+          "stateId": 0,
+          "state": "ready",
+          "crop": {
+            "x": 0,
+            "y": 0,
+            "width": 418,
+            "height": 470
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/cute-ferret/frame-00.png",
+          "pngSha256": "5e664d9c8f06404bb48c1563ff9aea1c6a8fae00cb8a7cac70e2e7ea015d4ae6",
+          "alphaBounds": "47x52+10+4",
+          "bytes": 6765
+        },
+        {
+          "stateId": 1,
+          "state": "curious",
+          "crop": {
+            "x": 418,
+            "y": 0,
+            "width": 418,
+            "height": 470
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/cute-ferret/frame-01.png",
+          "pngSha256": "806da9c36178cac5aa8230b1321afb376e86ad1181cde31367fcf5cb1804eb0d",
+          "alphaBounds": "55x56+7+0",
+          "bytes": 8708
+        },
+        {
+          "stateId": 2,
+          "state": "happy",
+          "crop": {
+            "x": 836,
+            "y": 0,
+            "width": 418,
+            "height": 470
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/cute-ferret/frame-02.png",
+          "pngSha256": "1fd396177d68c68897e77b399c578d848ae6147269b0c76db37099c879254e77",
+          "alphaBounds": "55x50+6+5",
+          "bytes": 7613
+        },
+        {
+          "stateId": 3,
+          "state": "zooming",
+          "crop": {
+            "x": 1254,
+            "y": 0,
+            "width": 418,
+            "height": 470
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/cute-ferret/frame-03.png",
+          "pngSha256": "826e215b8955f92f26cabddaab6dfbe822c7f298e1004ac77602ef0d19e94935",
+          "alphaBounds": "51x56+8+0",
+          "bytes": 6455
+        },
+        {
+          "stateId": 4,
+          "state": "fire",
+          "crop": {
+            "x": 0,
+            "y": 470,
+            "width": 418,
+            "height": 471
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/cute-ferret/frame-04.png",
+          "pngSha256": "316a46a34e14e57c6f3964313af7ca5bd7670dc8939c555d1180f842d28dbcb1",
+          "alphaBounds": "50x54+9+0",
+          "bytes": 8579
+        },
+        {
+          "stateId": 5,
+          "state": "tired",
+          "crop": {
+            "x": 418,
+            "y": 470,
+            "width": 418,
+            "height": 471
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/cute-ferret/frame-05.png",
+          "pngSha256": "56d14f6fcfb4dd00f7634c98ea2b79f356cee6ca5bbd9f26b802888452b2da6d",
+          "alphaBounds": "51x48+9+5",
+          "bytes": 6829
+        },
+        {
+          "stateId": 6,
+          "state": "waiting",
+          "crop": {
+            "x": 836,
+            "y": 470,
+            "width": 418,
+            "height": 471
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/cute-ferret/frame-06.png",
+          "pngSha256": "a27ca42a237de3392dd0ad496fc4f4ba7db64b724834eaed45e71cffed259477",
+          "alphaBounds": "50x53+9+2",
+          "bytes": 7821
+        },
+        {
+          "stateId": 7,
+          "state": "sleeping",
+          "crop": {
+            "x": 1254,
+            "y": 470,
+            "width": 418,
+            "height": 471
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/cute-ferret/frame-07.png",
+          "pngSha256": "c90824a830ee131480a3fc1e1670127fc444cf5810ca9f09fd2b402ec40abd4a",
+          "alphaBounds": "57x56+5+0",
+          "bytes": 7691
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "slug": "cat",
+      "label": "Cat",
+      "source": "framer-widgets/assets/wpm-cat-sprite-concept-v3-blue-transparent.png",
+      "sourceSha256": "b5d0019b50c213170f3141971fb8e146eda9f5d68a221d5d1967bfcd0c4581a4",
+      "width": 1774,
+      "height": 887,
+      "frames": [
+        {
+          "stateId": 0,
+          "state": "ready",
+          "crop": {
+            "x": 0,
+            "y": 0,
+            "width": 443,
+            "height": 443
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/cat/frame-00.png",
+          "pngSha256": "1af79fc7cf4bcae4c37b044e2f524e185c295f3faedacf9f390674d2a3fbfd69",
+          "alphaBounds": "51x53+9+2",
+          "bytes": 7346
+        },
+        {
+          "stateId": 1,
+          "state": "curious",
+          "crop": {
+            "x": 443,
+            "y": 0,
+            "width": 444,
+            "height": 443
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/cat/frame-01.png",
+          "pngSha256": "d40ec2b7900d808784180d477db60f89a2d1a8a740a7729e2e86e4a0adf02a99",
+          "alphaBounds": "53x56+11+0",
+          "bytes": 8419
+        },
+        {
+          "stateId": 2,
+          "state": "happy",
+          "crop": {
+            "x": 887,
+            "y": 0,
+            "width": 443,
+            "height": 443
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/cat/frame-02.png",
+          "pngSha256": "6884eba975a4cd7cfd4baed699ff8957b4a6d8c1da7148b03368830f71d795e0",
+          "alphaBounds": "62x55+3+1",
+          "bytes": 8735
+        },
+        {
+          "stateId": 3,
+          "state": "zooming",
+          "crop": {
+            "x": 1330,
+            "y": 0,
+            "width": 444,
+            "height": 443
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/cat/frame-03.png",
+          "pngSha256": "8a5f12dc2ade1f52475b4b9999524dde27cc22073398fa97f00ea95fe9da3c9d",
+          "alphaBounds": "64x46+2+10",
+          "bytes": 8479
+        },
+        {
+          "stateId": 4,
+          "state": "fire",
+          "crop": {
+            "x": 0,
+            "y": 443,
+            "width": 443,
+            "height": 444
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/cat/frame-04.png",
+          "pngSha256": "feee22df2812ba19e9e2e04fff7e6072aac9859ba5cf24e0361e3dc402f902ff",
+          "alphaBounds": "57x56+5+0",
+          "bytes": 9888
+        },
+        {
+          "stateId": 5,
+          "state": "tired",
+          "crop": {
+            "x": 443,
+            "y": 443,
+            "width": 444,
+            "height": 444
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/cat/frame-05.png",
+          "pngSha256": "75760de368b9ee8ff01dfec58a91a74c6c0c5eacde923ed72327e426c63d9fbb",
+          "alphaBounds": "61x56+3+0",
+          "bytes": 9130
+        },
+        {
+          "stateId": 6,
+          "state": "waiting",
+          "crop": {
+            "x": 887,
+            "y": 443,
+            "width": 443,
+            "height": 444
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/cat/frame-06.png",
+          "pngSha256": "ba164253e830bd530cfd348cb922f0b3ba75923021dda7561b24054e7c8bd151",
+          "alphaBounds": "60x56+7+0",
+          "bytes": 9137
+        },
+        {
+          "stateId": 7,
+          "state": "sleeping",
+          "crop": {
+            "x": 1330,
+            "y": 443,
+            "width": 444,
+            "height": 444
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/cat/frame-07.png",
+          "pngSha256": "9a3c7f308965459fb4d89d37c0074ac343a15479fbd474dc6fb94a9baf606856",
+          "alphaBounds": "56x49+7+7",
+          "bytes": 7342
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "slug": "lazy-cow",
+      "label": "Lazy cow",
+      "source": "framer-widgets/assets/wpm-lazy-cow-sprite-concept-v1.png",
+      "sourceSha256": "7f82fd18e54c17c0d745fe751f92708bf64525db10a4cab236ce93c3f34b5c17",
+      "width": 1672,
+      "height": 941,
+      "frames": [
+        {
+          "stateId": 0,
+          "state": "ready",
+          "crop": {
+            "x": 0,
+            "y": 0,
+            "width": 418,
+            "height": 470
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/lazy-cow/frame-00.png",
+          "pngSha256": "e5bafc33030cdd000bbc103ba9621666dcb098f2c94d916f010f5bff4b00c057",
+          "alphaBounds": "44x49+13+7",
+          "bytes": 5517
+        },
+        {
+          "stateId": 1,
+          "state": "curious",
+          "crop": {
+            "x": 418,
+            "y": 0,
+            "width": 418,
+            "height": 470
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/lazy-cow/frame-01.png",
+          "pngSha256": "b5664a4d2fd633aa16b52903e2505daac05ac11f0e3215f9c16d6628c9f55272",
+          "alphaBounds": "51x51+9+0",
+          "bytes": 6696
+        },
+        {
+          "stateId": 2,
+          "state": "happy",
+          "crop": {
+            "x": 836,
+            "y": 0,
+            "width": 418,
+            "height": 470
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/lazy-cow/frame-02.png",
+          "pngSha256": "92ef502450234b1c607c00db6b1e78da369be85f37c7f834b27daef86b5437a0",
+          "alphaBounds": "64x55+2+1",
+          "bytes": 8423
+        },
+        {
+          "stateId": 3,
+          "state": "zooming",
+          "crop": {
+            "x": 1254,
+            "y": 0,
+            "width": 418,
+            "height": 470
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/lazy-cow/frame-03.png",
+          "pngSha256": "0497c2dc6c6057ccbd3b4711feab8dcb00a6828b808258b6c2eb01dbd9d34a17",
+          "alphaBounds": "56x40+6+16",
+          "bytes": 7008
+        },
+        {
+          "stateId": 4,
+          "state": "fire",
+          "crop": {
+            "x": 0,
+            "y": 470,
+            "width": 418,
+            "height": 471
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/lazy-cow/frame-04.png",
+          "pngSha256": "07fdbd5cd9bdfd5598cb77051596ab08922760e06235c1a01651ca3dca47707c",
+          "alphaBounds": "52x53+8+0",
+          "bytes": 8304
+        },
+        {
+          "stateId": 5,
+          "state": "tired",
+          "crop": {
+            "x": 418,
+            "y": 470,
+            "width": 418,
+            "height": 471
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/lazy-cow/frame-05.png",
+          "pngSha256": "89a09ea5b66d8962c11f88bb58267e036721010aca0b862c77a7459669a5b253",
+          "alphaBounds": "46x45+11+3",
+          "bytes": 5689
+        },
+        {
+          "stateId": 6,
+          "state": "waiting",
+          "crop": {
+            "x": 836,
+            "y": 470,
+            "width": 418,
+            "height": 471
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/lazy-cow/frame-06.png",
+          "pngSha256": "1a9376fe5215fcef8c4e1ff7fac1918453b005f620c43ef1335d1cb3d6a6dbde",
+          "alphaBounds": "56x51+6+0",
+          "bytes": 7151
+        },
+        {
+          "stateId": 7,
+          "state": "sleeping",
+          "crop": {
+            "x": 1254,
+            "y": 470,
+            "width": 418,
+            "height": 471
+          },
+          "file": "framer-widgets/assets/wpm-pet-species-frames-v1/lazy-cow/frame-07.png",
+          "pngSha256": "95578e14808889ddab5c4ebbe03e9d99508420e65e6ca8dc251dec114360f28d",
+          "alphaBounds": "64x56+2+0",
+          "bytes": 8454
+        }
+      ]
+    }
+  ],
+  "preview": {
+    "file": "framer-widgets/assets/wpm-pet-species-frames-v1/preview-6-species-x-8-states.png",
+    "sha256": "f61fdba151f27d21ecb377feef766c4a6a0172da798aea787596ad8cd6e12b50",
+    "rows": "species order",
+    "columns": "state order"
+  }
+}

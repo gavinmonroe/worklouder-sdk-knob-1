@@ -1,0 +1,17 @@
+{
+  "name": "framer-f1-widgets-lab",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test",
+    "build:device-assets": "node tools/build-device-image-assets.mjs",
+    "build:device-assets:v2-full": "node tools/build-device-image-assets-v2-full.mjs",
+    "build:device-assets:v3-species": "node tools/build-device-image-assets-v3-species.mjs",
+    "extract:wpm-species": "node tools/extract-wpm-species-frames.mjs",
+    "pomodoro": "node pomodoro.mjs",
+    "wpm-pet": "node wpm-pet.mjs demo"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

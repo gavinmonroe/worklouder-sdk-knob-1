@@ -1,0 +1,365 @@
+{
+  "behavior": {
+    "albumArt": "64x64 RGB565, generated into controller-owned RAM",
+    "background": "flat painted root; rounded label-as-panel objects disabled after live teardown crash",
+    "durationMs": 240000,
+    "initialTrack": "Midnight Circuit — Static Bloom (deterministic fixture until first host update)",
+    "logicalCanvas": {
+      "height": 310,
+      "width": 100
+    },
+    "metadata": "mp.write_info host-fed title, artist, elapsed, duration, and playing state",
+    "positionMs": 102000,
+    "progress": "text-only fixture while label-as-panel progress objects remain disabled",
+    "progressPermille": 425,
+    "progressPixels": 34
+  },
+  "code": {
+    "architecture": "ESP32-S3 elf32-xtensa-le",
+    "bytes": 4420,
+    "deterministicRebuilds": 2,
+    "entry": "music_id1_register",
+    "finalAddressOwnedByCombinedLinker": true,
+    "integrationHarness": {
+      "bytes": 4497,
+      "relocations": 0,
+      "setupLiteralSourceCount": 1,
+      "sha256": "20d231ebb65653caae5d0628164441124f98d89e7e06ad1a073239e5f39999f7",
+      "wpmRegistrationStub": true
+    },
+    "provisionalVirtualAddress": "0x42118000",
+    "relocations": 0,
+    "sha256": "443b7aaca676002fc7b6577a2cd8111460f7939e5efc7ce413a0f7f5276dbf1a"
+  },
+  "format": "framer-f1-music-id1-offline-candidate-v1",
+  "integration": {
+    "assetBudget": {
+      "musicAlbumFormat": "RGB565 64x64 controller-owned RAM",
+      "musicDromBytes": 0,
+      "musicRuntimeAlbumDescriptorBytes": 24,
+      "musicRuntimeAlbumPixelBytes": 8192,
+      "runtimeReadableDromUpperBoundExclusive": "0x3c1d0000"
+    },
+    "forbiddenHooks": [
+      "stock key callback",
+      "native WPM tick",
+      "Timer getter",
+      "global input bubble"
+    ],
+    "format": "framer-f1-combined-registration-contract-v1",
+    "registrations": [
+      {
+        "arguments": [
+          "screenRegistry",
+          "navigationManager"
+        ],
+        "callsStockSetup": false,
+        "name": "music-player",
+        "screenId": 1,
+        "symbol": "music_id1_register"
+      },
+      {
+        "arguments": [
+          "screenRegistry",
+          "navigationManager"
+        ],
+        "callsStockSetup": false,
+        "name": "wpm-pet",
+        "screenId": 7,
+        "status": "symbol-and-final-ABI-owned-by-wpm-module",
+        "symbol": "stage3e34_register_wpm"
+      }
+    ],
+    "requiredOrder": [
+      "stock setup",
+      "music ID1 registration",
+      "WPM ID7 registration"
+    ],
+    "target": "Framer F1 firmware 0.4.1",
+    "topLevelSetup": {
+      "callsStockSetup": 1,
+      "owner": "combined builder",
+      "preservesStockReturn": true,
+      "setupPointerPatchCount": 1
+    }
+  },
+  "memory": {
+    "appendedDromBytes": 0,
+    "artwork": {
+      "activeIndexOffset": 184,
+      "buffers": [
+        {
+          "bytes": 12800,
+          "offset": 208
+        },
+        {
+          "bytes": 12800,
+          "offset": 13008
+        }
+      ],
+      "bytes": 12800,
+      "expectedBytesOffset": 196,
+      "format": "rgb565-le",
+      "height": 80,
+      "producerGenerationOffset": 200,
+      "stagedBytesOffset": 192,
+      "stagingIndexOffset": 188,
+      "uiGenerationOffset": 204,
+      "width": 80
+    },
+    "controllerAllocationBytes": 8424,
+    "metadataTextBytesEach": 64,
+    "nativeDescriptorBytes": 24,
+    "nativeDescriptorOffset": 208,
+    "pixelBytes": 8192,
+    "pixelOffset": 232,
+    "producerGenerationOffset": 140,
+    "rpcStringTable": {
+      "bytes": 152,
+      "lifetime": "controller",
+      "offset": 25808,
+      "source": "l32r-word-literals"
+    },
+    "runtimeReadableDromUpperBoundExclusive": "0x3c1d0000",
+    "transportStateAllocationBytes": 87980,
+    "transportStatePointerOffset": 56,
+    "uiGenerationOffset": 144
+  },
+  "safety": {
+    "appImageProduced": false,
+    "callsStockSetup": false,
+    "cleanupCallsFree": false,
+    "crashEvidence": {
+      "bytes": 65536,
+      "core": "/private/tmp/framer-combined-music-crash-coredump.bin",
+      "panic": "multi_heap_free multi_heap_poisoning.c:279 (head != NULL)",
+      "sha256": "d3f95812f40d0f05eee0b76dba6ac767b632d61bd6cf9441ec60856f87bd76fa",
+      "task": "wl_lvgl"
+    },
+    "flashCommandProvided": false,
+    "hardwareAccess": false,
+    "labelAsPanelObjectsCreated": false,
+    "littleFsTouched": false,
+    "nativeWpmTickTouched": false,
+    "navigationIdAddedOnlyAfterRegistryAssociation": true,
+    "registrationSuccessPostcondition": "controller+20 equals expected registry after add_controller returns",
+    "runtimeOwnedObjects": "background image, album image, and three ordinary labels",
+    "setupPointerPatched": false,
+    "stockKeyCallbackTouched": false,
+    "timerGetterTouched": false
+  },
+  "screenId": 1,
+  "status": "OFFLINE_ABI_CANDIDATE_NOT_LINKED_NOT_HARDWARE_APPROVED",
+  "stockWindows": [
+    {
+      "address": "0x420e7c04",
+      "bytes": 16,
+      "purpose": "operator new",
+      "sha256": "3414948f9d5fefc040714fdee428ff559e501097826268628de6d36a1c75cf81"
+    },
+    {
+      "address": "0x3c1acc34",
+      "bytes": 16,
+      "purpose": "controller base vtable",
+      "sha256": "c9128709a6bfab7a00768221964b9af618a643239186be59a3a805431cff239e"
+    },
+    {
+      "address": "0x4204da84",
+      "bytes": 16,
+      "purpose": "registry add controller",
+      "sha256": "f3820932cac4b57f5e8111645cb0e01183623bb16119bd44086f598fe82fbb66"
+    },
+    {
+      "address": "0x420293a8",
+      "bytes": 16,
+      "purpose": "navigation add ID",
+      "sha256": "129929f12eb7726028927fdac27d624df1c0e558873fde489dc49f7d08b47c8c"
+    },
+    {
+      "address": "0x420ae8a0",
+      "bytes": 16,
+      "purpose": "LVGL image create",
+      "sha256": "257132ed2e582d49cb814b0e709239b5968badb8a3143a08e5ab324830f260f8"
+    },
+    {
+      "address": "0x420aeef0",
+      "bytes": 16,
+      "purpose": "LVGL image set source",
+      "sha256": "a8fa32979cc2e8239796b00154f07376910b6815f175613d9743cd78d3008d7f"
+    },
+    {
+      "address": "0x4204f170",
+      "bytes": 16,
+      "purpose": "label create",
+      "sha256": "fc7a0a882d28271d5080af908166fb1a7b4a6982e4f366295117eb57c1b860fa"
+    },
+    {
+      "address": "0x4204f018",
+      "bytes": 16,
+      "purpose": "label font",
+      "sha256": "2d9620e1ad1826bf06e06a93ee7c30e090e1cf9b1969d0a8332c345466b51f21"
+    },
+    {
+      "address": "0x4204ee30",
+      "bytes": 16,
+      "purpose": "label text",
+      "sha256": "211965b244a4642b1b68722494b300e507a4e2084de1ce01298da4cceaf357fb"
+    },
+    {
+      "address": "0x4204ef44",
+      "bytes": 16,
+      "purpose": "label text color",
+      "sha256": "9abeca42351ef686a3b278b10b34de73f9b9424bbd013821082c16b0246a309a"
+    },
+    {
+      "address": "0x4209d154",
+      "bytes": 16,
+      "purpose": "LVGL object size",
+      "sha256": "e940da1caedb9ec2f7b45583790084196769881d1cc8284345bb0655e5a67480"
+    },
+    {
+      "address": "0x4204f0d0",
+      "bytes": 16,
+      "purpose": "LVGL object alignment",
+      "sha256": "77671ad32016ce758110635db0efc813ce0f8fd36b1bc26c052a50918ebc9dac"
+    },
+    {
+      "address": "0x4204ef10",
+      "bytes": 16,
+      "purpose": "background color",
+      "sha256": "a7ec82aa4a21c87c6b9cfdc48ce2d1a9484d8cfbd09e35ef29d5bce7b9096a06"
+    },
+    {
+      "address": "0x4204efd0",
+      "bytes": 16,
+      "purpose": "background opacity",
+      "sha256": "d6cee49ec8631e76a417cba4c5c63eb643bc33732e752c07e76dbe210b7a8619"
+    },
+    {
+      "address": "0x420a0f38",
+      "bytes": 16,
+      "purpose": "style radius property 12",
+      "sha256": "b5c80591ff1e74051710a0159373e78e7cdcaaf101b8126cca7ba432bb8f582d"
+    },
+    {
+      "address": "0x3c18e960",
+      "bytes": 16,
+      "purpose": "small ASCII font",
+      "sha256": "0c4c96c92c3de5cf5b76713b51d9a32281e51afe42a5d573880a0071f46b5a17"
+    },
+    {
+      "address": "0x42004afc",
+      "bytes": 16,
+      "purpose": "Framer RPC registry",
+      "sha256": "7f4a92ac254fc84160e4dd757ba73389b2adeaf26227203538c5bba3752082c2"
+    },
+    {
+      "address": "0x420540f4",
+      "bytes": 16,
+      "purpose": "Framer RPC method registration",
+      "sha256": "9d8fd56a6afea380160ee953dfca34a4e81f56e11a670a066bcb22fd8f98cb4a"
+    },
+    {
+      "address": "0x42106ae4",
+      "bytes": 16,
+      "purpose": "RPC callback temporary destructor",
+      "sha256": "d59c655a982b1d98d68c470a79f19606f2d49795bde397c47709f77f85294a35"
+    },
+    {
+      "address": "0x4200465c",
+      "bytes": 16,
+      "purpose": "RPC callback closure ABI",
+      "sha256": "6dbb9120bfd531122164a1dabd45f7de3d4ea0fe56f682fd40dd22550ab467c6"
+    },
+    {
+      "address": "0x420576a4",
+      "bytes": 16,
+      "purpose": "request JSON root constructor",
+      "sha256": "e6739d321e7883d8f9ddc62c09bf3cb736d5a12eac0f4f1bd68205859ff573f1"
+    },
+    {
+      "address": "0x420052e4",
+      "bytes": 16,
+      "purpose": "JSON key proxy constructor",
+      "sha256": "0dd5b72161c9c18a102184d37c708d4d81d39959bdc705ea126eca04dc503e9c"
+    },
+    {
+      "address": "0x42005590",
+      "bytes": 16,
+      "purpose": "JSON variant materialization/type gate",
+      "sha256": "f58b5ef9263a2a5567cc63490e8ce310cc835e08511f92aaf8c622dd614addc3"
+    },
+    {
+      "address": "0x420055c0",
+      "bytes": 16,
+      "purpose": "bounded metadata string accessor",
+      "sha256": "586e5389428d2ce260e86cf6c5ecd7ef3c31722e36893f82c9be1dec763d7f05"
+    },
+    {
+      "address": "0x420046e0",
+      "bytes": 16,
+      "purpose": "JSON variant node to string tuple",
+      "sha256": "5a25f88e25fc4a3b4fff7db2a75dc94b9d683e53c03681c8320d4310a34ae963"
+    },
+    {
+      "address": "0x42004f80",
+      "bytes": 16,
+      "purpose": "JSON proxy/root destructor",
+      "sha256": "a1d36c472aedcb81ce712e72b68990e849083140d8a20158c1262a3f4e54b2bb"
+    },
+    {
+      "address": "0x42005560",
+      "bytes": 16,
+      "purpose": "direct JSON key lookup",
+      "sha256": "ea9e11672401e7f126fae8a18b9158128eb5898fd1e0c7416733a06660e5261f"
+    },
+    {
+      "address": "0x42059638",
+      "bytes": 16,
+      "purpose": "Nomad-homolog numeric JSON conversion",
+      "sha256": "ceb8498c901e490cdc6776865b388a6e8bd5cc5debbf6da8215e0a006f506c07"
+    },
+    {
+      "address": "0x42005240",
+      "bytes": 16,
+      "purpose": "stock response key builder",
+      "sha256": "ea5662298be488cf01cf382f1269a9ac353faa840575cf77bd1a68a87eb60a02"
+    },
+    {
+      "address": "0x42005a18",
+      "bytes": 16,
+      "purpose": "stock response string assignment",
+      "sha256": "97de13fd6c9f286f36a56f7519dada7b2fbcd98665187009ab282bd15cdd8cf7"
+    },
+    {
+      "address": "0x42057d40",
+      "bytes": 16,
+      "purpose": "stock RPC response dispatch",
+      "sha256": "adb9e4c55bb93f499023d383477e19029641cd2bf5c4fe1f986f85e48125f59e"
+    },
+    {
+      "address": "0x420cd968",
+      "bytes": 16,
+      "purpose": "stock Framer base64 decoder",
+      "sha256": "9cc390a1b35c767f76fa861ec9fc422259249b6403b6533010ce73551de2438b"
+    }
+  ],
+  "target": "Framer F1 firmware 0.4.1",
+  "transport": {
+    "acknowledgement": {
+      "hostNormalizedAccepted": true,
+      "wire": {
+        "status": "ok"
+      }
+    },
+    "artworkCommit": "inactive ping-pong buffer; generation published only on exact completion",
+    "artworkContract": "strict 12800-byte ordered transaction, <=3072 raw bytes per base64 chunk",
+    "artworkHandler": "mp.write_artwork",
+    "implemented": true,
+    "metadataCommit": "odd while mutating, even after memw; UI double-checks and copies 128 bytes before LVGL",
+    "metadataHandler": "mp.write_info",
+    "nativeMediaRpcProven": "stock Framer registration/request/response ABI pinned; custom handler not live-proven",
+    "screenRebuildReplay": "first UI tick reapplies nonzero accepted metadata and artwork generations",
+    "taskBoundary": "RPC publishes an odd/even metadata seqlock; LVGL refresh applies only a stable private snapshot"
+  }
+}

@@ -1,0 +1,155 @@
+{
+  "format": "framer-f1-wpm-pet-lvgl-assets-v1",
+  "converter": "@worklouder/wl-device-kit convertImageToLvgl 0.1.28",
+  "layout": {
+    "screen": {
+      "width": 100,
+      "height": 100
+    },
+    "cat": {
+      "width": 68,
+      "height": 56,
+      "align": "center",
+      "x": 0,
+      "y": 0
+    },
+    "drawOrder": [
+      "sky",
+      "cat",
+      "wpm",
+      "analytics"
+    ]
+  },
+  "frames": [
+    {
+      "name": "sky-0",
+      "kind": "sky",
+      "source": "framer-widgets/assets/night-sky-frames-v1/frame-00.png",
+      "output": "framer-widgets/assets/device-lvgl-v1/sky-0.lvgl.bin",
+      "pngSha256": "8a597bf427c2dc54c1f85df9b3b6e79739880c9c54c754a725e8db8b04209d6f",
+      "lvglSha256": "d0d322a6d53e26af6b0789831c532dd8d2d439754ea5243dedc6d0b7a87f2e80",
+      "width": 100,
+      "height": 100,
+      "stride": 100,
+      "bytes": 11036,
+      "colorFormat": "LV_COLOR_FORMAT_I8"
+    },
+    {
+      "name": "sky-1",
+      "kind": "sky",
+      "source": "framer-widgets/assets/night-sky-frames-v1/frame-01.png",
+      "output": "framer-widgets/assets/device-lvgl-v1/sky-1.lvgl.bin",
+      "pngSha256": "117429f8cabbd795d947125555c359d682ff8678a1abb309cb6999c7ba489dce",
+      "lvglSha256": "0faeaec41f1bd9b45b86df5976cb122c1521a6f6c8a7c48d9510964e03249322",
+      "width": 100,
+      "height": 100,
+      "stride": 100,
+      "bytes": 11036,
+      "colorFormat": "LV_COLOR_FORMAT_I8"
+    },
+    {
+      "name": "cat-0",
+      "kind": "cat",
+      "source": "framer-widgets/assets/wpm-cat-frames-v2-blue/frame-00.png",
+      "output": "framer-widgets/assets/device-lvgl-v1/cat-0.lvgl.bin",
+      "pngSha256": "aa2119242463b5ab9d0c8de6c3c6a7243e26bd0dbff18d56bb3cc27a3c5547c9",
+      "lvglSha256": "fd16f2f1b7466a51c047ae7258795677ad7713f5104c6e5d15be21bb3261b397",
+      "width": 68,
+      "height": 56,
+      "stride": 68,
+      "bytes": 4844,
+      "colorFormat": "LV_COLOR_FORMAT_I8"
+    },
+    {
+      "name": "cat-1",
+      "kind": "cat",
+      "source": "framer-widgets/assets/wpm-cat-frames-v2-blue/frame-01.png",
+      "output": "framer-widgets/assets/device-lvgl-v1/cat-1.lvgl.bin",
+      "pngSha256": "03b8dc3c3f62f0dfc442dea9c5a7ac03a6dfe2ad935d0068beb04ea7447d7c0e",
+      "lvglSha256": "3951cf38a34057dd2493100f07b0b1af3381f931d3fb4406b69b7d61f4d4ea7c",
+      "width": 68,
+      "height": 56,
+      "stride": 68,
+      "bytes": 4844,
+      "colorFormat": "LV_COLOR_FORMAT_I8"
+    },
+    {
+      "name": "cat-2",
+      "kind": "cat",
+      "source": "framer-widgets/assets/wpm-cat-frames-v2-blue/frame-02.png",
+      "output": "framer-widgets/assets/device-lvgl-v1/cat-2.lvgl.bin",
+      "pngSha256": "b64ab8c99f44f8e2f58929afc4df6da6380a955fd7bef2645f3fcb0e96abe82c",
+      "lvglSha256": "fb49fb4599491f58ae428dc7de6155625180d30694773cfac9ec417f3c922867",
+      "width": 68,
+      "height": 56,
+      "stride": 68,
+      "bytes": 4844,
+      "colorFormat": "LV_COLOR_FORMAT_I8"
+    },
+    {
+      "name": "cat-3",
+      "kind": "cat",
+      "source": "framer-widgets/assets/wpm-cat-frames-v2-blue/frame-03.png",
+      "output": "framer-widgets/assets/device-lvgl-v1/cat-3.lvgl.bin",
+      "pngSha256": "5c806e34477f3b688b0d593cf49c31ec94d243639d228248c1dea129fa6e5026",
+      "lvglSha256": "f8926e00eb8697cbd8bbfb6857e6d92ebe2cb7ebdad9e1dc739145e3371e6e78",
+      "width": 68,
+      "height": 56,
+      "stride": 68,
+      "bytes": 4844,
+      "colorFormat": "LV_COLOR_FORMAT_I8"
+    },
+    {
+      "name": "cat-4",
+      "kind": "cat",
+      "source": "framer-widgets/assets/wpm-cat-frames-v2-blue/frame-04.png",
+      "output": "framer-widgets/assets/device-lvgl-v1/cat-4.lvgl.bin",
+      "pngSha256": "7b11904f0db9f530a781823e5d34dbe819d344bb64bf9412721bc8cb3ce0138d",
+      "lvglSha256": "4d1a35dc108e76fcf1c1a3169f0304606c9c1039db71c995ed3ce38909aea095",
+      "width": 68,
+      "height": 56,
+      "stride": 68,
+      "bytes": 4844,
+      "colorFormat": "LV_COLOR_FORMAT_I8"
+    },
+    {
+      "name": "cat-5",
+      "kind": "cat",
+      "source": "framer-widgets/assets/wpm-cat-frames-v2-blue/frame-05.png",
+      "output": "framer-widgets/assets/device-lvgl-v1/cat-5.lvgl.bin",
+      "pngSha256": "278a8935c4e709ac953fffcd82acbff5b9a572720504996c1704ad109a091510",
+      "lvglSha256": "aca858fc895d3a66a4e9d3711db3f9d7a008804f40dae83cd1dca9e6748ca78c",
+      "width": 68,
+      "height": 56,
+      "stride": 68,
+      "bytes": 4844,
+      "colorFormat": "LV_COLOR_FORMAT_I8"
+    },
+    {
+      "name": "cat-6",
+      "kind": "cat",
+      "source": "framer-widgets/assets/wpm-cat-frames-v2-blue/frame-06.png",
+      "output": "framer-widgets/assets/device-lvgl-v1/cat-6.lvgl.bin",
+      "pngSha256": "a2f9cae34cd51b931cde988ec710e302509d8f637ff180884c8c80f8d179c50c",
+      "lvglSha256": "fc83555569a67b8c827fb0baf6948553e4d1023d061e13c2fe4e42539c023aba",
+      "width": 68,
+      "height": 56,
+      "stride": 68,
+      "bytes": 4844,
+      "colorFormat": "LV_COLOR_FORMAT_I8"
+    },
+    {
+      "name": "cat-7",
+      "kind": "cat",
+      "source": "framer-widgets/assets/wpm-cat-frames-v2-blue/frame-07.png",
+      "output": "framer-widgets/assets/device-lvgl-v1/cat-7.lvgl.bin",
+      "pngSha256": "f9943c6daee5ed8ea35378e6136f2dc55dfd889e7da4308d20798a8fcf09eb24",
+      "lvglSha256": "5b24676867cac7a8e8ea18c7b01f69e171321f2f54f89bb7d9e851cdb5a61dab",
+      "width": 68,
+      "height": 56,
+      "stride": 68,
+      "bytes": 4844,
+      "colorFormat": "LV_COLOR_FORMAT_I8"
+    }
+  ]
+}

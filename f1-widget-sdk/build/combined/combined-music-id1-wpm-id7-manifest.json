@@ -1,0 +1,183 @@
+{
+  "format": "framer-f1-combined-music-id1-wpm-id7-candidate-v1",
+  "status": "OFFLINE_DETERMINISTIC_CANDIDATE_AWAITING_MAIN_APPROVAL",
+  "deployable": false,
+  "target": {
+    "device": "knob_f1",
+    "firmware": "0.4.1",
+    "screenIds": {
+      "music": 1,
+      "wpm": 7
+    },
+    "prohibitedScreenId": 8
+  },
+  "setup": {
+    "soleWrapper": "f1_combined_setup_wrapper",
+    "address": "0x42117094",
+    "stockSetupCalls": 1,
+    "order": [
+      "stock",
+      "music_id1_register",
+      "stage3e34_register_wpm"
+    ]
+  },
+  "registration": {
+    "musicNavGate": "controller+20 == registry",
+    "wpmNavGate": "controller+20 == registry",
+    "independentAllocationFailure": true
+  },
+  "wpm": {
+    "source": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/custom-firmware/experimental/stage3e34-wpm-pet.S",
+    "registrationOnly": true,
+    "standaloneWrapperLinked": false,
+    "pinnedRegistrationArtifact": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/custom-firmware/experimental/stage3e34-register-only.hex",
+      "bytes": 1928,
+      "sha256": "6862764da34424285799e5c91796cd6080fca1adc1374f60f5b171b8d34c6c12"
+    },
+    "runtimeAssetEnd": "0x3c1cf36c",
+    "runtimeBoundaryExclusive": "0x3c1d0000",
+    "headroomBytes": 3220,
+    "pet": "96x78 RAM-expanded active I4 source plus exact E3A fallback",
+    "liveCompleteFrozenLinkedBytes": {
+      "literalOffset": 16,
+      "literalBytes": 220,
+      "literalSha256": "c447cf2300462ad218ab7d687595a5f178c06f0ca9ee5b4adadd2c3d65d24646",
+      "textOffset": 444,
+      "textBytes": 1708,
+      "textSha256": "4934ea5a2ec030cb689953d813d0995854d911546b4d4ebd122014bf4b49ec0c",
+      "musicAddress": 1108440952,
+      "preservedByteForByte": true
+    }
+  },
+  "music": {
+    "source": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/examples/music-player/on-device/music-player-id1.S",
+    "screenId": 1,
+    "dromBytes": 0,
+    "album": "64x64 RGB565 controller-owned RAM deterministic fixture",
+    "crashContainment": "No label-as-panel objects; one image plus three text labels only"
+  },
+  "code": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined/combined-music-id1-wpm-id7-irom.bin",
+    "wrapperAddress": 1108439188,
+    "bytes": 3048,
+    "sha256": "d5a9bd2a9a84f769b34eee582a6137d6ce1e620414152cf90a2db9a06bc3b88c",
+    "relocations": 0,
+    "deterministicRebuilds": 2
+  },
+  "outputs": {
+    "app": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined/framer-0.4.1-combined-music-id1-wpm-id7-app.bin",
+      "bytes": 2029088,
+      "sha256": "3bee0ae9ed339cef08ea7198e946d1feabb9c54067787af2ec278544df55c9a1"
+    },
+    "merged": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined/framer-0.4.1-combined-music-id1-wpm-id7-merged.bin",
+      "bytes": 2094624,
+      "sha256": "15bb7f399e2e564db58c0b8d38bb1b14405b7ac568c71ec09177f3434a328721"
+    },
+    "inspection": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined/framer-0.4.1-combined-music-id1-wpm-id7-app.bin",
+      "fileBytes": 2029088,
+      "fileSha256": "3bee0ae9ed339cef08ea7198e946d1feabb9c54067787af2ec278544df55c9a1",
+      "appOffset": "0x0",
+      "appBytes": 2029088,
+      "appSha256": "3bee0ae9ed339cef08ea7198e946d1feabb9c54067787af2ec278544df55c9a1",
+      "segmentCount": 6,
+      "segments": [
+        {
+          "index": 0,
+          "headerOffset": "0x18",
+          "dataOffset": "0x20",
+          "loadAddress": "0x3c120020",
+          "length": 725360
+        },
+        {
+          "index": 1,
+          "headerOffset": "0xb1190",
+          "dataOffset": "0xb1198",
+          "loadAddress": "0x3fca4f00",
+          "length": 23136
+        },
+        {
+          "index": 2,
+          "headerOffset": "0xb6bf8",
+          "dataOffset": "0xb6c00",
+          "loadAddress": "0x40374000",
+          "length": 37912
+        },
+        {
+          "index": 3,
+          "headerOffset": "0xc0018",
+          "dataOffset": "0xc0020",
+          "loadAddress": "0x42000020",
+          "length": 1145560
+        },
+        {
+          "index": 4,
+          "headerOffset": "0x1d7af8",
+          "dataOffset": "0x1d7b00",
+          "loadAddress": "0x4037d418",
+          "length": 96740
+        },
+        {
+          "index": 5,
+          "headerOffset": "0x1ef4e4",
+          "dataOffset": "0x1ef4ec",
+          "loadAddress": "0x600fe000",
+          "length": 264
+        }
+      ],
+      "checksum": {
+        "offset": "0x1ef5ff",
+        "value": "0xdc",
+        "valid": true
+      },
+      "digest": {
+        "offset": "0x1ef600",
+        "sha256": "aabc84a3b77f615f6be740f71c7908b2b2cadc4c74a0ad69576d138cf1fd5260",
+        "valid": true
+      },
+      "factoryPartitionFit": true,
+      "factoryPartitionHeadroom": 6359520
+    }
+  },
+  "bases": {
+    "officialMergedSha256": "c8926bd181bc06062d8c79221c6bb1c7f85463f0034444f263e1995cb383b976",
+    "exactC1AppSha256": "e2e7ba4ab4b9c247af8c0bdc3d7896ac52967bb7f90fb19beae73c0ae4a2b8fd",
+    "liveE3aRollbackSha256": "dd8edaaa2c3aa98a1cbdbda319255cc7d1a0e02d0069f543dd574ef040db4b83",
+    "recovery": {
+      "manifest": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/recovery/backups/2026-08-15-framer-f1-a4cb8faf3210-before-custom/manifest.json",
+      "fullFlash": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/recovery/backups/2026-08-15-framer-f1-a4cb8faf3210-before-custom/full-flash-16mb.bin",
+      "bytes": 16777216,
+      "sha256": "aa6042310d075c9cbd3b992044511c064bb4b84713d0740a3adafcbdb3028fdd",
+      "mac": "a4:cb:8f:af:32:10"
+    },
+    "livePassedE31AssetDonorSha256": "431f4b9abf235a87f26ea455a762fd74afb16c2e55c9c1d7bb8c418a99799713",
+    "exactE34AppSha256": "0e20b00b046f34750e19141ea5b9cede2debc0e04f59038432b508eb4a8df5a6",
+    "assetPageSha256": "c49880fdc1fa2f8d34fa08d989c09d8e23b9546243b0db32bb8f1bca8741fee5"
+  },
+  "safety": {
+    "hardwareAccess": false,
+    "approvalRequired": true,
+    "appOnlyOffset": "0x10000",
+    "stockHooksPreserved": true,
+    "segments": 6,
+    "dromSegments": 1,
+    "iromSegments": 1
+  },
+  "verification": {
+    "abi": "PASS",
+    "deterministicBuild": "PASS",
+    "checksumDigest": "PASS",
+    "esptoolImageInfo": "PASS",
+    "esptoolImageInfoSha256": "629205fa29dfef322c4b44dc2f215d4de0b0f3add15fc8d04cd7f6fb37081ee0",
+    "rollbackPreflight": "PASS"
+  },
+  "elapsedMs": 346,
+  "sourceFingerprint": "1da9f5805128e557a1fd33230123d4e048b683e266bdd8d9ae619044f98c3d57",
+  "cache": {
+    "build": "miss",
+    "sourceFingerprint": "1da9f5805128e557a1fd33230123d4e048b683e266bdd8d9ae619044f98c3d57"
+  }
+}

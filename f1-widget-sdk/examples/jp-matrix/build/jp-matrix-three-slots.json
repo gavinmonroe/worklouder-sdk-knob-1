@@ -1,0 +1,35 @@
+{
+  "format": "framer-widget-bundle-v1",
+  "sha256": "fbfeefff128bc80c44663515830d3300083c84d18335f837f8949027051b2274",
+  "generation": 1,
+  "activeSlot": 0,
+  "slots": [
+    {
+      "index": 0,
+      "name": "matrix-blue",
+      "kind": "semantic",
+      "sceneSha256": "97b0e81d6554ba8725bba8418219af0d2a5182bdbff3f9ab34752af0bb59baad",
+      "sceneBytes": 1048,
+      "atlasSha256": "f71a9cc7105843a7b1d40b0dfce97965b0fd81260c6fe788683c07ad6733ac70",
+      "atlasBytes": 2004
+    },
+    {
+      "index": 1,
+      "name": "matrix-violet",
+      "kind": "semantic",
+      "sceneSha256": "f696acc945fb3d1159a4dbf4d6d22fa640dad9bdba71755f312d49900aa887c6",
+      "sceneBytes": 1048,
+      "atlasSha256": "f71a9cc7105843a7b1d40b0dfce97965b0fd81260c6fe788683c07ad6733ac70",
+      "atlasBytes": 2004
+    },
+    {
+      "index": 2,
+      "name": "matrix-emerald",
+      "kind": "semantic",
+      "sceneSha256": "77d75aadba6e83947a955fc73b6cf493e21b73671b9740b07ae70225dbfc05f5",
+      "sceneBytes": 1048,
+      "atlasSha256": "f71a9cc7105843a7b1d40b0dfce97965b0fd81260c6fe788683c07ad6733ac70",
+      "atlasBytes": 2004
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+{
+  "assets": {
+    "album-art.rgba8": {
+      "bytes": 256,
+      "sha256": "434dfd484865486a572dac3bce2bada27c50b12fafdfecca9c8cf256dbb89369"
+    },
+    "background-100x310.rgba8": {
+      "bytes": 124000,
+      "sha256": "6772c3173de681a4c6478b8559ef96c29885786feb443d71f76c8fa43fc454a7"
+    },
+    "frame-100x310.rgba8": {
+      "bytes": 124000,
+      "sha256": "d628cdfe3995faeb0acdc0946f55efc8a5386193b8a018159a54260a50c46130"
+    },
+    "preview-100x310.png": {
+      "bytes": 13571,
+      "sha256": "b460601886b169b56b9b39df858dca3840bb768fe9ef0e7110aa3c3dd3aa89a8"
+    }
+  },
+  "contract": "host-fed-asset-transaction-v1",
+  "futureCommitProtocol": [
+    "stage complete assets under a transaction-specific temporary namespace",
+    "verify every asset size and sha256",
+    "publish generation manifest atomically",
+    "swap LVGL descriptors on the device UI thread",
+    "retain previous generation until the next frame renders successfully"
+  ],
+  "generation": 1,
+  "logicalCanvas": {
+    "height": 310,
+    "width": 100
+  },
+  "media": {
+    "artist": "Static Bloom",
+    "durationMs": 240000,
+    "mainColor": "#2e86de",
+    "positionMs": 102000,
+    "progressPermille": 425,
+    "title": "Midnight Circuit"
+  },
+  "safety": {
+    "flashCommandProvided": false,
+    "hardwareAccess": false,
+    "nativeMediaControllerProven": false,
+    "transportImplemented": false
+  },
+  "status": "OFFLINE_MEDIA_BUNDLE_NOT_DEVICE_INSTALLABLE",
+  "transactionId": "f76bfc6defa558c23e5ead9c177be284b7edf156450862df3aea66227708e749"
+}

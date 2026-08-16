@@ -1,0 +1,27 @@
+{
+  "format": "framer-f1-wpm-pet-lvgl-assets-v4-i4-canary",
+  "status": "offline-only; not embedded in or flashed as firmware",
+  "purpose": "Minimal one-source I4 decoder canary with a painted LVGL background and no frame switching.",
+  "source": "framer-widgets/assets/wpm-pet-species-frames-v1/cat/frame-00.png",
+  "sourceSha256": "1af79fc7cf4bcae4c37b044e2f524e185c295f3faedacf9f390674d2a3fbfd69",
+  "preview": "framer-widgets/assets/device-lvgl-v4-i4-canary/cat-ready-52x42.png",
+  "previewSha256": "32b38a42d2993f2575149a8bc9fcb34b3b85364e727a5efa0b582d7f6ea803e4",
+  "output": "framer-widgets/assets/device-lvgl-v4-i4-canary/cat-ready-52x42.lvgl.bin",
+  "lvglSha256": "0ad586b3a5002fee3cb16498045ead72cae8c8e7befc18133d750f815034fc03",
+  "nativeBank": "framer-widgets/assets/device-lvgl-v4-i4-canary/cat-ready-52x42.native-bank.bin",
+  "nativeBankSha256": "f651cf38ee0dc567b2240d61b263ecd4e525f68b34549780a897b370c111aff1",
+  "width": 52,
+  "height": 42,
+  "stride": 26,
+  "colorFormat": "LV_COLOR_FORMAT_I4 (0x09)",
+  "paletteColorsUsed": 14,
+  "serializedBytes": 1168,
+  "nativeBankBytes": 1180,
+  "boundary": {
+    "baseAddress": 1008472464,
+    "endAddress": 1008473644,
+    "bytes": 1180,
+    "headroom": 59860
+  },
+  "officialInputDecoderRoundTrip": true
+}

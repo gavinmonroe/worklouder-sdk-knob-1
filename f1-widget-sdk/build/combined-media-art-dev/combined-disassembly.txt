@@ -1,0 +1,2222 @@
+
+/var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/f1-combined-id1-id7-niTbDr/first/combined.elf:     file format elf32-xtensa-le
+
+
+Disassembly of section .combined_text:
+
+42117094 <f1_combined_setup_wrapper>:
+42117094:	006136        	entry	a1, 48
+42117097:	20a220        	or	a10, a2, a2
+4211709a:	ff9d81        	l32r	a8, 42116f10 <f1_combined_setup_wrapper-0x184>
+4211709d:	0008e0        	callx8	a8
+421170a0:	204aa0        	or	a4, a10, a10
+421170a3:	ff9c81        	l32r	a8, 42116f14 <f1_combined_setup_wrapper-0x180>
+421170a6:	0008e0        	callx8	a8
+421170a9:	ff9b81        	l32r	a8, 42116f18 <f1_combined_setup_wrapper-0x17c>
+421170ac:	0008e0        	callx8	a8
+421170af:	207aa0        	or	a7, a10, a10
+421170b2:	ff9a81        	l32r	a8, 42116f1c <f1_combined_setup_wrapper-0x178>
+421170b5:	0008e0        	callx8	a8
+421170b8:	0a6d      	mov.n	a6, a10
+421170ba:	07ad      	mov.n	a10, a7
+421170bc:	06bd      	mov.n	a11, a6
+421170be:	006ba5        	call8	42117778 <music_id1_register>
+421170c1:	07ad      	mov.n	a10, a7
+421170c3:	06bd      	mov.n	a11, a6
+421170c5:	000065        	call8	421170cc <stage3e34_register_wpm>
+421170c8:	042d      	mov.n	a2, a4
+421170ca:	f01d      	retw.n
+
+421170cc <stage3e34_register_wpm>:
+421170cc:	006136        	entry	a1, 48
+421170cf:	027d      	mov.n	a7, a2
+421170d1:	036d      	mov.n	a6, a3
+421170d3:	089716        	beqz	a7, 42117160 <stage3e34_register_wpm+0x94>
+421170d6:	086616        	beqz	a6, 42117160 <stage3e34_register_wpm+0x94>
+421170d9:	ffa4a1        	l32r	a10, 42116f6c <f1_combined_setup_wrapper-0x128>
+421170dc:	ff9181        	l32r	a8, 42116f20 <f1_combined_setup_wrapper-0x174>
+421170df:	0008e0        	callx8	a8
+421170e2:	0a5d      	mov.n	a5, a10
+421170e4:	078516        	beqz	a5, 42117160 <stage3e34_register_wpm+0x94>
+421170e7:	05ad      	mov.n	a10, a5
+421170e9:	0b0c      	movi.n	a11, 0
+421170eb:	ffa0c1        	l32r	a12, 42116f6c <f1_combined_setup_wrapper-0x128>
+421170ee:	ff8d81        	l32r	a8, 42116f24 <f1_combined_setup_wrapper-0x170>
+421170f1:	0008e0        	callx8	a8
+421170f4:	ff8d81        	l32r	a8, 42116f28 <f1_combined_setup_wrapper-0x16c>
+421170f7:	0589      	s32i.n	a8, a5, 0
+421170f9:	a80c      	movi.n	a8, 10
+421170fb:	1a4582        	s8i	a8, a5, 26
+421170fe:	480c      	movi.n	a8, 4
+42117100:	1f6582        	s32i	a8, a5, 124
+42117103:	01d592        	addmi	a9, a5, 0x100
+42117106:	a0c992        	addi	a9, a9, -96
+42117109:	ff8a81        	l32r	a8, 42116f34 <f1_combined_setup_wrapper-0x160>
+4211710c:	0989      	s32i.n	a8, a9, 0
+4211710e:	ff8a81        	l32r	a8, 42116f38 <f1_combined_setup_wrapper-0x15c>
+42117111:	1989      	s32i.n	a8, a9, 4
+42117113:	ff8a81        	l32r	a8, 42116f3c <f1_combined_setup_wrapper-0x158>
+42117116:	2989      	s32i.n	a8, a9, 8
+42117118:	ff8a81        	l32r	a8, 42116f40 <f1_combined_setup_wrapper-0x154>
+4211711b:	3989      	s32i.n	a8, a9, 12
+4211711d:	ff8981        	l32r	a8, 42116f44 <f1_combined_setup_wrapper-0x150>
+42117120:	4989      	s32i.n	a8, a9, 16
+42117122:	ff8981        	l32r	a8, 42116f48 <f1_combined_setup_wrapper-0x14c>
+42117125:	5989      	s32i.n	a8, a9, 20
+42117127:	ff8981        	l32r	a8, 42116f4c <f1_combined_setup_wrapper-0x148>
+4211712a:	6989      	s32i.n	a8, a9, 24
+4211712c:	ff8981        	l32r	a8, 42116f50 <f1_combined_setup_wrapper-0x144>
+4211712f:	7989      	s32i.n	a8, a9, 28
+42117131:	ff8881        	l32r	a8, 42116f54 <f1_combined_setup_wrapper-0x140>
+42117134:	8989      	s32i.n	a8, a9, 32
+42117136:	ff8881        	l32r	a8, 42116f58 <f1_combined_setup_wrapper-0x13c>
+42117139:	9989      	s32i.n	a8, a9, 36
+4211713b:	ff8881        	l32r	a8, 42116f5c <f1_combined_setup_wrapper-0x138>
+4211713e:	a989      	s32i.n	a8, a9, 40
+42117140:	0599      	s32i.n	a9, a5, 0
+42117142:	07ad      	mov.n	a10, a7
+42117144:	20b550        	or	a11, a5, a5
+42117147:	ff7981        	l32r	a8, 42116f2c <f1_combined_setup_wrapper-0x168>
+4211714a:	0008e0        	callx8	a8
+4211714d:	5588      	l32i.n	a8, a5, 20
+4211714f:	0d9877        	bne	a8, a7, 42117160 <stage3e34_register_wpm+0x94>
+42117152:	06ad      	mov.n	a10, a6
+42117154:	7b0c      	movi.n	a11, 7
+42117156:	ff7681        	l32r	a8, 42116f30 <f1_combined_setup_wrapper-0x164>
+42117159:	0008e0        	callx8	a8
+4211715c:	052d      	mov.n	a2, a5
+4211715e:	f01d      	retw.n
+42117160:	020c      	movi.n	a2, 0
+42117162:	f01d      	retw.n
+
+42117164 <stage3e34_make_image>:
+42117164:	006136        	entry	a1, 48
+42117167:	036d      	mov.n	a6, a3
+42117169:	207440        	or	a7, a4, a4
+4211716c:	02ad      	mov.n	a10, a2
+4211716e:	ff7c81        	l32r	a8, 42116f60 <f1_combined_setup_wrapper-0x134>
+42117171:	0008e0        	callx8	a8
+42117174:	0a5d      	mov.n	a5, a10
+42117176:	659c      	beqz.n	a5, 42117190 <stage3e34_make_image+0x2c>
+42117178:	05ad      	mov.n	a10, a5
+4211717a:	06bd      	mov.n	a11, a6
+4211717c:	ff7a81        	l32r	a8, 42116f64 <f1_combined_setup_wrapper-0x130>
+4211717f:	0008e0        	callx8	a8
+42117182:	05ad      	mov.n	a10, a5
+42117184:	9b0c      	movi.n	a11, 9
+42117186:	0c0c      	movi.n	a12, 0
+42117188:	07dd      	mov.n	a13, a7
+4211718a:	ff7981        	l32r	a8, 42116f70 <f1_combined_setup_wrapper-0x124>
+4211718d:	0008e0        	callx8	a8
+42117190:	052d      	mov.n	a2, a5
+42117192:	f01d      	retw.n
+
+42117194 <stage3e34_make_label>:
+42117194:	006136        	entry	a1, 48
+42117197:	067d      	mov.n	a7, a6
+42117199:	20a220        	or	a10, a2, a2
+4211719c:	ff7681        	l32r	a8, 42116f74 <f1_combined_setup_wrapper-0x120>
+4211719f:	0008e0        	callx8	a8
+421171a2:	0a6d      	mov.n	a6, a10
+421171a4:	26ac      	beqz.n	a6, 421171ca <stage3e34_make_label+0x36>
+421171a6:	06ad      	mov.n	a10, a6
+421171a8:	03bd      	mov.n	a11, a3
+421171aa:	0c0c      	movi.n	a12, 0
+421171ac:	ff7381        	l32r	a8, 42116f78 <f1_combined_setup_wrapper-0x11c>
+421171af:	0008e0        	callx8	a8
+421171b2:	06ad      	mov.n	a10, a6
+421171b4:	07bd      	mov.n	a11, a7
+421171b6:	0c0c      	movi.n	a12, 0
+421171b8:	04dd      	mov.n	a13, a4
+421171ba:	ff6d81        	l32r	a8, 42116f70 <f1_combined_setup_wrapper-0x124>
+421171bd:	0008e0        	callx8	a8
+421171c0:	06ad      	mov.n	a10, a6
+421171c2:	05bd      	mov.n	a11, a5
+421171c4:	ff6e81        	l32r	a8, 42116f7c <f1_combined_setup_wrapper-0x118>
+421171c7:	0008e0        	callx8	a8
+421171ca:	062d      	mov.n	a2, a6
+421171cc:	f01d      	retw.n
+	...
+
+421171d0 <stage3e34_make_star>:
+421171d0:	008136        	entry	a1, 64
+421171d3:	037d      	mov.n	a7, a3
+421171d5:	046d      	mov.n	a6, a4
+421171d7:	a82c      	movi.n	a8, 42
+421171d9:	104182        	s8i	a8, a1, 16
+421171dc:	080c      	movi.n	a8, 0
+421171de:	114182        	s8i	a8, a1, 17
+421171e1:	02ad      	mov.n	a10, a2
+421171e3:	ff6481        	l32r	a8, 42116f74 <f1_combined_setup_wrapper-0x120>
+421171e6:	0008e0        	callx8	a8
+421171e9:	0a4d      	mov.n	a4, a10
+421171eb:	14bc      	beqz.n	a4, 42117220 <stage3e34_make_star+0x50>
+421171ed:	04ad      	mov.n	a10, a4
+421171ef:	ff65b1        	l32r	a11, 42116f84 <f1_combined_setup_wrapper-0x110>
+421171f2:	0c0c      	movi.n	a12, 0
+421171f4:	ff6181        	l32r	a8, 42116f78 <f1_combined_setup_wrapper-0x11c>
+421171f7:	0008e0        	callx8	a8
+421171fa:	04ad      	mov.n	a10, a4
+421171fc:	9b0c      	movi.n	a11, 9
+421171fe:	07cd      	mov.n	a12, a7
+42117200:	20d660        	or	a13, a6, a6
+42117203:	ff5b81        	l32r	a8, 42116f70 <f1_combined_setup_wrapper-0x124>
+42117206:	0008e0        	callx8	a8
+42117209:	04ad      	mov.n	a10, a4
+4211720b:	10c1b2        	addi	a11, a1, 16
+4211720e:	ff5b81        	l32r	a8, 42116f7c <f1_combined_setup_wrapper-0x118>
+42117211:	0008e0        	callx8	a8
+42117214:	04ad      	mov.n	a10, a4
+42117216:	05bd      	mov.n	a11, a5
+42117218:	0c0c      	movi.n	a12, 0
+4211721a:	ff5981        	l32r	a8, 42116f80 <f1_combined_setup_wrapper-0x114>
+4211721d:	0008e0        	callx8	a8
+42117220:	042d      	mov.n	a2, a4
+42117222:	f01d      	retw.n
+
+42117224 <stage3e34_expand_i4>:
+42117224:	010136        	entry	a1, 128
+42117227:	027d      	mov.n	a7, a2
+42117229:	036d      	mov.n	a6, a3
+4211722b:	0fb616        	beqz	a6, 4211732a <stage3e34_expand_i4+0x106>
+4211722e:	0688      	l32i.n	a8, a6, 0
+42117230:	ff5f91        	l32r	a9, 42116fac <f1_combined_setup_wrapper-0xe8>
+42117233:	021897        	beq	a8, a9, 42117239 <stage3e34_expand_i4+0x15>
+42117236:	003c06        	j	4211732a <stage3e34_expand_i4+0x106>
+42117239:	1688      	l32i.n	a8, a6, 4
+4211723b:	ff6091        	l32r	a9, 42116fbc <f1_combined_setup_wrapper-0xd8>
+4211723e:	021897        	beq	a8, a9, 42117244 <stage3e34_expand_i4+0x20>
+42117241:	003946        	j	4211732a <stage3e34_expand_i4+0x106>
+42117244:	2688      	l32i.n	a8, a6, 8
+42117246:	a91c      	movi.n	a9, 26
+42117248:	021897        	beq	a8, a9, 4211724e <stage3e34_expand_i4+0x2a>
+4211724b:	0036c6        	j	4211732a <stage3e34_expand_i4+0x106>
+4211724e:	3688      	l32i.n	a8, a6, 12
+42117250:	84a492        	movi	a9, 0x484
+42117253:	021897        	beq	a8, a9, 42117259 <stage3e34_expand_i4+0x35>
+42117256:	003406        	j	4211732a <stage3e34_expand_i4+0x106>
+42117259:	4668      	l32i.n	a6, a6, 16
+4211725b:	0cb616        	beqz	a6, 4211732a <stage3e34_expand_i4+0x106>
+4211725e:	242782        	l32i	a8, a7, 144
+42117261:	01a092        	movi	a9, 1
+42117264:	308890        	xor	a8, a8, a9
+42117267:	246782        	s32i	a8, a7, 144
+4211726a:	01d732        	addmi	a3, a7, 0x100
+4211726d:	d0c332        	addi	a3, a3, -48
+42117270:	488c      	beqz.n	a8, 42117278 <stage3e34_expand_i4+0x54>
+42117272:	ff5391        	l32r	a9, 42116fc0 <f1_combined_setup_wrapper-0xd4>
+42117275:	803390        	add	a3, a3, a9
+42117278:	18c352        	addi	a5, a3, 24
+4211727b:	ff4c81        	l32r	a8, 42116fac <f1_combined_setup_wrapper-0xe8>
+4211727e:	0389      	s32i.n	a8, a3, 0
+42117280:	ff4c81        	l32r	a8, 42116fb0 <f1_combined_setup_wrapper-0xe4>
+42117283:	1389      	s32i.n	a8, a3, 4
+42117285:	ff4b81        	l32r	a8, 42116fb4 <f1_combined_setup_wrapper-0xe0>
+42117288:	2389      	s32i.n	a8, a3, 8
+4211728a:	ff4b81        	l32r	a8, 42116fb8 <f1_combined_setup_wrapper-0xdc>
+4211728d:	3389      	s32i.n	a8, a3, 12
+4211728f:	4359      	s32i.n	a5, a3, 16
+42117291:	080c      	movi.n	a8, 0
+42117293:	5389      	s32i.n	a8, a3, 20
+42117295:	06ad      	mov.n	a10, a6
+42117297:	05bd      	mov.n	a11, a5
+42117299:	10a0c2        	movi	a12, 16
+4211729c:	0a88      	l32i.n	a8, a10, 0
+4211729e:	0b89      	s32i.n	a8, a11, 0
+421172a0:	aa4b      	addi.n	a10, a10, 4
+421172a2:	bb4b      	addi.n	a11, a11, 4
+421172a4:	cc0b      	addi.n	a12, a12, -1
+421172a6:	ff2c56        	bnez	a12, 4211729c <stage3e34_expand_i4+0x78>
+421172a9:	40c662        	addi	a6, a6, 64
+421172ac:	40c552        	addi	a5, a5, 64
+421172af:	00a042        	movi	a4, 0
+421172b2:	a82c      	movi.n	a8, 42
+421172b4:	828480        	mull	a8, a4, a8
+421172b7:	e94c      	movi.n	a9, 78
+421172b9:	c28890        	quou	a8, a8, a9
+421172bc:	a91c      	movi.n	a9, 26
+421172be:	828890        	mull	a8, a8, a9
+421172c1:	a68a      	add.n	a10, a6, a8
+421172c3:	083c      	movi.n	a8, 48
+421172c5:	828480        	mull	a8, a4, a8
+421172c8:	b58a      	add.n	a11, a5, a8
+421172ca:	0c0c      	movi.n	a12, 0
+421172cc:	483c      	movi.n	a8, 52
+421172ce:	828c80        	mull	a8, a12, a8
+421172d1:	60a092        	movi	a9, 96
+421172d4:	c28890        	quou	a8, a8, a9
+421172d7:	419180        	srli	a9, a8, 1
+421172da:	9a9a      	add.n	a9, a10, a9
+421172dc:	0009d2        	l8ui	a13, a9, 0
+421172df:	05e807        	bbsi	a8, 0, 421172e8 <stage3e34_expand_i4+0xc4>
+421172e2:	41d4d0        	srli	a13, a13, 4
+421172e5:	000086        	j	421172eb <stage3e34_expand_i4+0xc7>
+421172e8:	34d0d0        	extui	a13, a13, 0, 4
+421172eb:	8c1b      	addi.n	a8, a12, 1
+421172ed:	493c      	movi.n	a9, 52
+421172ef:	828890        	mull	a8, a8, a9
+421172f2:	60a092        	movi	a9, 96
+421172f5:	c28890        	quou	a8, a8, a9
+421172f8:	419180        	srli	a9, a8, 1
+421172fb:	9a9a      	add.n	a9, a10, a9
+421172fd:	0009e2        	l8ui	a14, a9, 0
+42117300:	05e807        	bbsi	a8, 0, 42117309 <stage3e34_expand_i4+0xe5>
+42117303:	41e4e0        	srli	a14, a14, 4
+42117306:	000086        	j	4211730c <stage3e34_expand_i4+0xe8>
+42117309:	34e0e0        	extui	a14, a14, 0, 4
+4211730c:	11ddc0        	slli	a13, a13, 4
+4211730f:	20dde0        	or	a13, a13, a14
+42117312:	004bd2        	s8i	a13, a11, 0
+42117315:	bb1b      	addi.n	a11, a11, 1
+42117317:	cc2b      	addi.n	a12, a12, 2
+42117319:	60a082        	movi	a8, 96
+4211731c:	ac3c87        	bltu	a12, a8, 421172cc <stage3e34_expand_i4+0xa8>
+4211731f:	441b      	addi.n	a4, a4, 1
+42117321:	e84c      	movi.n	a8, 78
+42117323:	8b3487        	bltu	a4, a8, 421172b2 <stage3e34_expand_i4+0x8e>
+42117326:	032d      	mov.n	a2, a3
+42117328:	f01d      	retw.n
+4211732a:	020c      	movi.n	a2, 0
+4211732c:	f01d      	retw.n
+	...
+
+42117330 <stage3e34_apply_pet_source>:
+42117330:	00a136        	entry	a1, 80
+42117333:	027d      	mov.n	a7, a2
+42117335:	036d      	mov.n	a6, a3
+42117337:	1f2752        	l32i	a5, a7, 124
+4211733a:	680c      	movi.n	a8, 6
+4211733c:	42b587        	bgeu	a5, a8, 42117382 <stage3e34_apply_pet_source+0x52>
+4211733f:	880c      	movi.n	a8, 8
+42117341:	3db687        	bgeu	a6, a8, 42117382 <stage3e34_apply_pet_source+0x52>
+42117344:	152742        	l32i	a4, a7, 84
+42117347:	74bc      	beqz.n	a4, 42117382 <stage3e34_apply_pet_source+0x52>
+42117349:	202782        	l32i	a8, a7, 128
+4211734c:	212792        	l32i	a9, a7, 132
+4211734f:	029857        	bne	a8, a5, 42117355 <stage3e34_apply_pet_source+0x25>
+42117352:	2c1967        	beq	a9, a6, 42117382 <stage3e34_apply_pet_source+0x52>
+42117355:	1185d0        	slli	a8, a5, 3
+42117358:	886a      	add.n	a8, a8, a6
+4211735a:	891c      	movi.n	a9, 24
+4211735c:	828890        	mull	a8, a8, a9
+4211735f:	ff12b1        	l32r	a11, 42116fa8 <f1_combined_setup_wrapper-0xec>
+42117362:	bb8a      	add.n	a11, a11, a8
+42117364:	0b3d      	mov.n	a3, a11
+42117366:	07ad      	mov.n	a10, a7
+42117368:	20b330        	or	a11, a3, a3
+4211736b:	ffeba5        	call8	42117224 <stage3e34_expand_i4>
+4211736e:	0a8c      	beqz.n	a10, 42117372 <stage3e34_apply_pet_source+0x42>
+42117370:	0a3d      	mov.n	a3, a10
+42117372:	04ad      	mov.n	a10, a4
+42117374:	03bd      	mov.n	a11, a3
+42117376:	fefb81        	l32r	a8, 42116f64 <f1_combined_setup_wrapper-0x130>
+42117379:	0008e0        	callx8	a8
+4211737c:	206752        	s32i	a5, a7, 128
+4211737f:	216762        	s32i	a6, a7, 132
+42117382:	f01d      	retw.n
+
+42117384 <stage3e34_wpm_build>:
+42117384:	00c136        	entry	a1, 96
+42117387:	027d      	mov.n	a7, a2
+42117389:	080c      	movi.n	a8, 0
+4211738b:	8789      	s32i.n	a8, a7, 32
+4211738d:	9789      	s32i.n	a8, a7, 36
+4211738f:	a789      	s32i.n	a8, a7, 40
+42117391:	b789      	s32i.n	a8, a7, 44
+42117393:	c789      	s32i.n	a8, a7, 48
+42117395:	d789      	s32i.n	a8, a7, 52
+42117397:	e789      	s32i.n	a8, a7, 56
+42117399:	106782        	s32i	a8, a7, 64
+4211739c:	116782        	s32i	a8, a7, 68
+4211739f:	126782        	s32i	a8, a7, 72
+421173a2:	136782        	s32i	a8, a7, 76
+421173a5:	146782        	s32i	a8, a7, 80
+421173a8:	226782        	s32i	a8, a7, 136
+421173ab:	f87c      	movi.n	a8, -1
+421173ad:	f789      	s32i.n	a8, a7, 60
+421173af:	1b6782        	s32i	a8, a7, 108
+421173b2:	1c6782        	s32i	a8, a7, 112
+421173b5:	1d6782        	s32i	a8, a7, 116
+421173b8:	1e6782        	s32i	a8, a7, 120
+421173bb:	206782        	s32i	a8, a7, 128
+421173be:	216782        	s32i	a8, a7, 132
+421173c1:	480c      	movi.n	a8, 4
+421173c3:	7789      	s32i.n	a8, a7, 28
+421173c5:	0327a2        	l32i	a10, a7, 12
+421173c8:	feffb1        	l32r	a11, 42116fc4 <f1_combined_setup_wrapper-0xd0>
+421173cb:	00a0c2        	movi	a12, 0
+421173ce:	fef481        	l32r	a8, 42116fa0 <f1_combined_setup_wrapper-0xf4>
+421173d1:	0008e0        	callx8	a8
+421173d4:	37a8      	l32i.n	a10, a7, 12
+421173d6:	ffa0b2        	movi	a11, 255
+421173d9:	0c0c      	movi.n	a12, 0
+421173db:	fef281        	l32r	a8, 42116fa4 <f1_combined_setup_wrapper-0xf0>
+421173de:	0008e0        	callx8	a8
+421173e1:	0327a2        	l32i	a10, a7, 12
+421173e4:	fee1b1        	l32r	a11, 42116f68 <f1_combined_setup_wrapper-0x12c>
+421173e7:	00a0c2        	movi	a12, 0
+421173ea:	ffd7a5        	call8	42117164 <stage3e34_make_image>
+421173ed:	1567a2        	s32i	a10, a7, 84
+421173f0:	07ad      	mov.n	a10, a7
+421173f2:	00a0b2        	movi	a11, 0
+421173f5:	fff3a5        	call8	42117330 <stage3e34_apply_pet_source>
+421173f8:	feef81        	l32r	a8, 42116fb4 <f1_combined_setup_wrapper-0xe0>
+421173fb:	4189      	s32i.n	a8, a1, 16
+421173fd:	37a8      	l32i.n	a10, a7, 12
+421173ff:	fee2b1        	l32r	a11, 42116f88 <f1_combined_setup_wrapper-0x10c>
+42117402:	3c0c      	movi.n	a12, 3
+42117404:	10c1d2        	addi	a13, a1, 16
+42117407:	02a0e2        	movi	a14, 2
+4211740a:	ffd8a5        	call8	42117194 <stage3e34_make_label>
+4211740d:	1667a2        	s32i	a10, a7, 88
+42117410:	9a8c      	beqz.n	a10, 4211741d <stage3e34_wpm_build+0x99>
+42117412:	feefb1        	l32r	a11, 42116fd0 <f1_combined_setup_wrapper-0xc4>
+42117415:	0c0c      	movi.n	a12, 0
+42117417:	feda81        	l32r	a8, 42116f80 <f1_combined_setup_wrapper-0x114>
+4211741a:	0008e0        	callx8	a8
+4211741d:	fef081        	l32r	a8, 42116fe0 <f1_combined_setup_wrapper-0xb4>
+42117420:	8189      	s32i.n	a8, a1, 32
+42117422:	fef081        	l32r	a8, 42116fe4 <f1_combined_setup_wrapper-0xb0>
+42117425:	9189      	s32i.n	a8, a1, 36
+42117427:	fef081        	l32r	a8, 42116fe8 <f1_combined_setup_wrapper-0xac>
+4211742a:	a189      	s32i.n	a8, a1, 40
+4211742c:	fef081        	l32r	a8, 42116fec <f1_combined_setup_wrapper-0xa8>
+4211742f:	b189      	s32i.n	a8, a1, 44
+42117431:	37a8      	l32i.n	a10, a7, 12
+42117433:	fed4b1        	l32r	a11, 42116f84 <f1_combined_setup_wrapper-0x110>
+42117436:	dc7c      	movi.n	a12, -3
+42117438:	20c1d2        	addi	a13, a1, 32
+4211743b:	05a0e2        	movi	a14, 5
+4211743e:	ffd565        	call8	42117194 <stage3e34_make_label>
+42117441:	1767a2        	s32i	a10, a7, 92
+42117444:	37a8      	l32i.n	a10, a7, 12
+42117446:	0b6c      	movi.n	a11, -32
+42117448:	9aafc2        	movi	a12, -102
+4211744b:	fee0d1        	l32r	a13, 42116fcc <f1_combined_setup_wrapper-0xc8>
+4211744e:	ffd825        	call8	421171d0 <stage3e34_make_star>
+42117451:	1867a2        	s32i	a10, a7, 96
+42117454:	37a8      	l32i.n	a10, a7, 12
+42117456:	fb1c      	movi.n	a11, 31
+42117458:	bcafc2        	movi	a12, -68
+4211745b:	fedbd1        	l32r	a13, 42116fc8 <f1_combined_setup_wrapper-0xcc>
+4211745e:	ffd725        	call8	421171d0 <stage3e34_make_star>
+42117461:	1967a2        	s32i	a10, a7, 100
+42117464:	37a8      	l32i.n	a10, a7, 12
+42117466:	3b6c      	movi.n	a11, -29
+42117468:	2c5c      	movi.n	a12, 82
+4211746a:	fed8d1        	l32r	a13, 42116fcc <f1_combined_setup_wrapper-0xc8>
+4211746d:	ffd625        	call8	421171d0 <stage3e34_make_star>
+42117470:	1a67a2        	s32i	a10, a7, 104
+42117473:	f01d      	retw.n
+42117475:	000000        	ill
+
+42117478 <stage3e34_wpm_cleanup>:
+42117478:	004136        	entry	a1, 32
+4211747b:	080c      	movi.n	a8, 0
+4211747d:	156282        	s32i	a8, a2, 84
+42117480:	166282        	s32i	a8, a2, 88
+42117483:	176282        	s32i	a8, a2, 92
+42117486:	186282        	s32i	a8, a2, 96
+42117489:	196282        	s32i	a8, a2, 100
+4211748c:	1a6282        	s32i	a8, a2, 104
+4211748f:	f87c      	movi.n	a8, -1
+42117491:	206282        	s32i	a8, a2, 128
+42117494:	216282        	s32i	a8, a2, 132
+42117497:	f01d      	retw.n
+42117499:	000000        	ill
+
+4211749c <stage3e34_wpm_id>:
+4211749c:	004136        	entry	a1, 32
+4211749f:	720c      	movi.n	a2, 7
+421174a1:	f01d      	retw.n
+	...
+
+421174a4 <stage3e34_wpm_encoder>:
+421174a4:	006136        	entry	a1, 48
+421174a7:	027d      	mov.n	a7, a2
+421174a9:	180c      	movi.n	a8, 1
+421174ab:	389387        	bne	a3, a8, 421174e7 <stage3e34_wpm_encoder+0x43>
+421174ae:	236400        	sext	a6, a4, 7
+421174b1:	26bc      	beqz.n	a6, 421174e7 <stage3e34_wpm_encoder+0x43>
+421174b3:	feb981        	l32r	a8, 42116f98 <f1_combined_setup_wrapper-0xfc>
+421174b6:	0008e0        	callx8	a8
+421174b9:	aaac      	beqz.n	a10, 421174e7 <stage3e34_wpm_encoder+0x43>
+421174bb:	feb881        	l32r	a8, 42116f9c <f1_combined_setup_wrapper-0xf8>
+421174be:	0008e0        	callx8	a8
+421174c1:	2aac      	beqz.n	a10, 421174e7 <stage3e34_wpm_encoder+0x43>
+421174c3:	1f2752        	l32i	a5, a7, 124
+421174c6:	180c      	movi.n	a8, 1
+421174c8:	0c2687        	blt	a6, a8, 421174d8 <stage3e34_wpm_encoder+0x34>
+421174cb:	551b      	addi.n	a5, a5, 1
+421174cd:	680c      	movi.n	a8, 6
+421174cf:	112587        	blt	a5, a8, 421174e4 <stage3e34_wpm_encoder+0x40>
+421174d2:	050c      	movi.n	a5, 0
+421174d4:	000306        	j	421174e4 <stage3e34_wpm_encoder+0x40>
+421174d7:	00          	.byte	00
+421174d8:	65cc      	bnez.n	a5, 421174e2 <stage3e34_wpm_encoder+0x3e>
+421174da:	550c      	movi.n	a5, 5
+421174dc:	000106        	j	421174e4 <stage3e34_wpm_encoder+0x40>
+421174df:	00          	.byte	00
+421174e0:	00          	.byte	00
+421174e1:	00          	.byte	00
+421174e2:	550b      	addi.n	a5, a5, -1
+421174e4:	1f6752        	s32i	a5, a7, 124
+421174e7:	f01d      	retw.n
+421174e9:	000000        	ill
+
+421174ec <stage3e34_sample_and_render>:
+421174ec:	010136        	entry	a1, 128
+421174ef:	027d      	mov.n	a7, a2
+421174f1:	fea781        	l32r	a8, 42116f90 <f1_combined_setup_wrapper-0x104>
+421174f4:	000803        	lsi	f0, a8, 0
+421174f7:	ea6000        	utrunc.s	a6, f0, 0
+421174fa:	e7a392        	movi	a9, 0x3e7
+421174fd:	01b967        	bgeu	a9, a6, 42117502 <stage3e34_sample_and_render+0x16>
+42117500:	096d      	mov.n	a6, a9
+42117502:	b769      	s32i.n	a6, a7, 44
+42117504:	112782        	l32i	a8, a7, 68
+42117507:	0db867        	bgeu	a8, a6, 42117518 <stage3e34_sample_and_render+0x2c>
+4211750a:	190c      	movi.n	a9, 1
+4211750c:	146792        	s32i	a9, a7, 80
+4211750f:	090c      	movi.n	a9, 0
+42117511:	126792        	s32i	a9, a7, 72
+42117514:	000506        	j	4211752c <stage3e34_sample_and_render+0x40>
+42117517:	00          	.byte	00
+42117518:	142792        	l32i	a9, a7, 80
+4211751b:	d98c      	beqz.n	a9, 4211752c <stage3e34_sample_and_render+0x40>
+4211751d:	122792        	l32i	a9, a7, 72
+42117520:	3ca082        	movi	a8, 60
+42117523:	05b987        	bgeu	a9, a8, 4211752c <stage3e34_sample_and_render+0x40>
+42117526:	01c992        	addi	a9, a9, 1
+42117529:	126792        	s32i	a9, a7, 72
+4211752c:	116762        	s32i	a6, a7, 68
+4211752f:	051616        	beqz	a6, 42117584 <stage3e34_sample_and_render+0x98>
+42117532:	142782        	l32i	a8, a7, 80
+42117535:	04b816        	beqz	a8, 42117584 <stage3e34_sample_and_render+0x98>
+42117538:	122782        	l32i	a8, a7, 72
+4211753b:	a90c      	movi.n	a9, 10
+4211753d:	43b897        	bgeu	a8, a9, 42117584 <stage3e34_sample_and_render+0x98>
+42117540:	c758      	l32i.n	a5, a7, 48
+42117542:	fe9491        	l32r	a9, 42116f94 <f1_combined_setup_wrapper-0x100>
+42117545:	0b3597        	bltu	a5, a9, 42117554 <stage3e34_sample_and_render+0x68>
+42117548:	415150        	srli	a5, a5, 1
+4211754b:	d788      	l32i.n	a8, a7, 52
+4211754d:	418180        	srli	a8, a8, 1
+42117550:	c759      	s32i.n	a5, a7, 48
+42117552:	d789      	s32i.n	a8, a7, 52
+42117554:	c5cc      	bnez.n	a5, 42117564 <stage3e34_sample_and_render+0x78>
+42117556:	180c      	movi.n	a8, 1
+42117558:	c789      	s32i.n	a8, a7, 48
+4211755a:	d769      	s32i.n	a6, a7, 52
+4211755c:	e769      	s32i.n	a6, a7, 56
+4211755e:	f769      	s32i.n	a6, a7, 60
+42117560:	000806        	j	42117584 <stage3e34_sample_and_render+0x98>
+42117563:	00          	.byte	00
+42117564:	d788      	l32i.n	a8, a7, 52
+42117566:	886a      	add.n	a8, a8, a6
+42117568:	d789      	s32i.n	a8, a7, 52
+4211756a:	551b      	addi.n	a5, a5, 1
+4211756c:	c759      	s32i.n	a5, a7, 48
+4211756e:	e788      	l32i.n	a8, a7, 56
+42117570:	09b867        	bgeu	a8, a6, 4211757d <stage3e34_sample_and_render+0x91>
+42117573:	e769      	s32i.n	a6, a7, 56
+42117575:	0445b6        	bltui	a5, 4, 4211757d <stage3e34_sample_and_render+0x91>
+42117578:	380c      	movi.n	a8, 3
+4211757a:	136782        	s32i	a8, a7, 76
+4211757d:	f788      	l32i.n	a8, a7, 60
+4211757f:	01b687        	bgeu	a6, a8, 42117584 <stage3e34_sample_and_render+0x98>
+42117582:	f769      	s32i.n	a6, a7, 60
+42117584:	c788      	l32i.n	a8, a7, 48
+42117586:	688c      	beqz.n	a8, 42117590 <stage3e34_sample_and_render+0xa4>
+42117588:	d798      	l32i.n	a9, a7, 52
+4211758a:	c25980        	quou	a5, a9, a8
+4211758d:	000046        	j	42117592 <stage3e34_sample_and_render+0xa6>
+42117590:	050c      	movi.n	a5, 0
+42117592:	106752        	s32i	a5, a7, 64
+42117595:	040c      	movi.n	a4, 0
+42117597:	142782        	l32i	a8, a7, 80
+4211759a:	056816        	beqz	a8, 421175f4 <stage3e34_sample_and_render+0x108>
+4211759d:	122782        	l32i	a8, a7, 72
+421175a0:	c93c      	movi.n	a9, 60
+421175a2:	4cb897        	bgeu	a8, a9, 421175f2 <stage3e34_sample_and_render+0x106>
+421175a5:	a90c      	movi.n	a9, 10
+421175a7:	41b897        	bgeu	a8, a9, 421175ec <stage3e34_sample_and_render+0x100>
+421175aa:	132782        	l32i	a8, a7, 76
+421175ad:	08fc      	bnez.n	a8, 421175e1 <stage3e34_sample_and_render+0xf5>
+421175af:	c788      	l32i.n	a8, a7, 48
+421175b1:	491c      	movi.n	a9, 20
+421175b3:	163897        	bltu	a8, a9, 421175cd <stage3e34_sample_and_render+0xe1>
+421175b6:	e788      	l32i.n	a8, a7, 56
+421175b8:	189c      	beqz.n	a8, 421175cd <stage3e34_sample_and_render+0xe1>
+421175ba:	a90c      	movi.n	a9, 10
+421175bc:	829690        	mull	a9, a6, a9
+421175bf:	930c      	movi.n	a3, 9
+421175c1:	828830        	mull	a8, a8, a3
+421175c4:	14b987        	bgeu	a9, a8, 421175dc <stage3e34_sample_and_render+0xf0>
+421175c7:	1b3657        	bltu	a6, a5, 421175e6 <stage3e34_sample_and_render+0xfa>
+421175ca:	000246        	j	421175d7 <stage3e34_sample_and_render+0xeb>
+421175cd:	882c      	movi.n	a8, 40
+421175cf:	04b687        	bgeu	a6, a8, 421175d7 <stage3e34_sample_and_render+0xeb>
+421175d2:	140c      	movi.n	a4, 1
+421175d4:	000706        	j	421175f4 <stage3e34_sample_and_render+0x108>
+421175d7:	240c      	movi.n	a4, 2
+421175d9:	0005c6        	j	421175f4 <stage3e34_sample_and_render+0x108>
+421175dc:	340c      	movi.n	a4, 3
+421175de:	000486        	j	421175f4 <stage3e34_sample_and_render+0x108>
+421175e1:	440c      	movi.n	a4, 4
+421175e3:	000346        	j	421175f4 <stage3e34_sample_and_render+0x108>
+421175e6:	540c      	movi.n	a4, 5
+421175e8:	000206        	j	421175f4 <stage3e34_sample_and_render+0x108>
+421175eb:	00          	.byte	00
+421175ec:	640c      	movi.n	a4, 6
+421175ee:	000086        	j	421175f4 <stage3e34_sample_and_render+0x108>
+421175f1:	00          	.byte	00
+421175f2:	740c      	movi.n	a4, 7
+421175f4:	9749      	s32i.n	a4, a7, 36
+421175f6:	07ad      	mov.n	a10, a7
+421175f8:	04bd      	mov.n	a11, a4
+421175fa:	ffd365        	call8	42117330 <stage3e34_apply_pet_source>
+421175fd:	132782        	l32i	a8, a7, 76
+42117600:	004816        	beqz	a8, 42117608 <stage3e34_sample_and_render+0x11c>
+42117603:	880b      	addi.n	a8, a8, -1
+42117605:	136782        	s32i	a8, a7, 76
+42117608:	162782        	l32i	a8, a7, 88
+4211760b:	087816        	beqz	a8, 42117696 <stage3e34_sample_and_render+0x1aa>
+4211760e:	084d      	mov.n	a4, a8
+42117610:	1b2792        	l32i	a9, a7, 108
+42117613:	331697        	beq	a6, a9, 4211764a <stage3e34_sample_and_render+0x15e>
+42117616:	1b6762        	s32i	a6, a7, 108
+42117619:	fe7581        	l32r	a8, 42116ff0 <f1_combined_setup_wrapper-0xa4>
+4211761c:	046182        	s32i	a8, a1, 16
+4211761f:	20c1a2        	addi	a10, a1, 32
+42117622:	0ca0b2        	movi	a11, 12
+42117625:	10c1c2        	addi	a12, a1, 16
+42117628:	20d660        	or	a13, a6, a6
+4211762b:	fe5881        	l32r	a8, 42116f8c <f1_combined_setup_wrapper-0x108>
+4211762e:	0008e0        	callx8	a8
+42117631:	04ad      	mov.n	a10, a4
+42117633:	20c1b2        	addi	a11, a1, 32
+42117636:	fe5181        	l32r	a8, 42116f7c <f1_combined_setup_wrapper-0x118>
+42117639:	0008e0        	callx8	a8
+4211763c:	04ad      	mov.n	a10, a4
+4211763e:	2b0c      	movi.n	a11, 2
+42117640:	0c0c      	movi.n	a12, 0
+42117642:	3d0c      	movi.n	a13, 3
+42117644:	fe4b81        	l32r	a8, 42116f70 <f1_combined_setup_wrapper-0x124>
+42117647:	0008e0        	callx8	a8
+4211764a:	030c      	movi.n	a3, 0
+4211764c:	069c      	beqz.n	a6, 42117660 <stage3e34_sample_and_render+0x174>
+4211764e:	130c      	movi.n	a3, 1
+42117650:	892c      	movi.n	a9, 40
+42117652:	0a3697        	bltu	a6, a9, 42117660 <stage3e34_sample_and_render+0x174>
+42117655:	230c      	movi.n	a3, 2
+42117657:	50a092        	movi	a9, 80
+4211765a:	023697        	bltu	a6, a9, 42117660 <stage3e34_sample_and_render+0x174>
+4211765d:	03a032        	movi	a3, 3
+42117660:	1e2782        	l32i	a8, a7, 120
+42117663:	2f1387        	beq	a3, a8, 42117696 <stage3e34_sample_and_render+0x1aa>
+42117666:	1e6732        	s32i	a3, a7, 120
+42117669:	fe59b1        	l32r	a11, 42116fd0 <f1_combined_setup_wrapper-0xc4>
+4211766c:	c39c      	beqz.n	a3, 4211768c <stage3e34_sample_and_render+0x1a0>
+4211766e:	180c      	movi.n	a8, 1
+42117670:	0c1387        	beq	a3, a8, 42117680 <stage3e34_sample_and_render+0x194>
+42117673:	280c      	movi.n	a8, 2
+42117675:	101387        	beq	a3, a8, 42117689 <stage3e34_sample_and_render+0x19d>
+42117678:	fe59b1        	l32r	a11, 42116fdc <f1_combined_setup_wrapper-0xb8>
+4211767b:	000346        	j	4211768c <stage3e34_sample_and_render+0x1a0>
+4211767e:	00          	.byte	00
+4211767f:	00          	.byte	00
+42117680:	fe55b1        	l32r	a11, 42116fd4 <f1_combined_setup_wrapper-0xc0>
+42117683:	000146        	j	4211768c <stage3e34_sample_and_render+0x1a0>
+42117686:	00          	.byte	00
+42117687:	00          	.byte	00
+42117688:	00          	.byte	00
+42117689:	fe53b1        	l32r	a11, 42116fd8 <f1_combined_setup_wrapper-0xbc>
+4211768c:	04ad      	mov.n	a10, a4
+4211768e:	0c0c      	movi.n	a12, 0
+42117690:	fe3c81        	l32r	a8, 42116f80 <f1_combined_setup_wrapper-0x114>
+42117693:	0008e0        	callx8	a8
+42117696:	172782        	l32i	a8, a7, 92
+42117699:	05d816        	beqz	a8, 421176fa <stage3e34_sample_and_render+0x20e>
+4211769c:	084d      	mov.n	a4, a8
+4211769e:	e7e8      	l32i.n	a14, a7, 56
+421176a0:	c788      	l32i.n	a8, a7, 48
+421176a2:	002856        	bnez	a8, 421176a8 <stage3e34_sample_and_render+0x1bc>
+421176a5:	00a0e2        	movi	a14, 0
+421176a8:	1c2782        	l32i	a8, a7, 112
+421176ab:	059857        	bne	a8, a5, 421176b4 <stage3e34_sample_and_render+0x1c8>
+421176ae:	1d2782        	l32i	a8, a7, 116
+421176b1:	4518e7        	beq	a8, a14, 421176fa <stage3e34_sample_and_render+0x20e>
+421176b4:	1c6752        	s32i	a5, a7, 112
+421176b7:	1d67e2        	s32i	a14, a7, 116
+421176ba:	fe4981        	l32r	a8, 42116fe0 <f1_combined_setup_wrapper-0xb4>
+421176bd:	c189      	s32i.n	a8, a1, 48
+421176bf:	fe4d81        	l32r	a8, 42116ff4 <f1_combined_setup_wrapper-0xa0>
+421176c2:	d189      	s32i.n	a8, a1, 52
+421176c4:	fe4d81        	l32r	a8, 42116ff8 <f1_combined_setup_wrapper-0x9c>
+421176c7:	e189      	s32i.n	a8, a1, 56
+421176c9:	fe4981        	l32r	a8, 42116ff0 <f1_combined_setup_wrapper-0xa4>
+421176cc:	0f6182        	s32i	a8, a1, 60
+421176cf:	40c1a2        	addi	a10, a1, 64
+421176d2:	20a0b2        	movi	a11, 32
+421176d5:	30c1c2        	addi	a12, a1, 48
+421176d8:	20d550        	or	a13, a5, a5
+421176db:	fe2c81        	l32r	a8, 42116f8c <f1_combined_setup_wrapper-0x108>
+421176de:	0008e0        	callx8	a8
+421176e1:	04ad      	mov.n	a10, a4
+421176e3:	40c1b2        	addi	a11, a1, 64
+421176e6:	fe2581        	l32r	a8, 42116f7c <f1_combined_setup_wrapper-0x118>
+421176e9:	0008e0        	callx8	a8
+421176ec:	04ad      	mov.n	a10, a4
+421176ee:	5b0c      	movi.n	a11, 5
+421176f0:	0c0c      	movi.n	a12, 0
+421176f2:	dd7c      	movi.n	a13, -3
+421176f4:	fe1f81        	l32r	a8, 42116f70 <f1_combined_setup_wrapper-0x124>
+421176f7:	0008e0        	callx8	a8
+421176fa:	f01d      	retw.n
+
+421176fc <stage3e34_wpm_ui_refresh>:
+421176fc:	006136        	entry	a1, 48
+421176ff:	027d      	mov.n	a7, a2
+42117701:	07ad      	mov.n	a10, a7
+42117703:	97b8      	l32i.n	a11, a7, 36
+42117705:	ffc2a5        	call8	42117330 <stage3e34_apply_pet_source>
+42117708:	8788      	l32i.n	a8, a7, 32
+4211770a:	881b      	addi.n	a8, a8, 1
+4211770c:	5098b6        	bltui	a8, 10, 42117760 <stage3e34_wpm_ui_refresh+0x64>
+4211770f:	080c      	movi.n	a8, 0
+42117711:	8789      	s32i.n	a8, a7, 32
+42117713:	222792        	l32i	a9, a7, 136
+42117716:	180c      	movi.n	a8, 1
+42117718:	309980        	xor	a9, a9, a8
+4211771b:	226792        	s32i	a9, a7, 136
+4211771e:	fe2a51        	l32r	a5, 42116fc8 <f1_combined_setup_wrapper-0xcc>
+42117721:	fe2a61        	l32r	a6, 42116fcc <f1_combined_setup_wrapper-0xc8>
+42117724:	598c      	beqz.n	a9, 4211772d <stage3e34_wpm_ui_refresh+0x31>
+42117726:	058d      	mov.n	a8, a5
+42117728:	065d      	mov.n	a5, a6
+4211772a:	206880        	or	a6, a8, a8
+4211772d:	1827a2        	l32i	a10, a7, 96
+42117730:	9a8c      	beqz.n	a10, 4211773d <stage3e34_wpm_ui_refresh+0x41>
+42117732:	06bd      	mov.n	a11, a6
+42117734:	00a0c2        	movi	a12, 0
+42117737:	fe1281        	l32r	a8, 42116f80 <f1_combined_setup_wrapper-0x114>
+4211773a:	0008e0        	callx8	a8
+4211773d:	1927a2        	l32i	a10, a7, 100
+42117740:	9a8c      	beqz.n	a10, 4211774d <stage3e34_wpm_ui_refresh+0x51>
+42117742:	05bd      	mov.n	a11, a5
+42117744:	00a0c2        	movi	a12, 0
+42117747:	fe0e81        	l32r	a8, 42116f80 <f1_combined_setup_wrapper-0x114>
+4211774a:	0008e0        	callx8	a8
+4211774d:	1a27a2        	l32i	a10, a7, 104
+42117750:	ea8c      	beqz.n	a10, 42117762 <stage3e34_wpm_ui_refresh+0x66>
+42117752:	06bd      	mov.n	a11, a6
+42117754:	0c0c      	movi.n	a12, 0
+42117756:	fe0a81        	l32r	a8, 42116f80 <f1_combined_setup_wrapper-0x114>
+42117759:	0008e0        	callx8	a8
+4211775c:	000086        	j	42117762 <stage3e34_wpm_ui_refresh+0x66>
+4211775f:	00          	.byte	00
+42117760:	8789      	s32i.n	a8, a7, 32
+42117762:	7788      	l32i.n	a8, a7, 28
+42117764:	881b      	addi.n	a8, a8, 1
+42117766:	0a58b6        	bltui	a8, 5, 42117774 <stage3e34_wpm_ui_refresh+0x78>
+42117769:	080c      	movi.n	a8, 0
+4211776b:	7789      	s32i.n	a8, a7, 28
+4211776d:	07ad      	mov.n	a10, a7
+4211776f:	ffd7e5        	call8	421174ec <stage3e34_sample_and_render>
+42117772:	f01d      	retw.n
+42117774:	7789      	s32i.n	a8, a7, 28
+42117776:	f01d      	retw.n
+
+42117778 <music_id1_register>:
+42117778:	006136        	entry	a1, 48
+4211777b:	027d      	mov.n	a7, a2
+4211777d:	206330        	or	a6, a3, a3
+42117780:	fe39a1        	l32r	a10, 42117064 <f1_combined_setup_wrapper-0x30>
+42117783:	fde781        	l32r	a8, 42116f20 <f1_combined_setup_wrapper-0x174>
+42117786:	0008e0        	callx8	a8
+42117789:	0a5d      	mov.n	a5, a10
+4211778b:	079516        	beqz	a5, 42117808 <music_id1_register+0x90>
+4211778e:	05ad      	mov.n	a10, a5
+42117790:	0b0c      	movi.n	a11, 0
+42117792:	fe34c1        	l32r	a12, 42117064 <f1_combined_setup_wrapper-0x30>
+42117795:	fde381        	l32r	a8, 42116f24 <f1_combined_setup_wrapper-0x170>
+42117798:	0008e0        	callx8	a8
+4211779b:	fde381        	l32r	a8, 42116f28 <f1_combined_setup_wrapper-0x16c>
+4211779e:	0589      	s32i.n	a8, a5, 0
+421177a0:	a80c      	movi.n	a8, 10
+421177a2:	1a4582        	s8i	a8, a5, 26
+421177a5:	a9a182        	movi	a8, 0x1a9
+421177a8:	9589      	s32i.n	a8, a5, 36
+421177aa:	01d592        	addmi	a9, a5, 0x100
+421177ad:	a0c992        	addi	a9, a9, -96
+421177b0:	fde181        	l32r	a8, 42116f34 <f1_combined_setup_wrapper-0x160>
+421177b3:	0989      	s32i.n	a8, a9, 0
+421177b5:	fe1181        	l32r	a8, 42116ffc <f1_combined_setup_wrapper-0x98>
+421177b8:	1989      	s32i.n	a8, a9, 4
+421177ba:	fde081        	l32r	a8, 42116f3c <f1_combined_setup_wrapper-0x158>
+421177bd:	2989      	s32i.n	a8, a9, 8
+421177bf:	fde081        	l32r	a8, 42116f40 <f1_combined_setup_wrapper-0x154>
+421177c2:	3989      	s32i.n	a8, a9, 12
+421177c4:	fe0f81        	l32r	a8, 42117000 <f1_combined_setup_wrapper-0x94>
+421177c7:	4989      	s32i.n	a8, a9, 16
+421177c9:	fddf81        	l32r	a8, 42116f48 <f1_combined_setup_wrapper-0x14c>
+421177cc:	5989      	s32i.n	a8, a9, 20
+421177ce:	fe0d81        	l32r	a8, 42117004 <f1_combined_setup_wrapper-0x90>
+421177d1:	6989      	s32i.n	a8, a9, 24
+421177d3:	fddf81        	l32r	a8, 42116f50 <f1_combined_setup_wrapper-0x144>
+421177d6:	7989      	s32i.n	a8, a9, 28
+421177d8:	fe0c81        	l32r	a8, 42117008 <f1_combined_setup_wrapper-0x8c>
+421177db:	8989      	s32i.n	a8, a9, 32
+421177dd:	fe0b81        	l32r	a8, 4211700c <f1_combined_setup_wrapper-0x88>
+421177e0:	9989      	s32i.n	a8, a9, 36
+421177e2:	fdde81        	l32r	a8, 42116f5c <f1_combined_setup_wrapper-0x138>
+421177e5:	a989      	s32i.n	a8, a9, 40
+421177e7:	0599      	s32i.n	a9, a5, 0
+421177e9:	07ad      	mov.n	a10, a7
+421177eb:	20b550        	or	a11, a5, a5
+421177ee:	fdcf81        	l32r	a8, 42116f2c <f1_combined_setup_wrapper-0x168>
+421177f1:	0008e0        	callx8	a8
+421177f4:	5588      	l32i.n	a8, a5, 20
+421177f6:	0c9877        	bne	a8, a7, 42117806 <music_id1_register+0x8e>
+421177f9:	05ad      	mov.n	a10, a5
+421177fb:	06bd      	mov.n	a11, a6
+421177fd:	003fe5        	call8	42117bfc <music_id1_register_media_rpc>
+42117800:	000106        	j	42117808 <music_id1_register+0x90>
+42117803:	00          	.byte	00
+42117804:	f03d      	nop.n
+42117806:	050c      	movi.n	a5, 0
+42117808:	052d      	mov.n	a2, a5
+4211780a:	f01d      	retw.n
+
+4211780c <music_id1_init_album>:
+4211780c:	006136        	entry	a1, 48
+4211780f:	027d      	mov.n	a7, a2
+42117811:	8788      	l32i.n	a8, a7, 32
+42117813:	07d856        	bnez	a8, 42117894 <music_id1_init_album+0x88>
+42117816:	01d762        	addmi	a6, a7, 0x100
+42117819:	d0c662        	addi	a6, a6, -48
+4211781c:	fe0e81        	l32r	a8, 42117054 <f1_combined_setup_wrapper-0x40>
+4211781f:	0689      	s32i.n	a8, a6, 0
+42117821:	fe0d81        	l32r	a8, 42117058 <f1_combined_setup_wrapper-0x3c>
+42117824:	1689      	s32i.n	a8, a6, 4
+42117826:	fe0d81        	l32r	a8, 4211705c <f1_combined_setup_wrapper-0x38>
+42117829:	2689      	s32i.n	a8, a6, 8
+4211782b:	fe0d81        	l32r	a8, 42117060 <f1_combined_setup_wrapper-0x34>
+4211782e:	3689      	s32i.n	a8, a6, 12
+42117830:	01d752        	addmi	a5, a7, 0x100
+42117833:	e8c552        	addi	a5, a5, -24
+42117836:	4659      	s32i.n	a5, a6, 16
+42117838:	080c      	movi.n	a8, 0
+4211783a:	5689      	s32i.n	a8, a6, 20
+4211783c:	040c      	movi.n	a4, 0
+4211783e:	030c      	movi.n	a3, 0
+42117840:	418340        	srli	a8, a4, 3
+42117843:	419330        	srli	a9, a3, 3
+42117846:	fe0121        	l32r	a2, 4211704c <f1_combined_setup_wrapper-0x48>
+42117849:	88ac      	beqz.n	a8, 42117875 <music_id1_init_album+0x69>
+4211784b:	07a0a2        	movi	a10, 7
+4211784e:	2318a7        	beq	a8, a10, 42117875 <music_id1_init_album+0x69>
+42117851:	09ac      	beqz.n	a9, 42117875 <music_id1_init_album+0x69>
+42117853:	1e19a7        	beq	a9, a10, 42117875 <music_id1_init_album+0x69>
+42117856:	02a0a2        	movi	a10, 2
+42117859:	0518a7        	beq	a8, a10, 42117862 <music_id1_init_album+0x56>
+4211785c:	05a0a2        	movi	a10, 5
+4211785f:	1598a7        	bne	a8, a10, 42117878 <music_id1_init_album+0x6c>
+42117862:	3a0c      	movi.n	a10, 3
+42117864:	0419a7        	beq	a9, a10, 4211786c <music_id1_init_album+0x60>
+42117867:	4a0c      	movi.n	a10, 4
+42117869:	0b99a7        	bne	a9, a10, 42117878 <music_id1_init_album+0x6c>
+4211786c:	fdf921        	l32r	a2, 42117050 <f1_combined_setup_wrapper-0x44>
+4211786f:	000146        	j	42117878 <music_id1_init_album+0x6c>
+42117872:	00          	.byte	00
+42117873:	00          	.byte	00
+42117874:	00          	.byte	00
+42117875:	fdf421        	l32r	a2, 42117048 <f1_combined_setup_wrapper-0x4c>
+42117878:	118490        	slli	a8, a4, 7
+4211787b:	1193f0        	slli	a9, a3, 1
+4211787e:	889a      	add.n	a8, a8, a9
+42117880:	885a      	add.n	a8, a8, a5
+42117882:	005822        	s16i	a2, a8, 0
+42117885:	331b      	addi.n	a3, a3, 1
+42117887:	b5d3b6        	bltui	a3, 64, 42117840 <music_id1_init_album+0x34>
+4211788a:	441b      	addi.n	a4, a4, 1
+4211788c:	aed4b6        	bltui	a4, 64, 4211783e <music_id1_init_album+0x32>
+4211788f:	180c      	movi.n	a8, 1
+42117891:	086782        	s32i	a8, a7, 32
+42117894:	f01d      	retw.n
+	...
+
+42117898 <music_id1_make_panel>:
+42117898:	008136        	entry	a1, 64
+4211789b:	4139      	s32i.n	a3, a1, 16
+4211789d:	5149      	s32i.n	a4, a1, 20
+4211789f:	6159      	s32i.n	a5, a1, 24
+421178a1:	7169      	s32i.n	a6, a1, 28
+421178a3:	8179      	s32i.n	a7, a1, 32
+421178a5:	20a220        	or	a10, a2, a2
+421178a8:	fdb381        	l32r	a8, 42116f74 <f1_combined_setup_wrapper-0x120>
+421178ab:	0008e0        	callx8	a8
+421178ae:	0a6d      	mov.n	a6, a10
+421178b0:	050616        	beqz	a6, 42117904 <music_id1_make_panel+0x6c>
+421178b3:	082c      	movi.n	a8, 32
+421178b5:	9189      	s32i.n	a8, a1, 36
+421178b7:	06ad      	mov.n	a10, a6
+421178b9:	24c1b2        	addi	a11, a1, 36
+421178bc:	fdb081        	l32r	a8, 42116f7c <f1_combined_setup_wrapper-0x118>
+421178bf:	0008e0        	callx8	a8
+421178c2:	06ad      	mov.n	a10, a6
+421178c4:	41b8      	l32i.n	a11, a1, 16
+421178c6:	51c8      	l32i.n	a12, a1, 20
+421178c8:	fdd281        	l32r	a8, 42117010 <f1_combined_setup_wrapper-0x84>
+421178cb:	0008e0        	callx8	a8
+421178ce:	06ad      	mov.n	a10, a6
+421178d0:	81b8      	l32i.n	a11, a1, 32
+421178d2:	0c0c      	movi.n	a12, 0
+421178d4:	fdb381        	l32r	a8, 42116fa0 <f1_combined_setup_wrapper-0xf4>
+421178d7:	0008e0        	callx8	a8
+421178da:	06ad      	mov.n	a10, a6
+421178dc:	ffa0b2        	movi	a11, 255
+421178df:	00a0c2        	movi	a12, 0
+421178e2:	fdb081        	l32r	a8, 42116fa4 <f1_combined_setup_wrapper-0xf0>
+421178e5:	0008e0        	callx8	a8
+421178e8:	06ad      	mov.n	a10, a6
+421178ea:	fddfb1        	l32r	a11, 42117068 <f1_combined_setup_wrapper-0x2c>
+421178ed:	00a0c2        	movi	a12, 0
+421178f0:	fdc981        	l32r	a8, 42117014 <f1_combined_setup_wrapper-0x80>
+421178f3:	0008e0        	callx8	a8
+421178f6:	06ad      	mov.n	a10, a6
+421178f8:	9b0c      	movi.n	a11, 9
+421178fa:	61c8      	l32i.n	a12, a1, 24
+421178fc:	71d8      	l32i.n	a13, a1, 28
+421178fe:	fd9c81        	l32r	a8, 42116f70 <f1_combined_setup_wrapper-0x124>
+42117901:	0008e0        	callx8	a8
+42117904:	062d      	mov.n	a2, a6
+42117906:	f01d      	retw.n
+
+42117908 <music_id1_make_label>:
+42117908:	006136        	entry	a1, 48
+4211790b:	037d      	mov.n	a7, a3
+4211790d:	046d      	mov.n	a6, a4
+4211790f:	055d      	mov.n	a5, a5
+42117911:	02ad      	mov.n	a10, a2
+42117913:	fd9881        	l32r	a8, 42116f74 <f1_combined_setup_wrapper-0x120>
+42117916:	0008e0        	callx8	a8
+42117919:	0a4d      	mov.n	a4, a10
+4211791b:	f4ac      	beqz.n	a4, 4211794e <music_id1_make_label+0x46>
+4211791d:	04ad      	mov.n	a10, a4
+4211791f:	fd99b1        	l32r	a11, 42116f84 <f1_combined_setup_wrapper-0x110>
+42117922:	0c0c      	movi.n	a12, 0
+42117924:	fd9581        	l32r	a8, 42116f78 <f1_combined_setup_wrapper-0x11c>
+42117927:	0008e0        	callx8	a8
+4211792a:	04ad      	mov.n	a10, a4
+4211792c:	2b0c      	movi.n	a11, 2
+4211792e:	0c0c      	movi.n	a12, 0
+42117930:	07dd      	mov.n	a13, a7
+42117932:	fd8f81        	l32r	a8, 42116f70 <f1_combined_setup_wrapper-0x124>
+42117935:	0008e0        	callx8	a8
+42117938:	04ad      	mov.n	a10, a4
+4211793a:	06bd      	mov.n	a11, a6
+4211793c:	fd9081        	l32r	a8, 42116f7c <f1_combined_setup_wrapper-0x118>
+4211793f:	0008e0        	callx8	a8
+42117942:	04ad      	mov.n	a10, a4
+42117944:	05bd      	mov.n	a11, a5
+42117946:	0c0c      	movi.n	a12, 0
+42117948:	fd8e81        	l32r	a8, 42116f80 <f1_combined_setup_wrapper-0x114>
+4211794b:	0008e0        	callx8	a8
+4211794e:	042d      	mov.n	a2, a4
+42117950:	f01d      	retw.n
+	...
+
+42117954 <music_id1_build>:
+42117954:	010136        	entry	a1, 128
+42117957:	027d      	mov.n	a7, a2
+42117959:	080c      	movi.n	a8, 0
+4211795b:	7789      	s32i.n	a8, a7, 28
+4211795d:	a789      	s32i.n	a8, a7, 40
+4211795f:	b789      	s32i.n	a8, a7, 44
+42117961:	c789      	s32i.n	a8, a7, 48
+42117963:	d789      	s32i.n	a8, a7, 52
+42117965:	07ad      	mov.n	a10, a7
+42117967:	ffea65        	call8	4211780c <music_id1_init_album>
+4211796a:	3768      	l32i.n	a6, a7, 12
+4211796c:	06ad      	mov.n	a10, a6
+4211796e:	fdaab1        	l32r	a11, 42117018 <f1_combined_setup_wrapper-0x7c>
+42117971:	0c0c      	movi.n	a12, 0
+42117973:	fd8b81        	l32r	a8, 42116fa0 <f1_combined_setup_wrapper-0xf4>
+42117976:	0008e0        	callx8	a8
+42117979:	20a660        	or	a10, a6, a6
+4211797c:	ffa0b2        	movi	a11, 255
+4211797f:	00a0c2        	movi	a12, 0
+42117982:	fd8881        	l32r	a8, 42116fa4 <f1_combined_setup_wrapper-0xf0>
+42117985:	0008e0        	callx8	a8
+42117988:	001f46        	j	42117a09 <music_id1_build+0xb5>
+4211798b:	06ad      	mov.n	a10, a6
+4211798d:	60a0b2        	movi	a11, 96
+42117990:	0ea1c2        	movi	a12, 0x10e
+42117993:	0d0c      	movi.n	a13, 0
+42117995:	0e0c      	movi.n	a14, 0
+42117997:	fda1f1        	l32r	a15, 4211701c <f1_combined_setup_wrapper-0x78>
+4211799a:	ffefe5        	call8	42117898 <music_id1_make_panel>
+4211799d:	06ad      	mov.n	a10, a6
+4211799f:	8b5c      	movi.n	a11, 88
+421179a1:	e6a0c2        	movi	a12, 230
+421179a4:	0d0c      	movi.n	a13, 0
+421179a6:	ce6c      	movi.n	a14, -20
+421179a8:	fd9ef1        	l32r	a15, 42117020 <f1_combined_setup_wrapper-0x74>
+421179ab:	ffeee5        	call8	42117898 <music_id1_make_panel>
+421179ae:	06ad      	mov.n	a10, a6
+421179b0:	0b5c      	movi.n	a11, 80
+421179b2:	bea0c2        	movi	a12, 190
+421179b5:	0d0c      	movi.n	a13, 0
+421179b7:	d8afe2        	movi	a14, -40
+421179ba:	fd9af1        	l32r	a15, 42117024 <f1_combined_setup_wrapper-0x70>
+421179bd:	ffeda5        	call8	42117898 <music_id1_make_panel>
+421179c0:	06ad      	mov.n	a10, a6
+421179c2:	8b4c      	movi.n	a11, 72
+421179c4:	9aa0c2        	movi	a12, 154
+421179c7:	0d0c      	movi.n	a13, 0
+421179c9:	c9afe2        	movi	a14, -55
+421179cc:	fd97f1        	l32r	a15, 42117028 <f1_combined_setup_wrapper-0x6c>
+421179cf:	ffeca5        	call8	42117898 <music_id1_make_panel>
+421179d2:	06ad      	mov.n	a10, a6
+421179d4:	0b4c      	movi.n	a11, 64
+421179d6:	7ea0c2        	movi	a12, 126
+421179d9:	0d0c      	movi.n	a13, 0
+421179db:	bfafe2        	movi	a14, -65
+421179de:	fd93f1        	l32r	a15, 4211702c <f1_combined_setup_wrapper-0x68>
+421179e1:	ffeb65        	call8	42117898 <music_id1_make_panel>
+421179e4:	06ad      	mov.n	a10, a6
+421179e6:	8b3c      	movi.n	a11, 56
+421179e8:	68a0c2        	movi	a12, 104
+421179eb:	0d0c      	movi.n	a13, 0
+421179ed:	baafe2        	movi	a14, -70
+421179f0:	fd90f1        	l32r	a15, 42117030 <f1_combined_setup_wrapper-0x64>
+421179f3:	ffea65        	call8	42117898 <music_id1_make_panel>
+421179f6:	06ad      	mov.n	a10, a6
+421179f8:	0b3c      	movi.n	a11, 48
+421179fa:	56a0c2        	movi	a12, 86
+421179fd:	00a0d2        	movi	a13, 0
+42117a00:	baafe2        	movi	a14, -70
+42117a03:	fd8cf1        	l32r	a15, 42117034 <f1_combined_setup_wrapper-0x60>
+42117a06:	ffe925        	call8	42117898 <music_id1_make_panel>
+42117a09:	20a660        	or	a10, a6, a6
+42117a0c:	fd5581        	l32r	a8, 42116f60 <f1_combined_setup_wrapper-0x134>
+42117a0f:	0008e0        	callx8	a8
+42117a12:	a7a9      	s32i.n	a10, a7, 40
+42117a14:	9a9c      	beqz.n	a10, 42117a31 <music_id1_build+0xdd>
+42117a16:	01d7b2        	addmi	a11, a7, 0x100
+42117a19:	d0cbb2        	addi	a11, a11, -48
+42117a1c:	fd5281        	l32r	a8, 42116f64 <f1_combined_setup_wrapper-0x130>
+42117a1f:	0008e0        	callx8	a8
+42117a22:	a7a8      	l32i.n	a10, a7, 40
+42117a24:	9b0c      	movi.n	a11, 9
+42117a26:	0c0c      	movi.n	a12, 0
+42117a28:	bfafd2        	movi	a13, -65
+42117a2b:	fd5181        	l32r	a8, 42116f70 <f1_combined_setup_wrapper-0x124>
+42117a2e:	0008e0        	callx8	a8
+42117a31:	fd8e81        	l32r	a8, 4211706c <f1_combined_setup_wrapper-0x28>
+42117a34:	4189      	s32i.n	a8, a1, 16
+42117a36:	fd8e81        	l32r	a8, 42117070 <f1_combined_setup_wrapper-0x24>
+42117a39:	5189      	s32i.n	a8, a1, 20
+42117a3b:	fd8e81        	l32r	a8, 42117074 <f1_combined_setup_wrapper-0x20>
+42117a3e:	6189      	s32i.n	a8, a1, 24
+42117a40:	fd8e81        	l32r	a8, 42117078 <f1_combined_setup_wrapper-0x1c>
+42117a43:	7189      	s32i.n	a8, a1, 28
+42117a45:	fd6981        	l32r	a8, 42116fec <f1_combined_setup_wrapper-0xa8>
+42117a48:	8189      	s32i.n	a8, a1, 32
+42117a4a:	06ad      	mov.n	a10, a6
+42117a4c:	84a0b2        	movi	a11, 132
+42117a4f:	10c1c2        	addi	a12, a1, 16
+42117a52:	fd7bd1        	l32r	a13, 42117040 <f1_combined_setup_wrapper-0x54>
+42117a55:	ffeb25        	call8	42117908 <music_id1_make_label>
+42117a58:	b7a9      	s32i.n	a10, a7, 44
+42117a5a:	fd8881        	l32r	a8, 4211707c <f1_combined_setup_wrapper-0x18>
+42117a5d:	a189      	s32i.n	a8, a1, 40
+42117a5f:	fd8881        	l32r	a8, 42117080 <f1_combined_setup_wrapper-0x14>
+42117a62:	b189      	s32i.n	a8, a1, 44
+42117a64:	fd8881        	l32r	a8, 42117084 <f1_combined_setup_wrapper-0x10>
+42117a67:	c189      	s32i.n	a8, a1, 48
+42117a69:	fd6081        	l32r	a8, 42116fec <f1_combined_setup_wrapper-0xa8>
+42117a6c:	d189      	s32i.n	a8, a1, 52
+42117a6e:	06ad      	mov.n	a10, a6
+42117a70:	94a0b2        	movi	a11, 148
+42117a73:	28c1c2        	addi	a12, a1, 40
+42117a76:	fd73d1        	l32r	a13, 42117044 <f1_combined_setup_wrapper-0x50>
+42117a79:	ffe8e5        	call8	42117908 <music_id1_make_label>
+42117a7c:	c7a9      	s32i.n	a10, a7, 48
+42117a7e:	000886        	j	42117aa4 <music_id1_build+0x150>
+42117a81:	06ad      	mov.n	a10, a6
+42117a83:	0b5c      	movi.n	a11, 80
+42117a85:	5c0c      	movi.n	a12, 5
+42117a87:	0d0c      	movi.n	a13, 0
+42117a89:	73a0e2        	movi	a14, 115
+42117a8c:	fd6bf1        	l32r	a15, 42117038 <f1_combined_setup_wrapper-0x5c>
+42117a8f:	ffe0a5        	call8	42117898 <music_id1_make_panel>
+42117a92:	06ad      	mov.n	a10, a6
+42117a94:	2b2c      	movi.n	a11, 34
+42117a96:	5c0c      	movi.n	a12, 5
+42117a98:	e9afd2        	movi	a13, -23
+42117a9b:	73a0e2        	movi	a14, 115
+42117a9e:	fd67f1        	l32r	a15, 4211703c <f1_combined_setup_wrapper-0x58>
+42117aa1:	ffdf65        	call8	42117898 <music_id1_make_panel>
+42117aa4:	fd7981        	l32r	a8, 42117088 <f1_combined_setup_wrapper-0xc>
+42117aa7:	106182        	s32i	a8, a1, 64
+42117aaa:	fd7881        	l32r	a8, 4211708c <f1_combined_setup_wrapper-0x8>
+42117aad:	116182        	s32i	a8, a1, 68
+42117ab0:	fd7881        	l32r	a8, 42117090 <f1_combined_setup_wrapper-0x4>
+42117ab3:	126182        	s32i	a8, a1, 72
+42117ab6:	06ad      	mov.n	a10, a6
+42117ab8:	f7a0b2        	movi	a11, 247
+42117abb:	40c1c2        	addi	a12, a1, 64
+42117abe:	fd61d1        	l32r	a13, 42117044 <f1_combined_setup_wrapper-0x50>
+42117ac1:	ffe465        	call8	42117908 <music_id1_make_label>
+42117ac4:	d7a9      	s32i.n	a10, a7, 52
+42117ac6:	f01d      	retw.n
+
+42117ac8 <music_id1_cleanup>:
+42117ac8:	004136        	entry	a1, 32
+42117acb:	080c      	movi.n	a8, 0
+42117acd:	a289      	s32i.n	a8, a2, 40
+42117acf:	b289      	s32i.n	a8, a2, 44
+42117ad1:	c289      	s32i.n	a8, a2, 48
+42117ad3:	d289      	s32i.n	a8, a2, 52
+42117ad5:	f01d      	retw.n
+	...
+
+42117ad8 <music_id1_ui_refresh>:
+42117ad8:	006136        	entry	a1, 48
+42117adb:	02ad      	mov.n	a10, a2
+42117add:	0080e5        	call8	421182ec <music_id1_ui_refresh_transport>
+42117ae0:	f03d      	nop.n
+42117ae2:	f03d      	nop.n
+42117ae4:	f01d      	retw.n
+	...
+
+42117ae8 <music_id1_id>:
+42117ae8:	004136        	entry	a1, 32
+42117aeb:	120c      	movi.n	a2, 1
+42117aed:	f01d      	retw.n
+	...
+
+42117af0 <music_id1_encoder>:
+42117af0:	004136        	entry	a1, 32
+42117af3:	f01d      	retw.n
+42117af5:	00          	.byte	00
+42117af6:	00          	.byte	00
+42117af7:	00          	.byte	00
+42117af8:	fc          	.byte	0xfc
+42117af9:	4a          	.byte	0x4a
+42117afa:	00          	.byte	00
+42117afb:	42          	.byte	0x42
+42117afc:	f4          	.byte	0xf4
+42117afd:	40          	.byte	0x40
+42117afe:	05          	.byte	0x5
+42117aff:	42          	.byte	0x42
+42117b00:	e4          	.byte	0xe4
+42117b01:	6a          	.byte	0x6a
+42117b02:	10          	.byte	0x10
+42117b03:	42          	.byte	0x42
+42117b04:	5c          	.byte	0x5c
+42117b05:	46          	.byte	0x46
+42117b06:	00          	.byte	00
+42117b07:	42          	.byte	0x42
+42117b08:	a4          	.byte	0xa4
+42117b09:	76          	.byte	0x76
+42117b0a:	05          	.byte	0x5
+42117b0b:	42          	.byte	0x42
+42117b0c:	e4          	.byte	0xe4
+42117b0d:	52          	.byte	0x52
+42117b0e:	00          	.byte	00
+42117b0f:	42          	.byte	0x42
+42117b10:	90          	.byte	0x90
+42117b11:	55          	.byte	0x55
+42117b12:	00          	.byte	00
+42117b13:	42          	.byte	0x42
+42117b14:	c0          	.byte	0xc0
+42117b15:	55          	.byte	0x55
+42117b16:	00          	.byte	00
+42117b17:	42          	.byte	0x42
+42117b18:	80          	.byte	0x80
+42117b19:	4f          	.byte	0x4f
+42117b1a:	00          	.byte	00
+42117b1b:	42          	.byte	0x42
+42117b1c:	60          	.byte	0x60
+42117b1d:	55          	.byte	0x55
+42117b1e:	00          	.byte	00
+42117b1f:	42          	.byte	0x42
+42117b20:	38          	.byte	0x38
+42117b21:	96          	.byte	0x96
+42117b22:	05          	.byte	0x5
+42117b23:	42          	.byte	0x42
+42117b24:	40          	.byte	0x40
+42117b25:	52          	.byte	0x52
+42117b26:	00          	.byte	00
+42117b27:	42          	.byte	0x42
+42117b28:	18          	.byte	0x18
+42117b29:	5a          	.byte	0x5a
+42117b2a:	00          	.byte	00
+42117b2b:	42          	.byte	0x42
+42117b2c:	40          	.byte	0x40
+42117b2d:	7d          	.byte	0x7d
+42117b2e:	05          	.byte	0x5
+42117b2f:	42          	.byte	0x42
+42117b30:	68          	.byte	0x68
+42117b31:	d9          	.byte	0xd9
+42117b32:	0c          	.byte	0xc
+42117b33:	42          	.byte	0x42
+42117b34:	48          	.byte	0x48
+42117b35:	12          	.byte	0x12
+42117b36:	00          	.byte	00
+42117b37:	40          	.byte	0x40
+42117b38:	34          	.byte	0x34
+42117b39:	4f          	.byte	0x4f
+42117b3a:	ca          	.byte	0xca
+42117b3b:	3f          	.byte	0x3f
+42117b3c:	58          	.byte	0x58
+42117b3d:	65          	.byte	0x65
+42117b3e:	00          	.byte	00
+42117b3f:	00          	.byte	00
+42117b40:	d0          	.byte	0xd0
+42117b41:	64          	.byte	0x64
+42117b42:	00          	.byte	00
+42117b43:	00          	.byte	00
+42117b44:	00          	.byte	00
+42117b45:	32          	.byte	0x32
+42117b46:	00          	.byte	00
+42117b47:	00          	.byte	00
+42117b48:	00          	.byte	00
+42117b49:	0c          	.byte	0xc
+42117b4a:	00          	.byte	00
+42117b4b:	00          	.byte	00
+42117b4c:	d0          	.byte	0xd0
+42117b4d:	32          	.byte	0x32
+42117b4e:	00          	.byte	00
+42117b4f:	00          	.byte	00
+42117b50:	50          	.byte	0x50
+42117b51:	00          	.byte	00
+42117b52:	50          	.byte	0x50
+42117b53:	00          	.byte	00
+42117b54:	a0          	.byte	0xa0
+42117b55:	00          	.byte	00
+42117b56:	00          	.byte	00
+42117b57:	00          	.byte	00
+42117b58:	b0          	.byte	0xb0
+42117b59:	7d          	.byte	0x7d
+42117b5a:	11          	.byte	0x11
+42117b5b:	42          	.byte	0x42
+42117b5c:	c0          	.byte	0xc0
+42117b5d:	7d          	.byte	0x7d
+42117b5e:	11          	.byte	0x11
+42117b5f:	42          	.byte	0x42
+42117b60:	6d          	.byte	0x6d
+42117b61:	70          	.byte	0x70
+42117b62:	2e          	.byte	0x2e
+42117b63:	77          	.byte	0x77
+42117b64:	72          	.byte	0x72
+42117b65:	69          	.byte	0x69
+42117b66:	74          	.byte	0x74
+42117b67:	65          	.byte	0x65
+42117b68:	5f          	.byte	0x5f
+42117b69:	69          	.byte	0x69
+42117b6a:	6e          	.byte	0x6e
+42117b6b:	66          	.byte	0x66
+42117b6c:	6f          	.byte	0x6f
+42117b6d:	00          	.byte	00
+42117b6e:	00          	.byte	00
+42117b6f:	00          	.byte	00
+42117b70:	5f          	.byte	0x5f
+42117b71:	61          	.byte	0x61
+42117b72:	72          	.byte	0x72
+42117b73:	74          	.byte	0x74
+42117b74:	77          	.byte	0x77
+42117b75:	6f          	.byte	0x6f
+42117b76:	72          	.byte	0x72
+42117b77:	6b          	.byte	0x6b
+42117b78:	00          	.byte	00
+42117b79:	00          	.byte	00
+42117b7a:	00          	.byte	00
+42117b7b:	00          	.byte	00
+42117b7c:	73          	.byte	0x73
+42117b7d:	6f          	.byte	0x6f
+42117b7e:	6e          	.byte	0x6e
+42117b7f:	67          	.byte	0x67
+42117b80:	5f          	.byte	0x5f
+42117b81:	74          	.byte	0x74
+42117b82:	69          	.byte	0x69
+42117b83:	74          	.byte	0x74
+42117b84:	6c          	.byte	0x6c
+42117b85:	65          	.byte	0x65
+42117b86:	00          	.byte	00
+42117b87:	00          	.byte	00
+42117b88:	61          	.byte	0x61
+42117b89:	72          	.byte	0x72
+42117b8a:	74          	.byte	0x74
+42117b8b:	69          	.byte	0x69
+42117b8c:	73          	.byte	0x73
+42117b8d:	74          	.byte	0x74
+42117b8e:	00          	.byte	00
+42117b8f:	00          	.byte	00
+42117b90:	65          	.byte	0x65
+42117b91:	6c          	.byte	0x6c
+42117b92:	61          	.byte	0x61
+42117b93:	70          	.byte	0x70
+42117b94:	73          	.byte	0x73
+42117b95:	65          	.byte	0x65
+42117b96:	64          	.byte	0x64
+42117b97:	00          	.byte	00
+42117b98:	74          	.byte	0x74
+42117b99:	6f          	.byte	0x6f
+42117b9a:	74          	.byte	0x74
+42117b9b:	61          	.byte	0x61
+42117b9c:	6c          	.byte	0x6c
+42117b9d:	5f          	.byte	0x5f
+42117b9e:	64          	.byte	0x64
+42117b9f:	75          	.byte	0x75
+42117ba0:	72          	.byte	0x72
+42117ba1:	61          	.byte	0x61
+42117ba2:	74          	.byte	0x74
+42117ba3:	69          	.byte	0x69
+42117ba4:	6f          	.byte	0x6f
+42117ba5:	6e          	.byte	0x6e
+42117ba6:	00          	.byte	00
+42117ba7:	00          	.byte	00
+42117ba8:	69          	.byte	0x69
+42117ba9:	73          	.byte	0x73
+42117baa:	5f          	.byte	0x5f
+42117bab:	70          	.byte	0x70
+42117bac:	6c          	.byte	0x6c
+42117bad:	61          	.byte	0x61
+42117bae:	79          	.byte	0x79
+42117baf:	69          	.byte	0x69
+42117bb0:	6e          	.byte	0x6e
+42117bb1:	67          	.byte	0x67
+42117bb2:	00          	.byte	00
+42117bb3:	00          	.byte	00
+42117bb4:	64          	.byte	0x64
+42117bb5:	61          	.byte	0x61
+42117bb6:	74          	.byte	0x74
+42117bb7:	61          	.byte	0x61
+42117bb8:	6f          	.byte	0x6f
+42117bb9:	66          	.byte	0x66
+42117bba:	66          	.byte	0x66
+42117bbb:	73          	.byte	0x73
+42117bbc:	65          	.byte	0x65
+42117bbd:	74          	.byte	0x74
+42117bbe:	00          	.byte	00
+42117bbf:	00          	.byte	00
+42117bc0:	73          	.byte	0x73
+42117bc1:	69          	.byte	0x69
+42117bc2:	7a          	.byte	0x7a
+42117bc3:	65          	.byte	0x65
+42117bc4:	73          	.byte	0x73
+42117bc5:	74          	.byte	0x74
+42117bc6:	61          	.byte	0x61
+42117bc7:	74          	.byte	0x74
+42117bc8:	75          	.byte	0x75
+42117bc9:	73          	.byte	0x73
+42117bca:	00          	.byte	00
+42117bcb:	00          	.byte	00
+42117bcc:	6f          	.byte	0x6f
+42117bcd:	6b          	.byte	0x6b
+42117bce:	00          	.byte	00
+42117bcf:	00          	.byte	00
+42117bd0:	65          	.byte	0x65
+42117bd1:	72          	.byte	0x72
+42117bd2:	72          	.byte	0x72
+42117bd3:	6f          	.byte	0x6f
+42117bd4:	72          	.byte	0x72
+42117bd5:	00          	.byte	00
+42117bd6:	00          	.byte	00
+42117bd7:	00          	.byte	00
+42117bd8:	65          	.byte	0x65
+42117bd9:	31          	.byte	0x31
+42117bda:	00          	.byte	00
+42117bdb:	00          	.byte	00
+42117bdc:	65          	.byte	0x65
+42117bdd:	32          	.byte	0x32
+42117bde:	00          	.byte	00
+42117bdf:	00          	.byte	00
+42117be0:	65          	.byte	0x65
+42117be1:	33          	.byte	0x33
+42117be2:	00          	.byte	00
+42117be3:	00          	.byte	00
+42117be4:	65          	.byte	0x65
+42117be5:	34          	.byte	0x34
+42117be6:	00          	.byte	00
+42117be7:	00          	.byte	00
+42117be8:	65          	.byte	0x65
+42117be9:	35          	.byte	0x35
+42117bea:	00          	.byte	00
+42117beb:	00          	.byte	00
+42117bec:	65          	.byte	0x65
+42117bed:	36          	.byte	0x36
+42117bee:	00          	.byte	00
+42117bef:	00          	.byte	00
+42117bf0:	65          	.byte	0x65
+42117bf1:	37          	.byte	0x37
+42117bf2:	00          	.byte	00
+42117bf3:	00          	.byte	00
+42117bf4:	65          	.byte	0x65
+42117bf5:	38          	.byte	0x38
+42117bf6:	00          	.byte	00
+42117bf7:	00          	.byte	00
+42117bf8:	65          	.byte	0x65
+42117bf9:	39          	.byte	0x39
+	...
+
+42117bfc <music_id1_register_media_rpc>:
+42117bfc:	008136        	entry	a1, 64
+42117bff:	027d      	mov.n	a7, a2
+42117c01:	036d      	mov.n	a6, a3
+42117c03:	06ad      	mov.n	a10, a6
+42117c05:	1b0c      	movi.n	a11, 1
+42117c07:	fcca81        	l32r	a8, 42116f30 <f1_combined_setup_wrapper-0x164>
+42117c0a:	0008e0        	callx8	a8
+42117c0d:	e758      	l32i.n	a5, a7, 56
+42117c0f:	15ec      	bnez.n	a5, 42117c34 <music_id1_register_media_rpc+0x38>
+42117c11:	ffcaa1        	l32r	a10, 42117b3c <music_id1_encoder+0x4c> (6558 <f1_combined_setup_wrapper-0x42110b3c>)
+42117c14:	fcc381        	l32r	a8, 42116f20 <f1_combined_setup_wrapper-0x174>
+42117c17:	0008e0        	callx8	a8
+42117c1a:	0a5d      	mov.n	a5, a10
+42117c1c:	08d516        	beqz	a5, 42117cad <music_id1_register_media_rpc+0xb1>
+42117c1f:	05ad      	mov.n	a10, a5
+42117c21:	00a0b2        	movi	a11, 0
+42117c24:	ffc6c1        	l32r	a12, 42117b3c <music_id1_encoder+0x4c> (6558 <f1_combined_setup_wrapper-0x42110b3c>)
+42117c27:	fcbf81        	l32r	a8, 42116f24 <f1_combined_setup_wrapper-0x170>
+42117c2a:	0008e0        	callx8	a8
+42117c2d:	05ad      	mov.n	a10, a5
+42117c2f:	000825        	call8	42117cb0 <music_id1_init_rpc_strings>
+42117c32:	e759      	s32i.n	a5, a7, 56
+42117c34:	ffb181        	l32r	a8, 42117af8 <music_id1_encoder+0x8> (42004afc <f1_combined_setup_wrapper-0x112598>)
+42117c37:	0008e0        	callx8	a8
+42117c3a:	0a6d      	mov.n	a6, a10
+42117c3c:	06d616        	beqz	a6, 42117cad <music_id1_register_media_rpc+0xb1>
+42117c3f:	080c      	movi.n	a8, 0
+42117c41:	4179      	s32i.n	a7, a1, 16
+42117c43:	5189      	s32i.n	a8, a1, 20
+42117c45:	ffaf81        	l32r	a8, 42117b04 <music_id1_encoder+0x14> (4200465c <f1_combined_setup_wrapper-0x112a38>)
+42117c48:	6189      	s32i.n	a8, a1, 24
+42117c4a:	080c      	movi.n	a8, 0
+42117c4c:	7189      	s32i.n	a8, a1, 28
+42117c4e:	d80c      	movi.n	a8, 13
+42117c50:	8189      	s32i.n	a8, a1, 32
+42117c52:	ffbb81        	l32r	a8, 42117b40 <music_id1_encoder+0x50> (64d0 <f1_combined_setup_wrapper-0x42110bc4>)
+42117c55:	858a      	add.n	a8, a5, a8
+42117c57:	9189      	s32i.n	a8, a1, 36
+42117c59:	06ad      	mov.n	a10, a6
+42117c5b:	81b8      	l32i.n	a11, a1, 32
+42117c5d:	91c8      	l32i.n	a12, a1, 36
+42117c5f:	10c1d2        	addi	a13, a1, 16
+42117c62:	ffbd81        	l32r	a8, 42117b58 <music_id1_encoder+0x68> (42117db0 <music_id1_info_callback>)
+42117c65:	7189      	s32i.n	a8, a1, 28
+42117c67:	ffa581        	l32r	a8, 42117afc <music_id1_encoder+0xc> (420540f4 <f1_combined_setup_wrapper-0xc2fa0>)
+42117c6a:	0008e0        	callx8	a8
+42117c6d:	10c1a2        	addi	a10, a1, 16
+42117c70:	ffa481        	l32r	a8, 42117b00 <music_id1_encoder+0x10> (42106ae4 <f1_combined_setup_wrapper-0x105b0>)
+42117c73:	0008e0        	callx8	a8
+42117c76:	080c      	movi.n	a8, 0
+42117c78:	4179      	s32i.n	a7, a1, 16
+42117c7a:	5189      	s32i.n	a8, a1, 20
+42117c7c:	ffa281        	l32r	a8, 42117b04 <music_id1_encoder+0x14> (4200465c <f1_combined_setup_wrapper-0x112a38>)
+42117c7f:	6189      	s32i.n	a8, a1, 24
+42117c81:	ffb681        	l32r	a8, 42117b5c <music_id1_encoder+0x6c> (42117dc0 <music_id1_art_callback>)
+42117c84:	7189      	s32i.n	a8, a1, 28
+42117c86:	081c      	movi.n	a8, 16
+42117c88:	8189      	s32i.n	a8, a1, 32
+42117c8a:	ffad81        	l32r	a8, 42117b40 <music_id1_encoder+0x50> (64d0 <f1_combined_setup_wrapper-0x42110bc4>)
+42117c8d:	858a      	add.n	a8, a5, a8
+42117c8f:	10c882        	addi	a8, a8, 16
+42117c92:	9189      	s32i.n	a8, a1, 36
+42117c94:	06ad      	mov.n	a10, a6
+42117c96:	81b8      	l32i.n	a11, a1, 32
+42117c98:	0921c2        	l32i	a12, a1, 36
+42117c9b:	10c1d2        	addi	a13, a1, 16
+42117c9e:	ff9781        	l32r	a8, 42117afc <music_id1_encoder+0xc> (420540f4 <f1_combined_setup_wrapper-0xc2fa0>)
+42117ca1:	0008e0        	callx8	a8
+42117ca4:	10c1a2        	addi	a10, a1, 16
+42117ca7:	ff9681        	l32r	a8, 42117b00 <music_id1_encoder+0x10> (42106ae4 <f1_combined_setup_wrapper-0x105b0>)
+42117caa:	0008e0        	callx8	a8
+42117cad:	f01d      	retw.n
+	...
+
+42117cb0 <music_id1_init_rpc_strings>:
+42117cb0:	004136        	entry	a1, 32
+42117cb3:	ffa381        	l32r	a8, 42117b40 <music_id1_encoder+0x50> (64d0 <f1_combined_setup_wrapper-0x42110bc4>)
+42117cb6:	728a      	add.n	a7, a2, a8
+42117cb8:	ffaa81        	l32r	a8, 42117b60 <music_id1_encoder+0x70> (772e706d <music_id1_format_time+0x351cec7d>)
+42117cbb:	0789      	s32i.n	a8, a7, 0
+42117cbd:	ffa981        	l32r	a8, 42117b64 <music_id1_encoder+0x74> (65746972 <music_id1_format_time+0x2362e582>)
+42117cc0:	1789      	s32i.n	a8, a7, 4
+42117cc2:	ffa981        	l32r	a8, 42117b68 <music_id1_encoder+0x78> (666e695f <music_id1_format_time+0x245ce56f>)
+42117cc5:	2789      	s32i.n	a8, a7, 8
+42117cc7:	ffa981        	l32r	a8, 42117b6c <music_id1_encoder+0x7c> (6f <f1_combined_setup_wrapper-0x42117025>)
+42117cca:	3789      	s32i.n	a8, a7, 12
+42117ccc:	ffa581        	l32r	a8, 42117b60 <music_id1_encoder+0x70> (772e706d <music_id1_format_time+0x351cec7d>)
+42117ccf:	4789      	s32i.n	a8, a7, 16
+42117cd1:	ffa481        	l32r	a8, 42117b64 <music_id1_encoder+0x74> (65746972 <music_id1_format_time+0x2362e582>)
+42117cd4:	5789      	s32i.n	a8, a7, 20
+42117cd6:	ffa681        	l32r	a8, 42117b70 <music_id1_encoder+0x80> (7472615f <music_id1_format_time+0x3260dd6f>)
+42117cd9:	6789      	s32i.n	a8, a7, 24
+42117cdb:	ffa681        	l32r	a8, 42117b74 <music_id1_encoder+0x84> (6b726f77 <music_id1_format_time+0x2960eb87>)
+42117cde:	7789      	s32i.n	a8, a7, 28
+42117ce0:	ffa681        	l32r	a8, 42117b78 <music_id1_encoder+0x88> (0 <f1_combined_setup_wrapper-0x42117094>)
+42117ce3:	8789      	s32i.n	a8, a7, 32
+42117ce5:	ffa581        	l32r	a8, 42117b7c <music_id1_encoder+0x8c> (676e6f73 <music_id1_format_time+0x255ceb83>)
+42117ce8:	9789      	s32i.n	a8, a7, 36
+42117cea:	ffa581        	l32r	a8, 42117b80 <music_id1_encoder+0x90> (7469745f <music_id1_format_time+0x3257f06f>)
+42117ced:	a789      	s32i.n	a8, a7, 40
+42117cef:	ffa581        	l32r	a8, 42117b84 <music_id1_encoder+0x94> (656c <f1_combined_setup_wrapper-0x42110b28>)
+42117cf2:	b789      	s32i.n	a8, a7, 44
+42117cf4:	ffa581        	l32r	a8, 42117b88 <music_id1_encoder+0x98> (69747261 <music_id1_format_time+0x2762ee71>)
+42117cf7:	c789      	s32i.n	a8, a7, 48
+42117cf9:	ffa481        	l32r	a8, 42117b8c <music_id1_encoder+0x9c> (7473 <f1_combined_setup_wrapper-0x4210fc21>)
+42117cfc:	d789      	s32i.n	a8, a7, 52
+42117cfe:	ffa481        	l32r	a8, 42117b90 <music_id1_encoder+0xa0> (70616c65 <music_id1_format_time+0x2e4fe875>)
+42117d01:	e789      	s32i.n	a8, a7, 56
+42117d03:	ffa481        	l32r	a8, 42117b94 <music_id1_encoder+0xa4> (646573 <f1_combined_setup_wrapper-0x41ad0b21>)
+42117d06:	f789      	s32i.n	a8, a7, 60
+42117d08:	ffa481        	l32r	a8, 42117b98 <music_id1_encoder+0xa8> (61746f74 <music_id1_format_time+0x1f62eb84>)
+42117d0b:	106782        	s32i	a8, a7, 64
+42117d0e:	ffa381        	l32r	a8, 42117b9c <music_id1_encoder+0xac> (75645f6c <music_id1_format_time+0x3352db7c>)
+42117d11:	116782        	s32i	a8, a7, 68
+42117d14:	ffa381        	l32r	a8, 42117ba0 <music_id1_encoder+0xb0> (69746172 <music_id1_format_time+0x2762dd82>)
+42117d17:	126782        	s32i	a8, a7, 72
+42117d1a:	ffa281        	l32r	a8, 42117ba4 <music_id1_encoder+0xb4> (6e6f <f1_combined_setup_wrapper-0x42110225>)
+42117d1d:	136782        	s32i	a8, a7, 76
+42117d20:	ffa281        	l32r	a8, 42117ba8 <music_id1_encoder+0xb8> (705f7369 <music_id1_format_time+0x2e4def79>)
+42117d23:	146782        	s32i	a8, a7, 80
+42117d26:	ffa181        	l32r	a8, 42117bac <music_id1_encoder+0xbc> (6979616c <music_id1_format_time+0x2767dd7c>)
+42117d29:	156782        	s32i	a8, a7, 84
+42117d2c:	ffa181        	l32r	a8, 42117bb0 <music_id1_encoder+0xc0> (676e <f1_combined_setup_wrapper-0x42110926>)
+42117d2f:	166782        	s32i	a8, a7, 88
+42117d32:	ffa081        	l32r	a8, 42117bb4 <music_id1_encoder+0xc4> (61746164 <music_id1_format_time+0x1f62dd74>)
+42117d35:	176782        	s32i	a8, a7, 92
+42117d38:	ff9081        	l32r	a8, 42117b78 <music_id1_encoder+0x88> (0 <f1_combined_setup_wrapper-0x42117094>)
+42117d3b:	186782        	s32i	a8, a7, 96
+42117d3e:	ff9e81        	l32r	a8, 42117bb8 <music_id1_encoder+0xc8> (7366666f <music_id1_format_time+0x3154e27f>)
+42117d41:	196782        	s32i	a8, a7, 100
+42117d44:	ff9e81        	l32r	a8, 42117bbc <music_id1_encoder+0xcc> (7465 <f1_combined_setup_wrapper-0x4210fc2f>)
+42117d47:	1a6782        	s32i	a8, a7, 104
+42117d4a:	ff9d81        	l32r	a8, 42117bc0 <music_id1_encoder+0xd0> (657a6973 <music_id1_format_time+0x2368e583>)
+42117d4d:	1b6782        	s32i	a8, a7, 108
+42117d50:	ff8a81        	l32r	a8, 42117b78 <music_id1_encoder+0x88> (0 <f1_combined_setup_wrapper-0x42117094>)
+42117d53:	1c6782        	s32i	a8, a7, 112
+42117d56:	ff9b81        	l32r	a8, 42117bc4 <music_id1_encoder+0xd4> (74617473 <music_id1_format_time+0x324ff083>)
+42117d59:	1d6782        	s32i	a8, a7, 116
+42117d5c:	ff9b81        	l32r	a8, 42117bc8 <music_id1_encoder+0xd8> (7375 <f1_combined_setup_wrapper-0x4210fd1f>)
+42117d5f:	1e6782        	s32i	a8, a7, 120
+42117d62:	ff9a81        	l32r	a8, 42117bcc <music_id1_encoder+0xdc> (6b6f <f1_combined_setup_wrapper-0x42110525>)
+42117d65:	1f6782        	s32i	a8, a7, 124
+42117d68:	ff9a81        	l32r	a8, 42117bd0 <music_id1_encoder+0xe0> (6f727265 <music_id1_format_time+0x2d60ee75>)
+42117d6b:	206782        	s32i	a8, a7, 128
+42117d6e:	ff9981        	l32r	a8, 42117bd4 <music_id1_encoder+0xe4> (72 <f1_combined_setup_wrapper-0x42117022>)
+42117d71:	216782        	s32i	a8, a7, 132
+42117d74:	ff9981        	l32r	a8, 42117bd8 <music_id1_encoder+0xe8> (3165 <f1_combined_setup_wrapper-0x42113f2f>)
+42117d77:	256282        	s32i	a8, a2, 148
+42117d7a:	ff9881        	l32r	a8, 42117bdc <music_id1_encoder+0xec> (3265 <f1_combined_setup_wrapper-0x42113e2f>)
+42117d7d:	266282        	s32i	a8, a2, 152
+42117d80:	ff9881        	l32r	a8, 42117be0 <music_id1_encoder+0xf0> (3365 <f1_combined_setup_wrapper-0x42113d2f>)
+42117d83:	276282        	s32i	a8, a2, 156
+42117d86:	ff9781        	l32r	a8, 42117be4 <music_id1_encoder+0xf4> (3465 <f1_combined_setup_wrapper-0x42113c2f>)
+42117d89:	286282        	s32i	a8, a2, 160
+42117d8c:	ff9781        	l32r	a8, 42117be8 <music_id1_encoder+0xf8> (3565 <f1_combined_setup_wrapper-0x42113b2f>)
+42117d8f:	296282        	s32i	a8, a2, 164
+42117d92:	ff9681        	l32r	a8, 42117bec <music_id1_encoder+0xfc> (3665 <f1_combined_setup_wrapper-0x42113a2f>)
+42117d95:	2a6282        	s32i	a8, a2, 168
+42117d98:	ff9681        	l32r	a8, 42117bf0 <music_id1_encoder+0x100> (3765 <f1_combined_setup_wrapper-0x4211392f>)
+42117d9b:	2b6282        	s32i	a8, a2, 172
+42117d9e:	ff9581        	l32r	a8, 42117bf4 <music_id1_encoder+0x104> (3865 <f1_combined_setup_wrapper-0x4211382f>)
+42117da1:	2c6282        	s32i	a8, a2, 176
+42117da4:	ff9581        	l32r	a8, 42117bf8 <music_id1_encoder+0x108> (3965 <f1_combined_setup_wrapper-0x4211372f>)
+42117da7:	2d6282        	s32i	a8, a2, 180
+42117daa:	0020c0        	memw
+42117dad:	f01d      	retw.n
+	...
+
+42117db0 <music_id1_info_callback>:
+42117db0:	004136        	entry	a1, 32
+42117db3:	04cd      	mov.n	a12, a4
+42117db5:	03b8      	l32i.n	a11, a3, 0
+42117db7:	02a8      	l32i.n	a10, a2, 0
+42117db9:	0014e5        	call8	42117f08 <music_id1_handle_info>
+42117dbc:	f01d      	retw.n
+	...
+
+42117dc0 <music_id1_art_callback>:
+42117dc0:	004136        	entry	a1, 32
+42117dc3:	04cd      	mov.n	a12, a4
+42117dc5:	03b8      	l32i.n	a11, a3, 0
+42117dc7:	02a8      	l32i.n	a10, a2, 0
+42117dc9:	0035a5        	call8	42118124 <music_id1_handle_art>
+42117dcc:	f01d      	retw.n
+	...
+
+42117dd0 <music_id1_read_string>:
+42117dd0:	008136        	entry	a1, 64
+42117dd3:	4149      	s32i.n	a4, a1, 16
+42117dd5:	5159      	s32i.n	a5, a1, 20
+42117dd7:	6169      	s32i.n	a6, a1, 24
+42117dd9:	7179      	s32i.n	a7, a1, 28
+42117ddb:	61a8      	l32i.n	a10, a1, 24
+42117ddd:	02bd      	mov.n	a11, a2
+42117ddf:	20c330        	or	a12, a3, a3
+42117de2:	ff4a81        	l32r	a8, 42117b0c <music_id1_encoder+0x1c> (420052e4 <f1_combined_setup_wrapper-0x111db0>)
+42117de5:	0008e0        	callx8	a8
+42117de8:	61a8      	l32i.n	a10, a1, 24
+42117dea:	ff4981        	l32r	a8, 42117b10 <music_id1_encoder+0x20> (42005590 <f1_combined_setup_wrapper-0x111b04>)
+42117ded:	0008e0        	callx8	a8
+42117df0:	052a16        	beqz	a10, 42117e46 <music_id1_read_string+0x76>
+42117df3:	040a82        	l8ui	a8, a10, 4
+42117df6:	290c      	movi.n	a9, 2
+42117df8:	091897        	beq	a8, a9, 42117e05 <music_id1_read_string+0x35>
+42117dfb:	490c      	movi.n	a9, 4
+42117dfd:	041897        	beq	a8, a9, 42117e05 <music_id1_read_string+0x35>
+42117e00:	590c      	movi.n	a9, 5
+42117e02:	409897        	bne	a8, a9, 42117e46 <music_id1_read_string+0x76>
+42117e05:	71a8      	l32i.n	a10, a1, 28
+42117e07:	02bd      	mov.n	a11, a2
+42117e09:	03cd      	mov.n	a12, a3
+42117e0b:	ff4081        	l32r	a8, 42117b0c <music_id1_encoder+0x1c> (420052e4 <f1_combined_setup_wrapper-0x111db0>)
+42117e0e:	0008e0        	callx8	a8
+42117e11:	71a8      	l32i.n	a10, a1, 28
+42117e13:	ff4081        	l32r	a8, 42117b14 <music_id1_encoder+0x24> (420055c0 <f1_combined_setup_wrapper-0x111ad4>)
+42117e16:	0008e0        	callx8	a8
+42117e19:	0a5d      	mov.n	a5, a10
+42117e1b:	040c      	movi.n	a4, 0
+42117e1d:	15ac      	beqz.n	a5, 42117e42 <music_id1_read_string+0x72>
+42117e1f:	140c      	movi.n	a4, 1
+42117e21:	4178      	l32i.n	a7, a1, 16
+42117e23:	5168      	l32i.n	a6, a1, 20
+42117e25:	660b      	addi.n	a6, a6, -1
+42117e27:	030c      	movi.n	a3, 0
+42117e29:	10b367        	bgeu	a3, a6, 42117e3d <music_id1_read_string+0x6d>
+42117e2c:	000582        	l8ui	a8, a5, 0
+42117e2f:	a88c      	beqz.n	a8, 42117e3d <music_id1_read_string+0x6d>
+42117e31:	004782        	s8i	a8, a7, 0
+42117e34:	551b      	addi.n	a5, a5, 1
+42117e36:	771b      	addi.n	a7, a7, 1
+42117e38:	331b      	addi.n	a3, a3, 1
+42117e3a:	fffac6        	j	42117e29 <music_id1_read_string+0x59>
+42117e3d:	080c      	movi.n	a8, 0
+42117e3f:	004782        	s8i	a8, a7, 0
+42117e42:	042d      	mov.n	a2, a4
+42117e44:	f01d      	retw.n
+42117e46:	020c      	movi.n	a2, 0
+42117e48:	f01d      	retw.n
+	...
+
+42117e4c <music_id1_read_integer>:
+42117e4c:	006136        	entry	a1, 48
+42117e4f:	027d      	mov.n	a7, a2
+42117e51:	38c7a2        	addi	a10, a7, 56
+42117e54:	03bd      	mov.n	a11, a3
+42117e56:	04cd      	mov.n	a12, a4
+42117e58:	1d0c      	movi.n	a13, 1
+42117e5a:	07ed      	mov.n	a14, a7
+42117e5c:	ff3081        	l32r	a8, 42117b1c <music_id1_encoder+0x2c> (42005560 <f1_combined_setup_wrapper-0x111b34>)
+42117e5f:	0008e0        	callx8	a8
+42117e62:	ca8c      	beqz.n	a10, 42117e72 <music_id1_read_integer+0x26>
+42117e64:	07bd      	mov.n	a11, a7
+42117e66:	ff2e81        	l32r	a8, 42117b20 <music_id1_encoder+0x30> (42059638 <f1_combined_setup_wrapper-0xbda5c>)
+42117e69:	0008e0        	callx8	a8
+42117e6c:	0a2d      	mov.n	a2, a10
+42117e6e:	130c      	movi.n	a3, 1
+42117e70:	f01d      	retw.n
+42117e72:	020c      	movi.n	a2, 0
+42117e74:	030c      	movi.n	a3, 0
+42117e76:	f01d      	retw.n
+
+42117e78 <music_id1_reply_status>:
+42117e78:	00e136        	entry	a1, 112
+42117e7b:	027d      	mov.n	a7, a2
+42117e7d:	036d      	mov.n	a6, a3
+42117e7f:	a4ac      	beqz.n	a4, 42117ead <music_id1_reply_status+0x35>
+42117e81:	f87c      	movi.n	a8, -1
+42117e83:	1a1487        	beq	a4, a8, 42117ea1 <music_id1_reply_status+0x29>
+42117e86:	840b      	addi.n	a8, a4, -1
+42117e88:	1188e0        	slli	a8, a8, 2
+42117e8b:	ff2d91        	l32r	a9, 42117b40 <music_id1_encoder+0x50> (64d0 <f1_combined_setup_wrapper-0x42110bc4>)
+42117e8e:	c0a590        	sub	a10, a5, a9
+42117e91:	01da52        	addmi	a5, a10, 0x100
+42117e94:	94c552        	addi	a5, a5, -108
+42117e97:	558a      	add.n	a5, a5, a8
+42117e99:	4a9a      	add.n	a4, a10, a9
+42117e9b:	74c442        	addi	a4, a4, 116
+42117e9e:	000446        	j	42117eb3 <music_id1_reply_status+0x3b>
+42117ea1:	74c542        	addi	a4, a5, 116
+42117ea4:	7cc552        	addi	a5, a5, 124
+42117ea7:	000206        	j	42117eb3 <music_id1_reply_status+0x3b>
+42117eaa:	00          	.byte	00
+42117eab:	00          	.byte	00
+42117eac:	00          	.byte	00
+42117ead:	74c542        	addi	a4, a5, 116
+42117eb0:	7cc552        	addi	a5, a5, 124
+42117eb3:	ff2181        	l32r	a8, 42117b38 <music_id1_encoder+0x48> (3fca4f34 <f1_combined_setup_wrapper-0x2472160>)
+42117eb6:	4189      	s32i.n	a8, a1, 16
+42117eb8:	090c      	movi.n	a9, 0
+42117eba:	144192        	s8i	a9, a1, 20
+42117ebd:	6199      	s32i.n	a9, a1, 24
+42117ebf:	1cc182        	addi	a8, a1, 28
+42117ec2:	f189      	s32i.n	a8, a1, 60
+42117ec4:	205192        	s16i	a9, a1, 64
+42117ec7:	480c      	movi.n	a8, 4
+42117ec9:	215182        	s16i	a8, a1, 66
+42117ecc:	f87c      	movi.n	a8, -1
+42117ece:	225182        	s16i	a8, a1, 68
+42117ed1:	4c4192        	s8i	a9, a1, 76
+42117ed4:	275182        	s16i	a8, a1, 78
+42117ed7:	01ad      	mov.n	a10, a1
+42117ed9:	10c1b2        	addi	a11, a1, 16
+42117edc:	04cd      	mov.n	a12, a4
+42117ede:	ff1181        	l32r	a8, 42117b24 <music_id1_encoder+0x34> (42005240 <f1_combined_setup_wrapper-0x111e54>)
+42117ee1:	0008e0        	callx8	a8
+42117ee4:	01ad      	mov.n	a10, a1
+42117ee6:	05bd      	mov.n	a11, a5
+42117ee8:	0c0c      	movi.n	a12, 0
+42117eea:	ff0f81        	l32r	a8, 42117b28 <music_id1_encoder+0x38> (42005a18 <f1_combined_setup_wrapper-0x11167c>)
+42117eed:	0008e0        	callx8	a8
+42117ef0:	07ad      	mov.n	a10, a7
+42117ef2:	06bd      	mov.n	a11, a6
+42117ef4:	10c1c2        	addi	a12, a1, 16
+42117ef7:	ff0d81        	l32r	a8, 42117b2c <music_id1_encoder+0x3c> (42057d40 <f1_combined_setup_wrapper-0xbf354>)
+42117efa:	0008e0        	callx8	a8
+42117efd:	10c1a2        	addi	a10, a1, 16
+42117f00:	ff0681        	l32r	a8, 42117b18 <music_id1_encoder+0x28> (42004f80 <f1_combined_setup_wrapper-0x112114>)
+42117f03:	0008e0        	callx8	a8
+42117f06:	f01d      	retw.n
+
+42117f08 <music_id1_handle_info>:
+42117f08:	028136        	entry	a1, 0x140
+42117f0b:	e278      	l32i.n	a7, a2, 56
+42117f0d:	206330        	or	a6, a3, a3
+42117f10:	045d      	mov.n	a5, a4
+42117f12:	0eb716        	beqz	a7, 42118001 <music_id1_handle_info+0xf9>
+42117f15:	ff0a81        	l32r	a8, 42117b40 <music_id1_encoder+0x50> (64d0 <f1_combined_setup_wrapper-0x42110bc4>)
+42117f18:	804780        	add	a4, a7, a8
+42117f1b:	fef781        	l32r	a8, 42117af8 <music_id1_encoder+0x8> (42004afc <f1_combined_setup_wrapper-0x112598>)
+42117f1e:	0008e0        	callx8	a8
+42117f21:	0abd      	mov.n	a11, a10
+42117f23:	01d1a2        	addmi	a10, a1, 0x100
+42117f26:	e0caa2        	addi	a10, a10, -32
+42117f29:	05cd      	mov.n	a12, a5
+42117f2b:	fef781        	l32r	a8, 42117b08 <music_id1_encoder+0x18> (420576a4 <f1_combined_setup_wrapper-0xbf9f0>)
+42117f2e:	0008e0        	callx8	a8
+42117f31:	232782        	l32i	a8, a7, 140
+42117f34:	190c      	movi.n	a9, 1
+42117f36:	208890        	or	a8, a8, a9
+42117f39:	236782        	s32i	a8, a7, 140
+42117f3c:	0020c0        	memw
+42117f3f:	01d1a2        	addmi	a10, a1, 0x100
+42117f42:	e0caa2        	addi	a10, a10, -32
+42117f45:	24c4b2        	addi	a11, a4, 36
+42117f48:	20c770        	or	a12, a7, a7
+42117f4b:	0d4c      	movi.n	a13, 64
+42117f4d:	01d1e2        	addmi	a14, a1, 0x100
+42117f50:	d0cee2        	addi	a14, a14, -48
+42117f53:	01d1f2        	addmi	a15, a1, 0x100
+42117f56:	c0cff2        	addi	a15, a15, -64
+42117f59:	ffe765        	call8	42117dd0 <music_id1_read_string>
+42117f5c:	01d1a2        	addmi	a10, a1, 0x100
+42117f5f:	e0caa2        	addi	a10, a10, -32
+42117f62:	30c4b2        	addi	a11, a4, 48
+42117f65:	40c7c2        	addi	a12, a7, 64
+42117f68:	0d4c      	movi.n	a13, 64
+42117f6a:	01d1e2        	addmi	a14, a1, 0x100
+42117f6d:	b0cee2        	addi	a14, a14, -80
+42117f70:	01d1f2        	addmi	a15, a1, 0x100
+42117f73:	a0cff2        	addi	a15, a15, -96
+42117f76:	ffe5a5        	call8	42117dd0 <music_id1_read_string>
+42117f79:	01d1a2        	addmi	a10, a1, 0x100
+42117f7c:	e0caa2        	addi	a10, a10, -32
+42117f7f:	38c4b2        	addi	a11, a4, 56
+42117f82:	07a0c2        	movi	a12, 7
+42117f85:	ffec65        	call8	42117e4c <music_id1_read_integer>
+42117f88:	1b9c      	beqz.n	a11, 42117f9d <music_id1_handle_info+0x95>
+42117f8a:	080c      	movi.n	a8, 0
+42117f8c:	53aa80        	max	a10, a10, a8
+42117f8f:	dca582        	movi	a8, 0x5dc
+42117f92:	1188e0        	slli	a8, a8, 2
+42117f95:	880b      	addi.n	a8, a8, -1
+42117f97:	43aa80        	min	a10, a10, a8
+42117f9a:	2067a2        	s32i	a10, a7, 128
+42117f9d:	01d1a2        	addmi	a10, a1, 0x100
+42117fa0:	e0caa2        	addi	a10, a10, -32
+42117fa3:	40c4b2        	addi	a11, a4, 64
+42117fa6:	0ea0c2        	movi	a12, 14
+42117fa9:	ffea25        	call8	42117e4c <music_id1_read_integer>
+42117fac:	1b9c      	beqz.n	a11, 42117fc1 <music_id1_handle_info+0xb9>
+42117fae:	080c      	movi.n	a8, 0
+42117fb0:	53aa80        	max	a10, a10, a8
+42117fb3:	dca582        	movi	a8, 0x5dc
+42117fb6:	1188e0        	slli	a8, a8, 2
+42117fb9:	880b      	addi.n	a8, a8, -1
+42117fbb:	43aa80        	min	a10, a10, a8
+42117fbe:	2167a2        	s32i	a10, a7, 132
+42117fc1:	01d1a2        	addmi	a10, a1, 0x100
+42117fc4:	e0caa2        	addi	a10, a10, -32
+42117fc7:	50c4b2        	addi	a11, a4, 80
+42117fca:	0aa0c2        	movi	a12, 10
+42117fcd:	ffe7e5        	call8	42117e4c <music_id1_read_integer>
+42117fd0:	008b16        	beqz	a11, 42117fdc <music_id1_handle_info+0xd4>
+42117fd3:	002a16        	beqz	a10, 42117fd9 <music_id1_handle_info+0xd1>
+42117fd6:	01a0a2        	movi	a10, 1
+42117fd9:	2267a2        	s32i	a10, a7, 136
+42117fdc:	0020c0        	memw
+42117fdf:	232782        	l32i	a8, a7, 140
+42117fe2:	881b      	addi.n	a8, a8, 1
+42117fe4:	236782        	s32i	a8, a7, 140
+42117fe7:	0020c0        	memw
+42117fea:	06ad      	mov.n	a10, a6
+42117fec:	05bd      	mov.n	a11, a5
+42117fee:	0c0c      	movi.n	a12, 0
+42117ff0:	04dd      	mov.n	a13, a4
+42117ff2:	ffe865        	call8	42117e78 <music_id1_reply_status>
+42117ff5:	01d1a2        	addmi	a10, a1, 0x100
+42117ff8:	e0caa2        	addi	a10, a10, -32
+42117ffb:	fec781        	l32r	a8, 42117b18 <music_id1_encoder+0x28> (42004f80 <f1_combined_setup_wrapper-0x112114>)
+42117ffe:	0008e0        	callx8	a8
+42118001:	f01d      	retw.n
+	...
+
+42118004 <music_id1_base64_value>:
+42118004:	004136        	entry	a1, 32
+42118007:	748020        	extui	a8, a2, 0, 8
+4211800a:	194c      	movi.n	a9, 65
+4211800c:	0c3897        	bltu	a8, a9, 4211801c <music_id1_base64_value+0x18>
+4211800f:	ba5c      	movi.n	a10, 91
+42118011:	07b8a7        	bgeu	a8, a10, 4211801c <music_id1_base64_value+0x18>
+42118014:	bfc822        	addi	a2, a8, -65
+42118017:	130c      	movi.n	a3, 1
+42118019:	f01d      	retw.n
+4211801b:	00          	.byte	00
+4211801c:	61a092        	movi	a9, 97
+4211801f:	0d3897        	bltu	a8, a9, 42118030 <music_id1_base64_value+0x2c>
+42118022:	7ba0a2        	movi	a10, 123
+42118025:	07b8a7        	bgeu	a8, a10, 42118030 <music_id1_base64_value+0x2c>
+42118028:	b9c822        	addi	a2, a8, -71
+4211802b:	130c      	movi.n	a3, 1
+4211802d:	f01d      	retw.n
+4211802f:	00          	.byte	00
+42118030:	093c      	movi.n	a9, 48
+42118032:	0a3897        	bltu	a8, a9, 42118040 <music_id1_base64_value+0x3c>
+42118035:	aa3c      	movi.n	a10, 58
+42118037:	05b8a7        	bgeu	a8, a10, 42118040 <music_id1_base64_value+0x3c>
+4211803a:	284b      	addi.n	a2, a8, 4
+4211803c:	130c      	movi.n	a3, 1
+4211803e:	f01d      	retw.n
+42118040:	e23c      	movi.n	a2, 62
+42118042:	b92c      	movi.n	a9, 43
+42118044:	141897        	beq	a8, a9, 4211805c <music_id1_base64_value+0x58>
+42118047:	f23c      	movi.n	a2, 63
+42118049:	f92c      	movi.n	a9, 47
+4211804b:	0d1897        	beq	a8, a9, 4211805c <music_id1_base64_value+0x58>
+4211804e:	024c      	movi.n	a2, 64
+42118050:	d93c      	movi.n	a9, 61
+42118052:	061897        	beq	a8, a9, 4211805c <music_id1_base64_value+0x58>
+42118055:	020c      	movi.n	a2, 0
+42118057:	030c      	movi.n	a3, 0
+42118059:	f01d      	retw.n
+4211805b:	00          	.byte	00
+4211805c:	130c      	movi.n	a3, 1
+4211805e:	f01d      	retw.n
+
+42118060 <music_id1_decode_base64>:
+42118060:	00c136        	entry	a1, 96
+42118063:	027d      	mov.n	a7, a2
+42118065:	036d      	mov.n	a6, a3
+42118067:	205440        	or	a5, a4, a4
+4211806a:	00a042        	movi	a4, 0
+4211806d:	000782        	l8ui	a8, a7, 0
+42118070:	0a2816        	beqz	a8, 42118116 <music_id1_decode_base64+0xb6>
+42118073:	20a880        	or	a10, a8, a8
+42118076:	fff8e5        	call8	42118004 <music_id1_base64_value>
+42118079:	09fb16        	beqz	a11, 4211811c <music_id1_decode_base64+0xbc>
+4211807c:	0461a2        	s32i	a10, a1, 16
+4211807f:	0107a2        	l8ui	a10, a7, 1
+42118082:	fff825        	call8	42118004 <music_id1_base64_value>
+42118085:	093b16        	beqz	a11, 4211811c <music_id1_decode_base64+0xbc>
+42118088:	0561a2        	s32i	a10, a1, 20
+4211808b:	0207a2        	l8ui	a10, a7, 2
+4211808e:	fff765        	call8	42118004 <music_id1_base64_value>
+42118091:	087b16        	beqz	a11, 4211811c <music_id1_decode_base64+0xbc>
+42118094:	61a9      	s32i.n	a10, a1, 24
+42118096:	0307a2        	l8ui	a10, a7, 3
+42118099:	fff6a5        	call8	42118004 <music_id1_base64_value>
+4211809c:	07cb16        	beqz	a11, 4211811c <music_id1_decode_base64+0xbc>
+4211809f:	71a9      	s32i.n	a10, a1, 28
+421180a1:	4188      	l32i.n	a8, a1, 16
+421180a3:	5198      	l32i.n	a9, a1, 20
+421180a5:	0a4c      	movi.n	a10, 64
+421180a7:	7118a7        	beq	a8, a10, 4211811c <music_id1_decode_base64+0xbc>
+421180aa:	6e19a7        	beq	a9, a10, 4211811c <music_id1_decode_base64+0xbc>
+421180ad:	06b516        	beqz	a5, 4211811c <music_id1_decode_base64+0xbc>
+421180b0:	1188e0        	slli	a8, a8, 2
+421180b3:	419490        	srli	a9, a9, 4
+421180b6:	208890        	or	a8, a8, a9
+421180b9:	004682        	s8i	a8, a6, 0
+421180bc:	661b      	addi.n	a6, a6, 1
+421180be:	550b      	addi.n	a5, a5, -1
+421180c0:	441b      	addi.n	a4, a4, 1
+421180c2:	6188      	l32i.n	a8, a1, 24
+421180c4:	0a4c      	movi.n	a10, 64
+421180c6:	0e98a7        	bne	a8, a10, 421180d8 <music_id1_decode_base64+0x78>
+421180c9:	7198      	l32i.n	a9, a1, 28
+421180cb:	4d99a7        	bne	a9, a10, 4211811c <music_id1_decode_base64+0xbc>
+421180ce:	040792        	l8ui	a9, a7, 4
+421180d1:	047956        	bnez	a9, 4211811c <music_id1_decode_base64+0xbc>
+421180d4:	000f86        	j	42118116 <music_id1_decode_base64+0xb6>
+421180d7:	00          	.byte	00
+421180d8:	040516        	beqz	a5, 4211811c <music_id1_decode_base64+0xbc>
+421180db:	5198      	l32i.n	a9, a1, 20
+421180dd:	1199c0        	slli	a9, a9, 4
+421180e0:	418280        	srli	a8, a8, 2
+421180e3:	208890        	or	a8, a8, a9
+421180e6:	004682        	s8i	a8, a6, 0
+421180e9:	661b      	addi.n	a6, a6, 1
+421180eb:	550b      	addi.n	a5, a5, -1
+421180ed:	441b      	addi.n	a4, a4, 1
+421180ef:	7188      	l32i.n	a8, a1, 28
+421180f1:	0a4c      	movi.n	a10, 64
+421180f3:	0798a7        	bne	a8, a10, 421180fe <music_id1_decode_base64+0x9e>
+421180f6:	040792        	l8ui	a9, a7, 4
+421180f9:	f9dc      	bnez.n	a9, 4211811c <music_id1_decode_base64+0xbc>
+421180fb:	0005c6        	j	42118116 <music_id1_decode_base64+0xb6>
+421180fe:	a59c      	beqz.n	a5, 4211811c <music_id1_decode_base64+0xbc>
+42118100:	6198      	l32i.n	a9, a1, 24
+42118102:	1199a0        	slli	a9, a9, 6
+42118105:	208890        	or	a8, a8, a9
+42118108:	004682        	s8i	a8, a6, 0
+4211810b:	661b      	addi.n	a6, a6, 1
+4211810d:	550b      	addi.n	a5, a5, -1
+4211810f:	441b      	addi.n	a4, a4, 1
+42118111:	774b      	addi.n	a7, a7, 4
+42118113:	ffd586        	j	4211806d <music_id1_decode_base64+0xd>
+42118116:	042d      	mov.n	a2, a4
+42118118:	130c      	movi.n	a3, 1
+4211811a:	f01d      	retw.n
+4211811c:	020c      	movi.n	a2, 0
+4211811e:	030c      	movi.n	a3, 0
+42118120:	f01d      	retw.n
+	...
+
+42118124 <music_id1_handle_art>:
+42118124:	028136        	entry	a1, 0x140
+42118127:	e278      	l32i.n	a7, a2, 56
+42118129:	206330        	or	a6, a3, a3
+4211812c:	045d      	mov.n	a5, a4
+4211812e:	16a716        	beqz	a7, 4211829c <music_id1_handle_art+0x178>
+42118131:	fe8381        	l32r	a8, 42117b40 <music_id1_encoder+0x50> (64d0 <f1_combined_setup_wrapper-0x42110bc4>)
+42118134:	804780        	add	a4, a7, a8
+42118137:	fe7081        	l32r	a8, 42117af8 <music_id1_encoder+0x8> (42004afc <f1_combined_setup_wrapper-0x112598>)
+4211813a:	0008e0        	callx8	a8
+4211813d:	0abd      	mov.n	a11, a10
+4211813f:	01d1a2        	addmi	a10, a1, 0x100
+42118142:	e0caa2        	addi	a10, a10, -32
+42118145:	05cd      	mov.n	a12, a5
+42118147:	fe7081        	l32r	a8, 42117b08 <music_id1_encoder+0x18> (420576a4 <f1_combined_setup_wrapper-0xbf9f0>)
+4211814a:	0008e0        	callx8	a8
+4211814d:	01d1a2        	addmi	a10, a1, 0x100
+42118150:	e0caa2        	addi	a10, a10, -32
+42118153:	64c4b2        	addi	a11, a4, 100
+42118156:	06a0c2        	movi	a12, 6
+42118159:	ffcf25        	call8	42117e4c <music_id1_read_integer>
+4211815c:	13eb16        	beqz	a11, 4211829e <music_id1_handle_art+0x17a>
+4211815f:	1461a2        	s32i	a10, a1, 80
+42118162:	01d1a2        	addmi	a10, a1, 0x100
+42118165:	e0caa2        	addi	a10, a10, -32
+42118168:	6cc4b2        	addi	a11, a4, 108
+4211816b:	4c0c      	movi.n	a12, 4
+4211816d:	ffcde5        	call8	42117e4c <music_id1_read_integer>
+42118170:	130b16        	beqz	a11, 421182a4 <music_id1_handle_art+0x180>
+42118173:	1561a2        	s32i	a10, a1, 84
+42118176:	fe7381        	l32r	a8, 42117b44 <music_id1_encoder+0x54> (3200 <f1_combined_setup_wrapper-0x42113e94>)
+42118179:	021a87        	beq	a10, a8, 4211817f <music_id1_handle_art+0x5b>
+4211817c:	004a46        	j	421182a9 <music_id1_handle_art+0x185>
+4211817f:	142192        	l32i	a9, a1, 80
+42118182:	e9dc      	bnez.n	a9, 421181a4 <music_id1_handle_art+0x80>
+42118184:	322782        	l32i	a8, a7, 200
+42118187:	3327a2        	l32i	a10, a7, 204
+4211818a:	0218a7        	beq	a8, a10, 42118190 <music_id1_handle_art+0x6c>
+4211818d:	004746        	j	421182ae <music_id1_handle_art+0x18a>
+42118190:	2e2782        	l32i	a8, a7, 184
+42118193:	1a0c      	movi.n	a10, 1
+42118195:	3088a0        	xor	a8, a8, a10
+42118198:	2f6782        	s32i	a8, a7, 188
+4211819b:	152182        	l32i	a8, a1, 84
+4211819e:	316782        	s32i	a8, a7, 196
+421181a1:	0020c0        	memw
+421181a4:	0020c0        	memw
+421181a7:	312782        	l32i	a8, a7, 196
+421181aa:	1521a2        	l32i	a10, a1, 84
+421181ad:	0218a7        	beq	a8, a10, 421181b3 <music_id1_handle_art+0x8f>
+421181b0:	004006        	j	421182b4 <music_id1_handle_art+0x190>
+421181b3:	0239a7        	bltu	a9, a10, 421181b9 <music_id1_handle_art+0x95>
+421181b6:	003fc6        	j	421182b9 <music_id1_handle_art+0x195>
+421181b9:	899c      	beqz.n	a9, 421181d5 <music_id1_handle_art+0xb1>
+421181bb:	fe6381        	l32r	a8, 42117b48 <music_id1_encoder+0x58> (c00 <f1_combined_setup_wrapper-0x42116494>)
+421181be:	131987        	beq	a9, a8, 421181d5 <music_id1_handle_art+0xb1>
+421181c1:	11a8f0        	slli	a10, a8, 1
+421181c4:	0d19a7        	beq	a9, a10, 421181d5 <music_id1_handle_art+0xb1>
+421181c7:	aa8a      	add.n	a10, a10, a8
+421181c9:	0819a7        	beq	a9, a10, 421181d5 <music_id1_handle_art+0xb1>
+421181cc:	11a8e0        	slli	a10, a8, 2
+421181cf:	0219a7        	beq	a9, a10, 421181d5 <music_id1_handle_art+0xb1>
+421181d2:	0038c6        	j	421182b9 <music_id1_handle_art+0x195>
+421181d5:	01d1a2        	addmi	a10, a1, 0x100
+421181d8:	e0caa2        	addi	a10, a10, -32
+421181db:	38caa2        	addi	a10, a10, 56
+421181de:	5cc4b2        	addi	a11, a4, 92
+421181e1:	4c0c      	movi.n	a12, 4
+421181e3:	1d0c      	movi.n	a13, 1
+421181e5:	01d1e2        	addmi	a14, a1, 0x100
+421181e8:	e0cee2        	addi	a14, a14, -32
+421181eb:	fe4c81        	l32r	a8, 42117b1c <music_id1_encoder+0x2c> (42005560 <f1_combined_setup_wrapper-0x111b34>)
+421181ee:	0008e0        	callx8	a8
+421181f1:	0c9a16        	beqz	a10, 421182be <music_id1_handle_art+0x19a>
+421181f4:	040a82        	l8ui	a8, a10, 4
+421181f7:	290c      	movi.n	a9, 2
+421181f9:	101897        	beq	a8, a9, 4211820d <music_id1_handle_art+0xe9>
+421181fc:	490c      	movi.n	a9, 4
+421181fe:	0b1897        	beq	a8, a9, 4211820d <music_id1_handle_art+0xe9>
+42118201:	05a092        	movi	a9, 5
+42118204:	021897        	beq	a8, a9, 4211820a <music_id1_handle_art+0xe6>
+42118207:	002e06        	j	421182c3 <music_id1_handle_art+0x19f>
+4211820a:	08caa2        	addi	a10, a10, 8
+4211820d:	0b7a16        	beqz	a10, 421182c8 <music_id1_handle_art+0x1a4>
+42118210:	1661a2        	s32i	a10, a1, 88
+42118213:	fe4881        	l32r	a8, 42117b34 <music_id1_encoder+0x44> (40001248 <f1_combined_setup_wrapper-0x2115e4c>)
+42118216:	0008e0        	callx8	a8
+42118219:	1761a2        	s32i	a10, a1, 92
+4211821c:	2f2782        	l32i	a8, a7, 188
+4211821f:	01d732        	addmi	a3, a7, 0x100
+42118222:	d0c332        	addi	a3, a3, -48
+42118225:	488c      	beqz.n	a8, 4211822d <music_id1_handle_art+0x109>
+42118227:	fe4981        	l32r	a8, 42117b4c <music_id1_encoder+0x5c> (32d0 <f1_combined_setup_wrapper-0x42113dc4>)
+4211822a:	803780        	add	a3, a7, a8
+4211822d:	142192        	l32i	a9, a1, 80
+42118230:	339a      	add.n	a3, a3, a9
+42118232:	fe4481        	l32r	a8, 42117b44 <music_id1_encoder+0x54> (3200 <f1_combined_setup_wrapper-0x42113e94>)
+42118235:	c0b890        	sub	a11, a8, a9
+42118238:	fe4481        	l32r	a8, 42117b48 <music_id1_encoder+0x58> (c00 <f1_combined_setup_wrapper-0x42116494>)
+4211823b:	43bb80        	min	a11, a11, a8
+4211823e:	080c      	movi.n	a8, 0
+42118240:	186182        	s32i	a8, a1, 96
+42118243:	03ad      	mov.n	a10, a3
+42118245:	60c1c2        	addi	a12, a1, 96
+42118248:	1621d2        	l32i	a13, a1, 88
+4211824b:	1721e2        	l32i	a14, a1, 92
+4211824e:	fe3881        	l32r	a8, 42117b30 <music_id1_encoder+0x40> (420cd968 <f1_combined_setup_wrapper-0x4972c>)
+42118251:	0008e0        	callx8	a8
+42118254:	075a56        	bnez	a10, 421182cd <music_id1_handle_art+0x1a9>
+42118257:	1821a2        	l32i	a10, a1, 96
+4211825a:	142192        	l32i	a9, a1, 80
+4211825d:	fe3981        	l32r	a8, 42117b44 <music_id1_encoder+0x54> (3200 <f1_combined_setup_wrapper-0x42113e94>)
+42118260:	c0b890        	sub	a11, a8, a9
+42118263:	fe3981        	l32r	a8, 42117b48 <music_id1_encoder+0x58> (c00 <f1_combined_setup_wrapper-0x42116494>)
+42118266:	43bb80        	min	a11, a11, a8
+42118269:	659ab7        	bne	a10, a11, 421182d2 <music_id1_handle_art+0x1ae>
+4211826c:	99ba      	add.n	a9, a9, a11
+4211826e:	0020c0        	memw
+42118271:	fe3481        	l32r	a8, 42117b44 <music_id1_encoder+0x54> (3200 <f1_combined_setup_wrapper-0x42113e94>)
+42118274:	0d9987        	bne	a9, a8, 42118285 <music_id1_handle_art+0x161>
+42118277:	0020c0        	memw
+4211827a:	322782        	l32i	a8, a7, 200
+4211827d:	881b      	addi.n	a8, a8, 1
+4211827f:	326782        	s32i	a8, a7, 200
+42118282:	0020c0        	memw
+42118285:	06ad      	mov.n	a10, a6
+42118287:	05bd      	mov.n	a11, a5
+42118289:	0c0c      	movi.n	a12, 0
+4211828b:	04dd      	mov.n	a13, a4
+4211828d:	ffbea5        	call8	42117e78 <music_id1_reply_status>
+42118290:	01d1a2        	addmi	a10, a1, 0x100
+42118293:	e0caa2        	addi	a10, a10, -32
+42118296:	fe2081        	l32r	a8, 42117b18 <music_id1_encoder+0x28> (42004f80 <f1_combined_setup_wrapper-0x112114>)
+42118299:	0008e0        	callx8	a8
+4211829c:	f01d      	retw.n
+4211829e:	1c0c      	movi.n	a12, 1
+421182a0:	000c06        	j	421182d4 <music_id1_handle_art+0x1b0>
+421182a3:	00          	.byte	00
+421182a4:	2c0c      	movi.n	a12, 2
+421182a6:	000a86        	j	421182d4 <music_id1_handle_art+0x1b0>
+421182a9:	3c0c      	movi.n	a12, 3
+421182ab:	000946        	j	421182d4 <music_id1_handle_art+0x1b0>
+421182ae:	4c0c      	movi.n	a12, 4
+421182b0:	000806        	j	421182d4 <music_id1_handle_art+0x1b0>
+421182b3:	00          	.byte	00
+421182b4:	5c0c      	movi.n	a12, 5
+421182b6:	000686        	j	421182d4 <music_id1_handle_art+0x1b0>
+421182b9:	6c0c      	movi.n	a12, 6
+421182bb:	000546        	j	421182d4 <music_id1_handle_art+0x1b0>
+421182be:	7c0c      	movi.n	a12, 7
+421182c0:	000406        	j	421182d4 <music_id1_handle_art+0x1b0>
+421182c3:	8c0c      	movi.n	a12, 8
+421182c5:	0002c6        	j	421182d4 <music_id1_handle_art+0x1b0>
+421182c8:	9c0c      	movi.n	a12, 9
+421182ca:	000186        	j	421182d4 <music_id1_handle_art+0x1b0>
+421182cd:	fc7c      	movi.n	a12, -1
+421182cf:	000046        	j	421182d4 <music_id1_handle_art+0x1b0>
+421182d2:	fc7c      	movi.n	a12, -1
+421182d4:	06ad      	mov.n	a10, a6
+421182d6:	05bd      	mov.n	a11, a5
+421182d8:	04dd      	mov.n	a13, a4
+421182da:	ffb9e5        	call8	42117e78 <music_id1_reply_status>
+421182dd:	01d1a2        	addmi	a10, a1, 0x100
+421182e0:	e0caa2        	addi	a10, a10, -32
+421182e3:	fe0d81        	l32r	a8, 42117b18 <music_id1_encoder+0x28> (42004f80 <f1_combined_setup_wrapper-0x112114>)
+421182e6:	0008e0        	callx8	a8
+421182e9:	f01d      	retw.n
+	...
+
+421182ec <music_id1_ui_refresh_transport>:
+421182ec:	01c136        	entry	a1, 224
+421182ef:	027d      	mov.n	a7, a2
+421182f1:	7758      	l32i.n	a5, a7, 28
+421182f3:	551b      	addi.n	a5, a5, 1
+421182f5:	7759      	s32i.n	a5, a7, 28
+421182f7:	0e2762        	l32i	a6, a7, 56
+421182fa:	0ed616        	beqz	a6, 421183eb <music_id1_ui_refresh_transport+0xff>
+421182fd:	0020c0        	memw
+42118300:	232682        	l32i	a8, a6, 140
+42118303:	04a080        	extui	a10, a8, 0, 1
+42118306:	08ca56        	bnez	a10, 42118396 <music_id1_ui_refresh_transport+0xaa>
+42118309:	242692        	l32i	a9, a6, 144
+4211830c:	089897        	bne	a8, a9, 42118318 <music_id1_ui_refresh_transport+0x2c>
+4211830f:	083816        	beqz	a8, 42118396 <music_id1_ui_refresh_transport+0xaa>
+42118312:	01a0a2        	movi	a10, 1
+42118315:	7d95a7        	bne	a5, a10, 42118396 <music_id1_ui_refresh_transport+0xaa>
+42118318:	276182        	s32i	a8, a1, 156
+4211831b:	06ad      	mov.n	a10, a6
+4211831d:	10c1b2        	addi	a11, a1, 16
+42118320:	082c      	movi.n	a8, 32
+42118322:	0a98      	l32i.n	a9, a10, 0
+42118324:	0b99      	s32i.n	a9, a11, 0
+42118326:	aa4b      	addi.n	a10, a10, 4
+42118328:	bb4b      	addi.n	a11, a11, 4
+4211832a:	880b      	addi.n	a8, a8, -1
+4211832c:	ff2856        	bnez	a8, 42118322 <music_id1_ui_refresh_transport+0x36>
+4211832f:	202682        	l32i	a8, a6, 128
+42118332:	246182        	s32i	a8, a1, 144
+42118335:	212682        	l32i	a8, a6, 132
+42118338:	256182        	s32i	a8, a1, 148
+4211833b:	222682        	l32i	a8, a6, 136
+4211833e:	266182        	s32i	a8, a1, 152
+42118341:	0020c0        	memw
+42118344:	232682        	l32i	a8, a6, 140
+42118347:	272192        	l32i	a9, a1, 156
+4211834a:	489897        	bne	a8, a9, 42118396 <music_id1_ui_refresh_transport+0xaa>
+4211834d:	04a080        	extui	a10, a8, 0, 1
+42118350:	042a56        	bnez	a10, 42118396 <music_id1_ui_refresh_transport+0xaa>
+42118353:	b7a8      	l32i.n	a10, a7, 44
+42118355:	7a8c      	beqz.n	a10, 42118360 <music_id1_ui_refresh_transport+0x74>
+42118357:	10c1b2        	addi	a11, a1, 16
+4211835a:	fb0881        	l32r	a8, 42116f7c <f1_combined_setup_wrapper-0x118>
+4211835d:	0008e0        	callx8	a8
+42118360:	c7a8      	l32i.n	a10, a7, 48
+42118362:	7a8c      	beqz.n	a10, 4211836d <music_id1_ui_refresh_transport+0x81>
+42118364:	50c1b2        	addi	a11, a1, 80
+42118367:	fb0581        	l32r	a8, 42116f7c <f1_combined_setup_wrapper-0x118>
+4211836a:	0008e0        	callx8	a8
+4211836d:	01d1a2        	addmi	a10, a1, 0x100
+42118370:	a0caa2        	addi	a10, a10, -96
+42118373:	2421b2        	l32i	a11, a1, 144
+42118376:	2521c2        	l32i	a12, a1, 148
+42118379:	201110        	or	a1, a1, a1
+4211837c:	000725        	call8	421183f0 <music_id1_format_time>
+4211837f:	d7a8      	l32i.n	a10, a7, 52
+42118381:	00ba16        	beqz	a10, 42118390 <music_id1_ui_refresh_transport+0xa4>
+42118384:	01d1b2        	addmi	a11, a1, 0x100
+42118387:	a0cbb2        	addi	a11, a11, -96
+4211838a:	fafc81        	l32r	a8, 42116f7c <f1_combined_setup_wrapper-0x118>
+4211838d:	0008e0        	callx8	a8
+42118390:	272182        	l32i	a8, a1, 156
+42118393:	246682        	s32i	a8, a6, 144
+42118396:	0020c0        	memw
+42118399:	322682        	l32i	a8, a6, 200
+4211839c:	332692        	l32i	a9, a6, 204
+4211839f:	079897        	bne	a8, a9, 421183aa <music_id1_ui_refresh_transport+0xbe>
+421183a2:	045816        	beqz	a8, 421183eb <music_id1_ui_refresh_transport+0xff>
+421183a5:	1a0c      	movi.n	a10, 1
+421183a7:	4095a7        	bne	a5, a10, 421183eb <music_id1_ui_refresh_transport+0xff>
+421183aa:	5189      	s32i.n	a8, a1, 20
+421183ac:	2f2682        	l32i	a8, a6, 188
+421183af:	2e6682        	s32i	a8, a6, 184
+421183b2:	01d752        	addmi	a5, a7, 0x100
+421183b5:	d0c552        	addi	a5, a5, -48
+421183b8:	fde681        	l32r	a8, 42117b50 <music_id1_encoder+0x60> (500050 <f1_combined_setup_wrapper-0x41c17044>)
+421183bb:	1589      	s32i.n	a8, a5, 4
+421183bd:	fde581        	l32r	a8, 42117b54 <music_id1_encoder+0x64> (a0 <f1_combined_setup_wrapper-0x42116ff4>)
+421183c0:	2589      	s32i.n	a8, a5, 8
+421183c2:	fde081        	l32r	a8, 42117b44 <music_id1_encoder+0x54> (3200 <f1_combined_setup_wrapper-0x42113e94>)
+421183c5:	3589      	s32i.n	a8, a5, 12
+421183c7:	2e2682        	l32i	a8, a6, 184
+421183ca:	01d692        	addmi	a9, a6, 0x100
+421183cd:	d0c992        	addi	a9, a9, -48
+421183d0:	004816        	beqz	a8, 421183d8 <music_id1_ui_refresh_transport+0xec>
+421183d3:	fdde81        	l32r	a8, 42117b4c <music_id1_encoder+0x5c> (32d0 <f1_combined_setup_wrapper-0x42113dc4>)
+421183d6:	968a      	add.n	a9, a6, a8
+421183d8:	4599      	s32i.n	a9, a5, 16
+421183da:	a7a8      	l32i.n	a10, a7, 40
+421183dc:	6a8c      	beqz.n	a10, 421183e6 <music_id1_ui_refresh_transport+0xfa>
+421183de:	05bd      	mov.n	a11, a5
+421183e0:	fae181        	l32r	a8, 42116f64 <f1_combined_setup_wrapper-0x130>
+421183e3:	0008e0        	callx8	a8
+421183e6:	5188      	l32i.n	a8, a1, 20
+421183e8:	336682        	s32i	a8, a6, 204
+421183eb:	f01d      	retw.n
+421183ed:	000000        	ill
+
+421183f0 <music_id1_format_time>:
+421183f0:	006136        	entry	a1, 48
+421183f3:	027d      	mov.n	a7, a2
+421183f5:	c83c      	movi.n	a8, 60
+421183f7:	c25380        	quou	a5, a3, a8
+421183fa:	e26380        	remu	a6, a3, a8
+421183fd:	63a092        	movi	a9, 99
+42118400:	435590        	min	a5, a5, a9
+42118403:	a80c      	movi.n	a8, 10
+42118405:	c29580        	quou	a9, a5, a8
+42118408:	e2a580        	remu	a10, a5, a8
+4211840b:	30c992        	addi	a9, a9, 48
+4211840e:	30caa2        	addi	a10, a10, 48
+42118411:	004792        	s8i	a9, a7, 0
+42118414:	0147a2        	s8i	a10, a7, 1
+42118417:	a93c      	movi.n	a9, 58
+42118419:	024792        	s8i	a9, a7, 2
+4211841c:	c29680        	quou	a9, a6, a8
+4211841f:	e2a680        	remu	a10, a6, a8
+42118422:	30c992        	addi	a9, a9, 48
+42118425:	30caa2        	addi	a10, a10, 48
+42118428:	034792        	s8i	a9, a7, 3
+4211842b:	0447a2        	s8i	a10, a7, 4
+4211842e:	092c      	movi.n	a9, 32
+42118430:	054792        	s8i	a9, a7, 5
+42118433:	f92c      	movi.n	a9, 47
+42118435:	064792        	s8i	a9, a7, 6
+42118438:	092c      	movi.n	a9, 32
+4211843a:	074792        	s8i	a9, a7, 7
+4211843d:	c83c      	movi.n	a8, 60
+4211843f:	c25480        	quou	a5, a4, a8
+42118442:	e26480        	remu	a6, a4, a8
+42118445:	63a092        	movi	a9, 99
+42118448:	435590        	min	a5, a5, a9
+4211844b:	a80c      	movi.n	a8, 10
+4211844d:	c29580        	quou	a9, a5, a8
+42118450:	e2a580        	remu	a10, a5, a8
+42118453:	30c992        	addi	a9, a9, 48
+42118456:	30caa2        	addi	a10, a10, 48
+42118459:	084792        	s8i	a9, a7, 8
+4211845c:	0947a2        	s8i	a10, a7, 9
+4211845f:	a93c      	movi.n	a9, 58
+42118461:	0a4792        	s8i	a9, a7, 10
+42118464:	c29680        	quou	a9, a6, a8
+42118467:	e2a680        	remu	a10, a6, a8
+4211846a:	30c992        	addi	a9, a9, 48
+4211846d:	30caa2        	addi	a10, a10, 48
+42118470:	0b4792        	s8i	a9, a7, 11
+42118473:	0c47a2        	s8i	a10, a7, 12
+42118476:	080c      	movi.n	a8, 0
+42118478:	0d4782        	s8i	a8, a7, 13
+4211847b:	f01d      	retw.n
+4211847d:	000000        	ill

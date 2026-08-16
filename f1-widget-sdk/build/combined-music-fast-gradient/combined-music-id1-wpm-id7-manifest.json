@@ -1,0 +1,196 @@
+{
+  "format": "framer-f1-combined-music-id1-wpm-id7-candidate-v1",
+  "status": "OFFLINE_DETERMINISTIC_CANDIDATE_AWAITING_MAIN_APPROVAL",
+  "deployable": false,
+  "target": {
+    "device": "knob_f1",
+    "firmware": "0.4.1",
+    "screenIds": {
+      "music": 1,
+      "wpm": 7
+    },
+    "prohibitedScreenId": 8
+  },
+  "setup": {
+    "soleWrapper": "f1_combined_setup_wrapper",
+    "address": "0x42117094",
+    "stockSetupCalls": 1,
+    "order": [
+      "stock",
+      "music_id1_register",
+      "stage3e34_register_wpm"
+    ]
+  },
+  "registration": {
+    "musicNavGate": "controller+20 == registry",
+    "wpmNavGate": "controller+20 == registry",
+    "independentAllocationFailure": true
+  },
+  "wpm": {
+    "source": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/custom-firmware/experimental/stage3e34-wpm-pet.S",
+    "registrationOnly": true,
+    "standaloneWrapperLinked": false,
+    "pinnedRegistrationArtifact": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/custom-firmware/experimental/stage3e34-register-only.hex",
+      "bytes": 1928,
+      "sha256": "6862764da34424285799e5c91796cd6080fca1adc1374f60f5b171b8d34c6c12"
+    },
+    "runtimeAssetEnd": "0x3c1cf36c",
+    "runtimeBoundaryExclusive": "0x3c1d0000",
+    "headroomBytes": 3220,
+    "pet": "96x78 RAM-expanded active I4 source plus exact E3A fallback",
+    "liveCompleteFrozenLinkedBytes": {
+      "literalOffset": 16,
+      "literalBytes": 220,
+      "literalSha256": "c447cf2300462ad218ab7d687595a5f178c06f0ca9ee5b4adadd2c3d65d24646",
+      "textOffset": 444,
+      "textBytes": 1708,
+      "textSha256": "4934ea5a2ec030cb689953d813d0995854d911546b4d4ebd122014bf4b49ec0c",
+      "musicAddress": 1108440952,
+      "preservedByteForByte": true
+    }
+  },
+  "music": {
+    "source": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/examples/music-player/on-device/music-player-id1.S",
+    "screenId": 1,
+    "dromBytes": 0,
+    "album": "80x80 RGB565 host-fed ping-pong RAM after initial 64x64 fixture",
+    "mediaRpc": {
+      "metadata": "mp.write_info",
+      "artwork": "mp.write_artwork",
+      "transportStateBytes": 87980,
+      "artworkBytes": 12800,
+      "chunkRawBytes": 3072,
+      "rpcStringTableOffset": 25808,
+      "rpcStringTableBytes": 152,
+      "rpcTaskTouchesLvgl": false,
+      "uiThreadGenerationApply": true,
+      "metadataSynchronization": "odd/even seqlock plus private UI snapshot",
+      "screenRebuildReplay": true
+    },
+    "crashContainment": "No label-as-panel objects; background image, album image, and three text labels only"
+  },
+  "code": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-music-fast-gradient/combined-music-id1-wpm-id7-irom.bin",
+    "wrapperAddress": 1108439188,
+    "bytes": 6332,
+    "sha256": "0f979d32f1a9b1203287cb71518b66367c66a1fa9e51a2c5f06be71bd15a804b",
+    "relocations": 0,
+    "deterministicRebuilds": 2
+  },
+  "outputs": {
+    "app": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-music-fast-gradient/framer-0.4.1-combined-music-id1-wpm-id7-app.bin",
+      "bytes": 2032368,
+      "sha256": "b9b8eec6250392f593ae664fa8b8cba64bf861f5ef49a427c65be79e6f355817"
+    },
+    "merged": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-music-fast-gradient/framer-0.4.1-combined-music-id1-wpm-id7-merged.bin",
+      "bytes": 2097904,
+      "sha256": "dbc29e0d74b30c8244fbe5e04960781ed58945e23cea525de0d44428434ebf54"
+    },
+    "inspection": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-music-fast-gradient/framer-0.4.1-combined-music-id1-wpm-id7-app.bin",
+      "fileBytes": 2032368,
+      "fileSha256": "b9b8eec6250392f593ae664fa8b8cba64bf861f5ef49a427c65be79e6f355817",
+      "appOffset": "0x0",
+      "appBytes": 2032368,
+      "appSha256": "b9b8eec6250392f593ae664fa8b8cba64bf861f5ef49a427c65be79e6f355817",
+      "segmentCount": 6,
+      "segments": [
+        {
+          "index": 0,
+          "headerOffset": "0x18",
+          "dataOffset": "0x20",
+          "loadAddress": "0x3c120020",
+          "length": 725360
+        },
+        {
+          "index": 1,
+          "headerOffset": "0xb1190",
+          "dataOffset": "0xb1198",
+          "loadAddress": "0x3fca4f00",
+          "length": 23136
+        },
+        {
+          "index": 2,
+          "headerOffset": "0xb6bf8",
+          "dataOffset": "0xb6c00",
+          "loadAddress": "0x40374000",
+          "length": 37912
+        },
+        {
+          "index": 3,
+          "headerOffset": "0xc0018",
+          "dataOffset": "0xc0020",
+          "loadAddress": "0x42000020",
+          "length": 1148844
+        },
+        {
+          "index": 4,
+          "headerOffset": "0x1d87cc",
+          "dataOffset": "0x1d87d4",
+          "loadAddress": "0x4037d418",
+          "length": 96740
+        },
+        {
+          "index": 5,
+          "headerOffset": "0x1f01b8",
+          "dataOffset": "0x1f01c0",
+          "loadAddress": "0x600fe000",
+          "length": 264
+        }
+      ],
+      "checksum": {
+        "offset": "0x1f02cf",
+        "value": "0x5a",
+        "valid": true
+      },
+      "digest": {
+        "offset": "0x1f02d0",
+        "sha256": "be056aaecc4ffa27a8593f6c7489dec18efa91e71547c66f3713f9ba28c37c47",
+        "valid": true
+      },
+      "factoryPartitionFit": true,
+      "factoryPartitionHeadroom": 6356240
+    }
+  },
+  "bases": {
+    "officialMergedSha256": "c8926bd181bc06062d8c79221c6bb1c7f85463f0034444f263e1995cb383b976",
+    "exactC1AppSha256": "e2e7ba4ab4b9c247af8c0bdc3d7896ac52967bb7f90fb19beae73c0ae4a2b8fd",
+    "liveE3aRollbackSha256": "dd8edaaa2c3aa98a1cbdbda319255cc7d1a0e02d0069f543dd574ef040db4b83",
+    "recovery": {
+      "manifest": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/recovery/backups/2026-08-15-framer-f1-a4cb8faf3210-before-custom/manifest.json",
+      "fullFlash": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/recovery/backups/2026-08-15-framer-f1-a4cb8faf3210-before-custom/full-flash-16mb.bin",
+      "bytes": 16777216,
+      "sha256": "aa6042310d075c9cbd3b992044511c064bb4b84713d0740a3adafcbdb3028fdd",
+      "mac": "a4:cb:8f:af:32:10"
+    },
+    "livePassedE31AssetDonorSha256": "431f4b9abf235a87f26ea455a762fd74afb16c2e55c9c1d7bb8c418a99799713",
+    "exactE34AppSha256": "0e20b00b046f34750e19141ea5b9cede2debc0e04f59038432b508eb4a8df5a6",
+    "assetPageSha256": "c49880fdc1fa2f8d34fa08d989c09d8e23b9546243b0db32bb8f1bca8741fee5"
+  },
+  "safety": {
+    "hardwareAccess": false,
+    "approvalRequired": true,
+    "appOnlyOffset": "0x10000",
+    "stockHooksPreserved": true,
+    "segments": 6,
+    "dromSegments": 1,
+    "iromSegments": 1
+  },
+  "verification": {
+    "abi": "PASS",
+    "deterministicBuild": "PASS",
+    "checksumDigest": "PASS",
+    "esptoolImageInfo": "PASS",
+    "esptoolImageInfoSha256": "16c3e0a473e399b5d9f1643c96d8aab502bddf691a402e579f313ceab10cc716",
+    "rollbackPreflight": "PASS"
+  },
+  "elapsedMs": 364,
+  "sourceFingerprint": "6d8eaeacb515f38d5e18cbf76f6e16432e18dcbd1773a7470e682068a36157ea",
+  "cache": {
+    "build": "miss",
+    "sourceFingerprint": "6d8eaeacb515f38d5e18cbf76f6e16432e18dcbd1773a7470e682068a36157ea"
+  }
+}

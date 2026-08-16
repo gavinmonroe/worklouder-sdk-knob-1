@@ -1,0 +1,5 @@
+.venv-esptool/
+.toolchains/
+recovery/backups/
+*.log
+custom-firmware/build/

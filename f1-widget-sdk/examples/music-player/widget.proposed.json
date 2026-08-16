@@ -1,0 +1,34 @@
+{
+  "format": "framer-f1-research-widget-sdk-v1",
+  "name": "music-player",
+  "profile": "host-fed-media-v1-proposed",
+  "target": {
+    "device": "framer-f1",
+    "firmware": "0.4.1",
+    "screenId": 7,
+    "logicalCanvas": { "width": 100, "height": 310 },
+    "physicalDisplay": { "width": 310, "height": 100, "orientation": "marketed-landscape" }
+  },
+  "media": {
+    "adapterContract": "host-media-snapshot-v1",
+    "updateContract": "host-fed-asset-transaction-v1",
+    "pollMs": 500,
+    "progressBucketMs": 1000
+  },
+  "layout": {
+    "albumArt": { "align": "top-mid", "x": 0, "y": 28, "width": 84, "height": 84 },
+    "title": { "align": "top-mid", "x": 0, "y": 133 },
+    "artist": { "align": "top-mid", "x": 0, "y": 149 },
+    "progress": { "align": "bottom-mid", "x": 0, "y": -37, "width": 80, "height": 5 }
+  },
+  "render": {
+    "background": "edge-normalized-radial-v1",
+    "dominantColor": "quantized-chromatic-dominant-v1",
+    "edgeColor": "#040814"
+  },
+  "safety": {
+    "hardwareAccess": false,
+    "nativeMediaControllerProven": false,
+    "status": "CONTRACT_AND_PREVIEW_ONLY_NOT_FIRMWARE_BUILDABLE"
+  }
+}

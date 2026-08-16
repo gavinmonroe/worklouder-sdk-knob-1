@@ -1,0 +1,42 @@
+{
+  "format": "framer-raster-animation-v1",
+  "animationSha256": "8c12d85b53c406de6046aa84dfd33df86d1063e1b7c6bd8eb9d0b326cb768d81",
+  "sourceSha256": "5bcc32d8731992fb9edef37257349a8e53112a1ac9da852721df387b4ce1a4b4",
+  "settings": {
+    "fps": 2,
+    "loopDurationMs": 1000,
+    "maxFrames": 2,
+    "maxBytes": 131072,
+    "interaction": "hover",
+    "cadenceMs": 500
+  },
+  "selectedFrameIndices": [
+    0,
+    1
+  ],
+  "requestedFrameCount": 2,
+  "encoded": {
+    "frameCount": 2,
+    "encodedBytes": 85992,
+    "rawBytes": 124000,
+    "savedBytes": 38008,
+    "modes": [
+      "full",
+      "spans"
+    ],
+    "changedPixels": [
+      31000,
+      8836
+    ],
+    "maxBytes": 131072,
+    "headroomBytes": 45080
+  },
+  "decoded": {
+    "frameCount": 2,
+    "modes": [
+      "full",
+      "spans"
+    ]
+  },
+  "note": "Hardware-free browser capture. This artifact is not a firmware image or device authorization."
+}

@@ -1,0 +1,272 @@
+{
+  "format": "framer-f1-stage3e3-sdk-preflight-v1",
+  "status": "RUNTIME_NO_GO_FULL48_PET_NOT_VISIBLE_2026_08_15",
+  "deployable": false,
+  "reason": "Background, stars, labels, boot, and health passed; no pet rendered, so mood/Fn switching was unobservable.",
+  "profile": {
+    "format": "framer-f1-stage3e3-sdk-profile-v1",
+    "screenId": 7,
+    "logicalCanvas": {
+      "width": 100,
+      "height": 310
+    },
+    "physicalDisplay": {
+      "width": 310,
+      "height": 100
+    },
+    "sourceFrame": {
+      "width": 52,
+      "height": 42,
+      "format": "LVGL I4",
+      "colorFormat": 9
+    },
+    "scale": 512,
+    "visiblePet": {
+      "width": 104,
+      "height": 84,
+      "align": "center"
+    },
+    "background": "procedural opaque #06152B root plus three created-once color-twinkled star labels",
+    "descriptorOrder": "species*8+state",
+    "roster": [
+      "Belgian Tervuren",
+      "Pepe",
+      "Angry owl",
+      "Cute ferret",
+      "Cat",
+      "Lazy cow"
+    ],
+    "states": [
+      "ready",
+      "curious",
+      "happy",
+      "zooming",
+      "fire",
+      "tired",
+      "waiting",
+      "sleeping"
+    ],
+    "input": {
+      "scope": "screen-local",
+      "chord": "Fn+bottom encoder",
+      "encoderId": 1
+    },
+    "runtimeAssetBoundaryExclusive": 1008533504,
+    "liveStatus": "RUNTIME_NO_GO_FULL48_PET_NOT_VISIBLE_2026_08_15",
+    "liveEvidence": "Background, stars, labels, boot, and health passed; no pet rendered, so mood/Fn switching was unobservable."
+  },
+  "gates": {
+    "officialMergedSha256": "c8926bd181bc06062d8c79221c6bb1c7f85463f0034444f263e1995cb383b976",
+    "c1AppSha256": "e2e7ba4ab4b9c247af8c0bdc3d7896ac52967bb7f90fb19beae73c0ae4a2b8fd",
+    "liveE3aRollbackSha256": "dd8edaaa2c3aa98a1cbdbda319255cc7d1a0e02d0069f543dd574ef040db4b83",
+    "recovery": {
+      "manifest": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/recovery/backups/2026-08-15-framer-f1-a4cb8faf3210-before-custom/manifest.json",
+      "fullFlash": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/recovery/backups/2026-08-15-framer-f1-a4cb8faf3210-before-custom/full-flash-16mb.bin",
+      "bytes": 16777216,
+      "sha256": "aa6042310d075c9cbd3b992044511c064bb4b84713d0740a3adafcbdb3028fdd",
+      "mac": "a4:cb:8f:af:32:10"
+    },
+    "abi": {
+      "format": "elf32-xtensa-le",
+      "relocations": 0,
+      "literalAddress": "0x42116f10",
+      "literalBytes": 212,
+      "textAddress": "0x42116fe4",
+      "textBytes": 1460,
+      "endAddress": "0x42117598",
+      "binaryBytes": 1672,
+      "sha256": "67f5ff528d691c7a5f5fb685e16b0f857ef291670f450b5eb03f5e347cb77992",
+      "objectFields": {
+        "pet": 84,
+        "wpm": 88,
+        "stats": 92,
+        "stars": [
+          96,
+          100,
+          104
+        ],
+        "species": 124,
+        "renderedSpecies": 128,
+        "renderedState": 132,
+        "starPhase": 136
+      },
+      "imageScale": "0x200 once after create",
+      "cacheDrop": false
+    },
+    "imageInfo": "PASS",
+    "checksumDigest": "PASS"
+  },
+  "assets": {
+    "manifest": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/framer-widgets/assets/device-lvgl-v5-i4-species/manifest.json",
+    "frames": 48,
+    "format": "I4 binary alpha",
+    "bankBytes": 56640,
+    "bankSha256": "b9f38b8d3fd14cd8477230651e871a3c37fe558abaa3720436d2a4e80a06e6ad",
+    "runtimeEndAddress": "0x3c1ceed0",
+    "runtimeBoundaryExclusive": "0x3c1d0000",
+    "headroomBytes": 4400,
+    "proceduralBackground": true,
+    "createdOnceTwinkleStars": 3
+  },
+  "outputs": {
+    "app": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/stage3e3/framer-0.4.1-stage3e3-sdk-app.bin",
+      "bytes": 2027712,
+      "sha256": "e7af67227d3969e3fefb5e9d3cc093fc20509f81c0426a4442ea87100f3dae44"
+    },
+    "merged": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/stage3e3/framer-0.4.1-stage3e3-sdk-merged.bin",
+      "bytes": 2093248,
+      "sha256": "5264c98ac765a794d4e6fe0c9518d561604e76beaf0881fe25b0c2418a09f41c"
+    },
+    "inspection": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/stage3e3/framer-0.4.1-stage3e3-sdk-app.bin",
+      "fileBytes": 2027712,
+      "fileSha256": "e7af67227d3969e3fefb5e9d3cc093fc20509f81c0426a4442ea87100f3dae44",
+      "appOffset": "0x0",
+      "appBytes": 2027712,
+      "appSha256": "e7af67227d3969e3fefb5e9d3cc093fc20509f81c0426a4442ea87100f3dae44",
+      "segmentCount": 6,
+      "segments": [
+        {
+          "index": 0,
+          "headerOffset": "0x18",
+          "dataOffset": "0x20",
+          "loadAddress": "0x3c120020",
+          "length": 725360
+        },
+        {
+          "index": 1,
+          "headerOffset": "0xb1190",
+          "dataOffset": "0xb1198",
+          "loadAddress": "0x3fca4f00",
+          "length": 23136
+        },
+        {
+          "index": 2,
+          "headerOffset": "0xb6bf8",
+          "dataOffset": "0xb6c00",
+          "loadAddress": "0x40374000",
+          "length": 37912
+        },
+        {
+          "index": 3,
+          "headerOffset": "0xc0018",
+          "dataOffset": "0xc0020",
+          "loadAddress": "0x42000020",
+          "length": 1144184
+        },
+        {
+          "index": 4,
+          "headerOffset": "0x1d7598",
+          "dataOffset": "0x1d75a0",
+          "loadAddress": "0x4037d418",
+          "length": 96740
+        },
+        {
+          "index": 5,
+          "headerOffset": "0x1eef84",
+          "dataOffset": "0x1eef8c",
+          "loadAddress": "0x600fe000",
+          "length": 264
+        }
+      ],
+      "checksum": {
+        "offset": "0x1ef09f",
+        "value": "0x1d",
+        "valid": true
+      },
+      "digest": {
+        "offset": "0x1ef0a0",
+        "sha256": "f97b1757bba63155b4aff5be66c5da910476354d5cf9bf33d57f697ceac0bdbd",
+        "valid": true
+      },
+      "factoryPartitionFit": true,
+      "factoryPartitionHeadroom": 6360896
+    }
+  },
+  "cache": {
+    "abi": "hit",
+    "build": "hit",
+    "assetFingerprint": "4d6868979b63e0f14de62aa62bea64df8ceb9801ef85ee7aa123ccc21d864cb6",
+    "abiFingerprint": "fac2376573285ad8b7b236de01d3cf45a23c245fb96f06124f11b81d92d54b8e",
+    "buildFingerprint": "b3f3a751105593fc482883a779f4ef6d89293dfb6c9399dc949a31e4ea718b50"
+  },
+  "timings": {
+    "totalMs": 151
+  },
+  "deployment": {
+    "smoke": "BLOCKED: current full-48 live test rendered no pet",
+    "release": "BLOCKED: requires corrected canary plus full read-back",
+    "nextAdapter": "Use this structural composer after the corrected ABI/asset hypothesis is independently promoted."
+  },
+  "combinedId1Id7": {
+    "format": "framer-f1-combined-id1-id7-sdk-preflight-v1",
+    "status": "BLOCKED_ON_WPM_REGISTRATION_ONLY_EXPORT",
+    "appImageProduced": false,
+    "stockRegistry": {
+      "occupiedId8": true,
+      "unusedIds": [
+        1,
+        7
+      ],
+      "musicScreenId": 1,
+      "wpmScreenId": 7
+    },
+    "music": {
+      "screenId": 1,
+      "abi": {
+        "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/stage3e3/music-id1/music-id1-abi.bin",
+        "bytes": 1117,
+        "sha256": "fd956e4a9b7bad822c618939f05f8b4be9fb07033709eda46a0599a223a522db"
+      },
+      "appendedDromBytes": 0,
+      "callsStockSetup": false,
+      "cache": "hit",
+      "integrationHarness": {
+        "bytes": 1198,
+        "relocations": 0,
+        "setupLiteralSourceCount": 1,
+        "sha256": "dc38beae3122641f6d4775c918d6b86c58e73858e4767bd7acf69a50eb1238d1",
+        "wpmRegistrationStub": true
+      }
+    },
+    "setup": {
+      "owner": "sole combined wrapper",
+      "stockSetupCalls": 1,
+      "order": [
+        "stock setup exactly once",
+        "resolve registry/navigation exactly once",
+        "music_id1_register",
+        "stage3e3_register_wpm",
+        "return preserved stock value"
+      ]
+    },
+    "wpmAdapter": {
+      "status": "BLOCKED_ON_WPM_REGISTRATION_ONLY_EXPORT",
+      "requiredSymbol": "stage3e3_register_wpm",
+      "arguments": [
+        "a2=screenRegistry",
+        "a3=navigationManager"
+      ],
+      "return": "a2=allocated controller or zero",
+      "requirements": [
+        "must not call stock setup",
+        "must allocate and initialize only the WPM ID7 controller",
+        "must register the controller before adding navigation ID7",
+        "must add navigation ID7 only when allocation/registration succeeds",
+        "must retain screen-local Fn+bottom encoder slot 9 and all WPM object ownership"
+      ],
+      "combinedOrder": [
+        "stock setup exactly once",
+        "resolve registry/navigation exactly once",
+        "music_id1_register",
+        "stage3e3_register_wpm",
+        "return preserved stock value"
+      ]
+    },
+    "blocker": "WPM source still owns setup and has no registration-only entry; the stub harness is not device code.",
+    "hardwareAccess": false
+  },
+  "esptoolImageInfoSha256": "3ae24036d8b4c607efba7785d1da6ed6b751fb3b4a650df7c9116c402b0a1087"
+}

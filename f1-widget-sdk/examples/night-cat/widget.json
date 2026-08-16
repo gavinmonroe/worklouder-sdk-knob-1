@@ -1,0 +1,534 @@
+{
+  "format": "framer-f1-research-widget-sdk-v1",
+  "name": "night-cat",
+  "profile": "wpm-roster-v2",
+  "target": {
+    "device": "framer-f1",
+    "firmware": "0.4.1",
+    "screenId": 7,
+    "logicalCanvas": {
+      "width": 100,
+      "height": 310
+    },
+    "physicalDisplay": {
+      "width": 310,
+      "height": 100,
+      "orientation": "marketed-landscape"
+    }
+  },
+  "assets": {
+    "backgrounds": [
+      {
+        "id": "sky-0",
+        "format": "png",
+        "source": "assets/backgrounds/sky-0.png",
+        "width": 100,
+        "height": 310
+      },
+      {
+        "id": "sky-1",
+        "format": "png",
+        "source": "assets/backgrounds/sky-1.png",
+        "width": 100,
+        "height": 310
+      }
+    ],
+    "roster": [
+      {
+        "id": "belgian-tervuren",
+        "name": "Belgian Tervuren",
+        "frames": [
+          {
+            "id": "belgian-tervuren-ready",
+            "state": "ready",
+            "format": "png",
+            "source": "assets/roster/belgian-tervuren/ready.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "belgian-tervuren-curious",
+            "state": "curious",
+            "format": "png",
+            "source": "assets/roster/belgian-tervuren/curious.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "belgian-tervuren-happy",
+            "state": "happy",
+            "format": "png",
+            "source": "assets/roster/belgian-tervuren/happy.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "belgian-tervuren-zooming",
+            "state": "zooming",
+            "format": "png",
+            "source": "assets/roster/belgian-tervuren/zooming.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "belgian-tervuren-fire",
+            "state": "fire",
+            "format": "png",
+            "source": "assets/roster/belgian-tervuren/fire.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "belgian-tervuren-tired",
+            "state": "tired",
+            "format": "png",
+            "source": "assets/roster/belgian-tervuren/tired.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "belgian-tervuren-waiting",
+            "state": "waiting",
+            "format": "png",
+            "source": "assets/roster/belgian-tervuren/waiting.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "belgian-tervuren-sleeping",
+            "state": "sleeping",
+            "format": "png",
+            "source": "assets/roster/belgian-tervuren/sleeping.png",
+            "width": 68,
+            "height": 56
+          }
+        ]
+      },
+      {
+        "id": "pepe",
+        "name": "Pepe",
+        "frames": [
+          {
+            "id": "pepe-ready",
+            "state": "ready",
+            "format": "png",
+            "source": "assets/roster/pepe/ready.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "pepe-curious",
+            "state": "curious",
+            "format": "png",
+            "source": "assets/roster/pepe/curious.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "pepe-happy",
+            "state": "happy",
+            "format": "png",
+            "source": "assets/roster/pepe/happy.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "pepe-zooming",
+            "state": "zooming",
+            "format": "png",
+            "source": "assets/roster/pepe/zooming.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "pepe-fire",
+            "state": "fire",
+            "format": "png",
+            "source": "assets/roster/pepe/fire.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "pepe-tired",
+            "state": "tired",
+            "format": "png",
+            "source": "assets/roster/pepe/tired.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "pepe-waiting",
+            "state": "waiting",
+            "format": "png",
+            "source": "assets/roster/pepe/waiting.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "pepe-sleeping",
+            "state": "sleeping",
+            "format": "png",
+            "source": "assets/roster/pepe/sleeping.png",
+            "width": 68,
+            "height": 56
+          }
+        ]
+      },
+      {
+        "id": "angry-owl",
+        "name": "Angry owl",
+        "frames": [
+          {
+            "id": "angry-owl-ready",
+            "state": "ready",
+            "format": "png",
+            "source": "assets/roster/angry-owl/ready.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "angry-owl-curious",
+            "state": "curious",
+            "format": "png",
+            "source": "assets/roster/angry-owl/curious.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "angry-owl-happy",
+            "state": "happy",
+            "format": "png",
+            "source": "assets/roster/angry-owl/happy.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "angry-owl-zooming",
+            "state": "zooming",
+            "format": "png",
+            "source": "assets/roster/angry-owl/zooming.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "angry-owl-fire",
+            "state": "fire",
+            "format": "png",
+            "source": "assets/roster/angry-owl/fire.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "angry-owl-tired",
+            "state": "tired",
+            "format": "png",
+            "source": "assets/roster/angry-owl/tired.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "angry-owl-waiting",
+            "state": "waiting",
+            "format": "png",
+            "source": "assets/roster/angry-owl/waiting.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "angry-owl-sleeping",
+            "state": "sleeping",
+            "format": "png",
+            "source": "assets/roster/angry-owl/sleeping.png",
+            "width": 68,
+            "height": 56
+          }
+        ]
+      },
+      {
+        "id": "cute-ferret",
+        "name": "Cute ferret",
+        "frames": [
+          {
+            "id": "cute-ferret-ready",
+            "state": "ready",
+            "format": "png",
+            "source": "assets/roster/cute-ferret/ready.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "cute-ferret-curious",
+            "state": "curious",
+            "format": "png",
+            "source": "assets/roster/cute-ferret/curious.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "cute-ferret-happy",
+            "state": "happy",
+            "format": "png",
+            "source": "assets/roster/cute-ferret/happy.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "cute-ferret-zooming",
+            "state": "zooming",
+            "format": "png",
+            "source": "assets/roster/cute-ferret/zooming.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "cute-ferret-fire",
+            "state": "fire",
+            "format": "png",
+            "source": "assets/roster/cute-ferret/fire.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "cute-ferret-tired",
+            "state": "tired",
+            "format": "png",
+            "source": "assets/roster/cute-ferret/tired.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "cute-ferret-waiting",
+            "state": "waiting",
+            "format": "png",
+            "source": "assets/roster/cute-ferret/waiting.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "cute-ferret-sleeping",
+            "state": "sleeping",
+            "format": "png",
+            "source": "assets/roster/cute-ferret/sleeping.png",
+            "width": 68,
+            "height": 56
+          }
+        ]
+      },
+      {
+        "id": "cat",
+        "name": "Cat",
+        "frames": [
+          {
+            "id": "cat-ready",
+            "state": "ready",
+            "format": "png",
+            "source": "assets/roster/cat/ready.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "cat-curious",
+            "state": "curious",
+            "format": "png",
+            "source": "assets/roster/cat/curious.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "cat-happy",
+            "state": "happy",
+            "format": "png",
+            "source": "assets/roster/cat/happy.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "cat-zooming",
+            "state": "zooming",
+            "format": "png",
+            "source": "assets/roster/cat/zooming.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "cat-fire",
+            "state": "fire",
+            "format": "png",
+            "source": "assets/roster/cat/fire.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "cat-tired",
+            "state": "tired",
+            "format": "png",
+            "source": "assets/roster/cat/tired.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "cat-waiting",
+            "state": "waiting",
+            "format": "png",
+            "source": "assets/roster/cat/waiting.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "cat-sleeping",
+            "state": "sleeping",
+            "format": "png",
+            "source": "assets/roster/cat/sleeping.png",
+            "width": 68,
+            "height": 56
+          }
+        ]
+      },
+      {
+        "id": "lazy-cow",
+        "name": "Lazy cow",
+        "frames": [
+          {
+            "id": "lazy-cow-ready",
+            "state": "ready",
+            "format": "png",
+            "source": "assets/roster/lazy-cow/ready.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "lazy-cow-curious",
+            "state": "curious",
+            "format": "png",
+            "source": "assets/roster/lazy-cow/curious.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "lazy-cow-happy",
+            "state": "happy",
+            "format": "png",
+            "source": "assets/roster/lazy-cow/happy.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "lazy-cow-zooming",
+            "state": "zooming",
+            "format": "png",
+            "source": "assets/roster/lazy-cow/zooming.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "lazy-cow-fire",
+            "state": "fire",
+            "format": "png",
+            "source": "assets/roster/lazy-cow/fire.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "lazy-cow-tired",
+            "state": "tired",
+            "format": "png",
+            "source": "assets/roster/lazy-cow/tired.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "lazy-cow-waiting",
+            "state": "waiting",
+            "format": "png",
+            "source": "assets/roster/lazy-cow/waiting.png",
+            "width": 68,
+            "height": 56
+          },
+          {
+            "id": "lazy-cow-sleeping",
+            "state": "sleeping",
+            "format": "png",
+            "source": "assets/roster/lazy-cow/sleeping.png",
+            "width": 68,
+            "height": 56
+          }
+        ]
+      }
+    ],
+    "defaultSpecies": "cat"
+  },
+  "layout": {
+    "background": {
+      "align": "center",
+      "x": 0,
+      "y": 0,
+      "width": 100,
+      "height": 310
+    },
+    "pet": {
+      "align": "center",
+      "x": 0,
+      "y": 0
+    },
+    "wpm": {
+      "align": "top-mid",
+      "x": 0,
+      "y": 3
+    },
+    "analytics": {
+      "align": "bottom-mid",
+      "x": 0,
+      "y": -3,
+      "format": "Avg ###\nTop: ###"
+    }
+  },
+  "stateMachine": {
+    "input": "native-wpm-float",
+    "behavior": "semantic-wpm-idle-v1",
+    "states": [
+      "ready",
+      "curious",
+      "happy",
+      "zooming",
+      "fire",
+      "tired",
+      "waiting",
+      "sleeping"
+    ]
+  },
+  "input": {
+    "scope": "controller-local",
+    "screenId": 7,
+    "vtableSlot": 9,
+    "chord": "fn+bottom-encoder",
+    "encoder": {
+      "id": 1,
+      "clockwise": "next",
+      "counterclockwise": "previous",
+      "deltaEncoding": "zero-extended-signed-i8",
+      "wrap": true
+    },
+    "selectionStorage": "controller-ram-only",
+    "resetOn": "reboot",
+    "globalKeyHook": false,
+    "hardwareAccess": false
+  },
+  "style": {
+    "wpmColors": {
+      "idle": "#8fb8ff",
+      "low": "#79a6ff",
+      "medium": "#63e6ff",
+      "high": "#ffee88"
+    }
+  },
+  "timing": {
+    "uiTickMs": 100,
+    "sampleEveryTicks": 5,
+    "twinkleEveryTicks": 10
+  },
+  "firmware": {
+    "base": "live-tested-stage3c1",
+    "assembly": "src/widget.S.tmpl",
+    "linker": "src/widget.ld.tmpl"
+  }
+}
