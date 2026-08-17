@@ -30,6 +30,9 @@ typedef void *(*pointer_one_arg_fn)(void *);
 #define PHYSICAL_MAP_BOOKKEEPING_RESERVE 4096u
 #define PHYSICAL_INTERNAL_BEGIN 0x3fc80000u
 #define PHYSICAL_INTERNAL_END 0x3fd00000u
+/* The stock allocator returns 8-byte alignment (live: 0x3fcd0d58) but the
+ * module block must be 16-aligned. Over-allocate by this slack and align up. */
+#define PHYSICAL_ALIGN_SLACK 16u
 #define STOCK_HEAP_MALLOC ((heap_allocate_fn)(uintptr_t)0x4037e55cu)
 #define STOCK_HEAP_FREE ((heap_free_fn)(uintptr_t)0x4037e250u)
 #define STOCK_HEAP_FREE_SIZE ((heap_size_fn)(uintptr_t)0x420c8200u)
@@ -104,7 +107,9 @@ void framer_physical_loader_start(void *controller)
     framer_physical_startup_fn startup =
         (framer_physical_startup_fn)(uintptr_t)FRAMER_PHYSICAL_STARTUP_VADDR;
     size_t free_internal;
+    __attribute__((aligned(4))) uint32_t sha_ram[8];
     void *owned_block;
+    void *aligned_block;
     uintptr_t block_start;
     /* The patched setup tail is shared with ID26 creation failure and a6 can
      * then be indeterminate. Reject the complete accepted ID26/v2 identity
@@ -113,15 +118,23 @@ void framer_physical_loader_start(void *controller)
         return;
     free_internal = STOCK_HEAP_FREE_SIZE(PHYSICAL_INTERNAL_CAPS);
     if (free_internal < (size_t)FRAMER_PHYSICAL_BLOCK_BYTES +
+                            PHYSICAL_ALIGN_SLACK +
                             PHYSICAL_RUNTIME_RESERVE +
                             PHYSICAL_MAP_BOOKKEEPING_RESERVE ||
         STOCK_HEAP_LARGEST(PHYSICAL_INTERNAL_CAPS) <
-            (size_t)FRAMER_PHYSICAL_BLOCK_BYTES)
+            (size_t)FRAMER_PHYSICAL_BLOCK_BYTES + PHYSICAL_ALIGN_SLACK)
         return;
-    owned_block = STOCK_HEAP_MALLOC((size_t)FRAMER_PHYSICAL_BLOCK_BYTES,
+    /* Over-allocate by the slack, align up for the module, and keep the raw
+     * pointer for loader-side frees. The module never frees the block
+     * (boot-lifetime adoption). */
+    owned_block = STOCK_HEAP_MALLOC((size_t)FRAMER_PHYSICAL_BLOCK_BYTES +
+                                        PHYSICAL_ALIGN_SLACK,
                                     PHYSICAL_INTERNAL_CAPS);
-    block_start = (uintptr_t)owned_block;
+    block_start = ((uintptr_t)owned_block + 15u) & ~(uintptr_t)15u;
+    aligned_block = (void *)block_start;
     if (owned_block == (void *)0 || (block_start & 15u) != 0u ||
+        block_start < (uintptr_t)owned_block ||
+        block_start - (uintptr_t)owned_block > PHYSICAL_ALIGN_SLACK ||
         block_start < PHYSICAL_INTERNAL_BEGIN ||
         block_start + (size_t)FRAMER_PHYSICAL_BLOCK_BYTES < block_start ||
         block_start + (size_t)FRAMER_PHYSICAL_BLOCK_BYTES >
@@ -144,13 +157,22 @@ void framer_physical_loader_start(void *controller)
         STOCK_HEAP_FREE(owned_block);
         return;
     }
+    /* The module hex-formats the digest with byte loads (digest_hex); the
+     * IROM instruction bus only supports 32-bit loads (live LoadStoreError at
+     * EXCVADDR framer_physical_module_sha256+16). Copy word-wise into RAM and
+     * pass the RAM copy; startup consumes it synchronously. */
+    {
+        volatile const uint32_t *src = framer_physical_module_sha256;
+        uint32_t i;
+        for (i = 0u; i < 8u; ++i)
+            sha_ram[i] = src[i];
+    }
     /* A successful startup deliberately leaves both pages mapped for the
      * boot-lifetime ID28 controller. Startup adopts the preallocated block
      * only once its owner task exists. Before that boundary the loader
      * synchronously unmaps and frees the block exactly once. */
-    if (!startup(controller,
-                 (const uint8_t *)(const void *)framer_physical_module_sha256,
-                 owned_block, FRAMER_PHYSICAL_BLOCK_BYTES)) {
+    if (!startup(controller, (const uint8_t *)(const void *)sha_ram,
+                 aligned_block, FRAMER_PHYSICAL_BLOCK_BYTES)) {
         (void)framer_mqjs_unmap_canary(&module);
         STOCK_HEAP_FREE(owned_block);
     }

@@ -10,7 +10,21 @@
 // identical offsets and size; every other module source, the assets, the linker
 // scripts, and the release verify pins are untouched.
 //
-// Outputs into build-diag-module/:
+// Environment:
+//   FRAMER_DIAG_MODULE_OUTPUT  output directory (default build-diag-module/)
+//   FRAMER_DIAG_ASSETS_DIR     optional directory of locally generated ID28
+//                              assets (weather-id28-gen19.js/.f2js/.f2tf,
+//                              weather-id28-base.lzss/.rgb565le).  In that mode
+//                              only the four asset SHA-256 pins are relaxed;
+//                              the embedded F2JS digest is recomputed, the base
+//                              must inflate to exactly 62,000 B and match the
+//                              .rgb565le, the F2TF must stay <= 4,096 B and
+//                              decode/admit at generation 19 against that exact
+//                              package digest and the pinned contract digest,
+//                              and the manifest records customAssets:true plus
+//                              the actual digests.
+//
+// Outputs into the output directory:
 //   mqjs-id28-text-page-diag.bin      0x20000, flash at 0x210000
 //   mqjs-id28-rodata-page-diag.bin    0x10000, flash at 0x230000
 //   mqjs-id28-slot-a-diag.bin         concatenation the loader digests
@@ -29,7 +43,9 @@ import { fileURLToPath } from "node:url";
 
 import { inspectEsp32AppImage, repairEsp32AppIntegrity } from
   "../../custom-firmware/lib/esp-app-image.mjs";
-import { TARGET_FACADE_CONTRACT_SHA256 } from
+import { decodeRenderV2MQuickJsPackage } from
+  "../../f1-widget-sdk/src/render-v2/mquickjs.mjs";
+import { decodeTargetFacadeAsset, TARGET_FACADE_CONTRACT_SHA256 } from
   "../mquickjs-target-facade/contract.mjs";
 
 const execute = promisify(execFile);
@@ -48,6 +64,14 @@ const healthyApp = path.join(repository,
   "framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-blue-timer-app.bin");
 const output = process.env.FRAMER_DIAG_MODULE_OUTPUT ??
   path.join(here, "build-diag-module");
+// Optional restyle/iteration mode: a directory holding a locally generated ID28
+// asset set (weather-id28-gen19.js/.f2js/.f2tf, weather-id28-base.lzss and
+// weather-id28-base.rgb565le).  Only the four *asset* SHA-256 pins are relaxed;
+// every module/loader/app pin still applies, and the assets are re-validated
+// here against the same rules `framer_tf_admit` and the resident LZSS decoder
+// enforce on the device.
+const customAssetsDir = process.env.FRAMER_DIAG_ASSETS_DIR
+  ? path.resolve(process.env.FRAMER_DIAG_ASSETS_DIR) : null;
 const toolchain = process.env.FRAMER_XTENSA_BIN ?? path.join(repository,
   ".toolchains/xtensa-esp-elf-13.2.0_20240530/bin");
 const xtensa = (name) => path.join(toolchain, `xtensa-esp32s3-elf-${name}`);
@@ -74,6 +98,15 @@ const expected = Object.freeze({
   lzssSha256: "dbf16d41750555b7a3403b4b568530a0b5cab1d6b3bf0558c836823749293a12",
   sourceSha256: "a9b1a833a75f8a296ae5e2575f31ec1030af0c8a944031858e0506456f8864ab",
   targetContractSha256: "8220152a09348da34cdd70dd7d370197f2f3fc46a9f45e50d7fb7015bdb8579a",
+  // ID28 asset shape, enforced whether the assets come from the release or from
+  // FRAMER_DIAG_ASSETS_DIR.  PHYSICAL_GENERATION / PHYSICAL_FRAME_BYTES /
+  // FRAMER_TF_MAX_ASSET_BYTES in the module sources.
+  generation: 19,
+  baseFrameBytes: 62000,
+  maxFacadeAssetBytes: 4096,
+  packageEvents: 14,
+  packageKeys: 2,
+  packageChords: 1,
   // Frozen release identity: the diagnostic module must keep the same block
   // size and startup/id/key-sink placement discipline, but its addresses are
   // re-derived below and are allowed to move.
@@ -107,6 +140,30 @@ function symbolAddress(text, name) {
 function readVirtual(image, start, end) {
   const irom = image.segments[3];
   return irom.data.subarray(start - irom.loadAddress, end - irom.loadAddress);
+}
+// Mirror of the resident decoder in physical_integration.c / verify.mjs; used
+// only to prove a custom base still inflates to exactly 62,000 bytes.
+function decodeLzss(bytes, outputBytes) {
+  const decoded = Buffer.alloc(outputBytes);
+  let source = 0; let destination = 0;
+  while (destination < decoded.length) {
+    invariant(source < bytes.length, "LZSS flags overrun.");
+    const flags = bytes[source++];
+    for (let bit = 1; bit <= 0x80 && destination < decoded.length; bit <<= 1) {
+      if ((flags & bit) === 0) decoded[destination++] = bytes[source++];
+      else {
+        const code = bytes.readUInt16LE(source); source += 2;
+        const distance = (code & 1023) + 1; const length = (code >>> 10) + 3;
+        invariant(distance <= destination && length <= decoded.length - destination,
+          "LZSS match escaped output.");
+        for (let index = 0; index < length; index++) {
+          decoded[destination] = decoded[destination - distance]; destination++;
+        }
+      }
+    }
+  }
+  invariant(source === bytes.length, "LZSS trailing bytes.");
+  return decoded;
 }
 function diffRanges(a, b) {
   const runs = []; let i = 0;
@@ -181,6 +238,7 @@ await Promise.all([mkdir(build), mkdir(assets)]);
 
 // --- inputs -----------------------------------------------------------------
 const releaseFile = (name) => path.join(release, name);
+const assetFile = (name) => path.join(customAssetsDir ?? release, name);
 const [candidate, healthy, releaseText, releaseRodata, releaseLoader,
   f2js, f2tf, lzss, weatherSource, header] = await Promise.all([
   readFile(releaseFile("framer-0.4.1-mqjs-id28-canary-NO-GO-app.bin")),
@@ -188,10 +246,10 @@ const [candidate, healthy, releaseText, releaseRodata, releaseLoader,
   readFile(releaseFile("mqjs-id28-text-page.bin")),
   readFile(releaseFile("mqjs-id28-rodata-page.bin")),
   readFile(releaseFile("mqjs-id28-resident-loader.bin")),
-  readFile(releaseFile("weather-id28-gen19.f2js")),
-  readFile(releaseFile("weather-id28-gen19.f2tf")),
-  readFile(releaseFile("weather-id28-base.lzss")),
-  readFile(releaseFile("weather-id28-gen19.js")),
+  readFile(assetFile("weather-id28-gen19.f2js")),
+  readFile(assetFile("weather-id28-gen19.f2tf")),
+  readFile(assetFile("weather-id28-base.lzss")),
+  readFile(assetFile("weather-id28-gen19.js")),
   readFile(path.join(canary, "framer_mquickjs_canary.h"), "utf8"),
 ]);
 invariant(sha(candidate) === expected.candidateAppSha256, "Released candidate app changed.");
@@ -201,11 +259,56 @@ invariant(sha(releaseText) === expected.releaseTextSha256 &&
   sha(Buffer.concat([releaseText, releaseRodata])) === expected.releaseSlotSha256,
 "Release module pages changed.");
 invariant(sha(releaseLoader) === expected.releaseLoaderSha256, "Release loader changed.");
-invariant(sha(f2js) === expected.f2jsSha256 && sha(f2tf) === expected.f2tfSha256 &&
-  sha(lzss) === expected.lzssSha256 && sha(weatherSource) === expected.sourceSha256,
-"Released ID28 assets changed.");
+const assetSha = Object.freeze({ f2js: sha(f2js), f2tf: sha(f2tf), lzss: sha(lzss),
+  source: sha(weatherSource) });
+if (!customAssetsDir) {
+  invariant(assetSha.f2js === expected.f2jsSha256 && assetSha.f2tf === expected.f2tfSha256 &&
+    assetSha.lzss === expected.lzssSha256 && assetSha.source === expected.sourceSha256,
+  "Released ID28 assets changed.");
+}
 invariant(TARGET_FACADE_CONTRACT_SHA256 === expected.targetContractSha256,
   "F2TF contract identity changed.");
+// Whatever the asset source, the module only boots if the base inflates to
+// exactly one 100x310 RGB565 frame and the facade admits against the exact
+// package digest it is bound to.  Prove both here rather than on the keyboard.
+const baseFrameBytes = decodeLzss(lzss, expected.baseFrameBytes);
+invariant(baseFrameBytes.length === expected.baseFrameBytes,
+  `Base LZSS inflated to ${baseFrameBytes.length} B, not ${expected.baseFrameBytes} B.`);
+invariant(f2tf.length <= expected.maxFacadeAssetBytes,
+  `F2TF is ${f2tf.length} B; FRAMER_TF_MAX_ASSET_BYTES is ${expected.maxFacadeAssetBytes}.`);
+const facadeBaseFrame = new Uint16Array(baseFrameBytes.buffer.slice(
+  baseFrameBytes.byteOffset, baseFrameBytes.byteOffset + baseFrameBytes.length));
+const decodedFacade = decodeTargetFacadeAsset(f2tf, {
+  expectedGeneration: expected.generation, expectedF2jsSha256: assetSha.f2js,
+  expectedContractSha256: TARGET_FACADE_CONTRACT_SHA256, baseFrame: facadeBaseFrame });
+invariant(decodedFacade.targets.length === 16,
+  "F2TF must declare exactly 16 targets.");
+let customPackage = null;
+if (customAssetsDir) {
+  const rawBase = await readFile(assetFile("weather-id28-base.rgb565le"));
+  invariant(rawBase.equals(baseFrameBytes),
+    "weather-id28-base.lzss does not decode to weather-id28-base.rgb565le.");
+  // The resident admission surface must not drift: same package format,
+  // generation, declared event/key/chord counts, and no in-package raster.
+  const decodedPackage = decodeRenderV2MQuickJsPackage(f2js);
+  invariant(decodedPackage.generation === expected.generation &&
+    (decodedPackage.rasterBase?.length ?? 0) === 0 &&
+    decodedPackage.events.length === expected.packageEvents &&
+    decodedPackage.input.keyCount === expected.packageKeys &&
+    decodedPackage.input.chordCount === expected.packageChords &&
+    decodedPackage.targets.length === 16,
+  `Custom F2JS admission metadata drifted: generation=${decodedPackage.generation} ` +
+    `events=${decodedPackage.events.length} keys=${decodedPackage.input.keyCount} ` +
+    `chords=${decodedPackage.input.chordCount}.`);
+  invariant(decodedPackage.targets.map(({ id }) => id).join("\0") ===
+    decodedFacade.targets.map(({ id }) => id).join("\0"),
+  "Custom F2JS target IDs differ from the F2TF target IDs.");
+  invariant(decodedPackage.sha256 === assetSha.f2js, "Custom F2JS did not round-trip.");
+  customPackage = { generation: decodedPackage.generation,
+    events: decodedPackage.events.length, keys: decodedPackage.input.keyCount,
+    chords: decodedPackage.input.chordCount,
+    matchesFlashedPackage: assetSha.f2js === expected.f2jsSha256 };
+}
 // The diagnostic module must differ from the release engine only in the copied
 // source, never through an edited release source file.
 invariant(await readFile(path.join(canary, "framer_mquickjs_canary.c"), "utf8") !==
@@ -215,11 +318,14 @@ const runtimeStorageBytes = Number(
   /FRAMER_MQJS_RUNTIME_STORAGE_BYTES\s+(\d+)u/u.exec(header)[1]);
 const heapBytes = Number(/FRAMER_MQJS_MIN_HEAP_BYTES\s+(\d+)u/u.exec(header)[1]);
 
-// --- assets (released binaries embedded verbatim) ---------------------------
+// --- assets (embedded verbatim) ---------------------------------------------
 // buildAssets() only writes these five files for the module link: the three
 // payloads plus two 32-byte digests.  Re-encoding them here would be a second,
-// unpinned implementation of the package/LZSS builders, so the frozen release
-// artifacts are embedded exactly as verify.mjs emitted them.
+// unpinned implementation of the package/LZSS builders, so the artifacts are
+// embedded exactly as their producer emitted them - the frozen release by
+// default, or FRAMER_DIAG_ASSETS_DIR when a restyled set is being tried.  The
+// embedded F2JS digest is always recomputed from the bytes actually embedded,
+// so `framer_tf_admit`'s package binding holds either way.
 const assetPaths = {
   f2js: path.join(assets, "weather-id28-gen19.f2js"),
   f2tf: path.join(assets, "weather-id28-gen19.f2tf"),
@@ -231,7 +337,7 @@ const assetPaths = {
 await Promise.all([
   writeFile(assetPaths.f2js, f2js), writeFile(assetPaths.f2tf, f2tf),
   writeFile(assetPaths.compressed, lzss), writeFile(assetPaths.source, weatherSource),
-  writeFile(assetPaths.f2jsSha, Buffer.from(expected.f2jsSha256, "hex")),
+  writeFile(assetPaths.f2jsSha, shaBytes(f2js)),
   writeFile(assetPaths.contractSha, Buffer.from(TARGET_FACADE_CONTRACT_SHA256, "hex")),
 ]);
 
@@ -610,10 +716,28 @@ const manifest = {
   blockOffsets: { ...offsets, sizeofBlock: blockBytes,
     derivation: "xtensa offsetof probe compiled against the exact sources in this build" },
   assets: {
-    embeddedVerbatimFrom: path.relative(repository, release),
-    f2jsSha256: expected.f2jsSha256, f2tfSha256: expected.f2tfSha256,
-    lzssSha256: expected.lzssSha256, sourceSha256: expected.sourceSha256,
+    customAssets: Boolean(customAssetsDir),
+    embeddedVerbatimFrom: path.relative(repository, customAssetsDir ?? release),
+    generation: expected.generation,
+    f2jsSha256: assetSha.f2js, f2tfSha256: assetSha.f2tf,
+    lzssSha256: assetSha.lzss, sourceSha256: assetSha.source,
+    embeddedF2jsDigestSha256: assetSha.f2js,
     targetContractSha256: TARGET_FACADE_CONTRACT_SHA256,
+    facade: { bytes: f2tf.length, maxBytes: expected.maxFacadeAssetBytes,
+      paletteEntries: decodedFacade.palette.length, glyphRecords: decodedFacade.glyphs.size,
+      maxOverlayWrites: decodedFacade.header.maxOverlayWrites,
+      baseSha256: sha(baseFrameBytes),
+      targets: decodedFacade.targets.map(({ id, format, x, y, width, height, scale }) =>
+        ({ id, format, x, y, width, height, scale })) },
+    base: { compressedBytes: lzss.length, inflatedBytes: baseFrameBytes.length },
+    package: customPackage,
+    releaseComparison: {
+      f2jsSha256: expected.f2jsSha256, f2tfSha256: expected.f2tfSha256,
+      lzssSha256: expected.lzssSha256, sourceSha256: expected.sourceSha256,
+      identical: assetSha.f2js === expected.f2jsSha256 &&
+        assetSha.f2tf === expected.f2tfSha256 && assetSha.lzss === expected.lzssSha256 &&
+        assetSha.source === expected.sourceSha256,
+    },
   },
 };
 await writeFile(path.join(output, "diag-module-manifest.json"),
@@ -624,5 +748,8 @@ process.stdout.write(`${JSON.stringify({
   slotSha256: manifest.module.slot.sha256, appSha256: manifest.app.sha256,
   loaderBytes: loaderRaw.length, loaderSha256: manifest.loader.sha256,
   blockBytes, startupVaddr: hex(startupVaddr), keyWrapper: hex(keyWrapper),
-  lastErrorOffset, out: output,
+  lastErrorOffset, customAssets: Boolean(customAssetsDir),
+  assetSource: path.relative(repository, customAssetsDir ?? release),
+  f2jsSha256: assetSha.f2js, f2tfSha256: assetSha.f2tf, lzssSha256: assetSha.lzss,
+  out: output,
 }, null, 2)}\n`);

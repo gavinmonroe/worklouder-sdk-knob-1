@@ -103,7 +103,7 @@ test("Input Lab visibly probes the physical ID28 canary, forwards host events, a
   assert.match(source, /deliverInputLabMQuickJsWeatherBatch/u);
   assert.match(source, /confirmInputLabMQuickJsWeatherRender/u);
   assert.match(source, /runMQuickJsTransaction/u);
-  assert.match(source, /restricted to US ZIP 60601/u);
+  assert.match(source, /Physical canary delivery requires a 5-digit US ZIP code/u);
   assert.match(source, /renders on the next ID28 entry/u);
   assert.match(source, /committed and rendered on physical ID28/u);
   assert.match(source, /runtimeUploader=false/u);

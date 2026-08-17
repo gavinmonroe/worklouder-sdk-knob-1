@@ -83,6 +83,7 @@ let mquickJsKeySimulator = null;
 let mquickJsClock = 0;
 let mquickJsRpcRevision = 0;
 let weatherRasterBasePromise = null;
+let zipSyncPushTimer = null;
 
 function fitPreviewStage() {
   const frameStyle = getComputedStyle(elements.deviceFrame);
@@ -250,6 +251,31 @@ async function weatherRasterBase() {
 function mquickJsSettings() {
   return normalizeInputLabMQuickJsSettings({ example: elements.mquickJsExample.value,
     postalCode: elements.mqZip.value, units: elements.mqUnits.value, countryCode: "US" });
+}
+
+// Shares f1-widget-sdk/build/zip-sync-config.json with tools/zip-sync.mjs so a
+// ZIP saved from the physical knob shows up here, and a ZIP typed here is
+// what zip-sync.mjs pushes to the device on its next boot. Best-effort: a
+// hosted or disconnected bridge simply leaves the ZIP field as it was.
+async function syncZipFieldFromBridge() {
+  if (!bridge) return;
+  try {
+    const config = await bridge.getZipSyncConfig();
+    if (!config) return;
+    elements.mqZip.value = config.postalCode;
+    elements.mqUnits.value = config.units;
+  } catch { /* Best-effort: keep whatever ZIP was already loaded from the saved slot. */ }
+}
+
+function scheduleZipSyncConfigPush() {
+  if (zipSyncPushTimer !== null) clearTimeout(zipSyncPushTimer);
+  zipSyncPushTimer = setTimeout(() => {
+    zipSyncPushTimer = null;
+    if (!bridge) return;
+    const settings = mquickJsSettings();
+    request("/api/zip-sync/config", { postalCode: settings.postalCode, countryCode: settings.countryCode,
+      units: settings.units }).catch(() => { /* Best-effort: local editing still works offline. */ });
+  }, 400);
 }
 
 function showMquickJsSnapshot(label = "Compiled") {
@@ -558,6 +584,7 @@ async function connectBridge() {
     elements.bridgeStatus.dataset.state = "ready";
     elements.bridgeStatus.textContent = "Compiler: ready";
     setApplyBusy(applyBusy);
+    await syncZipFieldFromBridge();
     await compile();
   } catch (error) {
     bridge = null;
@@ -891,8 +918,10 @@ elements.mqWeatherRefresh.addEventListener("click", async () => {
   try {
     const settings = mquickJsSettings();
     mquickJsSession.settings = settings;
-    const physicalTarget = settings.postalCode === INPUT_LAB_MQUICKJS_PHYSICAL_WEATHER_TARGET.postalCode &&
-      settings.countryCode === INPUT_LAB_MQUICKJS_PHYSICAL_WEATHER_TARGET.countryCode;
+    // The redesigned weather widget has no fixed place label, so any 5-digit
+    // US ZIP is a valid physical delivery target, not only the original fixture.
+    const physicalTarget = settings.countryCode === INPUT_LAB_MQUICKJS_PHYSICAL_WEATHER_TARGET.countryCode &&
+      /^\d{5}$/u.test(settings.postalCode);
     const deviceTelemetry = browserDevice && mquickJsDeviceCapability && physicalTarget
       ? await browserDevice.probeMQuickJsTelemetry() : null;
     const currentRevision = deviceTelemetry?.weatherAppliedRevision ?? mquickJsSession.snapshot().revision;
@@ -916,11 +945,12 @@ elements.mqWeatherRefresh.addEventListener("click", async () => {
           return Object.freeze({ delivery: delivered, confirmation: confirmed });
         });
       mquickJsRpcRevision = Math.max(mquickJsRpcRevision, weatherRevision);
+      const place = snapshot.location.name.toUpperCase();
       elements.v2EventStatus.value = confirmation.status === "rendered"
-        ? `Offline CHICAGO fixture revision ${weatherRevision} committed and rendered on physical ID28 · seq ${delivery.finalReceipt.sequence} · UI max ${confirmation.telemetry.uiMaximumUs} µs`
-        : `Offline CHICAGO fixture revision ${weatherRevision} committed in the device runtime; it renders on the next ID28 entry · seq ${delivery.finalReceipt.sequence}`;
+        ? `Offline ${place} fixture revision ${weatherRevision} committed and rendered on physical ID28 · seq ${delivery.finalReceipt.sequence} · UI max ${confirmation.telemetry.uiMaximumUs} µs`
+        : `Offline ${place} fixture revision ${weatherRevision} committed in the device runtime; it renders on the next ID28 entry · seq ${delivery.finalReceipt.sequence}`;
     } else if (browserDevice && mquickJsDeviceCapability && !physicalTarget) {
-      elements.v2EventStatus.value = `Offline ${settings.postalCode} preview updated. Physical canary delivery is restricted to US ZIP 60601 because its location label is fixed to CHICAGO.`;
+      elements.v2EventStatus.value = `Offline ${settings.postalCode} preview updated. Physical canary delivery requires a 5-digit US ZIP code.`;
     }
     scheduleAutosave();
   } catch (error) { showError(error); }
@@ -990,6 +1020,7 @@ elements.apply.addEventListener("click", async () => {
 for (const control of [elements.html, elements.css, elements.script, elements.mode]) control.addEventListener("input", markSourceEdited);
 for (const control of [elements.fps, elements.duration, elements.maxBytes, elements.interaction,
   elements.v2KeyCode, elements.v2KeyRpcId, elements.mqZip, elements.mqUnits]) control.addEventListener("input", scheduleAutosave);
+for (const control of [elements.mqZip, elements.mqUnits]) control.addEventListener("input", scheduleZipSyncConfigPush);
 window.addEventListener("pagehide", flushAutosave);
 globalThis.navigator?.hid?.addEventListener?.("disconnect", handleBrowserKeyboardDisconnect);
 document.addEventListener("visibilitychange", () => {

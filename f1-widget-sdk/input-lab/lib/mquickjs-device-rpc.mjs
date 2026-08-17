@@ -26,11 +26,14 @@ export const INPUT_LAB_MQUICKJS_TELEMETRY_PAGES = 6;
 export const INPUT_LAB_MQUICKJS_STATUS_BYTES = 112;
 export const INPUT_LAB_MQUICKJS_TELEMETRY_ATTEMPTS = 3;
 export const INPUT_LAB_MQUICKJS_PHYSICAL_WEATHER_TARGET = Object.freeze({
+  // The generation-20+ redesigned weather widget has no fixed place label,
+  // so physical delivery accepts any 5-digit US ZIP, not just one fixture.
   postalCode: "60601",
   countryCode: "US",
-  locationLabel: "CHICAGO",
   provider: "deterministic-offline-fixture",
 });
+
+const US_ZIP_PATTERN = /^\d{5}$/u;
 
 const HEX8 = "([0-9a-f]{8})";
 const HEX16 = "([0-9a-f]{16})";
@@ -220,10 +223,9 @@ export async function deliverInputLabMQuickJsWeatherBatch({
 } = {}) {
   invariant(typeof sendHostEvents === "function",
     "Physical weather delivery requires one exclusive sendHostEvents() transaction.");
-  invariant(String(postalCode).trim() === INPUT_LAB_MQUICKJS_PHYSICAL_WEATHER_TARGET.postalCode &&
-    String(countryCode).trim().toUpperCase() === INPUT_LAB_MQUICKJS_PHYSICAL_WEATHER_TARGET.countryCode,
-  "This first physical weather canary renders the fixed CHICAGO label and accepts only US ZIP 60601; " +
-  "other ZIPs remain offline-preview-only.", "MQUICKJS_CANARY_PHYSICAL_WEATHER_TARGET_MISMATCH");
+  invariant(String(countryCode).trim().toUpperCase() === INPUT_LAB_MQUICKJS_PHYSICAL_WEATHER_TARGET.countryCode &&
+    US_ZIP_PATTERN.test(String(postalCode).trim()),
+  "Physical weather delivery requires a 5-digit US ZIP code.", "MQUICKJS_CANARY_PHYSICAL_WEATHER_TARGET_MISMATCH");
   uint32(generation, "Physical weather generation", { minimum: 1 });
   uint32(revision, "Physical weather revision", { minimum: 1 });
   invariant(revision <= 0x7fffffff && Array.isArray(events) && events.length === 6,

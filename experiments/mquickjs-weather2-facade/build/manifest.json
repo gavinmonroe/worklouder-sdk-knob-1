@@ -1,0 +1,281 @@
+{
+  "format": "framer-f1-weather2-id28-asset-set-v1",
+  "status": "OFFLINE_ONLY_NOT_FLASHED",
+  "hardwareTouched": false,
+  "generation": 19,
+  "canvas": {
+    "width": 100,
+    "height": 310,
+    "pixels": 31000,
+    "bytes": 62000,
+    "format": "rgb565-le"
+  },
+  "package": {
+    "file": "weather-id28-gen19.f2js",
+    "bytes": 7416,
+    "sha256": "7aeeecde59bd686b3455feadc74b4b7705ca0c8ea933f9b0669cb8dc656c284e",
+    "sourceSha256": "a9b1a833a75f8a296ae5e2575f31ec1030af0c8a944031858e0506456f8864ab",
+    "unchangedFromFlashed": true,
+    "handlers": 16,
+    "events": 14,
+    "keys": 2,
+    "chords": 1
+  },
+  "facade": {
+    "file": "weather-id28-gen19.f2tf",
+    "bytes": 1420,
+    "sha256": "6b4cc3a20718cf550c06282a9a974ccd2bb0daa3a569ff12d0b5dbddc1979614",
+    "baseSha256": "2f5698487c1fe3d269384f401df8e4288ce8848d11f545d05a8d992db1146085",
+    "f2jsSha256": "7aeeecde59bd686b3455feadc74b4b7705ca0c8ea933f9b0669cb8dc656c284e",
+    "contractSha256": "8220152a09348da34cdd70dd7d370197f2f3fc46a9f45e50d7fb7015bdb8579a",
+    "maxAssetBytes": 4096,
+    "paletteEntries": 4,
+    "glyphRecords": 55,
+    "maxOverlayWrites": 4096,
+    "targets": [
+      {
+        "id": "weatherScreen",
+        "x": 0,
+        "y": 0,
+        "width": 100,
+        "height": 310,
+        "format": 1,
+        "scale": 0,
+        "align": 0,
+        "tableName": "none"
+      },
+      {
+        "id": "place",
+        "x": 0,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "format": 1,
+        "scale": 0,
+        "align": 0,
+        "tableName": "none"
+      },
+      {
+        "id": "status",
+        "x": 1,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "format": 1,
+        "scale": 0,
+        "align": 0,
+        "tableName": "none"
+      },
+      {
+        "id": "currentTemp",
+        "x": 5,
+        "y": 117,
+        "width": 90,
+        "height": 27,
+        "format": 4,
+        "scale": 3,
+        "align": 1,
+        "tableName": "bare"
+      },
+      {
+        "id": "currentCond",
+        "x": 5,
+        "y": 147,
+        "width": 90,
+        "height": 20,
+        "format": 5,
+        "scale": 2,
+        "align": 1,
+        "tableName": "conditions"
+      },
+      {
+        "id": "age",
+        "x": 2,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "format": 1,
+        "scale": 0,
+        "align": 0,
+        "tableName": "none"
+      },
+      {
+        "id": "d1Name",
+        "x": 6,
+        "y": 194,
+        "width": 22,
+        "height": 20,
+        "format": 7,
+        "scale": 1,
+        "align": 0,
+        "tableName": "weekdays"
+      },
+      {
+        "id": "d1Cond",
+        "x": 28,
+        "y": 194,
+        "width": 27,
+        "height": 20,
+        "format": 4,
+        "scale": 1,
+        "align": 2,
+        "tableName": "bare"
+      },
+      {
+        "id": "d1Temps",
+        "x": 72,
+        "y": 194,
+        "width": 23,
+        "height": 20,
+        "format": 4,
+        "scale": 1,
+        "align": 0,
+        "tableName": "bare"
+      },
+      {
+        "id": "d2Name",
+        "x": 6,
+        "y": 234,
+        "width": 22,
+        "height": 20,
+        "format": 7,
+        "scale": 1,
+        "align": 0,
+        "tableName": "weekdays"
+      },
+      {
+        "id": "d2Cond",
+        "x": 28,
+        "y": 234,
+        "width": 27,
+        "height": 20,
+        "format": 4,
+        "scale": 1,
+        "align": 2,
+        "tableName": "bare"
+      },
+      {
+        "id": "d2Temps",
+        "x": 72,
+        "y": 234,
+        "width": 23,
+        "height": 20,
+        "format": 4,
+        "scale": 1,
+        "align": 0,
+        "tableName": "bare"
+      },
+      {
+        "id": "d3Name",
+        "x": 6,
+        "y": 274,
+        "width": 22,
+        "height": 20,
+        "format": 7,
+        "scale": 1,
+        "align": 0,
+        "tableName": "weekdays"
+      },
+      {
+        "id": "d3Cond",
+        "x": 28,
+        "y": 274,
+        "width": 27,
+        "height": 20,
+        "format": 4,
+        "scale": 1,
+        "align": 2,
+        "tableName": "bare"
+      },
+      {
+        "id": "d3Temps",
+        "x": 72,
+        "y": 274,
+        "width": 23,
+        "height": 20,
+        "format": 4,
+        "scale": 1,
+        "align": 0,
+        "tableName": "bare"
+      },
+      {
+        "id": "retry",
+        "x": 3,
+        "y": 0,
+        "width": 1,
+        "height": 1,
+        "format": 1,
+        "scale": 0,
+        "align": 0,
+        "tableName": "none"
+      }
+    ]
+  },
+  "base": {
+    "file": "weather-id28-base.rgb565le",
+    "bytes": 62000,
+    "sha256": "2f5698487c1fe3d269384f401df8e4288ce8848d11f545d05a8d992db1146085"
+  },
+  "compressed": {
+    "file": "weather-id28-base.lzss",
+    "bytes": 2145,
+    "sha256": "1497011c17c0e2928e881205dcf327fed43f57ed1923245bd2acba9a48e9d06f",
+    "decodesTo": 62000,
+    "ratio": 0.0346
+  },
+  "contactSheet": {
+    "file": "contact-sheet.png",
+    "sha256": "3f48d175ebd8f53e8ad3b7f75980b39e96fbfc29e22f71bc095e19de71c1f007",
+    "panels": [
+      "static-base",
+      "boot-no-snapshot",
+      "sample-72-sunny",
+      "sample-aged-90s",
+      "provider-error-retry",
+      "extremes-negative"
+    ]
+  },
+  "render": [
+    {
+      "name": "boot-no-snapshot",
+      "result": 0,
+      "overlayWrites": 671,
+      "formattedTargets": 15,
+      "frameSha256": "3d31e04018ed9b5b2da20fb9fa4f3aacc37377b2b1bff4fc66de7008ae8b178e"
+    },
+    {
+      "name": "sample-72-sunny",
+      "result": 0,
+      "overlayWrites": 874,
+      "formattedTargets": 15,
+      "frameSha256": "2b08684514c0c78df22dd1dda93c87e7410972fc630e92d9e1f13c2b1cd977fc"
+    },
+    {
+      "name": "sample-aged-90s",
+      "result": 0,
+      "overlayWrites": 874,
+      "formattedTargets": 15,
+      "frameSha256": "2b08684514c0c78df22dd1dda93c87e7410972fc630e92d9e1f13c2b1cd977fc"
+    },
+    {
+      "name": "provider-error-retry",
+      "result": 0,
+      "overlayWrites": 874,
+      "formattedTargets": 15,
+      "frameSha256": "2b08684514c0c78df22dd1dda93c87e7410972fc630e92d9e1f13c2b1cd977fc"
+    },
+    {
+      "name": "extremes-negative",
+      "result": 0,
+      "overlayWrites": 897,
+      "formattedTargets": 15,
+      "frameSha256": "5d96f644c99874c57279fe57be6210d5d98f8901b63484e6a5970d9853ef816c"
+    }
+  ],
+  "constraints": {
+    "dynamicFont": "single 5x7 bitmap font, fixed 5 px width / 6 px advance, integer scale 1..3",
+    "dynamicGlyphs": "55/64 records (space, '-', 0-9, A-Z, 16 lowercase letters, degree)",
+    "degreeSign": "formatter 4 always appends U+00B0; a bare number is not expressible",
+    "staticText": "'Today', the cloud/sun mark, the card and the arrows are raster, not facade text"
+  }
+}

@@ -191,7 +191,11 @@ static int interrupt_handler(JSContext *ctx, void *opaque)
 static void begin_deadline(runtime_state *state)
 {
     uint64_t now = state->config.now_us(state->config.opaque);
-    uint64_t delta = state->config.callback_deadline_us;
+    /* The initial script load runs under FRAMER_MQJS_LOAD_DEADLINE_US, a
+     * separate and much larger one-shot budget than the steady-state
+     * callback_deadline_us (see the constant's definition for why). */
+    uint64_t delta = state->loading ? (uint64_t)FRAMER_MQJS_LOAD_DEADLINE_US
+                                     : state->config.callback_deadline_us;
     state->deadline_at_us = UINT64_MAX - now < delta ? UINT64_MAX : now + delta;
     state->deadline_hit = 0;
     state->deadline_active = 1;

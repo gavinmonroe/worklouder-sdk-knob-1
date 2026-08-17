@@ -170,3 +170,138 @@ physical RPC path also still needs bounded queue responses and an exact applied
 revision receipt plus exact event/control receipts. Resident parser/task/mailbox,
 screen lifecycle integration, startup hooks, physical capability advertisement,
 recovery, and soak evidence remain required before a hardware test.
+
+## ZIP sync host tool (keyboard-editable ZIP)
+
+`tools/zip-sync.mjs` is the host side of the keyboard-editable ZIP described in
+[`experiments/mquickjs-esp32s3-physical-canary/ZIP-SETTINGS-PLAN.md`](../../../experiments/mquickjs-esp32s3-physical-canary/ZIP-SETTINGS-PLAN.md).
+The redesigned widget stores the edited ZIP in a mailbox settings word on the
+device (mailbox slot 14: bits 0..16 ZIP, bit 17 `settingsActive`, bit 18
+`pendingSave`, bits 24..31 `saveSeq`), exposed read-only over
+`widget.mquickjs.telemetry` pages 6 (slots 0..7) and 7 (slots 8..15). The host
+tool polls those two pages, and when it sees a new `pendingSave`:
+
+1. persists the ZIP to `f1-widget-sdk/build/zip-sync-config.json`;
+2. acks the save with host event `0xB245` (`{ value: zip, auxiliary: saveSeq, generation: 19 }`);
+3. fetches weather for the ZIP with a real provider;
+4. pushes the normal six-record weather revision (`0xB240`/`0xB241`/`0xB242..0xB244`/`0xB24F`), exactly as `host-adapter.mjs`/`protocol.mjs` already encode it.
+
+On startup it also sends `0xB245` with the persisted ZIP (`auxiliary: 0`) and a
+weather push, so the widget shows the last-known ZIP immediately. It polls at
+~1 Hz while the device reports `settingsActive`, else ~5 s, and refreshes
+weather every 10 minutes regardless of settings activity.
+
+### Usage
+
+```sh
+# From f1-widget-sdk/, with Input running (remote debugger on 9230) and
+# exactly one Framer F1 on USB. Stop `npm run media:live` first — it shares
+# the same device RPC transport.
+node examples/render-v2-mquickjs-weather-canary/tools/zip-sync.mjs --confirm-live-rpc
+node examples/render-v2-mquickjs-weather-canary/tools/zip-sync.mjs --confirm-live-rpc --once
+node examples/render-v2-mquickjs-weather-canary/tools/zip-sync.mjs --confirm-live-rpc --provider deterministic
+node examples/render-v2-mquickjs-weather-canary/tools/zip-sync.mjs --confirm-live-rpc --config /path/to/zip-sync-config.json
+```
+
+Without `--confirm-live-rpc` the tool only prints help and exits 1; it never
+opens a device connection. `--once` runs a single poll+push cycle and exits.
+The tool refuses to start when `pgrep -fl run-live-media` finds a running
+`npm run media:live` process. It logs one JSON line per action to stdout
+(`config-loaded`, `telemetry`, `decision`, `provider-error`, `event-batch`,
+`config-persisted`, `error`, `stopped`).
+
+The persisted config (`{ format, postalCode, countryCode: "US", units,
+lastSaveSeq, updatedAt }`) is the same file Input Lab's dev server reads and
+writes at `GET`/`POST /api/zip-sync/config`, so a ZIP saved from the physical
+knob shows up in Input Lab's ZIP field, and a ZIP typed into Input Lab is what
+`zip-sync.mjs` pushes to the device on its next boot.
+
+### Providers
+
+`--provider open-meteo` (default) is a real forecast: Open-Meteo geocoding
+(`geocoding-api.open-meteo.com/v1/search?name=<ZIP>&countryCode=US`) resolves
+the ZIP to a lat/lon, then `api.open-meteo.com/v1/forecast` returns current +
+daily conditions. This is the exact `fetchOpenMeteoWeather()` already
+implemented and tested in
+[`src/render-v2/weather.mjs`](../../src/render-v2/weather.mjs) (also used by
+the `render-v2-weather` companion app) — `tools/zip-sync-providers.mjs` only
+adapts it to the `provider.lookup(config)` boundary `host-adapter.mjs`
+expects. All network I/O stays inside that one function; `zip-sync-providers.mjs`
+performs no requests of its own.
+
+`--provider deterministic` is the offline fixture (`createDeterministicWeatherProvider()`
+from `host-adapter.mjs`) — no network, repeatable output, for testing the ZIP
+flow without a live forecast.
+
+**Before this change, physical delivery from Input Lab always used the
+deterministic offline fixture** (`INPUT_LAB_MQUICKJS_PHYSICAL_WEATHER_TARGET.provider
+=== "deterministic-offline-fixture"` in `input-lab/lib/mquickjs-device-rpc.mjs`),
+restricted to ZIP 60601 because the on-screen place label was hard-baked to
+"CHICAGO" in the target facade. `zip-sync.mjs` is the first host path that
+fetches a real forecast for an arbitrary ZIP; Input Lab's own physical-delivery
+button still uses the deterministic fixture, but the 60601 restriction there
+is lifted (see below) since the redesigned widget has no fixed place label.
+
+### WMO weather-code mapping
+
+Open-Meteo returns a numeric [WMO code](https://open-meteo.com/en/docs); the
+widget only understands 8 condition ids, each with a day and a night label
+(`WEATHER_WIDGET_CONDITIONS` in `src/render-v2/weather.mjs`) — 16 label
+strings, plus a device-side "WAITING" placeholder shown before the first good
+snapshot (17 strings total in the on-device literal table, see
+`experiments/mquickjs-target-facade/contract.mjs`'s `conditions` table, which
+this repo does not modify). `weatherConditionFromWmo()` (already implemented
+and unit-tested in `src/render-v2/weather.mjs`) performs the mapping:
+
+| WMO code(s) | Condition id | key | Day label | Night label |
+| --- | ---: | --- | --- | --- |
+| 0 | 0 | `clear` | Sunny | Clear |
+| 1–2 | 1 | `partly-cloudy` | Partly | Partly |
+| 3 | 2 | `cloudy` | Cloudy | Cloudy |
+| 45, 48 | 3 | `fog` | Fog | Fog |
+| 51–57 | 4 | `drizzle` | Drizzle | Drizzle |
+| 61–67, 80–82 | 5 | `rain` | Rain | Rain |
+| 71–77, 85–86 | 6 | `snow` | Snow | Snow |
+| 95–99 | 7 | `storm` | Storm | Storm |
+| anything else | 2 | `cloudy` | Cloudy | Cloudy |
+
+Weekday ids are plain `Date.getUTCDay()` (0=Sun..6=Sat) over each forecast
+day's `YYYY-MM-DD` date, matching the on-device `weekdays` literal table
+(`SUN`..`SAT` plus a `---` no-data placeholder — 8 strings).
+
+### Tests
+
+`node --test test/zip-sync-*.test.mjs` (run from `f1-widget-sdk/`) covers,
+with no network and no device I/O:
+
+- `zip-sync-telemetry.test.mjs` — settings-word bit-field encode/decode and
+  the `v1;p=6/7;s..=xxxxxxxx` telemetry-page grammar, including two's-complement
+  negative words.
+- `zip-sync-policy.test.mjs` — the start/settings-save/weather-refresh/idle
+  decision state machine and the `0xB245` ack-request builder.
+- `zip-sync-config.test.mjs` — config validation and a real-filesystem
+  persistence round-trip (temp directory, no repo files touched).
+- `zip-sync-providers.test.mjs` — the Open-Meteo provider with an injected
+  `fetchImpl` fixture (`examples/render-v2-weather/fixtures/open-meteo-60601.json`,
+  reused from the existing weather tests) and the deterministic provider.
+- `zip-sync-device-rpc.test.mjs` — the generated Input-process RPC scripts and
+  the `run-live-media` guard, with a faked `pgrep`.
+- `zip-sync-cli.test.mjs` — argument parsing and the full `runPollCycle()`
+  orchestration (start / settings-save / weather-refresh / idle / provider
+  failure) against an injected fake `evaluate()` and the real deterministic
+  provider; `evaluateInInput()` and `fetch()` are never called for real.
+
+### Caveats
+
+- No automated test drives real hardware or the network; `--once` exists so a
+  human can run one cycle by hand after flashing the redesigned widget.
+- The device-side telemetry pages 6/7 and the `0xB245` handler are the other
+  half of this plan (module/JS work tracked separately); `zip-sync.mjs` is
+  written to the contract in `ZIP-SETTINGS-PLAN.md` but has not been run
+  against real firmware.
+- The event batch script sends each RPC then reads one receipt after a fixed
+  60 ms settle delay (the same pattern the smoke script uses) rather than
+  polling to a terminal receipt state the way `InputLabMQuickJsRpcClient`
+  does; the raw receipt status is still logged for a human to inspect.
+- `generation` is hardcoded to `19` per the plan/smoke script; the tool does
+  not probe device capability pages first.

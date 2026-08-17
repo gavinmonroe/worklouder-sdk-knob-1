@@ -1,0 +1,74 @@
+{
+  "status": "PASS_PSRAM_MODULE_WRAPPER_NO_HARDWARE",
+  "hardwareTouched": false,
+  "generatedFrom": {
+    "script": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module.mjs",
+    "sha256": "01b0b68d6829ec645fa57e54320fe1f95a838639c6a191a4c2f0ff9ed0e8c493",
+    "generatedScript": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram.generated.mjs",
+    "generatedSha256": "cd6b7971094298b6c52d2de64e7798b87cb3ec263ddceba798d985ca1438cd1f",
+    "substitutions": [
+      "output directory",
+      "module translation unit",
+      "include search path",
+      "block-size invariant",
+      "text page name",
+      "rodata page name",
+      "slot name",
+      "loader name",
+      "loader disassembly name",
+      "app name",
+      "manifest name",
+      "manifest format",
+      "manifest purpose",
+      "status line"
+    ]
+  },
+  "moduleSource": {
+    "file": "experiments/mquickjs-esp32s3-physical-canary/psram-module-src/physical_integration.c",
+    "sha256": "18b37104b7cbabcc166f061780d64d52575806ef20babf37f79daa23db2e3627",
+    "baseline": "experiments/mquickjs-esp32s3-physical-canary/physical_integration.c",
+    "baselineSha256": "6b79962ae0b38e441eb14de10d2162f02c6d741a29acb4b467e50040b85e9a40"
+  },
+  "build": {
+    "status": "PASS_PSRAM_MODULE_BUILT_NO_HARDWARE",
+    "textSha256": "81caf106cf8e26f26d236df136f915567208b6330fd90c9fbbd0053c3b3f6e79",
+    "rodataSha256": "7a3d8dd4838ae6fd54bb1876c25a897b62b2686e000e362dbfa741d936473c31",
+    "slotSha256": "54ce626af901f8a61cbecefa1ebee544d6809db5f2c12a60a53877192233b013",
+    "appSha256": "3c5602b90c22fa3ac59cb306b895722f93afbec0308c9b59cc1fe3e206f61692",
+    "loaderBytes": 4732,
+    "loaderSha256": "43d3077487a702862b34d9f675978d9ca6b5bf140e7ecd669c00fb499386fdce",
+    "blockBytes": 30048,
+    "startupVaddr": "0x423e37f0",
+    "keyWrapper": "0x4211e650",
+    "lastErrorOffset": 6312,
+    "customAssets": true,
+    "assetSource": "experiments/mquickjs-weather2-facade/build",
+    "f2jsSha256": "7aeeecde59bd686b3455feadc74b4b7705ca0c8ea933f9b0669cb8dc656c284e",
+    "f2tfSha256": "6b4cc3a20718cf550c06282a9a974ccd2bb0daa3a569ff12d0b5dbddc1979614",
+    "lzssSha256": "1497011c17c0e2928e881205dcf327fed43f57ed1923245bd2acba9a48e9d06f",
+    "out": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram"
+  },
+  "flashPlan": [
+    {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/mqjs-id28-text-page-psram.bin",
+      "offset": "0x210000",
+      "bytes": 131072
+    },
+    {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/mqjs-id28-rodata-page-psram.bin",
+      "offset": "0x230000",
+      "bytes": 65536
+    },
+    {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/framer-0.4.1-mqjs-id28-PSRAM-module-app.bin",
+      "offset": "0x10000",
+      "bytes": 2062912
+    }
+  ],
+  "rollback": {
+    "app": "f1-widget-sdk/build/combined-renderer-v2-clock-blue-timer/framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-blue-timer-app.bin",
+    "sha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
+    "offset": "0x10000",
+    "note": "slot-A pages may be left in place; the healthy app never maps them"
+  }
+}

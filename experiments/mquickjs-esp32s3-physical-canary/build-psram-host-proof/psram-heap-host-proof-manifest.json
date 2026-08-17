@@ -1,0 +1,50 @@
+{
+  "status": "PASS_PSRAM_HEAP_HOST_PROOF_NO_HARDWARE",
+  "hardwareTouched": false,
+  "extractedFrom": {
+    "file": "experiments/mquickjs-esp32s3-physical-canary/psram-module-src/physical_integration.c",
+    "sha256": "18b37104b7cbabcc166f061780d64d52575806ef20babf37f79daa23db2e3627"
+  },
+  "constantsFrom": [
+    {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/psram-module-src/physical_integration.c",
+      "defines": [
+        "PHYSICAL_CAP_8BIT",
+        "PHYSICAL_CAP_SPIRAM",
+        "PHYSICAL_HEAP_ALIGN_SLACK"
+      ]
+    },
+    {
+      "file": "experiments/mquickjs-esp32s3-resident-integration/f2js_admission.h",
+      "defines": [
+        "FRAMER_F2JS_HEAP_BYTES"
+      ]
+    }
+  ],
+  "extractedFunctions": [
+    "zero_bytes",
+    "in_psram",
+    "psram_heap_acquire",
+    "platform_allocate",
+    "platform_free"
+  ],
+  "hostSubstitutions": [
+    "PHYSICAL_PSRAM_BEGIN/END become host arena bounds (real values are image-derived and pinned by a _Static_assert in the shipped file)",
+    "physical_block reduced to heap_claimed, vm_heap, vm_heap_raw",
+    "heap_caps_malloc/free/get_free_size/get_largest_free_block are host models"
+  ],
+  "driver": {
+    "file": "experiments/mquickjs-esp32s3-physical-canary/build-psram-host-proof/psram-heap-host-proof.c",
+    "sha256": "ca323ddd1ea22c02ad4110e04fc11561f91cb0e52d040fc4f38cc37dd92f9c35",
+    "sanitizers": [
+      "address",
+      "undefined"
+    ],
+    "warnings": "-Wall -Wextra -Werror"
+  },
+  "result": {
+    "status": "PASS_PSRAM_HEAP_EXACT_SOURCE",
+    "checks": 36,
+    "failures": 0
+  }
+}

@@ -135,14 +135,23 @@ const expected = Object.freeze({
   packageAbi: "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
   moduleAbi: "ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb",
   moduleAdapterSourceSha256: "f1df175e69d41d1678e386e077011995df29e6f58e1d88235a5f0ac6d2cb89fc",
-  moduleLoaderManifestSha256: "a11894abc016838a975da3492935d2ddc7d953c72f44a1efda4ccf86cf155282",
-  sourceClosureSha256: "7ee7b063fb40e20bdf2bd8d58c29cf74475e0902542d4d28f61314a4a636f07e",
+  // Re-recorded: this is the module-loader's own freshly rebuilt manifest
+  // digest, which shifted because the -m32 atom/library word-size fix
+  // changed the module-loader build's generated atom header content.
+  moduleLoaderManifestSha256: "2c53815a97b178572dacc9c513bc15b4101ede55ee9d0dad8c5abd398fa181fb",
+  // Re-recorded: sourceClosurePaths includes framer_mquickjs_canary.c/.h and
+  // loader_entry.c, which this change intentionally edits (load-deadline fix
+  // and 16-byte alignment / IROM byte-read fixes).
+  sourceClosureSha256: "af41e343b452ec1ef4fb5987d0169e20d2946e85673eace90b8a408cf447eef3",
   baseSha256: "2f8263490c50631c3cdb7f992efde976ac794d8a3e599cc785a1e81bfa0e5c68",
   canonicalWeatherSourceSha256:
     "68db9d61fa38b0a396e46e88076d75d262a486f2ec4b41b4d398454d7d713e9b",
   canonicalWeatherF2jsSha256:
     "88537026c8b217b763c393b82d8787ca08256681265976f7bcff6077b2282d20",
-  engineSourceSha256: "f634d62094e6c3d08f7d6cf1975edf9afa5b9f53799599014a9a2ac3d09e1c19",
+  // Re-recorded: this is the concatenated-source digest of the canary files
+  // this change intentionally edits (see sourceClosureSha256 above); same
+  // fix, same new value as module-loader/verify.mjs's expectedCoreCanarySourceSha256.
+  engineSourceSha256: "ea0e19d73f927c8540c901b1845bf664542a96527fdd00ac172bcc8fde8ac9d6",
   runtimeManifestSha256: "b3b3ce77a91bbb0c7ae5d0a7e7a5c86a8888a5d25cab3fdef0c8947f9e101ed4",
   runtimeObjectSha256: "fa372a35c3a4196b5d89155be8728465bd94ca1309b830be40a160335e964676",
   residentManifestSha256: "6fb1a0782973ceb51d0853816a173dda4b02ec2b64036a55f74a7f9558b71d28",
@@ -594,8 +603,12 @@ async function generator(directory, targetWordSize = true) {
   const executable = path.join(directory, "framer-stdlib-gen");
   await run(cc, ["-std=c11", "-O2", `-I${vendor}`, path.join(canary, "framer_stdlib_gen.c"),
     path.join(vendor, "mquickjs_build.c"), "-o", executable]);
+  // mquickjs_atom.h word offsets must be generated at the same word size as
+  // the library it is paired with (host with host, -m32/target with -m32),
+  // or JS_ATOM_* offsets no longer match the ROM table layout.
   const [atoms, library] = await Promise.all([
-    run(executable, ["-a"]), run(executable, targetWordSize ? ["-m32"] : []),
+    run(executable, targetWordSize ? ["-m32", "-a"] : ["-a"]),
+    run(executable, targetWordSize ? ["-m32"] : []),
   ]);
   await Promise.all([
     writeFile(path.join(directory, "mquickjs_atom.h"), atoms.stdout),

@@ -1,0 +1,530 @@
+{
+  "format": "framer-f1-weather3-zip-id28-asset-set-v1",
+  "status": "OFFLINE_ONLY_NOT_FLASHED",
+  "hardwareTouched": false,
+  "generation": 19,
+  "canvas": {
+    "width": 100,
+    "height": 310,
+    "pixels": 31000,
+    "bytes": 62000,
+    "format": "rgb565-le"
+  },
+  "package": {
+    "file": "weather-id28-gen19.f2js",
+    "bytes": 8960,
+    "sha256": "8858060d9e9bea7c9a0d1e92bebcbeb8395def19479beb178602238db133ecad",
+    "sourceSha256": "a118efcf71699653794d728336d25af5724649a9c81ba7ec3fbca43304190eb9",
+    "sourceBytes": 8092,
+    "handlers": 16,
+    "events": 14,
+    "hostRpcIds": [
+      "0xB240",
+      "0xB241",
+      "0xB242",
+      "0xB243",
+      "0xB244",
+      "0xB245",
+      "0xB24D",
+      "0xB24E",
+      "0xB24F"
+    ],
+    "keys": 2,
+    "chords": 1,
+    "targets": [
+      "weatherScreen",
+      "bigTemp",
+      "cardErase",
+      "zip1",
+      "zip2",
+      "zip3",
+      "zip4",
+      "zip5",
+      "zipCaret",
+      "cardLabel",
+      "d1Name",
+      "d1Temps",
+      "d2Name",
+      "d2Temps",
+      "d3Name",
+      "d3Temps"
+    ]
+  },
+  "facade": {
+    "file": "weather-id28-gen19.f2tf",
+    "bytes": 1531,
+    "sha256": "aecbb419e759e44957275f3a6fd551aa0ee7fc014c8cc09af103411256c90627",
+    "baseSha256": "fb3e481ba12fdffcf5d292c9a281812c46d388777699a38a680bc5d3398c56a3",
+    "f2jsSha256": "8858060d9e9bea7c9a0d1e92bebcbeb8395def19479beb178602238db133ecad",
+    "contractSha256": "8220152a09348da34cdd70dd7d370197f2f3fc46a9f45e50d7fb7015bdb8579a",
+    "maxAssetBytes": 4096,
+    "paletteEntries": 4,
+    "glyphRecords": 59,
+    "maxOverlayWrites": 4096,
+    "targets": [
+      {
+        "id": "weatherScreen",
+        "x": 0,
+        "y": 0,
+        "width": 100,
+        "height": 310,
+        "format": 1,
+        "slots": [
+          15
+        ],
+        "scale": 0,
+        "align": 0,
+        "tableName": "none"
+      },
+      {
+        "id": "bigTemp",
+        "x": 5,
+        "y": 117,
+        "width": 90,
+        "height": 27,
+        "format": 4,
+        "slots": [
+          1,
+          15
+        ],
+        "scale": 3,
+        "align": 1,
+        "tableName": "bare"
+      },
+      {
+        "id": "cardErase",
+        "x": 24,
+        "y": 117,
+        "width": 51,
+        "height": 27,
+        "format": 5,
+        "slots": [
+          8,
+          13
+        ],
+        "scale": 3,
+        "align": 0,
+        "tableName": "erase"
+      },
+      {
+        "id": "zip1",
+        "x": 6,
+        "y": 117,
+        "width": 15,
+        "height": 27,
+        "format": 5,
+        "slots": [
+          3,
+          13
+        ],
+        "scale": 3,
+        "align": 0,
+        "tableName": "digits"
+      },
+      {
+        "id": "zip2",
+        "x": 24,
+        "y": 117,
+        "width": 15,
+        "height": 27,
+        "format": 5,
+        "slots": [
+          4,
+          13
+        ],
+        "scale": 3,
+        "align": 0,
+        "tableName": "digits"
+      },
+      {
+        "id": "zip3",
+        "x": 42,
+        "y": 117,
+        "width": 15,
+        "height": 27,
+        "format": 5,
+        "slots": [
+          5,
+          13
+        ],
+        "scale": 3,
+        "align": 0,
+        "tableName": "digits"
+      },
+      {
+        "id": "zip4",
+        "x": 60,
+        "y": 117,
+        "width": 15,
+        "height": 27,
+        "format": 5,
+        "slots": [
+          6,
+          13
+        ],
+        "scale": 3,
+        "align": 0,
+        "tableName": "digits"
+      },
+      {
+        "id": "zip5",
+        "x": 78,
+        "y": 117,
+        "width": 15,
+        "height": 27,
+        "format": 5,
+        "slots": [
+          7,
+          13
+        ],
+        "scale": 3,
+        "align": 0,
+        "tableName": "digits"
+      },
+      {
+        "id": "zipCaret",
+        "x": 6,
+        "y": 125,
+        "width": 87,
+        "height": 21,
+        "format": 5,
+        "slots": [
+          8,
+          13
+        ],
+        "scale": 3,
+        "align": 0,
+        "tableName": "caret"
+      },
+      {
+        "id": "cardLabel",
+        "x": 5,
+        "y": 147,
+        "width": 90,
+        "height": 20,
+        "format": 5,
+        "slots": [
+          2,
+          12
+        ],
+        "scale": 2,
+        "align": 1,
+        "tableName": "cardLabel"
+      },
+      {
+        "id": "d1Name",
+        "x": 6,
+        "y": 194,
+        "width": 22,
+        "height": 20,
+        "format": 7,
+        "slots": [
+          3,
+          15
+        ],
+        "scale": 1,
+        "align": 0,
+        "tableName": "weekdays"
+      },
+      {
+        "id": "d1Temps",
+        "x": 28,
+        "y": 194,
+        "width": 67,
+        "height": 20,
+        "format": 9,
+        "slots": [
+          4,
+          5,
+          15
+        ],
+        "scale": 1,
+        "align": 1,
+        "tableName": "bare"
+      },
+      {
+        "id": "d2Name",
+        "x": 6,
+        "y": 234,
+        "width": 22,
+        "height": 20,
+        "format": 7,
+        "slots": [
+          6,
+          15
+        ],
+        "scale": 1,
+        "align": 0,
+        "tableName": "weekdays"
+      },
+      {
+        "id": "d2Temps",
+        "x": 28,
+        "y": 234,
+        "width": 67,
+        "height": 20,
+        "format": 9,
+        "slots": [
+          7,
+          8,
+          15
+        ],
+        "scale": 1,
+        "align": 1,
+        "tableName": "bare"
+      },
+      {
+        "id": "d3Name",
+        "x": 6,
+        "y": 274,
+        "width": 22,
+        "height": 20,
+        "format": 7,
+        "slots": [
+          9,
+          15
+        ],
+        "scale": 1,
+        "align": 0,
+        "tableName": "weekdays"
+      },
+      {
+        "id": "d3Temps",
+        "x": 28,
+        "y": 274,
+        "width": 67,
+        "height": 20,
+        "format": 9,
+        "slots": [
+          10,
+          11,
+          15
+        ],
+        "scale": 1,
+        "align": 1,
+        "tableName": "bare"
+      }
+    ]
+  },
+  "base": {
+    "file": "weather-id28-base.rgb565le",
+    "bytes": 62000,
+    "sha256": "fb3e481ba12fdffcf5d292c9a281812c46d388777699a38a680bc5d3398c56a3"
+  },
+  "compressed": {
+    "file": "weather-id28-base.lzss",
+    "bytes": 2114,
+    "sha256": "90d4751938f2a790b5ded7e97a162b2122962f1d8f182cf2d1465a79d8223e37",
+    "decodesTo": 62000,
+    "ratio": 0.0341
+  },
+  "contactSheet": {
+    "file": "contact-sheet.png",
+    "sha256": "b82ed1bc819e64758cc90bdc57dda27b8308fdfe02f69c690c37e5d305f4f5d3",
+    "panels": [
+      "static-base",
+      "boot-no-snapshot",
+      "sample-72-sunny",
+      "provider-error-retry",
+      "extremes-negative",
+      "settings-digit-1",
+      "settings-digit-5",
+      "settings-saving",
+      "settings-saved"
+    ]
+  },
+  "mailbox": {
+    "0": "applied weather revision (facade revision gate)",
+    "1": "current temperature packed ASCII (weather only)",
+    "2": "card label index: weather condition, or 1 ZIP / 2 Saving / 3 Saved",
+    "12": "bit0 card-label has-good, bit1 retained has-good",
+    "13": "bit0 settings active (settings targets has-good), bit1 chord consumed",
+    "14": "settings word: zip 0..16, settingsActive 17, pendingSave 18, timer 19..23, saveSeq 24..31",
+    "15": "bit0 weather has-good, bit1 hidden, bit2 provider error",
+    "3..8": "weather: day1 meta/low/high, day2 meta/low/high; settings: five ZIP digit metas plus the caret index",
+    "9..11": "day3 meta/low/high (weather only)"
+  },
+  "interaction": {
+    "enter": "hold Space+LeftShift (the only chord) >= ~700 ms: input.key.hold with heldMask 3 and holdCount >= 3",
+    "edit": "input.fn-bottom-knob delta changes the active digit 0..9 with wrap",
+    "advance": "a short chord tap (input.chord.up) moves to the next digit",
+    "save": "a chord tap on the fifth digit raises pendingSave, increments saveSeq and shows Saving",
+    "cancel": "another >= ~700 ms chord hold, or 30 s of inactivity on tick.1s",
+    "ack": "host.rpc:0xB245 value=zip auxiliary=saveSeq clears pendingSave, shows Saved for 2 s and returns to the weather view; outside settings it just stores the zip"
+  },
+  "tests": {
+    "total": 26,
+    "passed": 26,
+    "failed": 0,
+    "cases": [
+      {
+        "name": "w01 coherent revision applies once and fills the weather slots",
+        "ok": true
+      },
+      {
+        "name": "w02 incomplete revision never applies",
+        "ok": true
+      },
+      {
+        "name": "w03 conflicting duplicate record invalidates the revision",
+        "ok": true
+      },
+      {
+        "name": "w04 stale revision is ignored, newer one applies",
+        "ok": true
+      },
+      {
+        "name": "w05 invalid day record (low > high) is rejected",
+        "ok": true
+      },
+      {
+        "name": "w06 tick.1s republishes without disturbing the forecast slots",
+        "ok": true
+      },
+      {
+        "name": "w07 provider error sets the error bit and clamps the retry counter",
+        "ok": true
+      },
+      {
+        "name": "w08 hidden widget sets bit 1 and stops ticking",
+        "ok": true
+      },
+      {
+        "name": "w09 re-shown widget clears the hidden bit",
+        "ok": true
+      },
+      {
+        "name": "w10 negative temperatures keep their sign byte",
+        "ok": true
+      },
+      {
+        "name": "w11 night clear maps to the dedicated card label entry",
+        "ok": true
+      },
+      {
+        "name": "w12 knob and keys still prove the input gate outside settings",
+        "ok": true
+      },
+      {
+        "name": "s01 chord held ~700 ms opens the settings view",
+        "ok": true
+      },
+      {
+        "name": "s02 a shorter chord hold does not open the settings view",
+        "ok": true
+      },
+      {
+        "name": "s03 knob edits the active cell and wraps 0..9",
+        "ok": true
+      },
+      {
+        "name": "s04 chord tap advances the caret across the five cells",
+        "ok": true
+      },
+      {
+        "name": "s05 advancing off the last cell saves",
+        "ok": true
+      },
+      {
+        "name": "s06 the host ack clears pendingSave, shows Saved and returns to weather",
+        "ok": true
+      },
+      {
+        "name": "s07 a stale ack is ignored while a save is pending",
+        "ok": true
+      },
+      {
+        "name": "s08 30 s of inactivity cancels back to the weather view",
+        "ok": true
+      },
+      {
+        "name": "s09 a second long chord hold cancels the settings view",
+        "ok": true
+      },
+      {
+        "name": "s10 key and chord edges do not fire the canary poke inside settings",
+        "ok": true
+      },
+      {
+        "name": "s11 the boot ack sets the zip without opening settings",
+        "ok": true
+      },
+      {
+        "name": "s12 an out-of-range ack is refused",
+        "ok": true
+      },
+      {
+        "name": "s13 a weather revision that lands during settings is held back",
+        "ok": true
+      },
+      {
+        "name": "s14 settings state survives a context reset via the mailbox",
+        "ok": true
+      }
+    ]
+  },
+  "render": [
+    {
+      "name": "boot-no-snapshot",
+      "result": 0,
+      "overlayWrites": 548,
+      "formattedTargets": 15,
+      "frameSha256": "e8c5ba73d63bb16e72d161a8ae8047bcfe6fd2dc66019ad385e7d6dac363d626"
+    },
+    {
+      "name": "sample-72-sunny",
+      "result": 0,
+      "overlayWrites": 901,
+      "formattedTargets": 15,
+      "frameSha256": "ad96a86145729f707c3f29fb36fd50622bb3d3cdfb910add6bb8b130b9522ff5"
+    },
+    {
+      "name": "provider-error-retry",
+      "result": 0,
+      "overlayWrites": 901,
+      "formattedTargets": 15,
+      "frameSha256": "ad96a86145729f707c3f29fb36fd50622bb3d3cdfb910add6bb8b130b9522ff5"
+    },
+    {
+      "name": "extremes-negative",
+      "result": 0,
+      "overlayWrites": 926,
+      "formattedTargets": 15,
+      "frameSha256": "ceca693ebb82091ca0c27b7df4abc0343237fee1d3efeb874fa539eea18c45ba"
+    },
+    {
+      "name": "settings-digit-1",
+      "result": 0,
+      "overlayWrites": 2048,
+      "formattedTargets": 15,
+      "frameSha256": "f8297d0c2ecae6bd416c87c93bcfdfab73b78d45c2e102e6ef7afe420daa1266"
+    },
+    {
+      "name": "settings-digit-5",
+      "result": 0,
+      "overlayWrites": 2048,
+      "formattedTargets": 15,
+      "frameSha256": "ccfc5629689a2c6c88caced2b42758bcd7d05759ab4a518491c4b83fa42e260c"
+    },
+    {
+      "name": "settings-saving",
+      "result": 0,
+      "overlayWrites": 2139,
+      "formattedTargets": 15,
+      "frameSha256": "c2f5c76845dc1c77561642074e0ee9860249401b870300c371ae9761e9338514"
+    },
+    {
+      "name": "settings-saved",
+      "result": 0,
+      "overlayWrites": 2111,
+      "formattedTargets": 15,
+      "frameSha256": "5e8de3720c25dfb1011d330cdc9b76e7f9d174e3a57b6ebfec6e1fd31e387938"
+    }
+  ],
+  "constraints": {
+    "dynamicFont": "single 5x7 bitmap font, fixed 5 px width / 6 px advance, integer scale 1..3",
+    "dynamicGlyphs": "59/64 records",
+    "closedFormatters": "formatter 4 always appends U+00B0 and can never render nothing, so the settings view erases its placeholder with an orange block target instead of hiding it",
+    "staticText": "'Today', the cloud/sun mark and the card are raster, not facade text"
+  }
+}

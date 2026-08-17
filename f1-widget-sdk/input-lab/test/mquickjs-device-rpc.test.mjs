@@ -226,9 +226,36 @@ test("physical weather helper sends one serialized six-record revision and prove
         appliedRevision: revision } })) }),
   /before commit/iu);
   await assert.rejects(deliverInputLabMQuickJsWeatherBatch({ events, generation: 19, revision,
-    postalCode: "90210", countryCode: "US", sendHostEvents: async () => {
+    postalCode: "9021", countryCode: "US", sendHostEvents: async () => {
       throw new Error("must not send");
-    } }), /only US ZIP 60601/iu);
+    } }), /5-digit US ZIP/iu);
+  await assert.rejects(deliverInputLabMQuickJsWeatherBatch({ events, generation: 19, revision,
+    postalCode: "90210", countryCode: "CA", sendHostEvents: async () => {
+      throw new Error("must not send");
+    } }), /5-digit US ZIP/iu);
+});
+
+test("physical weather helper now accepts any 5-digit US ZIP, not only the original 60601 fixture", async () => {
+  const revision = 30;
+  const events = [
+    { id: 0xb240, value: revision, auxiliary: 0 },
+    { id: 0xb241, value: 201, auxiliary: revision },
+    { id: 0xb242, value: 202, auxiliary: revision },
+    { id: 0xb243, value: 203, auxiliary: revision },
+    { id: 0xb244, value: 204, auxiliary: revision },
+    { id: 0xb24f, value: revision, auxiliary: 15 },
+  ];
+  const requests = [];
+  const delivery = await deliverInputLabMQuickJsWeatherBatch({ events, generation: 19, revision,
+    postalCode: "90210", countryCode: "US",
+    sendHostEvents: async (batch) => batch.map((request) => {
+      requests.push(structuredClone(request));
+      const sequence = requests.length;
+      return { status: "applied", request, receipt: { state: "A", sequence, id: request.id,
+        generation: request.generation, revision: request.revision, value: request.value,
+        auxiliary: request.auxiliary, appliedRevision: request.id === 0xb24f ? revision : 29 } };
+    }) });
+  assert.equal(delivery.finalReceipt.appliedRevision, revision);
 });
 
 test("weather render confirmation distinguishes visible pixels from a hidden committed runtime", async () => {

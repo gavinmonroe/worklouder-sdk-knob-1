@@ -80,12 +80,13 @@ host object is supplied. The external guarded one-hour receipt—not the device
 capability—promotes physical-runtime evidence.
 
 For the Weather example, **Refresh fixture** derives a deterministic offline snapshot
-from the entered ZIP code. Multi-ZIP preview remains available, but the first physical
-canary accepts only US ZIP `60601` because its F2TF location literal is fixed to
-`CHICAGO`; any other ZIP is preview-only and is never sent to the keyboard. For 60601,
-Input Lab reads one coherent ordered telemetry p0..p5 session, then sends exactly
-begin/current/three-day/commit inside one exclusive client transaction, so another
-button or key action cannot interleave between staged records or the pixel check.
+from the entered ZIP code. The redesigned weather widget has no fixed place label, so
+physical delivery accepts any 5-digit US ZIP, not only the original `60601` fixture
+(the `F2TF` build in `experiments/mquickjs-target-facade` that hard-baked a `CHICAGO`
+location literal predates that redesign). Input Lab reads one coherent ordered
+telemetry p0..p5 session, then sends exactly begin/current/three-day/commit inside
+one exclusive client transaction, so another button or key action cannot interleave
+between staged records or the pixel check.
 All six payloads share one weather revision, each device-assigned receipt
 sequence must be unique, pre-commit receipts must not expose that revision, and
 the final commit must report it as applied. A second bounded telemetry probe
@@ -96,6 +97,14 @@ ID28 entry. A transient device snapshot-lock collision retries the entire ordere
 p0..p5 session up to three times; Input Lab never resumes at a middle page, and
 malformed grammar or changed identity still fails immediately. This is explicitly
 an offline fixture; it does not claim a live provider or network fetch.
+
+The ZIP field reads and writes the same `f1-widget-sdk/build/zip-sync-config.json`
+file that `examples/render-v2-mquickjs-weather-canary/tools/zip-sync.mjs` (the
+keyboard-editable-ZIP host tool, which does use a real forecast provider) persists
+to, via `GET`/`POST /api/zip-sync/config` on the local dev bridge — a ZIP saved from
+the physical knob shows up here, and typing a ZIP here is what that tool pushes to
+the device on its next boot. This sync is loopback-only and best-effort; hosted
+Input Lab has no local device filesystem, so its ZIP field is not persisted this way.
 
 The three distinct seeded previews are `Working`, `Generating`, and `Electric`. Their source,
 settings, and compact compiled payload are stored locally. Render v1 `Apply / Push` compiles all three

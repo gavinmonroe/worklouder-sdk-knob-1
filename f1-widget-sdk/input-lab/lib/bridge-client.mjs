@@ -69,10 +69,20 @@ export class InputLabBridgeClient {
 
   async request(path, body, { accept = "application/json" } = {}) {
     invariant(this.capabilities, "Input Lab bridge is not connected.");
-    invariant(/^\/api\/(?:compile|capture|bundle|render-v2\/(?:compile|simulate))$/u.test(path),
+    invariant(/^\/api\/(?:compile|capture|bundle|render-v2\/(?:compile|simulate)|zip-sync\/config)$/u.test(path),
       "Unsupported Input Lab bridge endpoint.");
     return this.fetch(`${this.baseUrl}${path}`, { method: "POST", mode: "cors", credentials: this.credentials,
       headers: { accept, "content-type": "application/json",
         "x-input-lab-session": this.capabilities.sessionToken }, body: JSON.stringify(body) });
+  }
+
+  /** Reads the shared ZIP-sync config file (postalCode/units/etc.) that tools/zip-sync.mjs also writes. */
+  async getZipSyncConfig() {
+    invariant(this.capabilities, "Input Lab bridge is not connected.");
+    if (!this.capabilities.zipSyncConfig) return null;
+    const response = await this.fetch(`${this.baseUrl}/api/zip-sync/config`, { method: "GET", mode: "cors",
+      credentials: this.credentials, cache: "no-store", signal: AbortSignal.timeout(this.timeoutMs) });
+    if (!response.ok) return null;
+    return response.json();
   }
 }

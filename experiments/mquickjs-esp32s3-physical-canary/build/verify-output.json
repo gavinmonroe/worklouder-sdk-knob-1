@@ -3,7 +3,7 @@
   "candidateApp": {
     "file": "experiments/mquickjs-esp32s3-physical-canary/build/framer-0.4.1-mqjs-id28-canary-NO-GO-app.bin",
     "bytes": 2062912,
-    "sha256": "2a6b1f209ec99e6ba7df01604c59d2d2c5d3556c37e421530a9ca58a4bd97b54",
+    "sha256": "1d32e68a3445031d685fb5c85304e96321a785eb17fb229638f78cf3e68746a4",
     "addedScreenId": 28,
     "deterministicRebuilds": 2,
     "segmentCount": 6,
@@ -19,56 +19,58 @@
         "address": "0x42041568",
         "bytes": 4,
         "beforePointer": "0x4206eae0",
-        "afterPointer": "0x4211e554"
+        "afterPointer": "0x4211e580"
       },
       {
         "range": [
           "0x4211e460",
-          "0x4211edd4"
+          "0x4211ef18"
         ],
-        "bytes": 2420,
+        "bytes": 2744,
         "beforeAllZero": true,
-        "sha256": "286001548ad490efbf3748b1ab0f207143a3b061c2457e28e713c48ffd308af5"
+        "sha256": "62cc763a20feb7abbabf7f6af4d7c6199a9feb0b1fdfa04aad12fc0ce19e80be"
       }
     ]
   },
   "module": {
-    "abiVersion": 2,
+    "abiVersion": 3,
+    "moduleAbiSha256": "ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb",
     "packageAbiSha256": "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
+    "identitySeparation": "descriptor/loader use module ABI3; F2JS package uses package ABI1",
     "slotA": {
       "range": [
         "0x210000",
         "0x240000"
       ],
       "bytes": 196608,
-      "sha256": "09e7ad82613fc564fe4489d4baa60a323e2d8e5475bcc45f29ad296800b30732",
+      "sha256": "ca4bc1b997f42812e3b99cff911252cf9d4bbe88ea7548f4f860c1fa939c368c",
       "identitySemantics": "SHA-256 of padded text[0x20000] concatenated with padded rodata[0x10000]; binary digest is embedded only in resident loader and passed to startup"
     },
     "text": {
       "paddr": "0x210000",
       "vaddr": "0x423d0000",
-      "usedBytes": 90912,
+      "usedBytes": 91936,
       "capacityBytes": 131072,
-      "sha256": "b409ae8acde764cb66441d44a96c5438c04086ffd5eb91f5b1b785e6c8229ed4"
+      "sha256": "542b89fe2f178c37c4ef04f46f2058cdba17320a85bdd9bc64763b6053b4ac6f"
     },
     "rodata": {
       "paddr": "0x230000",
       "vaddr": "0x3c3f0000",
-      "usedBytes": 23216,
+      "usedBytes": 23536,
       "capacityBytes": 65536,
-      "sha256": "ea834409742505a123d96b9c3670350ae3c62bab2b3b1bdbeff6a992b85ec64d"
+      "sha256": "9a7137b404adc23636404cd98ad50a12e3c7d062de694dc8912f8a18523f4034"
     },
     "relocations": 0,
     "undefinedSymbols": 0,
     "writableStaticBytes": 0,
-    "residentBlockBytes": 95504,
-    "startupVaddr": "0x423e3148",
-    "id28IdentityVaddr": "0x423e59e0",
-    "keySinkVaddr": "0x423e2fec",
+    "residentBlockBytes": 95568,
+    "startupVaddr": "0x423e3598",
+    "id28IdentityVaddr": "0x423e5ddc",
+    "keySinkVaddr": "0x423e3418",
     "deterministicRebuilds": 2,
     "stackUsage": {
       "file": "experiments/mquickjs-esp32s3-physical-canary/build/module-stack-usage.json",
-      "sha256": "167d2644441bc2a814c2e8d364c73f508f64a902fa320abed388333dcc2844da",
+      "sha256": "92c1e0a9982e64ebce6123ef4902872adba3201db5505b822f56a98676e4c8e1",
       "compilerFlag": "-fstack-usage",
       "allFramesStatic": true,
       "rpc": {
@@ -90,12 +92,12 @@
     },
     "loader": {
       "file": "experiments/mquickjs-esp32s3-physical-canary/build/mqjs-id28-resident-loader.bin",
-      "bytes": 2420,
-      "sha256": "286001548ad490efbf3748b1ab0f207143a3b061c2457e28e713c48ffd308af5",
-      "preMapAdmissionBytes": 132368,
+      "bytes": 2744,
+      "sha256": "62cc763a20feb7abbabf7f6af4d7c6199a9feb0b1fdfa04aad12fc0ce19e80be",
+      "preMapAdmissionBytes": 132432,
       "allocationBeforeFirstMap": true,
       "startupAdoptsExactBlock": true,
-      "rollbackBeforeOwnerTask": "unmap then free exactly once",
+      "rollbackBeforeOwnerTask": "map failure frees the owned block but a failed internal cleanup may retain a mapping handle until reset; successful-map/startup-failure attempts unmap then frees exactly once; any unmap failure is a reset/rollback hardware gate",
       "postAllocationMapAdmission": {
         "freeMinimumBytes": 36864,
         "largestMinimumBytes": 4096
@@ -105,11 +107,16 @@
   "assets": {
     "generation": 19,
     "weatherCanaryPostalCode": "60601",
+    "canonicalWeather": {
+      "sourceSha256": "68db9d61fa38b0a396e46e88076d75d262a486f2ec4b41b4d398454d7d713e9b",
+      "packageSha256": "88537026c8b217b763c393b82d8787ca08256681265976f7bcff6077b2282d20",
+      "recoveryContract": "hydrate slots0/12/14/15 on callback; status-only publish inherits slots1..11; coherent packed commit alone replaces forecast"
+    },
     "f2js": {
       "file": "experiments/mquickjs-esp32s3-physical-canary/build/weather-id28-gen19.f2js",
-      "bytes": 7076,
-      "sha256": "2e359efcf0c60b02c3eb08a9898527de2381291e0f5e5dadc2583f598edb3ddc",
-      "sourceSha256": "ed64f7d8cadf5777ed0ca117b4f334ea1624ef5b5be40a81af9fb21d104fa8f4",
+      "bytes": 7416,
+      "sha256": "7aeeecde59bd686b3455feadc74b4b7705ca0c8ea933f9b0669cb8dc656c284e",
+      "sourceSha256": "a9b1a833a75f8a296ae5e2575f31ec1030af0c8a944031858e0506456f8864ab",
       "sourceFile": "experiments/mquickjs-esp32s3-physical-canary/build/weather-id28-gen19.js",
       "handlers": 16,
       "handlerLimit": 16,
@@ -151,8 +158,8 @@
     "f2tf": {
       "file": "experiments/mquickjs-esp32s3-physical-canary/build/weather-id28-gen19.f2tf",
       "bytes": 1375,
-      "sha256": "3a7c43c278dc9514c2ded0d7c07d0e5a7f3e89fe7b3cf8ae1f16977e3a5ae679",
-      "f2jsSha256": "2e359efcf0c60b02c3eb08a9898527de2381291e0f5e5dadc2583f598edb3ddc",
+      "sha256": "c436eea7ec9bfc85bbb9514923ea5bf4084ecbcb712ab5c183b9dd2adfd75743",
+      "f2jsSha256": "7aeeecde59bd686b3455feadc74b4b7705ca0c8ea933f9b0669cb8dc656c284e",
       "baseSha256": "2f8263490c50631c3cdb7f992efde976ac794d8a3e599cc785a1e81bfa0e5c68",
       "contractSha256": "8220152a09348da34cdd70dd7d370197f2f3fc46a9f45e50d7fb7015bdb8579a"
     },
@@ -182,8 +189,8 @@
     "identity": {
       "baseAppSha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
       "baseAppMeaning": "accepted healthy ancestry, not final candidate app SHA",
-      "moduleSlotSha256": "09e7ad82613fc564fe4489d4baa60a323e2d8e5475bcc45f29ad296800b30732",
-      "packageSha256": "2e359efcf0c60b02c3eb08a9898527de2381291e0f5e5dadc2583f598edb3ddc"
+      "moduleSlotSha256": "ca4bc1b997f42812e3b99cff911252cf9d4bbe88ea7548f4f860c1fa939c368c",
+      "packageSha256": "7aeeecde59bd686b3455feadc74b4b7705ca0c8ea933f9b0669cb8dc656c284e"
     },
     "eventFields": [
       "id",

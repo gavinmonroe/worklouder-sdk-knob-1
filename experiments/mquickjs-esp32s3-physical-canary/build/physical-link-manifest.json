@@ -40,7 +40,7 @@
   "candidateApp": {
     "file": "experiments/mquickjs-esp32s3-physical-canary/build/framer-0.4.1-mqjs-id28-canary-NO-GO-app.bin",
     "bytes": 2062912,
-    "sha256": "3145b3ea38c7289665bd83bdb18dc75d990ea7b212a39dcca04f0b8f68d5bcd7",
+    "sha256": "1d32e68a3445031d685fb5c85304e96321a785eb17fb229638f78cf3e68746a4",
     "addedScreenId": 28,
     "deterministicRebuilds": 2,
     "segmentCount": 6,
@@ -56,52 +56,54 @@
         "address": "0x42041568",
         "bytes": 4,
         "beforePointer": "0x4206eae0",
-        "afterPointer": "0x4211e558"
+        "afterPointer": "0x4211e580"
       },
       {
         "range": [
           "0x4211e460",
-          "0x4211eef0"
+          "0x4211ef18"
         ],
-        "bytes": 2704,
+        "bytes": 2744,
         "beforeAllZero": true,
-        "sha256": "775a199bfde8c17d14b77f15f5bff957d66189cf7bf6c97b6774d3ae8c86e6ed"
+        "sha256": "62cc763a20feb7abbabf7f6af4d7c6199a9feb0b1fdfa04aad12fc0ce19e80be"
       }
     ]
   },
   "module": {
-    "abiVersion": 2,
+    "abiVersion": 3,
+    "moduleAbiSha256": "ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb",
     "packageAbiSha256": "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
+    "identitySeparation": "descriptor/loader use module ABI3; F2JS package uses package ABI1",
     "slotA": {
       "range": [
         "0x210000",
         "0x240000"
       ],
       "bytes": 196608,
-      "sha256": "63eed98d976bad7230434adda7f41123d665e1d2333b0979fbdfa3386d31d768",
+      "sha256": "ca4bc1b997f42812e3b99cff911252cf9d4bbe88ea7548f4f860c1fa939c368c",
       "identitySemantics": "SHA-256 of padded text[0x20000] concatenated with padded rodata[0x10000]; binary digest is embedded only in resident loader and passed to startup"
     },
     "text": {
       "paddr": "0x210000",
       "vaddr": "0x423d0000",
-      "usedBytes": 91856,
+      "usedBytes": 91936,
       "capacityBytes": 131072,
-      "sha256": "bd46e3473b8493291aadebcf1d093e812a0788866e787663920637a3d76c8c43"
+      "sha256": "542b89fe2f178c37c4ef04f46f2058cdba17320a85bdd9bc64763b6053b4ac6f"
     },
     "rodata": {
       "paddr": "0x230000",
       "vaddr": "0x3c3f0000",
       "usedBytes": 23536,
       "capacityBytes": 65536,
-      "sha256": "ddad9cac1dfa370d0513891d3d23fdd7c6c64bca73409fd4740d8e07c1f9de6b"
+      "sha256": "9a7137b404adc23636404cd98ad50a12e3c7d062de694dc8912f8a18523f4034"
     },
     "relocations": 0,
     "undefinedSymbols": 0,
     "writableStaticBytes": 0,
     "residentBlockBytes": 95568,
-    "startupVaddr": "0x423e3510",
-    "id28IdentityVaddr": "0x423e5d8c",
-    "keySinkVaddr": "0x423e3390",
+    "startupVaddr": "0x423e3598",
+    "id28IdentityVaddr": "0x423e5ddc",
+    "keySinkVaddr": "0x423e3418",
     "deterministicRebuilds": 2,
     "stackUsage": {
       "file": "experiments/mquickjs-esp32s3-physical-canary/build/module-stack-usage.json",
@@ -127,8 +129,8 @@
     },
     "loader": {
       "file": "experiments/mquickjs-esp32s3-physical-canary/build/mqjs-id28-resident-loader.bin",
-      "bytes": 2704,
-      "sha256": "775a199bfde8c17d14b77f15f5bff957d66189cf7bf6c97b6774d3ae8c86e6ed",
+      "bytes": 2744,
+      "sha256": "62cc763a20feb7abbabf7f6af4d7c6199a9feb0b1fdfa04aad12fc0ce19e80be",
       "preMapAdmissionBytes": 132432,
       "allocationBeforeFirstMap": true,
       "startupAdoptsExactBlock": true,
@@ -677,7 +679,7 @@
     "identity": {
       "baseAppSha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
       "baseAppMeaning": "accepted healthy ancestry, not final candidate app SHA",
-      "moduleSlotSha256": "63eed98d976bad7230434adda7f41123d665e1d2333b0979fbdfa3386d31d768",
+      "moduleSlotSha256": "ca4bc1b997f42812e3b99cff911252cf9d4bbe88ea7548f4f860c1fa939c368c",
       "packageSha256": "7aeeecde59bd686b3455feadc74b4b7705ca0c8ea933f9b0669cb8dc656c284e"
     },
     "eventFields": [
@@ -744,7 +746,7 @@
       "chordDown": 3,
       "chordUp": 3
     },
-    "engineSourceSha256": "f634d62094e6c3d08f7d6cf1975edf9afa5b9f53799599014a9a2ac3d09e1c19",
+    "engineSourceSha256": "ea0e19d73f927c8540c901b1845bf664542a96527fdd00ac172bcc8fde8ac9d6",
     "physicalSourceOrdering": {
       "publicationOrder": "registry-postcondition-addNavigation-navPublished-boot7-rpcReady",
       "focusCleanup": "nonterminal-seq-cst-gate-epoch-owner-drain",
@@ -753,8 +755,15 @@
     },
     "runtimeProofManifest": {
       "file": "experiments/mquickjs-esp32s3-runtime-proof/build/runtime-proof-manifest.json",
-      "sha256": "f489c72a88ab79aa34c2a968e01e95d3d02c70be11f6e526e9de87fc3c2b5d9d",
-      "objectSha256": "b1328fdd5f1f21ad917071c7d1bc56615c043261586673108d7aeab17cc297e5"
+      "sha256": "b3b3ce77a91bbb0c7ae5d0a7e7a5c86a8888a5d25cab3fdef0c8947f9e101ed4",
+      "objectSha256": "fa372a35c3a4196b5d89155be8728465bd94ca1309b830be40a160335e964676"
+    },
+    "moduleLoaderProofManifest": {
+      "file": "experiments/mquickjs-esp32s3-module-loader/build/module-loader-manifest.json",
+      "sha256": "2c53815a97b178572dacc9c513bc15b4101ede55ee9d0dad8c5abd398fa181fb",
+      "moduleAdapterSourceSha256": "f1df175e69d41d1678e386e077011995df29e6f58e1d88235a5f0ac6d2cb89fc",
+      "publicAbiVersion": 3,
+      "publicAbiSha256": "ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb"
     },
     "residentProofManifest": {
       "file": "experiments/mquickjs-esp32s3-resident-integration/build/resident-integration-manifest.json",
@@ -766,6 +775,263 @@
       "sha256": "0afdc47b8009010fb59ad1308353945a15fa7f9d4e8812354701bea747b64e28",
       "objectSha256": "0406f9e8341f79d5f6cc602460c1bf405508c5aff4a4be5fa97244beacc4c676"
     },
+    "sourceClosure": {
+      "format": "framer-mquickjs-physical-source-closure-v1",
+      "sha256": "af41e343b452ec1ef4fb5987d0169e20d2946e85673eace90b8a408cf447eef3",
+      "files": [
+        {
+          "file": "custom-firmware/lib/esp-app-image.mjs",
+          "bytes": 6572,
+          "sha256": "683aba9404bac926abc8146e348a024c6140728074e99599096fdc7d3d35cc08"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/framer_mquickjs_canary.c",
+          "bytes": 59996,
+          "sha256": "102f13cc9f5ecf831248d89180396243f5e97d8dcb645ac1d138268814e850c5"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/framer_mquickjs_canary.h",
+          "bytes": 10067,
+          "sha256": "c2bf8c086fd3fb873b8ebe4092ae320289cf6a9592ec40b95a1f337c82e2f99a"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/framer_stdlib_gen.c",
+          "bytes": 4769,
+          "sha256": "cfe1c034151bffc36bd3da96c022bba22946bf539a99e67c7a8f02bbcb7f7a7a"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/host_harness.c",
+          "bytes": 31561,
+          "sha256": "b10a98ba8610ea1e8617448480e1b0521533f6836fb40258cc7aaf4ede8813e5"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/cutils.c",
+          "bytes": 4738,
+          "sha256": "670ec34d25203c0273c399206e02a6cc329b260ce88441abce73259af554edb1"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/cutils.h",
+          "bytes": 7964,
+          "sha256": "2f5ff3551a7088b1399c03dd93b2a16f54e2ecf2946486c2dde5bf6dcdec22c7"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/dtoa.c",
+          "bytes": 44839,
+          "sha256": "7bd70f32bb4a490736d4f450f3474bfde81237b75f61398ee10838f944b2096c"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/dtoa.h",
+          "bytes": 3311,
+          "sha256": "a3ad6c1568726245df7d5597aac8a9fcd203eca2cd4717b7bb07e839cde93ad7"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/libm.c",
+          "bytes": 65808,
+          "sha256": "ea464b9395b8d74c0f28dc66e00f85413dd32dd7847ff0814ef4d030d3c78b09"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/libm.h",
+          "bytes": 1802,
+          "sha256": "ef460e2ff7455b9880683e9909332e5f10c6255dd259317a49a7d6ab6bf65d24"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/list.h",
+          "bytes": 3091,
+          "sha256": "484a604d8996a9c23c23d453ec5017af05b2c74de4bb34da8abcd5f5b5880f3e"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/mquickjs.c",
+          "bytes": 571885,
+          "sha256": "7f32ddb315dad043f16f6eaf20c709283201604b3cf52c432b9c7fbe13194cb0"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/mquickjs.h",
+          "bytes": 14630,
+          "sha256": "9715a1b5c12f7a27a46a6171483099866d51a4a2fe8f0833f8f4dbaeee7db90b"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/mquickjs_build.c",
+          "bytes": 27798,
+          "sha256": "bc5b680a58dcb5ca3702899e822b79d1b2a25afb82d99e21a8a82e9f6705ad08"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/mquickjs_build.h",
+          "bytes": 4265,
+          "sha256": "c5578d2ce533e47640c65835535228985f3218a6b8b86ad8846e9e4697473af6"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/mquickjs_opcode.h",
+          "bytes": 10183,
+          "sha256": "2364fcfe308f2fc1993cc4238a2842990a9edaf398e8f43d97b53cd01072e4d0"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/mquickjs_priv.h",
+          "bytes": 12533,
+          "sha256": "5f91ccecfd27737c5259fbcbd3a5b2c0dbe34c15d8f785d85b26637c503990b9"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/softfp_template.h",
+          "bytes": 25100,
+          "sha256": "537bdf6e02bb632a6646bf81efca0aeb5e2ff93c0e1ed15bff1e99c45a0e2d4b"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-module-loader/module_adapter.c",
+          "bytes": 2712,
+          "sha256": "f1df175e69d41d1678e386e077011995df29e6f58e1d88235a5f0ac6d2cb89fc"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-module-loader/resident_loader_canary.c",
+          "bytes": 13795,
+          "sha256": "13c178717677674787f6ed0add1904df56d55c0c894a40538fbc04a77da204d2"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-module-loader/resident_loader_canary.h",
+          "bytes": 659,
+          "sha256": "20fea7277fc63a1f7dbcc04aa734976423187cd677950bf7d4e2a046e9a6e3b2"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/backend_contract.h",
+          "bytes": 3672,
+          "sha256": "951034160881db67a58d9bb59e015b99cf7676a57423686889a440a92ef321f7"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/completion_contract.h",
+          "bytes": 756,
+          "sha256": "2f3ce8f703225446b4f529536ff81b4f9365af072dcac9a7967f85e9db94f5ce"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/fatal_retirement.h",
+          "bytes": 487,
+          "sha256": "74aa16e2a033fde003c9d7dbdda3750491d7c22c8914d6c91424e0816db7e93d"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/focus_contract.h",
+          "bytes": 1787,
+          "sha256": "0a4beedaf5d40e02b39a1c28f97b0bfad92cae00941c69929b2fbcfd439c81c7"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/key_gate.h",
+          "bytes": 1011,
+          "sha256": "2cc044cbb2cd0f63bdbc73882033bc26a1e488c33c89f078af6456ddf411e22c"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/key_token.h",
+          "bytes": 361,
+          "sha256": "21a329163d9ba9bb023c2e3f708462840e4623447f18241f3a5e924d0358271f"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/key_wrapper.c",
+          "bytes": 2670,
+          "sha256": "7ed1dde267c45a1ffa91e9ebd54d6becc5238d88b60fec6c66622e716ca8831c"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/loader.ld",
+          "bytes": 564,
+          "sha256": "1f436498b0d0eafabc55b70029c582f9b22fa55ee9cd52c5db0cf46bac12f4af"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/loader_entry.c",
+          "bytes": 8006,
+          "sha256": "72979109273d4c91d38d7d0c64f110bac167682940c57d3a6ebc1b8c534f580b"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/module.ld",
+          "bytes": 959,
+          "sha256": "de7aab517c5840e157cb958b6d8b583dc5a7cbb2cf4f882deb02219383840551"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/physical_host_harness.c",
+          "bytes": 26320,
+          "sha256": "a4b742e783c26c5d84d1adabc477d65b123243cfdaf7141c9ce765eec4b078f8"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/physical_integration.c",
+          "bytes": 62689,
+          "sha256": "6b79962ae0b38e441eb14de10d2162f02c6d741a29acb4b467e50040b85e9a40"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/publication_contract.h",
+          "bytes": 1264,
+          "sha256": "6287062b582ee50180e2c6275f58499a88f6b4b1cfccc2c747da28f947e63d73"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/rpc_shims.S",
+          "bytes": 846,
+          "sha256": "24ab8d3fdfe5fc81e550e2071e5a5c1bc946456fdc7d63a942fa23b8d2caea40"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/tail_trampoline.S",
+          "bytes": 653,
+          "sha256": "85ca63712e88cc41b9ae5a4e717e31a0a8875c6b38b06635ac032d523aabc484"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/telemetry_session.h",
+          "bytes": 3032,
+          "sha256": "971000380f5eddc82622ba4b37a3c38d8ce261377292f48ff274560759e48f2a"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-resident-integration/f2js_admission.c",
+          "bytes": 22088,
+          "sha256": "f896aa3c632baf293e0167e1ea5734cc591465b41afd52ab612d7825564a7084"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-resident-integration/f2js_admission.h",
+          "bytes": 2420,
+          "sha256": "9eccbcccfc7fe1583bdb8ac63ddaab27e5e5c7dc623569eb4196546a5b1e66cb"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-resident-integration/resident_integration.c",
+          "bytes": 59281,
+          "sha256": "b2a2cabd01be41bb1964d924fbaa8e98c7ad00386554ee6e7d38282e9a0752e9"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-resident-integration/resident_integration.h",
+          "bytes": 12943,
+          "sha256": "b6b623e6ccba95811815d89e01788335f5963fcae94454a16fedc785ae597413"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-runtime-proof/runtime_proof.c",
+          "bytes": 27274,
+          "sha256": "513aeb257c027d6852db8fa56d4b840626cf56d808e3cfb7b4650165ec037093"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-runtime-proof/runtime_proof.h",
+          "bytes": 12026,
+          "sha256": "3ce2f4b00e434c223bedb9f93182a47f0699843ba42fbe26ca995c11aa99fe35"
+        },
+        {
+          "file": "experiments/mquickjs-target-facade/contract.mjs",
+          "bytes": 28068,
+          "sha256": "e1b27503bfade10db950e917dead5ada4da1d956e61232356d277eb84487d2fb"
+        },
+        {
+          "file": "experiments/mquickjs-target-facade/target_facade.c",
+          "bytes": 30299,
+          "sha256": "86aa138caa8a2c1376ce77a54cbe5b785f55456d5d497f05f49573b932e716cd"
+        },
+        {
+          "file": "experiments/mquickjs-target-facade/target_facade.h",
+          "bytes": 4151,
+          "sha256": "2b14bd3fe7de6205f92d7562c1f9fb6f2916b5c8eb124e7ab8b700ab0a67a552"
+        },
+        {
+          "file": "f1-widget-sdk/examples/render-v2-mquickjs-weather-canary/protocol.mjs",
+          "bytes": 4929,
+          "sha256": "71b24a66793855026a53f0dbc01d3161a5e37488a31eee5d0808bca643136b95"
+        },
+        {
+          "file": "f1-widget-sdk/examples/render-v2-mquickjs-weather-canary/weather-widget.js",
+          "bytes": 5667,
+          "sha256": "68db9d61fa38b0a396e46e88076d75d262a486f2ec4b41b4d398454d7d713e9b"
+        },
+        {
+          "file": "f1-widget-sdk/src/render-v2/mquickjs.mjs",
+          "bytes": 26360,
+          "sha256": "9e3773a29677337f90ef99dc0e0ffcaa3812994f6090a355aadc65a1a229307a"
+        }
+      ]
+    },
+    "capabilityIdentitySeparation": "PASS_PACKAGE_509_MODULE_AD484_DISTINCT_DESCRIPTOR_LOADER_CAP_P11_NO_SWAP",
     "telemetryHostileRefreshInterleave": "PASS_SHARED_HELPER_EXACT_ORDER_EXPIRY_BOUNDARY",
     "taggedCompletionTelemetry": "PASS_COMPLETION_FIELDS_THEN_COHERENT_P2_REFRESH_THEN_TERMINAL_RECEIPT_RELEASE_LAST_WHILE_ADMISSION_CLOSED",
     "keyDiscoveryFallthrough": "PASS_FOUR_EDGES_ZERO_MAP_FIFTH_EDGE_FIRST_MAP",

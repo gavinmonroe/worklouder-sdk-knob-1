@@ -41,7 +41,12 @@ async function buildGenerator(buildDirectory) {
   await run(nativeCc, ["-std=c11", "-O2", `-I${vendor}`,
     path.join(directory, "framer_stdlib_gen.c"), path.join(vendor, "mquickjs_build.c"),
     "-o", generator]);
+  // mquickjs_atom.h encodes JS_ATOM_* word offsets into the ROM table, so its
+  // word size must match the library it is paired with (host atoms with the
+  // host library, -m32 atoms with the -m32/target library) or the interpreter
+  // indexes the wrong table entries (observed live as a JS SyntaxError).
   const atoms = (await run(generator, ["-a"])).stdout;
+  const targetAtoms = (await run(generator, ["-m32", "-a"])).stdout;
   const hostLibrary = (await run(generator, [])).stdout;
   const targetLibrary = (await run(generator, ["-m32"])).stdout;
   await Promise.all([
@@ -53,7 +58,7 @@ async function buildGenerator(buildDirectory) {
     hostLibrary.includes("js_setTimeout") || hostLibrary.includes("js_print") ||
     hostLibrary.includes("js_date_now") || hostLibrary.includes("js_math_random")),
   "Forbidden native functions entered the Framer ROM library.");
-  return { generator, atoms, hostLibrary, targetLibrary };
+  return { generator, atoms, targetAtoms, hostLibrary, targetLibrary };
 }
 
 async function buildAndRunHost(buildDirectory, generated) {
@@ -184,12 +189,16 @@ async function inspectXtensa(first, second) {
     relocations: 0, undefinedSymbols: 0, systemAllocatorSymbols: 0,
     fixedHeapBytes: 65536, runtimeStorageBytes: 4096,
   };
-  invariant(target.textBytes === 76432 && target.dataBytes === 0 && target.bssBytes === 69704 &&
-    target.linkedBytes === 146136 && target.rawBytes === 76444 &&
-    target.rawSha256 === "74a4416f9ceced9e5f5785637dc839d010f0dde58856330ec747803c55e18c1c",
+  // Pins re-recorded after fixing the -m32 atom/library word-size mismatch
+  // (mquickjs_atom.h must be generated with -m32 for a -m32 library, or
+  // JS_ATOM_* offsets no longer match the ROM table layout); this changes
+  // the atom table content and therefore the freshly-built binary's bytes.
+  invariant(target.textBytes === 76468 && target.dataBytes === 0 && target.bssBytes === 69704 &&
+    target.linkedBytes === 146172 && target.rawBytes === 76508 &&
+    target.rawSha256 === "581e8f6cfbaa1b6cc2e77b7c1ec29506f4d8bbab83a2559d577191c555d095ef",
     `MicroQuickJS Xtensa footprint changed: ${JSON.stringify(target)}.`);
   invariant(JSON.stringify(target.elfSections) === JSON.stringify({
-    text: 65600, rodata: 10768, ehFrame: 64, data: 0, bss: 69704,
+    text: 65636, rodata: 10768, ehFrame: 64, data: 0, bss: 69704,
   }), `MicroQuickJS Xtensa ELF sections changed: ${JSON.stringify(target.elfSections)}.`);
   return target;
 }
@@ -200,7 +209,10 @@ try {
   const generated = await buildGenerator(temp);
   const host = await buildAndRunHost(temp, generated);
   const movingGcAsan = await runMovingGcAsan(temp);
-  await writeFile(path.join(temp, "framer_stdlib.h"), generated.targetLibrary);
+  await Promise.all([
+    writeFile(path.join(temp, "mquickjs_atom.h"), generated.targetAtoms),
+    writeFile(path.join(temp, "framer_stdlib.h"), generated.targetLibrary),
+  ]);
   const first = await buildXtensaPass(temp, 0);
   const second = await buildXtensaPass(temp, 1);
   const target = await inspectXtensa(first, second);

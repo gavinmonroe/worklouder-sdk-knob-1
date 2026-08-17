@@ -1,0 +1,95 @@
+{
+  "status": "PASS_PSRAM_MODULE_WRAPPER_NO_HARDWARE",
+  "hardwareTouched": false,
+  "generatedFrom": {
+    "script": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module.mjs",
+    "sha256": "01b0b68d6829ec645fa57e54320fe1f95a838639c6a191a4c2f0ff9ed0e8c493",
+    "generatedScript": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram.generated.mjs",
+    "generatedSha256": "cd6b7971094298b6c52d2de64e7798b87cb3ec263ddceba798d985ca1438cd1f",
+    "substitutions": [
+      "output directory",
+      "module translation unit",
+      "include search path",
+      "block-size invariant",
+      "text page name",
+      "rodata page name",
+      "slot name",
+      "loader name",
+      "loader disassembly name",
+      "app name",
+      "manifest name",
+      "manifest format",
+      "manifest purpose",
+      "status line"
+    ]
+  },
+  "moduleSource": {
+    "file": "experiments/mquickjs-esp32s3-physical-canary/psram-module-src/physical_integration.c",
+    "sha256": "40e7cf98e5858fb08d3b21200ef3b8de649d36b1370d2ac7aac23f129193a764",
+    "baseline": "experiments/mquickjs-esp32s3-physical-canary/physical_integration.c",
+    "baselineSha256": "6b79962ae0b38e441eb14de10d2162f02c6d741a29acb4b467e50040b85e9a40"
+  },
+  "telemetryExtension": {
+    "method": "widget.mquickjs.telemetry",
+    "pages": [
+      6,
+      7
+    ],
+    "protocol": "slot-pages-session-free-v1",
+    "format": "v1;p=<6|7>;s<slot>=<8 lower-case hex digits> x8",
+    "slots": {
+      "6": "0..7",
+      "7": "8..15"
+    },
+    "encoding": "raw 32-bit word; negative values arrive as two's complement",
+    "maxLength": 108,
+    "source": "framer_resident_mailbox at block->owner.mailbox",
+    "consistency": "mailbox seqlock, same discipline as framer_resident_mailbox_try_read / framer_tf_snapshot_mailbox, bounded to FRAMER_TF_SNAPSHOT_ATTEMPTS (3); a persistently torn read answers blocked",
+    "sessionFree": "pages 6/7 bypass the p0-locks-snapshot-ordered-p1-p5-expiry-clear-v1 session: no runtime_telemetry_lock, no expected_page mutation, safe to poll at ~1 Hz alongside an in-flight p0..p5 transaction",
+    "capabilityAdvertised": false,
+    "capabilityNote": "runtime_proof.c is a release TU; FRAMER_PHYSICAL_TELEMETRY_PAGES stays 6 and framer_runtime_telemetry_format still rejects page > 5",
+    "reader": "experiments/mquickjs-esp32s3-physical-canary/diag-read.mjs"
+  },
+  "build": {
+    "status": "PASS_PSRAM_MODULE_BUILT_NO_HARDWARE",
+    "textSha256": "bc1e3b57fb82cc067fc57b30671d4381cd45730e376a5d42298536e0dbc1726f",
+    "rodataSha256": "818d4620a388f24d6c14f23de40f41fb33af55f0f4ebbe608306959b6c52df64",
+    "slotSha256": "9111725192043f7b40d980408a25e9dbf71d7b89fd43891932b7ddfc026f063e",
+    "appSha256": "4736206f7bd3aa0e16ecda7f97412a24838d7060b8e25ea7aa54c2516a855ee1",
+    "loaderBytes": 4732,
+    "loaderSha256": "10257634ed32263f42dbdc60b545e66d82a3977dcdedea1b1f22439b623009cd",
+    "blockBytes": 30048,
+    "startupVaddr": "0x423e391c",
+    "keyWrapper": "0x4211e650",
+    "lastErrorOffset": 6312,
+    "customAssets": true,
+    "assetSource": "experiments/mquickjs-weather3-zip/build",
+    "f2jsSha256": "8858060d9e9bea7c9a0d1e92bebcbeb8395def19479beb178602238db133ecad",
+    "f2tfSha256": "aecbb419e759e44957275f3a6fd551aa0ee7fc014c8cc09af103411256c90627",
+    "lzssSha256": "90d4751938f2a790b5ded7e97a162b2122962f1d8f182cf2d1465a79d8223e37",
+    "out": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram"
+  },
+  "flashPlan": [
+    {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/mqjs-id28-text-page-psram.bin",
+      "offset": "0x210000",
+      "bytes": 131072
+    },
+    {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/mqjs-id28-rodata-page-psram.bin",
+      "offset": "0x230000",
+      "bytes": 65536
+    },
+    {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/framer-0.4.1-mqjs-id28-PSRAM-module-app.bin",
+      "offset": "0x10000",
+      "bytes": 2062912
+    }
+  ],
+  "rollback": {
+    "app": "f1-widget-sdk/build/combined-renderer-v2-clock-blue-timer/framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-blue-timer-app.bin",
+    "sha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
+    "offset": "0x10000",
+    "note": "slot-A pages may be left in place; the healthy app never maps them"
+  }
+}

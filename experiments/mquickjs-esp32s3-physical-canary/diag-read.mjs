@@ -46,6 +46,10 @@ const expr = String.raw`
     await call("diag4", { method: "widget.mquickjs.diag4" });
     await call("scene", { method: "widget.scene.status", params: { protocol: "framer-widget-scene-rpc-v1" } });
     await call("cap0", { method: "widget.mquickjs.cap", params: { page: 0 } });
+    // Slot pages: outside the ordered p0..p5 session, so they may be called
+    // on their own, in any order, without opening a telemetry transaction.
+    await call("tel6", { method: "widget.mquickjs.telemetry", params: { page: 6 } });
+    await call("tel7", { method: "widget.mquickjs.telemetry", params: { page: 7 } });
   } finally { try { await comm.disconnect(); } catch {} }
   return out;
 })()`;
@@ -283,6 +287,42 @@ if (v4 !== null) {
     console.log("  written by classify_exception in the instrumented engine and preserved");
     console.log("  across framer_mqjs_destroy. Pair it with l in diag3 (-5 = ERR_EXCEPTION).");
   }
+}
+
+// --- telemetry slot pages 6/7 - the device->host value channel ---------------
+// physical_integration.c telemetry_slots_format: "v1;p=<6|7>" then eight
+// ";s<absolute slot>=<8 hex digits>" groups, page 6 = slots 0..7, page 7 =
+// slots 8..15, each value the raw 32-bit word (negatives in two's complement).
+// A blocked reply means either a persistently torn mailbox seqlock read or a
+// module that predates the extension.
+function slotPage(entry, page) {
+  const f = fields(statusOf(entry), "v1");
+  if (!f || f.p !== String(page)) return null;
+  const base = (page - 6) * 8;
+  const out = [];
+  for (let index = 0; index < 8; index += 1) {
+    const raw = f[`s${base + index}`];
+    if (typeof raw !== "string" || !/^[0-9a-f]{8}$/u.test(raw)) return null;
+    out.push(i32(raw));
+  }
+  return out;
+}
+
+const slots6 = slotPage(r?.tel6, 6);
+const slots7 = slotPage(r?.tel7, 7);
+if (slots6 || slots7) {
+  console.log("\n=== widget.mquickjs.telemetry p6/p7 - owner mailbox slots ===");
+  const shown = {};
+  for (let slot = 0; slot < 16; slot += 1) {
+    const half = slot < 8 ? slots6 : slots7;
+    shown[`slot${slot}`] = half ? half[slot % 8] : "not read";
+  }
+  console.log(shown);
+  console.log("  slot0 is the widget revision counter; each page is internally");
+  console.log("  consistent (one mailbox seqlock read), the two pages are not.");
+} else if (r?.tel6 || r?.tel7) {
+  console.log("\nwidget.mquickjs.telemetry p6/p7 did not answer - either this");
+  console.log("module predates the slot-page extension, or the mailbox read tore.");
 }
 
 if (!v1) console.log("\nwidget.mquickjs.diag did not answer - the DIAG loader is not running.");

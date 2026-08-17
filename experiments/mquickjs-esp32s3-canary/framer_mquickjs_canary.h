@@ -28,6 +28,14 @@ extern "C" {
 #define FRAMER_MQJS_INPUT_MAX_RESYNC_EVENTS 18u
 #define FRAMER_MQJS_MIN_HEAP_BYTES 65536u
 #define FRAMER_MQJS_RUNTIME_STORAGE_BYTES 4096u
+/* The initial source load (parse + top-level run of a several-KB script from
+ * flash-cached code) takes far longer than one steady-state callback slice;
+ * live device result under the ordinary callback_deadline_us budget was
+ * ERR_TIMEOUT ("callback deadline expired") on a healthy script. This is a
+ * separate, generous one-shot budget applied only while state->loading is
+ * set (see begin_deadline in framer_mquickjs_canary.c); steady-state
+ * callbacks keep using config.callback_deadline_us. */
+#define FRAMER_MQJS_LOAD_DEADLINE_US 3000000u
 
 typedef union {
     uint64_t alignment;

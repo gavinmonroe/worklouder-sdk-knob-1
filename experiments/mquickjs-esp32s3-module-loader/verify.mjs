@@ -74,10 +74,13 @@ const expectedCompilerIdentity =
   "xtensa-esp-elf-gcc (crosstool-NG esp-13.2.0_20240530) 13.2.0";
 const expectedPackageAbiSha256 =
   "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8";
+// Re-recorded after fixing the -m32 atom/library word-size mismatch in the
+// companion canary's framer-stdlib-gen invocation (mquickjs_atom.h must be
+// generated at the same word size as the library it is paired with).
 const expectedCoreCanarySourceSha256 =
-  "f634d62094e6c3d08f7d6cf1975edf9afa5b9f53799599014a9a2ac3d09e1c19";
+  "ea0e19d73f927c8540c901b1845bf664542a96527fdd00ac172bcc8fde8ac9d6";
 const expectedCoreCanaryTargetRawSha256 =
-  "74a4416f9ceced9e5f5785637dc839d010f0dde58856330ec747803c55e18c1c";
+  "581e8f6cfbaa1b6cc2e77b7c1ec29506f4d8bbab83a2559d577191c555d095ef";
 
 async function verifyHealthyBase() {
   const [app, receiptBytes, evidence] = await Promise.all([
@@ -140,7 +143,10 @@ async function buildGenerator(buildDirectory) {
   await run(nativeCc, ["-std=c11", "-O2", `-I${vendor}`,
     path.join(canary, "framer_stdlib_gen.c"), path.join(vendor, "mquickjs_build.c"),
     "-o", generator]);
-  const atoms = (await run(generator, ["-a"])).stdout;
+  // Atoms feed the same target (xtensa) module build as framer_stdlib.h, so
+  // both must be generated at the target (-m32) word size or JS_ATOM_* enum
+  // offsets no longer match the ROM table layout (live JS SyntaxError).
+  const atoms = (await run(generator, ["-m32", "-a"])).stdout;
   const targetLibrary = (await run(generator, ["-m32"])).stdout;
   await Promise.all([
     writeFile(path.join(buildDirectory, "mquickjs_atom.h"), atoms),

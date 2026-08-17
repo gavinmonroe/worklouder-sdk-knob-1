@@ -1,0 +1,233 @@
+{
+  "format": "framer-f1-mquickjs-app-only-receipt-v1",
+  "status": "PASS_APP_ONLY_REBOOTED_HEALTH_PENDING",
+  "mode": "fast-diff",
+  "startedAt": "2026-08-17T22:26:39.402Z",
+  "app": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/framer-0.4.1-mqjs-id28-PSRAM-module-app.bin",
+    "bytes": 2062912,
+    "sha256": "5575a52b07b73302fc166698fd1a0c5ea7d5ba8c0787e0b37244376fc7433182",
+    "offset": 65536
+  },
+  "expectLiveSha256": "3c5602b90c22fa3ac59cb306b895722f93afbec0308c9b59cc1fe3e206f61692",
+  "phases": [
+    {
+      "phase": "identity",
+      "status": "PASS_READ_ONLY",
+      "mac": "a4:cb:8f:af:32:10"
+    },
+    {
+      "phase": "baseline",
+      "status": "PASS_READ_ONLY",
+      "mode": "fast-diff",
+      "ranges": [
+        {
+          "offset": 0,
+          "bytes": 4096,
+          "end": 4096,
+          "expectedSha256": "32a3c8ad630561c7c88cd37e84dc6e96d696a7ee022ed9463b33490e2835bd2d",
+          "actualSha256": "32a3c8ad630561c7c88cd37e84dc6e96d696a7ee022ed9463b33490e2835bd2d"
+        },
+        {
+          "offset": 515728,
+          "bytes": 4096,
+          "end": 519824,
+          "expectedSha256": "c97cdc4e4fb08412071dbc36af7dc3ca441efddb69a5cbfea18d9e5b9491a79e",
+          "actualSha256": "c97cdc4e4fb08412071dbc36af7dc3ca441efddb69a5cbfea18d9e5b9491a79e"
+        },
+        {
+          "offset": 1031456,
+          "bytes": 4096,
+          "end": 1035552,
+          "expectedSha256": "f3f8e2a8e703f3d90802e6f25fee647efe6f6d86d44a4c359f73be77410afe68",
+          "actualSha256": "f3f8e2a8e703f3d90802e6f25fee647efe6f6d86d44a4c359f73be77410afe68"
+        },
+        {
+          "offset": 1547184,
+          "bytes": 4096,
+          "end": 1551280,
+          "expectedSha256": "4e606a836024aeef03d3b8ec2868258ac11e377282860515d907a0717eba14eb",
+          "actualSha256": "4e606a836024aeef03d3b8ec2868258ac11e377282860515d907a0717eba14eb"
+        },
+        {
+          "offset": 1959052,
+          "bytes": 2,
+          "end": 1959054,
+          "expectedSha256": "5632651633ce12c8bc3c115728303b7b2e61297417d64bddca624f4581e36892",
+          "actualSha256": "5632651633ce12c8bc3c115728303b7b2e61297417d64bddca624f4581e36892"
+        },
+        {
+          "offset": 1959480,
+          "bytes": 22,
+          "end": 1959502,
+          "expectedSha256": "5a6493932a216ff7241188602a65a0f8068f0469026cf5da9d93b2bfabc8ee35",
+          "actualSha256": "5a6493932a216ff7241188602a65a0f8068f0469026cf5da9d93b2bfabc8ee35"
+        },
+        {
+          "offset": 1962544,
+          "bytes": 64,
+          "end": 1962608,
+          "expectedSha256": "1317ef34e0b4694d196fc1d271289220254aa7d4f90ff950b3f0e5e152c71e3a",
+          "actualSha256": "1317ef34e0b4694d196fc1d271289220254aa7d4f90ff950b3f0e5e152c71e3a"
+        },
+        {
+          "offset": 1962956,
+          "bytes": 2,
+          "end": 1962958,
+          "expectedSha256": "05200fb755951104354b1119fcd30fed25d2107b863a31516ce88b7a35f22120",
+          "actualSha256": "05200fb755951104354b1119fcd30fed25d2107b863a31516ce88b7a35f22120"
+        },
+        {
+          "offset": 1963688,
+          "bytes": 32,
+          "end": 1963720,
+          "expectedSha256": "507a223a01b2c1aae6adcc14df9c54265c802b597a3233439c1db4ce42b537a9",
+          "actualSha256": "507a223a01b2c1aae6adcc14df9c54265c802b597a3233439c1db4ce42b537a9"
+        },
+        {
+          "offset": 2058816,
+          "bytes": 4096,
+          "end": 2062912,
+          "expectedSha256": "22002904fffd0e0d180f0d69bb452351efd313f1c4a7b8533b1457595cddc9be",
+          "actualSha256": "22002904fffd0e0d180f0d69bb452351efd313f1c4a7b8533b1457595cddc9be"
+        }
+      ],
+      "totalReadBytes": 20602
+    },
+    {
+      "phase": "app",
+      "status": "PASS_BYTE_EXACT",
+      "mode": "fast-diff",
+      "write": {
+        "baud": 921600,
+        "hashVerifiedByEsptool": true
+      },
+      "ranges": [
+        {
+          "offset": 0,
+          "bytes": 4096,
+          "end": 4096,
+          "expectedSha256": "32a3c8ad630561c7c88cd37e84dc6e96d696a7ee022ed9463b33490e2835bd2d",
+          "actualSha256": "32a3c8ad630561c7c88cd37e84dc6e96d696a7ee022ed9463b33490e2835bd2d"
+        },
+        {
+          "offset": 515728,
+          "bytes": 4096,
+          "end": 519824,
+          "expectedSha256": "c97cdc4e4fb08412071dbc36af7dc3ca441efddb69a5cbfea18d9e5b9491a79e",
+          "actualSha256": "c97cdc4e4fb08412071dbc36af7dc3ca441efddb69a5cbfea18d9e5b9491a79e"
+        },
+        {
+          "offset": 1031456,
+          "bytes": 4096,
+          "end": 1035552,
+          "expectedSha256": "f3f8e2a8e703f3d90802e6f25fee647efe6f6d86d44a4c359f73be77410afe68",
+          "actualSha256": "f3f8e2a8e703f3d90802e6f25fee647efe6f6d86d44a4c359f73be77410afe68"
+        },
+        {
+          "offset": 1547184,
+          "bytes": 4096,
+          "end": 1551280,
+          "expectedSha256": "4e606a836024aeef03d3b8ec2868258ac11e377282860515d907a0717eba14eb",
+          "actualSha256": "4e606a836024aeef03d3b8ec2868258ac11e377282860515d907a0717eba14eb"
+        },
+        {
+          "offset": 1959052,
+          "bytes": 2,
+          "end": 1959054,
+          "expectedSha256": "087e22170ad1abed6bbb7ea90390ed159d1445f1f3e4c402a6865433de5c28fa",
+          "actualSha256": "087e22170ad1abed6bbb7ea90390ed159d1445f1f3e4c402a6865433de5c28fa"
+        },
+        {
+          "offset": 1959480,
+          "bytes": 22,
+          "end": 1959502,
+          "expectedSha256": "5526093124f427c0f0bc6aa8b389a5d234346ec6a52faa662f994ee59611178c",
+          "actualSha256": "5526093124f427c0f0bc6aa8b389a5d234346ec6a52faa662f994ee59611178c"
+        },
+        {
+          "offset": 1962544,
+          "bytes": 64,
+          "end": 1962608,
+          "expectedSha256": "3530fbe443e21d82b67a5a0f550f2cc18b4b97a9195aeb2155d3313db81b1bfb",
+          "actualSha256": "3530fbe443e21d82b67a5a0f550f2cc18b4b97a9195aeb2155d3313db81b1bfb"
+        },
+        {
+          "offset": 1962956,
+          "bytes": 2,
+          "end": 1962958,
+          "expectedSha256": "dce866c591b9662c8a814949c72d03a859ad07364fd40e7f793e29e7a8de0c30",
+          "actualSha256": "dce866c591b9662c8a814949c72d03a859ad07364fd40e7f793e29e7a8de0c30"
+        },
+        {
+          "offset": 1963688,
+          "bytes": 32,
+          "end": 1963720,
+          "expectedSha256": "57f1a078c7cc94140295d9cb4f12a68658c947199837cea9445f34be366c7684",
+          "actualSha256": "57f1a078c7cc94140295d9cb4f12a68658c947199837cea9445f34be366c7684"
+        },
+        {
+          "offset": 2058816,
+          "bytes": 4096,
+          "end": 2062912,
+          "expectedSha256": "2e8326afe778fdbc6c3ca7bd93f71abbc6b2d1ef510a773a1217ede7fa53bd04",
+          "actualSha256": "2e8326afe778fdbc6c3ca7bd93f71abbc6b2d1ef510a773a1217ede7fa53bd04"
+        }
+      ],
+      "totalReadBytes": 20602
+    }
+  ],
+  "ranges": [
+    {
+      "offset": 0,
+      "bytes": 4096,
+      "end": 4096
+    },
+    {
+      "offset": 515728,
+      "bytes": 4096,
+      "end": 519824
+    },
+    {
+      "offset": 1031456,
+      "bytes": 4096,
+      "end": 1035552
+    },
+    {
+      "offset": 1547184,
+      "bytes": 4096,
+      "end": 1551280
+    },
+    {
+      "offset": 1959052,
+      "bytes": 2,
+      "end": 1959054
+    },
+    {
+      "offset": 1959480,
+      "bytes": 22,
+      "end": 1959502
+    },
+    {
+      "offset": 1962544,
+      "bytes": 64,
+      "end": 1962608
+    },
+    {
+      "offset": 1962956,
+      "bytes": 2,
+      "end": 1962958
+    },
+    {
+      "offset": 1963688,
+      "bytes": 32,
+      "end": 1963720
+    },
+    {
+      "offset": 2058816,
+      "bytes": 4096,
+      "end": 2062912
+    }
+  ],
+  "finishedAt": "2026-08-17T22:27:11.330Z"
+}
