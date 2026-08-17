@@ -1,0 +1,288 @@
+{
+  "format": "framer-f1-combined-music-id1-wpm-id7-renderer-id26-candidate-v1",
+  "status": "DEVICE_SMOKE_CANDIDATE",
+  "deployable": true,
+  "target": {
+    "device": "knob_f1",
+    "firmware": "0.4.1",
+    "screenIds": {
+      "music": 1,
+      "wpm": 7,
+      "renderer": 26
+    }
+  },
+  "liveBase": {
+    "proofId": "framer-f1-0.4.1-music-id1-b9b8eec6",
+    "app": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-music-fast-gradient/framer-0.4.1-combined-music-id1-wpm-id7-app.bin",
+      "bytes": 2032368,
+      "sha256": "b9b8eec6250392f593ae664fa8b8cba64bf861f5ef49a427c65be79e6f355817"
+    },
+    "code": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-music-fast-gradient/combined-music-id1-wpm-id7-irom.bin",
+      "bytes": 6332,
+      "sha256": "0f979d32f1a9b1203287cb71518b66367c66a1fa9e51a2c5f06be71bd15a804b"
+    },
+    "receipt": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/device-receipts/device-1786895154649-fast-smoke.json",
+      "sha256": "95fbafe93ef45785e02e157f9047d9077bfee7030b4cb346ffa13da88a9550bf",
+      "deviceHealthy": true,
+      "appOnly": true,
+      "esptoolWriteHashVerified": true
+    }
+  },
+  "setup": {
+    "soleWrapper": "f1_combined_setup_wrapper",
+    "stockSetupCalls": 1,
+    "order": [
+      "stock",
+      "music_id1_register",
+      "stage3e34_register_wpm",
+      "renderer_id26_register"
+    ],
+    "mutation": {
+      "address": "0x421170c5",
+      "bytes": 3,
+      "purpose": "redirect frozen WPM call through append-only WPM-then-renderer chain"
+    }
+  },
+  "preservation": {
+    "musicLiteral": {
+      "offset": 236,
+      "bytes": 148,
+      "sha256": "54158beff47a8dc6feee68df2656cd405849711d1adb59ad137471c76856d145",
+      "preservedByteForByte": true
+    },
+    "musicText": {
+      "offset": 2152,
+      "bytes": 4180,
+      "sha256": "e72917f53aeb3963a9adc7cb1a45aef083d762ed49019a4d6e3ba220f7e92c4e",
+      "preservedByteForByte": true
+    },
+    "wpmLiteral": {
+      "offset": 16,
+      "bytes": 220,
+      "sha256": "c447cf2300462ad218ab7d687595a5f178c06f0ca9ee5b4adadd2c3d65d24646",
+      "preservedByteForByte": true
+    },
+    "wpmText": {
+      "offset": 444,
+      "bytes": 1708,
+      "sha256": "4934ea5a2ec030cb689953d813d0995854d911546b4d4ebd122014bf4b49ec0c",
+      "preservedByteForByte": true
+    },
+    "allLiveDromAssets": {
+      "bytes": 725360,
+      "sha256": "257b6a010c9547f560d8bc952f7964ba7076977d568edf2c5c288b79c013448c",
+      "preservedByteForByte": true
+    }
+  },
+  "renderer": {
+    "source": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/custom-firmware/experimental/renderer-v1-id26.c",
+    "screenId": 26,
+    "registrationOnly": true,
+    "ownsStockSetup": false,
+    "navigationGate": "controller+20 == registry",
+    "controllerBytes": 62164,
+    "persistentRam": {
+      "controllerAndFramebufferBytes": 62164,
+      "framebufferBytes": 62000,
+      "descriptorIdentities": 2,
+      "embeddedDefaultBytes": 9488,
+      "rpcStateAndStoreBytes": 98624,
+      "successfulRegistrationBytes": 170276,
+      "failSoftRendererOnlyBytes": 62164
+    },
+    "plannedSingleStoreUploadRam": {
+      "sceneStoreBytes": 98304,
+      "rpcMetadataAndHeaderBytes": 320,
+      "embeddedDefaultBytes": 9488,
+      "framebufferBytes": 62000,
+      "controllerOverheadBytes": 164,
+      "peakBytes": 170276,
+      "semantics": "embedded default stays separate; RPC store supports freeze/detach/repeated replacement"
+    },
+    "formats": {
+      "bundle": "F1WB v1",
+      "semantic": [
+        "F1SC v1",
+        "F1GA v1"
+      ],
+      "raster": "F1RA v1",
+      "structuralAdmissionSymbol": "renderer_v1_stage_bundle",
+      "nativeRenderers": [
+        "renderer_v1_tick",
+        "renderer_v1_encoder"
+      ],
+      "transactionShaPrerequisite": true
+    },
+    "startupScene": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/examples/jp-matrix/build/jp-matrix-three-slots.f1wb",
+      "bytes": 9488,
+      "sha256": "fbfeefff128bc80c44663515830d3300083c84d18335f837f8949027051b2274",
+      "slots": 3,
+      "generation": 1,
+      "activation": "setup-time renderer_v1_tick before RPC registration",
+      "storage": "IROM word literals copied once into a dedicated retained 9488-byte RAM allocation",
+      "uploadLatch": "unused; RPC store is seeded to active generation 1 and remains writable"
+    },
+    "module": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-id26/renderer-v1-id26-registration-only.bin",
+      "baseAddress": "0x421187cc",
+      "entryAddress": "0x4211cb8c",
+      "bytes": 30540,
+      "sha256": "4241be7b22d9b9198c2e4247a6daec3299557fe8fe424588ddff5702d2a79d5e",
+      "relocations": 0,
+      "deterministicRebuilds": 2
+    },
+    "rpc": {
+      "protocol": "framer-widget-scene-rpc-v1",
+      "acceptancePending": true,
+      "liveProofId": null,
+      "handlersImplemented": true,
+      "singleSceneStoreAccepted": false,
+      "heapTelemetryAccepted": false,
+      "responseEnvelope": "proven RAM-backed {status:ok|error} canary",
+      "hostCapabilitySource": "local proof registry until physical ID26 acceptance",
+      "firstSuccessfulUploadPerBoot": false,
+      "repeatedPush": true,
+      "generationSeed": 1,
+      "activeStoreOverwriteHandshake": "timer-tick detach for every active-store overwrite",
+      "requiredCapabilityContract": {
+        "atomicF1wb": true,
+        "uiThreadApply": true,
+        "ramOnly": true,
+        "persistence": false,
+        "singleSceneStore": true,
+        "freezeOnUpload": true,
+        "headerLastCommit": true,
+        "rollbackMode": "freeze-last-frame",
+        "maxBundleBytes": 98304,
+        "sceneStoreBytes": 98304,
+        "framebufferBytes": 62000,
+        "minimumRendererBytes": 160304,
+        "chunkRawBytes": 3072,
+        "maxChunks": 32
+      },
+      "methodsReserved": [
+        "widget.scene.capabilities",
+        "widget.scene.begin",
+        "widget.scene.write",
+        "widget.scene.commit",
+        "widget.scene.abort",
+        "widget.scene.status"
+      ]
+    }
+  },
+  "outputs": {
+    "app": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-id26/framer-0.4.1-combined-music-id1-wpm-id7-renderer-id26-app.bin",
+      "bytes": 2062912,
+      "sha256": "49cbf8801e3d86b20e0df21f41a2410b3e4d8547f8f64021ca6ed4bd85168840"
+    },
+    "merged": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-id26/framer-0.4.1-combined-music-id1-wpm-id7-renderer-id26-merged.bin",
+      "bytes": 2128448,
+      "sha256": "d2f62725d20859db26142927b5f18f1e9db82c48928cb1d8a6fecae61253fd97"
+    },
+    "code": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-id26/combined-music-id1-wpm-id7-renderer-id26-irom.bin",
+      "bytes": 36872,
+      "sha256": "29ab7e856deea7bc4d87df784ecceb8e9c66210674a14264f277d801cb8c5276"
+    },
+    "inspection": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-id26/framer-0.4.1-combined-music-id1-wpm-id7-renderer-id26-app.bin",
+      "fileBytes": 2062912,
+      "fileSha256": "49cbf8801e3d86b20e0df21f41a2410b3e4d8547f8f64021ca6ed4bd85168840",
+      "appOffset": "0x0",
+      "appBytes": 2062912,
+      "appSha256": "49cbf8801e3d86b20e0df21f41a2410b3e4d8547f8f64021ca6ed4bd85168840",
+      "segmentCount": 6,
+      "segments": [
+        {
+          "index": 0,
+          "headerOffset": "0x18",
+          "dataOffset": "0x20",
+          "loadAddress": "0x3c120020",
+          "length": 725360
+        },
+        {
+          "index": 1,
+          "headerOffset": "0xb1190",
+          "dataOffset": "0xb1198",
+          "loadAddress": "0x3fca4f00",
+          "length": 23136
+        },
+        {
+          "index": 2,
+          "headerOffset": "0xb6bf8",
+          "dataOffset": "0xb6c00",
+          "loadAddress": "0x40374000",
+          "length": 37912
+        },
+        {
+          "index": 3,
+          "headerOffset": "0xc0018",
+          "dataOffset": "0xc0020",
+          "loadAddress": "0x42000020",
+          "length": 1179384
+        },
+        {
+          "index": 4,
+          "headerOffset": "0x1dff18",
+          "dataOffset": "0x1dff20",
+          "loadAddress": "0x4037d418",
+          "length": 96740
+        },
+        {
+          "index": 5,
+          "headerOffset": "0x1f7904",
+          "dataOffset": "0x1f790c",
+          "loadAddress": "0x600fe000",
+          "length": 264
+        }
+      ],
+      "checksum": {
+        "offset": "0x1f7a1f",
+        "value": "0xce",
+        "valid": true
+      },
+      "digest": {
+        "offset": "0x1f7a20",
+        "sha256": "5fe09f86031211dc93c35a26c3866d80593c8269844a37b91a8707c0aa709eaf",
+        "valid": true
+      },
+      "factoryPartitionFit": true,
+      "factoryPartitionHeadroom": 6325696
+    }
+  },
+  "safety": {
+    "hardwareAccess": false,
+    "rendererLiveProof": false,
+    "approvalRequired": false,
+    "newDromAssets": false,
+    "acceptedDromPreserved": true,
+    "factoryAppOnlyOffset": "0x10000",
+    "recovery": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/recovery/backups/2026-08-15-framer-f1-a4cb8faf3210-before-custom/full-flash-16mb.bin",
+      "sha256": "aa6042310d075c9cbd3b992044511c064bb4b84713d0740a3adafcbdb3028fdd"
+    },
+    "rollback": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/custom-firmware/build/framer-0.4.1-stage3e3a-i4-canary-app.bin",
+      "sha256": "dd8edaaa2c3aa98a1cbdbda319255cc7d1a0e02d0069f543dd574ef040db4b83"
+    }
+  },
+  "verification": {
+    "exactLiveBase": "PASS",
+    "musicWpmBytePreservation": "PASS",
+    "rendererAbi": "PASS",
+    "deterministicBuild": "PASS",
+    "checksumDigest": "PASS",
+    "esptoolImageInfo": "PASS",
+    "screenId26UnoccupiedInStock": "PASS",
+    "rendererRpcStaticImplementation": "PASS",
+    "rendererRpcAcceptance": "PENDING",
+    "heapTelemetry": "PENDING"
+  },
+  "elapsedMs": 547
+}

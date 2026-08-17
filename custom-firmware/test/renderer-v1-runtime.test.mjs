@@ -236,16 +236,18 @@ test("F1RA honors declared 100-ms cadence and fails closed on malformed payloads
   assert.throws(() => admitRendererV1Raster(overlap), /span range is invalid/u);
 });
 
-test("official 0.4.1 pins dynamic ID26 registry/navigation evidence and honest blockers", async () => {
+test("official 0.4.1 pins dynamic ID26 registry/navigation evidence and honest live gates", async () => {
   const app = await readFile(new URL("../../artifacts/firmware/framer_app_0.4.1.bin", import.meta.url));
   const audit = auditRendererV1Abi(app);
   assert.equal(RENDERER_V1_SCREEN_ID, 26);
   assert.equal(audit.screenId, 26);
   assert.match(audit.id26Evidence, /grows its pointer vector/u);
   assert.match(audit.id26Evidence, /untruncated u32/u);
-  assert.equal(audit.staticReady, false);
-  assert.equal(audit.blockers.length, 3);
+  assert.equal(audit.staticReady, true);
+  assert.equal(audit.liveReady, false);
+  assert.equal(audit.blockers.length, 4);
   assert.deepEqual(audit.memoryBudget, {
-    framebufferRam: 62_000, descriptorRam: 48, decoderScratchRam: 0, maximumThreeSlotFlash: 393_216,
+    framebufferRam: 62_000, descriptorRam: 48, decoderScratchRam: 0,
+    nativeControllerAllocation: 62_164, admittedBundleBytes: 98_304, maximumThreeSlotFlash: 393_216,
   });
 });

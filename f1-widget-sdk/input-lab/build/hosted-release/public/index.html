@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="input-lab-session-token" content="__INPUT_LAB_SESSION_TOKEN__">
+    <title>Input Lab</title>
+    <script type="module" crossorigin src="./assets/index-BWc-D0uc.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-lFnZ-Nu_.css">
+  </head>
+  <body>
+    <header class="toolbar">
+      <strong>Input Lab</strong>
+      <span id="active-slot">Active slot: 1 · Working</span>
+      <span id="bridge-status" class="bridge-status">Compiler: checking…</span>
+      <div id="apply-progress" class="apply-progress" role="status" aria-live="polite" aria-atomic="true" hidden>
+        <span class="apply-spinner" aria-hidden="true"></span>
+        <span id="apply-progress-text">Ready</span>
+      </div>
+      <button id="compile" type="button">Compile</button>
+      <button id="export" type="button">Export project</button>
+      <button id="apply" class="primary" type="button" aria-describedby="apply-progress-text" disabled
+        title="Wait for the Input Lab compiler service and connect the keyboard">Apply / Push</button>
+    </header>
+    <main class="workspace">
+      <section class="editors" aria-label="Scene source">
+        <div class="settings">
+          <label>Mode <select id="mode"><option value="auto">Auto (recommended)</option><option value="semantic">Semantic CSS (strict)</option><option value="raster">Chromium raster</option></select></label>
+          <label>FPS <input id="fps" type="number" min="1" max="10" step="0.5" value="5"></label>
+          <label>Loop ms <input id="duration" type="number" min="100" max="10000" step="100" value="2000"></label>
+          <label>Max bytes ≤128K <input id="max-bytes" type="number" min="65536" max="131072" step="1024" value="131072"></label>
+          <label>State <select id="interaction"><option value="none">Default</option><option value="hover">Hover</option></select></label>
+        </div>
+        <label for="html-source">HTML</label>
+        <textarea id="html-source" spellcheck="false" maxlength="131072"></textarea>
+        <label for="css-source">CSS</label>
+        <textarea id="css-source" spellcheck="false" maxlength="131072"></textarea>
+      </section>
+      <section class="device-column" aria-label="Device preview">
+        <div class="device-frame">
+          <div id="preview-stage" class="preview-stage">
+            <canvas id="preview" width="100" height="310"></canvas>
+            <iframe id="browser-preview" title="Sandboxed browser preview" sandbox hidden></iframe>
+          </div>
+        </div>
+        <output id="status" role="status" aria-live="polite">Browser preview ready · no device access</output>
+        <div id="capture-stats" class="capture-stats"></div>
+        <div id="filmstrip" class="filmstrip" aria-label="Captured frames"></div>
+      </section>
+      <section class="slots" aria-label="Saved previews">
+        <h2>Saved previews</h2>
+        <div id="slot-list"></div>
+        <div class="device-actions">
+          <h2>Keyboard</h2>
+          <p id="usb-status">Not connected · browser device access is always explicit</p>
+          <button id="connect-keyboard" type="button">Connect keyboard</button>
+          <button id="flash-renderer" type="button" disabled>Flash renderer app</button>
+          <p class="device-note">Scene Push uses WebHID in normal firmware. Flash uses bootloader WebSerial and writes only the app partition at 0x10000.</p>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

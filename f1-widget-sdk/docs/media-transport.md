@@ -15,7 +15,7 @@ Provider ownership, Chrome/Apple precedence, transition handling, and a symptom-
 | Chunk transport contract | Ready | 3,072 raw bytes / at most 4,096 base64 characters |
 | Capability handshake | Ready | Framer-specific, versioned, atomic/UI-thread requirements |
 | Mock runtime | Ready | Ordered chunk, per-chunk hash, complete commit verification |
-| Framer runtime sink | Ready, explicit opt-in | App `bfce3956…`, receipt `device-1786888204784`, `DEVICE_HEALTHY`; metadata, album art, progress, and track changes physically accepted |
+| Framer runtime sink | Ready, explicit opt-in | App `b9b8eec6…`, receipt `device-1786895154649`, `DEVICE_HEALTHY`; metadata, album art, progress, and track changes physically accepted |
 
 ## CLI
 
@@ -37,12 +37,11 @@ npm --prefix my-media-widget run demo
 open -n -a input --args --inspect=9230
 node f1-widget-sdk/bin/f1-widget.mjs media inspect
 
-# After confirming the exact bfce3956 app is installed, run the 1 Hz bridge.
-cd f1-widget-sdk
-npm run media:live -- --confirm-live-rpc
+# After confirming the live-accepted Music ID1 app is installed, run the 1 Hz bridge.
+npm --prefix f1-widget-sdk run media:live -- --confirm-live-rpc
 
 # One deterministic poll, useful for acceptance.
-npm run media:live -- --confirm-live-rpc --once
+npm --prefix f1-widget-sdk run media:live -- --confirm-live-rpc --once
 ```
 
 `media inspect` does not load `wl-device-kit`, discover a keyboard, or call RPC.
@@ -54,7 +53,67 @@ Input normally when finished to remove the debugger listener.
 
 `media:live` is intentionally different: it discovers exactly one USB `KnobF1`, requires firmware
 `0.4.1`, opens one bounded `evaluateInInput` transaction per WLRPC call, and disconnects in `finally`.
-It refuses to start without `--confirm-live-rpc`. Press Ctrl-C to stop the 1 Hz session.
+It refuses to start without `--confirm-live-rpc`. Press Ctrl-C to stop the 1 Hz session. The equivalent
+command from `f1-widget-sdk/` is `npm run media:live -- --confirm-live-rpc`.
+
+## Live runtime requirements
+
+The live-accepted Music ID1 firmware must already be installed. The reconnect
+handling in this host SDK does **not** change device firmware and does not
+require reflashing an F1 that already has Music ID1.
+
+The preferred end-user path is **Download Mac host companion** on any
+Music-containing Web Flasher card. It provides
+`framer-f1-music-host-macos.zip`, which is standalone from this repository but
+requires Node.js 22+ and the installed Work Louder Input app. Its launcher
+starts Input with `--inspect=9230` when safe and keeps the publisher in its
+Terminal window; leave that window open. The commands here remain the manual
+developer setup and the authoritative runtime/troubleshooting reference.
+
+Launch Input with its localhost inspector before starting the publisher:
+
+```sh
+open -n -a input --args --inspect=9230
+```
+
+Input provides the inspected media/device services, but Input by itself does
+not publish media to the custom Music ID1 screen. Keep
+`npm --prefix f1-widget-sdk run media:live -- --confirm-live-rpc` running for
+the entire syncing session. With supported media active, successful startup
+prints a `running` result followed by `published`. `unchanged` with
+`heartbeat:true` is normal when the media snapshot has not changed; it means
+the publisher still reached the device.
+
+The current live publisher explicitly supports exactly one USB/HID Framer F1
+on firmware 0.4.1. Bluetooth-only delivery is not supported or proven. Even if
+the F1 is paired over Bluetooth, its USB connection must remain attached for
+this publisher.
+
+If USB is unplugged while the publisher stays running, the next failed
+heartbeat/write invalidates its device-side delivery assumptions. After wired
+reconnect, the first successful poll resends complete metadata and all artwork
+chunks. If the publisher was stopped or its terminal was closed, reconnecting
+the keyboard alone cannot resume delivery; restart the publisher command.
+
+## No-update checklist
+
+1. Confirm Input was launched with `--inspect=9230` and its inspector is still
+   listening. `node f1-widget-sdk/bin/f1-widget.mjs media inspect` should return
+   a snapshot or the explicit `no-active-media` result rather than a debugger
+   connection error.
+2. Confirm the continuous `media:live` process is still running. Input alone is
+   not the Music ID1 publisher.
+3. Leave exactly one Framer F1 connected by USB/HID and confirm it reports
+   firmware 0.4.1. Disconnect extra F1 devices; Bluetooth alone is insufficient.
+4. Start playback in a supported source. App focus is irrelevant: Apple Music
+   must report `playing`; Chrome's explicit path requires exactly one valid
+   `music.youtube.com/watch?v=...` tab. Other Chrome audio is only available
+   through generic MediaRemote and is not a browser-specific guarantee.
+5. Read the publisher log. A healthy active session begins with `running` then
+   `published`; `unchanged` plus `heartbeat:true` is healthy. Repeated
+   `Expected exactly one USB Framer F1` errors mean the wired-device gate is not
+   satisfied. After correcting it, leave the same process running for the full
+   metadata/artwork resend, or restart it if it already exited.
 
 `init-media` creates `media-project.json`, a mock source, mock and default-blocked Input sessions, a runnable demo, regression tests, and per-project contract/testing docs. It refuses to overwrite an existing path. This keeps custom-widget work focused on the source and presentation contract while the SDK owns protocol bounds and the live-proof gate.
 
@@ -83,7 +142,7 @@ await blocked.pollOnce();
 const live = new MediaTransportSession({
   source,
   sink: new FramerMediaRuntimeSink({
-    proofId: "framer-f1-0.4.1-music-id1-bfce3956",
+    proofId: "framer-f1-0.4.1-music-id1-b9b8eec6",
     transport: new InputWlrpcMediaTransport(),
   }),
   pollIntervalMs: 1000,
@@ -140,10 +199,10 @@ The host sends `framer-host-media-v1` `host-hello` with screen ID1, `rgb565-le`,
 Production policy rejects mock or unproven runtime claims. `BlockedMediaRuntimeSink` reports `NO_LIVE_PROVEN_FRAMER_MEDIA_HANDLER` and implements no device I/O.
 
 `FramerMediaRuntimeSink` accepts one immutable SDK proof ID:
-`framer-f1-0.4.1-music-id1-bfce3956`. The proof pins app SHA-256
-`bfce3956d144ffd6747ebd85f22bbfdb806dbced64afa7e3fee9ec2053c8f682`, code SHA-256
-`e9572f0b653bbd7ce671459c3cbe9c1d1fa2aec245126aaaa96773db49c9c66b`, and deployment
-receipt `device-1786888204784`. Unknown or omitted IDs still block before negotiation or RPC.
+`framer-f1-0.4.1-music-id1-b9b8eec6`. The proof pins app SHA-256
+`b9b8eec6250392f593ae664fa8b8cba64bf861f5ef49a427c65be79e6f355817`, code SHA-256
+`0f979d32f1a9b1203287cb71518b66367c66a1fa9e51a2c5f06be71bd15a804b`, and deployment
+receipt `device-1786895154649`. Unknown or omitted IDs still block before negotiation or RPC.
 
 ## Metadata contract
 
@@ -169,6 +228,11 @@ always sends a complete six-field `mp.write_info` snapshot. Its cache advances o
 a rejection leaves the prior baseline intact. A stopped payload sends the full empty/zero/false/black
 snapshot and clears the cache only after acceptance.
 
+When a live snapshot is otherwise unchanged, the sink repeats the accepted metadata as a one-second
+device heartbeat. A missing or rejected device invalidates both transport hashes without advancing the
+generation. Polling continues, and the first successful poll after reconnect sends the complete metadata
+and all artwork chunks again so a power-cycled widget never inherits the host's pre-unplug cache.
+
 ## Artwork contract
 
 RGBA8 is nearest-neighbor resized to the runtime dimensions and alpha-composited over black while encoding RGB565 little-endian. For `80x80`, the result is exactly 12,800 bytes and five chunks:
@@ -191,10 +255,10 @@ Artwork is sent only when its encoded pixel hash changes. One-second progress ch
 
 ## Live deployment evidence
 
-The exact `bfce3956…` application was written app-only and booted as `DEVICE_HEALTHY` under receipt
-`build/device-receipts/device-1786888204784-fast-smoke.json` (receipt SHA-256
-`4ff46b80aa30d4b954db1ff43fca3fe2d5cfa04a851d464cbeb9389ab55203c3`). One-shot delivery accepted
-real metadata and a complete five-chunk artwork transaction with transaction prefix `c31b97…`.
+The exact `b9b8eec6…` application was written app-only and booted as `DEVICE_HEALTHY` under receipt
+`build/device-receipts/device-1786895154649-fast-smoke.json` (receipt SHA-256
+`95fbafe93ef45785e02e157f9047d9077bfee7030b4cb346ffa13da88a9550bf`). One-shot delivery accepted
+real metadata and a complete five-chunk artwork transaction with transaction prefix `6dc74f…`.
 
 Physical acceptance is complete: the user confirmed the correct album cover, title, artist, radial
 background, and progress display. The host fixes were also verified against both provider failure modes:
@@ -210,7 +274,7 @@ background, and progress display. The host fixes were also verified against both
   `80x80` RGBA8 SHA-256 `474acf621f4519c6b285ec934470199bb540ac8b6d6469a19935cf7458cb1ef5`.
 
 This proves boot health, host arbitration, metadata RPC, real artwork transport, transaction commit,
-track transitions, and physical rendering for proof ID `framer-f1-0.4.1-music-id1-bfce3956`.
+track transitions, and physical rendering for proof ID `framer-f1-0.4.1-music-id1-b9b8eec6`.
 The linked WPM ID7 literal/text slices remain unchanged byte-for-byte.
 
 ## Why existing shortcuts are not the product transport
@@ -226,7 +290,8 @@ The linked WPM ID7 literal/text slices remain unchanged byte-for-byte.
 `v.framer.bubble` can show a temporary two-line, 1 Hz metadata demo, but it is a visible global overlay with a ten-second expiry. Hidden mode is not a safe shared-memory contract, and the overlay can contend with WPM. Neither shortcut solves atomic RAM artwork or Music-label ownership.
 
 The live runner uses controller-owned inactive artwork staging and LVGL UI-thread generation apply;
-it does not write LittleFS or firmware and sends artwork only when the RGB565 hash changes.
+it does not write LittleFS or firmware and sends artwork only when the RGB565 hash changes or a device
+disconnect invalidates the last accepted delivery.
 
 ## Tests
 
@@ -236,7 +301,8 @@ npm --prefix f1-widget-sdk test
 ```
 
 The focused tests cover handshake rejection, exact fields, UTF-8/dimension bounds, RGB565 byte order,
-five-chunk geometry, one-second diffing, full accepted-state snapshot merging, artwork retry cleanup,
+five-chunk geometry, one-second diffing, full accepted-state snapshot merging, unplug/reconnect re-sync,
+artwork retry cleanup,
 active-Music precedence, active-Chrome arbitration, bounded YouTube oEmbed, transition duration guarding,
 exact Apple catalog matching, unknown-proof blocking,
 safe base64 RPC construction, one-evaluation-per-RPC behavior, explicit runner confirmation, and scaffolding.

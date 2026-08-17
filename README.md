@@ -1,5 +1,24 @@
 # Framer F1 widget research lab
 
+## Browser flasher
+
+[`web-flasher`](./web-flasher) is a static React 19 + Vite catalog for WPM Pet,
+Music, and the Custom HTML/CSS Preview widget. The live-accepted images and an
+explicitly approved renderer smoke candidate can use Chrome WebHID and Web
+Serial to install only their SHA-pinned factory app at `0x10000`. On origins
+where Chrome omits the HID serial, an explicit one-connected-device fallback
+keeps the chip, layout, flash, security, ROM-MAC recording, and post-boot gates
+active. The renderer
+entry reads its size, hash, and deployable status from the generated manifest
+and remains visibly labeled until its runtime is live accepted. The installer
+retains the CLI workflow's ESP32-S3, same-device MAC when exposed, 16MB flash,
+security, image-integrity, device-hash, and post-boot health gates.
+
+```sh
+npm --prefix web-flasher install
+npm --prefix web-flasher run dev
+```
+
 This workspace contains a recovery-gated investigation of Work Louder Input
 0.18.2 and Framer F1 firmware 0.4.1. It now includes both a verified host-side
 Pomodoro and the first offline-validated native firmware patch. Live progress,
@@ -82,10 +101,10 @@ evidence levels, and exact recovery steps are maintained in the
   app was written app-only, read back exactly, integrity-checked, and booted
   healthy on 0.4.1. Visual acceptance is pending: dark background, centered
   transparent cat, no white square, and no lower-screen glitch.
-- SDK v0.3 now links the Music Player ID-`1` fixture with corrected WPM ID-`7`
-  under one setup wrapper. The deterministic combined app was written app-only
-  with verified hash and booted healthy; visual/navigation acceptance is
-  pending user observation.
+- SDK v0.3 links the Music Player ID-`1` runtime with corrected WPM ID-`7`
+  under one setup wrapper. The deterministic combined app was written app-only,
+  booted healthy, and accepted for live metadata, artwork, progress, and track
+  changes from Apple Music and Chrome/YouTube Music.
 - `f1-widget-sdk/` is an unofficial guarded authoring tool with `init`,
   `validate`, `build`, `inspect`, cached `combined`, and a separate opt-in,
   fail-closed app-only `deploy` workflow. It passes 31/31 SDK tests.
@@ -93,6 +112,39 @@ evidence levels, and exact recovery steps are maintained in the
 Do **not** flash the Nomad image onto a Framer. The devices have different
 display/peripheral drivers. Reflashing official Framer 0.4.1 also will not wire
 the latent state machine into a selectable view.
+
+## Run the Music ID1 widget
+
+The live-accepted Music ID1 firmware must already be installed. The host
+reconnect fix and these documentation updates do **not** require another
+firmware flash.
+
+The preferred end-user setup is any Music-containing Web Flasher card: install
+Music ID1 there, then choose **Download Mac host companion** to get
+`framer-f1-music-host-macos.zip`. The ZIP is standalone from this repository,
+but it requires Node.js 22+ and the installed Work Louder Input app. Its launcher
+starts Input with `--inspect=9230` when safe and keeps the publisher in its
+Terminal window; leave that window open. For SDK development, the equivalent
+manual commands from the workspace root are:
+
+```sh
+open -n -a input --args --inspect=9230
+npm --prefix f1-widget-sdk run media:live -- --confirm-live-rpc
+```
+
+Keep the publisher process running. Input alone reads media but does not publish
+it to the custom Music ID1 screen. The current publisher supports exactly one
+USB/HID Framer F1 on firmware 0.4.1; Bluetooth-only operation is not supported
+or proven, so USB must remain attached. With supported media playing, normal
+startup logs `"status":"running"` and then `"status":"published"`.
+`"status":"unchanged"` with `"heartbeat":true` is a normal successful device
+check when the snapshot has not changed.
+
+If the F1 is unplugged while the publisher remains running, delivery errors are
+expected until it returns. On wired reconnect, the publisher invalidates its
+old device cache and resends complete metadata and artwork. If the publisher
+was stopped, reconnecting the keyboard alone cannot resume syncing; run the
+command again. See the full [media transport setup and no-update checklist](./f1-widget-sdk/docs/media-transport.md).
 
 ## Use the current Pomodoro proof
 

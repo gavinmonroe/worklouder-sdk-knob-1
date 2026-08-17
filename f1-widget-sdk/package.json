@@ -12,6 +12,10 @@
       "types": "./src/render/index.d.ts",
       "import": "./src/render/index.mjs"
     },
+    "./renderer-v2": {
+      "types": "./src/render-v2/index.d.ts",
+      "import": "./src/render-v2/index.mjs"
+    },
     "./media-transport": {
       "types": "./src/media-transport/index.d.ts",
       "import": "./src/media-transport/index.mjs"
@@ -31,12 +35,24 @@
     "media:status": "node bin/f1-widget.mjs media status",
     "media:mock": "node bin/f1-widget.mjs media mock",
     "media:live": "node examples/music-player/tools/run-live-media.mjs",
-    "input-lab": "node input-lab/server.mjs",
+    "input-lab": "vite --config input-lab/vite.config.mjs",
+    "input-lab:bridge": "node input-lab/server.mjs",
+    "input-lab:build": "vite build --config input-lab/vite.config.mjs",
+    "input-lab:build-hosted": "npm run input-lab:build && node input-lab/tools/build-hosted-release.mjs",
+    "input-lab:preview": "vite preview --config input-lab/vite.config.mjs",
     "input-lab:test": "node --test input-lab/test/*.test.mjs",
     "input-lab:prepare-app": "node input-lab/tools/prepare-lab-app.mjs",
     "input-lab:build-app": "node input-lab/tools/build-lab-app.mjs"
   },
   "engines": {
     "node": ">=22"
+  },
+  "devDependencies": {
+    "vite": "8.2.1"
+  },
+  "dependencies": {
+    "esptool-js": "0.6.1",
+    "sharp": "0.35.3",
+    "spark-md5": "3.0.2"
   }
 }

@@ -308,11 +308,59 @@ and non-overlapping offsets. Names are at most 16 UTF-8 bytes. The decoder also
 rejects nonzero reserved bytes and production bundles containing an F1GA
 `testOnly` marker.
 
-Apply stages and validates all three slots before an atomic UI-tick commit. The
-Fn-plus-bottom-knob handler then changes only the local active index and wraps
-through the three resident slots; it does not contact the host or recompile.
-Slots may mix modes—for example, semantic Katakana, raster Less-but-better, and
-a second semantic palette—without changing the control contract.
+The host validates all three slots before upload. The bounded device transport
+then freezes the last displayed frame, streams the complete bundle into one
+scene store, validates it, publishes its header/generation last, and resumes on
+an atomic UI tick. The Fn-plus-bottom-knob handler then changes only the local
+active index and wraps through the three resident slots; it does not contact
+the host or recompile. Slots may mix modes—for example, semantic Katakana,
+raster Less-but-better, and a second semantic palette—without changing the
+control contract.
+
+## Live scene transport contract
+
+The reusable host protocol is `framer-widget-scene-rpc-v1`. It allowlists only
+these six methods:
+
+- `widget.scene.capabilities`
+- `widget.scene.begin`
+- `widget.scene.write`
+- `widget.scene.commit`
+- `widget.scene.abort`
+- `widget.scene.status`
+
+`begin` pins an expected generation, next generation, total bytes, chunk count,
+3,072-byte chunk bound, transaction ID, and complete SHA-256. `write` accepts
+only the next exact index/offset and verifies canonical base64, decoded length,
+and per-chunk SHA-256. `commit` repeats the immutable manifest and succeeds only
+after all bytes, the whole SHA, F1WB descriptors, payload hashes, F1SC/F1GA or
+F1RA records, and runtime admission validate. `status` lets the host observe the
+UI-thread generation handoff; an indeterminate queued commit is never blindly
+aborted.
+
+There are **not** two 96 KiB scene buffers. Renderer ownership is bounded to:
+
+| Allocation | Maximum |
+|---|---:|
+| One in-place F1WB scene store | 98,304 bytes (96 KiB) |
+| One 100×310 RGB565 framebuffer | 62,000 bytes |
+| Header scratch | 20 bytes |
+| Scene store + framebuffer | 160,304 bytes |
+
+At `begin`, ID26 freezes on the last framebuffer and invalidates the in-place
+F1WB publication marker. The first 20 header bytes remain in the tiny scratch
+while later bytes stream directly into the one store. After validation, the
+header and generation are installed last and the UI task resumes. A torn,
+reordered, corrupt, timed-out, or explicitly aborted upload keeps the last frame
+visible (or fail-black if no valid frame exists), leaves the scene store invalid,
+and does not advance the accepted producer generation. It intentionally does
+not claim that the overwritten previous scene is recoverable; Input must retry
+the same next generation.
+
+This visually atomic, single-store recovery policy avoids a 96 KiB duplicate,
+but 160,304 renderer bytes are still not proven safe beside Music, WPM, LVGL,
+USB, and Input. Capabilities therefore include `heapTelemetryAccepted`; the host
+requires it to be exactly `true` in addition to an immutable live proof ID.
 
 ## Input authoring workflow
 
@@ -334,10 +382,13 @@ Apply pipeline:
 
 1. Compile locally and refuse any unsupported or over-budget source.
 2. Negotiate the exact renderer version and limits with the keyboard.
-3. Send scene and atlas to inactive RAM staging in bounded chunks.
-4. Validate length, SHA, references, counts, coordinates, and memory budget.
-5. Commit a new generation atomically on the LVGL thread.
-6. Retain the last accepted generation until the replacement fully validates.
+3. Freeze the last displayed frame and stream the F1WB into the one bounded
+   scene store, withholding its 20-byte publication header.
+4. Validate length, SHA, references, counts, coordinates, payload records, and
+   memory budget.
+5. Publish the header/generation last and resume atomically on the LVGL thread.
+6. On failure, retain the last pixels and accepted generation, mark the scene
+   store invalid, and require a complete retry.
 
 For the first live proof, the host should republish after boot and screen
 registration; no persistent flash writes. That gives seconds-long iteration
@@ -375,11 +426,13 @@ turns most widget work into validated data updates.
 | Browser-raster compiler | Ready, hardware-free | Real 100×310 Chromium capture and F1RA round-trip tests |
 | Raster byte fitter | Ready, hardware-free | Static, sparse, span, tile, dense, corruption, and cap tests |
 | Three-slot F1WB | Ready, hardware-free | Mixed semantic/raster encode, SHA, range, kind, and active-slot tests |
-| Input Lab editor/preview/save/apply | Ready for localhost/mock use | Three saved slots and sandbox capture exercised without hardware |
+| Input Lab web app/preview/save/export | Ready as a relative Vite static build | Offline sandbox preview, three saved slots, portable export, CSP/Permissions-Policy guidance |
+| Input Lab device transports | Guarded browser canary | Explicit WebHID status-only scene RPC; separate WebSerial app-only flash; loopback bridge fallback |
 | Reference renderer runtime | Ready as executable specification | One framebuffer, mixed dispatch, atomic generations, knob wrap, fail-black tests |
 | Xtensa F1SC/F1GA/F1RA decoder | Not assembled | Must implement and verify canonical SDK formats in device code |
 | Renderer widget registration | Static contract only | ID26 canary must prove registry/navigation and teardown on 0.4.1 |
-| Live scene RPC | Not accepted | Needs staging buffers, chunk bounds, SHA, generation commit, and recovery proof |
+| Live scene RPC protocol/reference | Ready, hardware-free | Six bounded methods; single-store/header-last state machine; torn/reordered/oversize/corrupt/rollback tests |
+| Live scene RPC on ID26 | Not accepted | Current exact B9 receipt proves Music/WPM only; new handlers, app hash, device acceptance, and receipt are required |
 | Heap/frame-time safety | Not accepted | Measure steady heap, worst-frame time, repeated navigation, and 30-minute soak |
 | Reboot persistence | Not implemented | First live version remains RAM-only and host-republished |
 

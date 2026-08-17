@@ -1,0 +1,7 @@
+abi <abi/4.0>,
+include <tunables/global>
+
+profile input-lab-chrome /opt/input-lab/runtime/chrome-151.0.7922.138/chrome-linux64/chrome flags=(unconfined) {
+  userns,
+  include if exists <local/input-lab-chrome>
+}

@@ -26,6 +26,8 @@ import {
 } from "../src/media-transport/index.mjs";
 import { LIVE_MEDIA_PROOF_ID, parseLiveMediaArguments, runLiveMedia } from
   "../examples/music-player/tools/run-live-media.mjs";
+import { buildInputArtworkDecodeExpression, decodeArtworkInInput } from
+  "../examples/music-player/companion/run-music-host.mjs";
 
 function artwork(seed = 1) {
   const width = 80;
@@ -44,6 +46,32 @@ function snapshot({ positionMs = 0, title = "Night Drive", seed = 1 } = {}) {
   return { title, artist: "SDK Band", durationMs: 180_000, positionMs, isPlaying: true,
     albumArt: artwork(seed) };
 }
+
+test("downloadable companion delegates artwork decoding to Input without a bundled node_modules", async () => {
+  const compressed = Buffer.from([0, 1, 2, 3, 254, 255]);
+  const expression = buildInputArtworkDecodeExpression(compressed, { side: 2 });
+  assert.match(expression, /\/Applications\/input\.app/u);
+  assert.match(expression, /AAECA\/7\//u);
+  assert.doesNotMatch(expression, /extracted\/input-app/u);
+
+  let evaluation;
+  const expectedPixels = Buffer.alloc(2 * 2 * 4, 91);
+  const decoded = await decodeArtworkInInput(compressed, {
+    side: 2,
+    evaluate: async (source, options) => {
+      evaluation = { source, options };
+      return { format: "rgba8", width: 2, height: 2,
+        pixelsBase64: expectedPixels.toString("base64") };
+    },
+  });
+  assert.equal(evaluation.source, expression);
+  assert.deepEqual(evaluation.options, { timeoutMs: 20_000 });
+  assert.deepEqual(decoded.pixels, expectedPixels);
+  await assert.rejects(decodeArtworkInInput(compressed, {
+    side: 2,
+    evaluate: async () => ({ format: "rgba8", width: 2, height: 2, pixelsBase64: "AA==" }),
+  }), /pixel count/u);
+});
 
 test("capability handshake negotiates exact protocol and rejects drift", async () => {
   const hello = createMediaHostHello();
@@ -184,6 +212,45 @@ test("rejected metadata does not advance generation or accepted snapshot", async
   assert.equal(session.previousSnapshot, null);
   sink.reject = null;
   assert.equal((await session.pollOnce()).generation, 1);
+});
+
+test("live session invalidates device caches and fully resyncs after unplug and reconnect", async () => {
+  let connected = true;
+  const calls = [];
+  const transport = {
+    negotiate: async () => ({ protocol: "framer-host-media-v1", type: "device-capabilities",
+      deviceFamily: "knob_f1", status: "ready", runtimeProof: "live-proven", metadata: true,
+      artwork: true, atomicArtworkCommit: true, uiThreadApply: true, maxTextBytes: 63,
+      maxArtworkWidth: 80, maxArtworkHeight: 80, maxArtworkBytes: 12800,
+      chunkRawBytes: 3072, artworkFormats: ["rgb565-le"], hardwareAccess: true }),
+    rpc: async (method, params) => {
+      calls.push({ connected, method, params });
+      if (!connected) throw new Error("Expected exactly one USB Framer F1");
+      return { status: "ok" };
+    },
+  };
+  const session = new MediaTransportSession({ source: { getCurrentMedia: async () => snapshot() },
+    sink: new FramerMediaRuntimeSink({ transport, proofId: LIVE_MEDIA_PROOF_ID }) });
+  assert.equal((await session.pollOnce()).status, "published");
+
+  connected = false;
+  await assert.rejects(session.pollOnce(), /USB Framer F1/u,
+    "an unchanged paused/static track still probes the device");
+  assert.equal(session.artworkKey, null);
+  assert.equal(session.metadataKey, null);
+  assert.equal(session.nextGeneration, 2, "a failed heartbeat must not advance the accepted generation");
+
+  connected = true;
+  const restored = await session.pollOnce();
+  assert.deepEqual({ status: restored.status, artwork: restored.artwork, metadata: restored.metadata },
+    { status: "published", artwork: true, metadata: true });
+  assert.equal(session.nextGeneration, 3);
+  assert.equal(calls.filter(({ connected: wasConnected, method }) =>
+    wasConnected && method === "mp.write_artwork").length, 10,
+  "reconnect must resend all five artwork chunks, not trust the pre-unplug cache");
+  assert.equal(calls.filter(({ connected: wasConnected, method }) =>
+    wasConnected && method === "mp.write_info").length, 2,
+  "reconnect must restore full metadata after the device reboot");
 });
 
 test("unknown Framer proof IDs remain blocked before any transport I/O", async () => {

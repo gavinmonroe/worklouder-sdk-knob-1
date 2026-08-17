@@ -1,0 +1,57 @@
+[Unit]
+Description=Framer F1 Input Lab hosted compiler API
+Documentation=https://htmlcss-to-framerf1-widget.g-m.dev/
+After=network.target
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+User=input-lab
+Group=input-lab
+WorkingDirectory=/opt/input-lab/current
+EnvironmentFile=/etc/input-lab/input-lab-api.env
+Environment=HOME=/var/lib/input-lab-api
+Environment=XDG_CACHE_HOME=/var/cache/input-lab-api
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+ExecStart=/usr/bin/env node input-lab/server.mjs --hosted-origin https://htmlcss-to-framerf1-widget.g-m.dev --host 127.0.0.1 --port 9231 --max-concurrent-jobs 1
+Restart=on-failure
+RestartSec=3s
+TimeoutStopSec=15s
+KillMode=mixed
+
+# The API and its bounded Chromium renderer need only loopback networking and
+# private temporary/state directories. Do not add Chrome's --no-sandbox flag.
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectHostname=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+LockPersonality=true
+RestrictRealtime=true
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+IPAddressDeny=any
+IPAddressAllow=localhost
+CapabilityBoundingSet=
+AmbientCapabilities=
+SystemCallArchitectures=native
+UMask=0077
+StateDirectory=input-lab-api
+StateDirectoryMode=0750
+CacheDirectory=input-lab-api
+CacheDirectoryMode=0750
+RuntimeDirectory=input-lab-api
+RuntimeDirectoryMode=0750
+LimitNOFILE=4096
+TasksMax=192
+CPUQuota=100%
+MemoryHigh=900M
+MemoryMax=1200M
+
+[Install]
+WantedBy=multi-user.target

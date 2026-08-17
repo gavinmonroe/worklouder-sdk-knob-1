@@ -1,0 +1,78 @@
+{
+  "format": "framer-f1-device-candidate-v1",
+  "status": "DEVICE_SMOKE_CANDIDATE",
+  "deployable": true,
+  "target": {
+    "device": "knob_f1",
+    "firmware": "0.4.1",
+    "chip": "ESP32-S3",
+    "mac": "a4:cb:8f:af:32:10"
+  },
+  "write": {
+    "offset": "0x10000",
+    "scope": "factory-app-only",
+    "hardwareWriteApproved": true
+  },
+  "app": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-focus-dial/framer-0.4.1-music-id1-wpm-id7-renderer-id26-focus-dial-app.bin",
+    "bytes": 2062912,
+    "sha256": "49590ca4dc0a26c5b998a83d217eb4e2d0b4586f5894cad00d9b48defd7eacf4"
+  },
+  "rollback": {
+    "mode": "accepted-live-receipt-v1",
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/rollbacks/framer-0.4.1-live-7ad9054a-renderer-v2-app.bin",
+    "bytes": 2062912,
+    "sha256": "7ad9054ad11f65aea130776b405c3228766a70d38e77988524795d728dd420b6",
+    "receipt": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/device-receipts/device-1786928878294-fast-smoke.json",
+      "bytes": 2394,
+      "sha256": "6457f02906008fca27c54e03f0d29a48a32b09cb8554b3cd9e6c9edfbdf824dc"
+    }
+  },
+  "recovery": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/recovery/backups/2026-08-15-framer-f1-a4cb8faf3210-before-custom/full-flash-16mb.bin",
+    "bytes": 16777216,
+    "sha256": "aa6042310d075c9cbd3b992044511c064bb4b84713d0740a3adafcbdb3028fdd"
+  },
+  "runtime": {
+    "allAssetBytesBelow": "0x3c1d0000",
+    "headroomBytes": 17,
+    "dromMappingProfile": "accepted-7ad-page1c-bootstrap-reuse-v1",
+    "newDromAssets": false,
+    "dromMutationBytes": 0,
+    "borrowedFramebufferBytes": 62000,
+    "extraFramebufferBytes": 0,
+    "baseBundleBytes": 748,
+    "f2epBytes": 9536,
+    "decodedAssetRamBytes": 10284,
+    "dromExtensionBytes": 0,
+    "integratedIromModuleBytes": 22032,
+    "integratedIromModuleSha256": "96f16c2062e1ee0662adf9a9964b2146789b8bef7a709197beb3965f5dbb5f98",
+    "integratedIromModuleAddress": "0x421187cc",
+    "integratedIromCavityBytes": 30540,
+    "integratedIromEntryAddress": "0x42118c00",
+    "wrapperCall": {
+      "address": "0x421170c5",
+      "acceptedBytes": "25aa01",
+      "candidateBytes": "a5b301"
+    },
+    "compressedAssets": {
+      "address": "0x3c1cf400",
+      "bytes": 3055,
+      "sha256": "843d7848a8ad206b2314e2a3025ba0b50b78dfa537d6909e8f5c456a69885337",
+      "capacity": 3072,
+      "decodedBytes": 10284,
+      "decodedSha256": "1b01bbba47f7462abad20dbf3fc572b22f25806900a8c6f7823c579792309ca5"
+    },
+    "acceptedDromPrefixBytes": 725360,
+    "acceptedIromBytes": 1179384,
+    "iromEndExclusive": "0x42120000",
+    "runtimeMapPatch": null,
+    "focusSceneStoreBytes": 98304,
+    "focusPackageBytes": 77566,
+    "focusPackageSha256": "2845673ea5020a5fa4658f5e38ee23a9d408ec05956e61d77c437d5fdfddc776",
+    "focusUploadOncePerBoot": true,
+    "nativeContractAccepted": true,
+    "manualScreen26AcceptancePending": true
+  }
+}

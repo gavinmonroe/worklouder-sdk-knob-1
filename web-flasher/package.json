@@ -1,0 +1,30 @@
+{
+  "name": "framer-f1-web-flasher",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "music-host:build": "node ../f1-widget-sdk/examples/music-player/tools/build-host-companion.mjs",
+    "predev": "npm run music-host:build",
+    "dev": "vite",
+    "prebuild": "npm run music-host:build",
+    "build": "vite build",
+    "preview": "vite preview",
+    "pretest": "npm run music-host:build",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "esptool-js": "0.6.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "spark-md5": "3.0.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "6.0.5",
+    "vite": "8.2.1",
+    "vitest": "4.1.10"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

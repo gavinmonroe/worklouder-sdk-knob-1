@@ -20,8 +20,8 @@ safe fallback. The immutable source bank remains below the exclusive
 `0x3c1d0000` runtime boundary.
 
 Music ID1 is also live accepted on exact app SHA-256
-`bfce3956d144ffd6747ebd85f22bbfdb806dbced64afa7e3fee9ec2053c8f682`
-under proof ID `framer-f1-0.4.1-music-id1-bfce3956`. Physical tests confirmed
+`b9b8eec6250392f593ae664fa8b8cba64bf861f5ef49a427c65be79e6f355817`
+under proof ID `framer-f1-0.4.1-music-id1-b9b8eec6`. Physical tests confirmed
 title, artist, timeline, radial artwork background, real album art, and track
 changes across Apple Music and Chrome/YouTube Music. The host bridge follows
 the player that is actually playing, not application focus or stale
@@ -30,6 +30,41 @@ MediaRemote state.
 Earlier full-DROM and image-scale failures remain regression fixtures. They are
 kept in the test suite because they pin the readable-page boundary and prevent
 unsupported scaling/cache behavior from returning.
+
+## Run live Music ID1 syncing
+
+This is a host-driven widget. Its live-accepted Music ID1 firmware must already
+be installed, but host publisher/reconnect changes do **not** require
+reflashing.
+
+For end users, the preferred setup is **Download Mac host companion** on any
+Music-containing Web Flasher card. It downloads
+`framer-f1-music-host-macos.zip`, which is standalone from this repository but
+requires Node.js 22+ and the installed Work Louder Input app. Its launcher
+starts Input with `--inspect=9230` when safe and keeps the publisher in its
+Terminal window; leave that window open. The commands below remain the manual
+developer workflow. From the workspace root, start Input's inspector and the
+publisher:
+
+```sh
+open -n -a input --args --inspect=9230
+npm --prefix f1-widget-sdk run media:live -- --confirm-live-rpc
+```
+
+Keep that terminal process running for as long as the widget should sync.
+Launching Input alone does not publish to custom Music ID1. The current live
+publisher accepts exactly one USB/HID Framer F1 on firmware 0.4.1. It does not
+support or prove Bluetooth-only delivery, so leave USB attached.
+
+With supported media active, a successful launch prints `"status":"running"`
+and then `"status":"published"`. An unchanged paused/static snapshot prints
+`"status":"unchanged","heartbeat":true`; that heartbeat is normal and proves
+the wired device is still answering. If USB is unplugged while the publisher
+keeps running, it invalidates the accepted metadata/artwork cache and fully
+resends both after wired reconnect. If the publisher has exited, reconnecting
+alone is insufficient—restart the command. See
+[`docs/media-transport.md`](docs/media-transport.md) for source behavior and the
+no-update checklist.
 
 ## Sub-second cached offline preflight
 
@@ -85,11 +120,27 @@ not authorization to flash the still-gated renderer firmware. See
 [`docs/css-renderer.md`](docs/css-renderer.md) for the exact format, budget, and
 known/unknown boundaries.
 
+Input Lab now has one relative-base Vite build for localhost or static hosting. Without native services it
+still provides a sandboxed 100x310 browser preview, three local saved previews, and portable project export.
+An allowlisted loopback bridge supplies exact compilation/capture; explicit WebHID sends normal-firmware
+scene RPC, while the separately confirmed WebSerial/esptool path validates and writes only the app image at
+`0x10000`. Push and flash remain disabled until their respective browser/device gates are satisfied.
+
 [`examples/less-but-better`](examples/less-but-better) is the complementary
 arbitrary-browser example: radial gradients, inline SVG turbulence, blend mode,
 transform animation, and captured hover are compiled to bounded F1RA pixels.
 Its build emits decoded PNG frames so the exact RGB565 payload can be inspected
 without a keyboard.
+
+Renderer v2 now has a separate hardware-free event prototype under
+[`examples/render-v2-events`](examples/render-v2-events). A constrained
+JavaScript/DOM-shaped source compiles into deterministic F2EP state bytecode
+and RGB565 dirty patches for a one-second clock, Fn-plus-bottom-knob input, and
+a fixed host-RPC event. The SDK and firmware models produce byte-identical
+programs and pixel-identical 100x310 frames; no JavaScript engine or live DOM is
+run on the keyboard. See [`docs/renderer-v2.md`](docs/renderer-v2.md) for the
+supported source surface, measured budgets, engine research, and remaining
+native/device work.
 
 ## Commands
 
@@ -156,11 +207,11 @@ node f1-widget-sdk/bin/f1-widget.mjs combined
 ```
 
 The live-accepted output is
-`build/combined-music-string-tuple/framer-0.4.1-combined-music-id1-wpm-id7-app.bin`,
-2,032,304 bytes, SHA-256
-`bfce3956d144ffd6747ebd85f22bbfdb806dbced64afa7e3fee9ec2053c8f682`.
+`build/combined-music-fast-gradient/framer-0.4.1-combined-music-id1-wpm-id7-app.bin`,
+2,032,368 bytes, SHA-256
+`b9b8eec6250392f593ae664fa8b8cba64bf861f5ef49a427c65be79e6f355817`.
 It was written app-only, booted healthy as `knob_f1` firmware 0.4.1, and is
-pinned by receipt `device-1786888204784`. WPM ID7 and Music ID1 are both
+pinned by receipt `device-1786895154649`. WPM ID7 and Music ID1 are both
 physically accepted. Building alone still never authorizes a device write;
 live RPC requires the matching proof ID and explicit `--confirm-live-rpc`.
 
@@ -177,7 +228,12 @@ live RPC requires the matching proof ID and explicit `--confirm-live-rpc`.
   ownership policy, source-of-truth matrix, transition handling, and runtime
   troubleshooting.
 - [`docs/css-renderer.md`](docs/css-renderer.md): constrained CSS compiler,
-  keyframe runtime, memory/CPU budgets, and the proposed Input authoring flow.
+  keyframe runtime, exact preview, mixed three-slot F1WB, single-store live-RPC
+  reference, memory/CPU budgets, and the Input authoring flow. The host bridge
+  remains proof-gated until a new ID26 handler receipt and heap soak exist.
+- [`docs/renderer-v2.md`](docs/renderer-v2.md): event-driven renderer-v1
+  extension, safe script compiler, F2EP ABI, clock/knob/RPC prototype, embedded
+  JavaScript-engine research, and the native integration gates.
 
 ```sh
 npm --prefix f1-widget-sdk test

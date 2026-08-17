@@ -50,6 +50,7 @@ export class MediaTransportSession {
     this.hadActiveMedia = false;
     this.previousSnapshot = null;
     this.inactiveSince = null;
+    this.needsFullSync = false;
     this.running = false;
     this.timer = null;
     this.lastResult = null;
@@ -83,6 +84,13 @@ export class MediaTransportSession {
     }
   }
 
+  invalidatePublishedState() {
+    this.metadataKey = null;
+    this.artworkKey = null;
+    this.needsFullSync = true;
+    this.sink.resetConnectionState?.();
+  }
+
   async pollOnce() {
     const capabilities = await this.handshake();
     if (capabilities.status === "blocked") {
@@ -101,46 +109,62 @@ export class MediaTransportSession {
         if (this.previousSnapshot?.isPlaying === true) {
           const retained = Object.freeze({ ...this.previousSnapshot, isPlaying: false });
           const message = createMetadataMessage(retained, capabilities, this.nextGeneration,
-            this.previousSnapshot);
-          accepted(await this.sink.publishMetadata(message), "transient inactive metadata");
+            this.needsFullSync ? null : this.previousSnapshot);
+          try { accepted(await this.sink.publishMetadata(message), "transient inactive metadata"); }
+          catch (error) { this.invalidatePublishedState(); throw error; }
           generation = this.nextGeneration++;
           this.metadataKey = mediaSha256(createMediaMetadataPayload(retained, capabilities));
           this.previousSnapshot = retained;
+          this.needsFullSync = false;
           metadata = true;
         }
         return Object.freeze({ status: "retained-transient-inactive",
           generation, inactiveForMs, graceMs: this.inactiveGraceMs, metadata, artwork: false });
       }
       const stopped = createStoppedMetadataMessage(capabilities, this.nextGeneration);
-      accepted(await this.sink.publishMetadata(stopped), "stopped metadata");
+      try { accepted(await this.sink.publishMetadata(stopped), "stopped metadata"); }
+      catch (error) { this.invalidatePublishedState(); throw error; }
       const generation = this.nextGeneration++;
       this.metadataKey = null;
       this.artworkKey = null;
       this.hadActiveMedia = false;
       this.previousSnapshot = null;
       this.inactiveSince = null;
+      this.needsFullSync = false;
       return Object.freeze({ status: "published-stopped", generation, metadata: true, artwork: false });
     }
 
     const snapshot = normalizeTransportSnapshot(raw, { maxTextBytes: capabilities.maxTextBytes });
     this.inactiveSince = null;
-    const metadata = createMetadataMessage(snapshot, capabilities, this.nextGeneration, this.previousSnapshot);
+    const metadata = createMetadataMessage(snapshot, capabilities, this.nextGeneration,
+      this.needsFullSync ? null : this.previousSnapshot);
     const artwork = createArtworkTransaction(snapshot, capabilities, this.nextGeneration);
     const metadataKey = mediaSha256(createMediaMetadataPayload(snapshot, capabilities));
     const artworkKey = mediaSha256(artwork.pixels);
     const metadataChanged = metadataKey !== this.metadataKey;
     const artworkChanged = artworkKey !== this.artworkKey;
     if (!metadataChanged && !artworkChanged) {
+      if (typeof this.sink.heartbeat === "function") {
+        try { accepted(await this.sink.heartbeat(), "media heartbeat"); }
+        catch (error) { this.invalidatePublishedState(); throw error; }
+        return Object.freeze({ status: "unchanged", generation: this.nextGeneration - 1, heartbeat: true });
+      }
       return Object.freeze({ status: "unchanged", generation: this.nextGeneration - 1 });
     }
 
-    if (artworkChanged) await this.publishArtwork(artwork);
-    if (metadataChanged) accepted(await this.sink.publishMetadata(metadata), "media metadata");
+    try {
+      if (artworkChanged) await this.publishArtwork(artwork);
+      if (metadataChanged) accepted(await this.sink.publishMetadata(metadata), "media metadata");
+    } catch (error) {
+      this.invalidatePublishedState();
+      throw error;
+    }
     const generation = this.nextGeneration++;
     this.metadataKey = metadataKey;
     this.artworkKey = artworkKey;
     this.hadActiveMedia = true;
     this.previousSnapshot = snapshot;
+    this.needsFullSync = false;
     return Object.freeze({
       status: "published",
       generation,

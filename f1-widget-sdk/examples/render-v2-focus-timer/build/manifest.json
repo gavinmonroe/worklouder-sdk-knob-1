@@ -1,0 +1,428 @@
+{
+  "format": "framer-renderer-v2-focus-timer-demo-v1",
+  "screenProfile": "timer/id27-proposed",
+  "execution": {
+    "target": "focus-id26-base-plus-lzss-blue-timer-base-plus-deterministic-timer-f2ep",
+    "sourceOfTruth": "timer-design.mjs blue RGB565 base -> exact bounded LZSS -> linkRenderV2Raster(prepareRenderV2(widget.*)) -> F2EP",
+    "deviceEvaluatesJavaScript": false,
+    "deviceRasterizesDial": false,
+    "renderSource": "pre-rendered-rgb565",
+    "nativeOrCombinedFirmwareChanged": false
+  },
+  "viewport": {
+    "width": 100,
+    "height": 310,
+    "pixelFormat": "RGB565-LE",
+    "borrowedFramebufferBytes": 62000
+  },
+  "sharedBase": {
+    "owner": "focus-clock/id26",
+    "relativeArtifact": "../render-v2-focus-dial/build/render-v2-focus-dial.base.rgb565",
+    "bytes": 62000,
+    "sha256": "5d154baeb898d090d2b0382cd5209078f5a2b5d047127dbb9a22d109083cbac6",
+    "separateTimerBaseStored": true,
+    "repaintStrategy": "ID26 restores its exact orange F1WB base; ID27 decodes the exact blue timer switch-base before applying timer F2EP patches"
+  },
+  "timerSwitchBase": {
+    "rawArtifact": "render-v2-focus-timer.base.rgb565",
+    "bytes": 62000,
+    "sha256": "13daabad2f5c578a5ebfed2fceef9dde60ae7f38c8ab51404b34133ef1b4e3e8",
+    "compressedArtifact": "render-v2-focus-timer.base.lzss",
+    "compressedBytes": 3335,
+    "compressedSha256": "cae1a0903e8b9ec09880dee05652a354b420cd5966d10b28c0382e40c0427307",
+    "codec": "lzss-1k-len3-66-v1",
+    "exactRoundTrip": true
+  },
+  "design": {
+    "largeFace": "MM:SS",
+    "palette": {
+      "black": "#000000",
+      "faceLine": "#101b2a",
+      "digits": "#edf4ff",
+      "muted": "#7f94ad",
+      "quiet": "#3c5573",
+      "skyBlue": "#176fd1",
+      "skyBlueEdge": "#46a6ff",
+      "dialCore": "#010915",
+      "tick": "#07254b",
+      "activeTick": "#c9e6ff",
+      "focus": "#a7bdd3"
+    },
+    "dialDetents": 5,
+    "visibleArcTicks": 5,
+    "radialFalloff": "continuous smoothstep quantized once to RGB565",
+    "safeArea": {
+      "left": 5,
+      "right": 5,
+      "topStatusY": 20,
+      "previousTopStatusY": 16,
+      "addedTopPaddingPixels": 4,
+      "largeDigitsX": [
+        5,
+        24,
+        57,
+        76
+      ],
+      "clippedPixels": 0
+    }
+  },
+  "source": {
+    "files": [
+      "widget.html",
+      "widget.css",
+      "widget.js",
+      "timer-design.mjs"
+    ],
+    "sha256": "85b443f174c48571e812f29f8f91147dd26b3c2997a8cd71233c5b4dae823412"
+  },
+  "compiler": {
+    "preparedFormat": "framer-render-v2-prepared-v1",
+    "sceneSha256": "f125041655e680389305200ba48c017e703a598a1b7ebfcb0693dc07f254ce1c",
+    "sceneBytes": 140,
+    "glyphs": 11,
+    "atlasSha256": "e96f4e779fa640e45845b9ac60066b3e6d2b2241d656d77725d2631a5c9052c6",
+    "atlasBytes": 148,
+    "linkedFormat": "framer-render-v2-linked-v1",
+    "linkedSha256": "80e7ca2e30a56ca12c29320256884c69cdaef7fea27a6468a0cb54122cad8979",
+    "linkedBudget": {
+      "states": 2,
+      "handlers": 3,
+      "bindings": 7,
+      "patchSets": 3,
+      "variants": 25,
+      "spans": 460,
+      "pixelBytes": 10366,
+      "baseFrameBytes": 62000,
+      "programBytes": 14618
+    },
+    "baseFrameSha256": "13daabad2f5c578a5ebfed2fceef9dde60ae7f38c8ab51404b34133ef1b4e3e8",
+    "authoredBytecodeSha256": "8391579a4925d7cce5d37f2656d4bc345c85c23da3e8f677df4b7a709419ea91",
+    "authoredBytecodeBytes": 128,
+    "linkedBytecodeExact": true,
+    "sdkFirmwareBinaryExact": true,
+    "sdkFirmwareManifestExact": true,
+    "selectorOverrides": {
+      "clock_0": {
+        "divisor": 36000,
+        "modulo": 1
+      },
+      "clock_3": {
+        "divisor": 600,
+        "modulo": 10
+      }
+    },
+    "selectorOverrideScope": "offline raster linker only; F2EP ABI unchanged",
+    "hostRuntimeVsFirmwareModel": "pixel-exact",
+    "firmwareModelVsFreshFullRasterRender": "pixel-exact"
+  },
+  "program": {
+    "format": "framer-renderer-v2-event-program-v1",
+    "sha256": "80e7ca2e30a56ca12c29320256884c69cdaef7fea27a6468a0cb54122cad8979",
+    "bytes": 14618,
+    "framebuffer": {
+      "width": 100,
+      "height": 310,
+      "strideBytes": 200,
+      "bytes": 62000,
+      "source": "borrowed-renderer-v1",
+      "extraFramebufferBytes": 0
+    },
+    "state": {
+      "slots": 2,
+      "bytes": 8,
+      "names": [
+        "remainingSeconds",
+        "dialPhase"
+      ]
+    },
+    "events": {
+      "recordBytes": 16,
+      "queueRecords": 8,
+      "queueBytes": 128
+    },
+    "vm": {
+      "handlers": 3,
+      "instructions": 16,
+      "bytecodeBytes": 128
+    },
+    "patches": {
+      "patchSets": 3,
+      "variants": 25,
+      "spans": 460,
+      "spanTableBytes": 3680,
+      "pixelBytes": 10366
+    },
+    "bindings": 7
+  },
+  "budget": {
+    "programBinaryBytes": 14618,
+    "patchPayloadBytes": 10366,
+    "patchSpanCount": 460,
+    "stateSlots": 2,
+    "handlerCount": 3,
+    "bindingCount": 7,
+    "borrowedRendererV1FramebufferBytes": 62000,
+    "additionalFramebufferBytes": 0,
+    "eventQueueBytes": 128,
+    "limits": {
+      "patchPayloadBytes": 16384,
+      "patchSpans": 512,
+      "stateSlots": 16,
+      "bindings": 16,
+      "extraFramebufferBytes": 0
+    },
+    "admitted": {
+      "patchPayload": true,
+      "patchSpans": true,
+      "stateSlots": true,
+      "bindings": true,
+      "extraFramebufferBytes": true
+    }
+  },
+  "timer": {
+    "initialSeconds": 1500,
+    "minimumEditSeconds": 300,
+    "maximumSeconds": 5700,
+    "knobStepSeconds": 300,
+    "countdownFloorSeconds": 0,
+    "authoredScaledDelta": "remainingSeconds += event.delta * 300"
+  },
+  "events": {
+    "tick": "tick.1s subtracts one and clamps at zero",
+    "fnBottomKnob": {
+      "encoderId": 1,
+      "fnRequired": true,
+      "signedDeltaScaleSeconds": 300,
+      "editClampSeconds": [
+        300,
+        5700
+      ]
+    },
+    "hostSync": {
+      "fixedEventId": 45569,
+      "fixedEventIdHex": "0xB201",
+      "value": "remaining seconds",
+      "clampSeconds": [
+        300,
+        5700
+      ]
+    }
+  },
+  "sharedStore": {
+    "accountingArtifact": "render-v2-focus-plus-timer.store-fit.bin",
+    "deployableContainer": false,
+    "layout": [
+      "focus-id26.f1wb",
+      "focus-id26.f2ep",
+      "timer-id27.f2ep",
+      "timer-id27.base.lzss"
+    ],
+    "capacityBytes": 98304,
+    "bytes": 95535,
+    "remainingBytes": 2769,
+    "sha256": "c7a49c9f7a4f709692299cff9239b9f5e0d9cc0c946efc948d3c54b54b1f5102",
+    "focusF1wbBytes": 62404,
+    "focusF1wbSha256": "fa5580257a2432301acfe87434f277493e3d1a8fd8470d793b8bd9ce66850b18",
+    "focusF2epBytes": 15178,
+    "focusF2epSha256": "b2eadd5884c6ee3b1546ac50c3c077d16eb384adbf1a82631551e69f93705aed",
+    "timerF2epBytes": 14618,
+    "timerF2epSha256": "80e7ca2e30a56ca12c29320256884c69cdaef7fea27a6468a0cb54122cad8979",
+    "timerBaseLzssBytes": 3335,
+    "timerBaseLzssSha256": "cae1a0903e8b9ec09880dee05652a354b420cd5966d10b28c0382e40c0427307"
+  },
+  "animation": {
+    "cadenceMs": 1000,
+    "model": "five-position clicking rotation synchronized to displayed seconds",
+    "state": "dialPhase",
+    "modulo": 5,
+    "exactSecondBoundaryPolicy": "queued Fn click is applied first, then the independent automatic second click; both are retained",
+    "frames": [
+      {
+        "dialPhase": 0,
+        "dialDetent": 1,
+        "rgb565Sha256": "8749c60fb58e8e7c180f526b32ef6752087844aac4aaad891c4dbcb2dc9104d7"
+      },
+      {
+        "dialPhase": 1,
+        "dialDetent": 2,
+        "rgb565Sha256": "78eb52deb80a798fdf1501e05f2a9cb66d267b23bfb8ac6fe91a07e4dba15edd"
+      },
+      {
+        "dialPhase": 2,
+        "dialDetent": 3,
+        "rgb565Sha256": "5fc3b5f17c8c226e3f2dd0b66a2f550a038a300ceb81b7383960b3c901585d9a"
+      },
+      {
+        "dialPhase": 3,
+        "dialDetent": 4,
+        "rgb565Sha256": "97fc055059d3c7b7e54f6677b198e97abf3012608659c9477fc084335328142d"
+      },
+      {
+        "dialPhase": 4,
+        "dialDetent": 5,
+        "rgb565Sha256": "1a4458e0d7cc7c4dd3105332246b7d9b6255f24e2bf6a06c0efb58c41bb3d2ef"
+      }
+    ],
+    "contactSheet": "animation-contact-sheet.png",
+    "contactSheetSha256": "705f7879575a8f691fc3f5ae739cd96e0b9e116edd88c379038fc197d6248e52"
+  },
+  "frames": [
+    {
+      "index": 0,
+      "name": "initial-25-00",
+      "event": "initial tick.100ms",
+      "state": {
+        "remainingSeconds": 1500,
+        "dialPhase": 0
+      },
+      "semantic": {
+        "display": "25:00",
+        "dialDetent": 1
+      },
+      "frameGeneration": 1,
+      "descriptorIdentity": 1,
+      "hostGeneration": 1,
+      "hostDiffPixels": 0,
+      "fullRasterRenderDiffPixels": 0,
+      "rgb565Sha256": "d8308c853da7da6745f8fdc6b40b1189bcc379800650671e568d32d65333b165",
+      "rgb565Bytes": 62000,
+      "changedPixelsFromPrevious": 0,
+      "png": "frame-00-initial-25-00.png",
+      "raw": "frame-00-initial-25-00.rgb565"
+    },
+    {
+      "index": 1,
+      "name": "turn-plus-30-00",
+      "event": "Fn+bottom-knob delta=+1",
+      "state": {
+        "remainingSeconds": 1800,
+        "dialPhase": 1
+      },
+      "semantic": {
+        "display": "30:00",
+        "dialDetent": 2
+      },
+      "frameGeneration": 2,
+      "descriptorIdentity": 0,
+      "hostGeneration": 2,
+      "hostDiffPixels": 0,
+      "fullRasterRenderDiffPixels": 0,
+      "rgb565Sha256": "c5d8e92863e9fd34789429f18f57eaede72419943fe26694b19adc16ecc3df93",
+      "rgb565Bytes": 62000,
+      "changedPixelsFromPrevious": 306,
+      "png": "frame-01-turn-plus-30-00.png",
+      "raw": "frame-01-turn-plus-30-00.rgb565"
+    },
+    {
+      "index": 2,
+      "name": "turn-minus-25-00",
+      "event": "Fn+bottom-knob delta=-1",
+      "state": {
+        "remainingSeconds": 1500,
+        "dialPhase": 0
+      },
+      "semantic": {
+        "display": "25:00",
+        "dialDetent": 1
+      },
+      "frameGeneration": 3,
+      "descriptorIdentity": 1,
+      "hostGeneration": 3,
+      "hostDiffPixels": 0,
+      "fullRasterRenderDiffPixels": 0,
+      "rgb565Sha256": "d8308c853da7da6745f8fdc6b40b1189bcc379800650671e568d32d65333b165",
+      "rgb565Bytes": 62000,
+      "changedPixelsFromPrevious": 306,
+      "png": "frame-02-turn-minus-25-00.png",
+      "raw": "frame-02-turn-minus-25-00.rgb565"
+    },
+    {
+      "index": 3,
+      "name": "countdown-tick-24-59",
+      "event": "tick.1s",
+      "state": {
+        "remainingSeconds": 1499,
+        "dialPhase": 1
+      },
+      "semantic": {
+        "display": "24:59",
+        "dialDetent": 2
+      },
+      "frameGeneration": 10,
+      "descriptorIdentity": 0,
+      "hostGeneration": 4,
+      "hostDiffPixels": 0,
+      "fullRasterRenderDiffPixels": 0,
+      "rgb565Sha256": "78eb52deb80a798fdf1501e05f2a9cb66d267b23bfb8ac6fe91a07e4dba15edd",
+      "rgb565Bytes": 62000,
+      "changedPixelsFromPrevious": 402,
+      "png": "frame-03-countdown-tick-24-59.png",
+      "raw": "frame-03-countdown-tick-24-59.rgb565"
+    },
+    {
+      "index": 4,
+      "name": "host-sync-95-00",
+      "event": "host.rpc:0xB201 seconds=5700",
+      "state": {
+        "remainingSeconds": 5700,
+        "dialPhase": 1
+      },
+      "semantic": {
+        "display": "95:00",
+        "dialDetent": 2
+      },
+      "frameGeneration": 11,
+      "descriptorIdentity": 1,
+      "hostGeneration": 5,
+      "hostDiffPixels": 0,
+      "fullRasterRenderDiffPixels": 0,
+      "rgb565Sha256": "8f9d1e8e6aa38fd9a0a36b17051d587f094e504c00f79eb531e464b8eb30d2d9",
+      "rgb565Bytes": 62000,
+      "changedPixelsFromPrevious": 394,
+      "png": "frame-04-host-sync-95-00.png",
+      "raw": "frame-04-host-sync-95-00.rgb565"
+    }
+  ],
+  "boundaryFrames": [
+    {
+      "remainingSeconds": 300,
+      "display": "05:00",
+      "rgb565Sha256": "0f187afdf8f6fa63d7c2e697e15186a63307ed487b3de0b2b34c1612652655a9",
+      "png": "boundary-05-00.png",
+      "raw": "boundary-05-00.rgb565"
+    },
+    {
+      "remainingSeconds": 0,
+      "display": "00:00",
+      "rgb565Sha256": "322cc3238b677a7d685711a290ef640212755365f131a6d92bc007c00b742fde",
+      "png": "boundary-00-00.png",
+      "raw": "boundary-00-00.rgb565"
+    },
+    {
+      "remainingSeconds": 3300,
+      "display": "55:00",
+      "rgb565Sha256": "9c39c4732dfb98b6fd4e402b2bb5bac1965c2e172d26a9acb8362003e01972e3",
+      "png": "boundary-55-00.png",
+      "raw": "boundary-55-00.rgb565"
+    },
+    {
+      "remainingSeconds": 3600,
+      "display": "60:00",
+      "rgb565Sha256": "5ba93ec14ab706c161f17ef56a298a0905f9623ad6bba917e7f9d97fe3882a2d",
+      "png": "boundary-60-00.png",
+      "raw": "boundary-60-00.rgb565"
+    },
+    {
+      "remainingSeconds": 5700,
+      "display": "95:00",
+      "rgb565Sha256": "b7b4f4021dd7e55bd8c6fe90c32ba9b88faf0b9e55209f500ba4043938efa56b",
+      "png": "boundary-95-00.png",
+      "raw": "boundary-95-00.rgb565"
+    }
+  ],
+  "contactSheet": "lifecycle-contact-sheet.png",
+  "contactSheetSha256": "3be60cc0a3d6b486bcfd66df748877738c4523b0625e11a382b04eddb588dec6",
+  "boundaryContactSheet": "boundary-contact-sheet.png",
+  "boundaryContactSheetSha256": "4e4d383330e6440a89c59a398fd25569321d116619f02420411695c872291439",
+  "note": "Separate timer/ID27 F2EP linked to its exact compressed blue switch-base; ID26 keeps its orange F1WB base. No native/combined image or hardware was modified."
+}

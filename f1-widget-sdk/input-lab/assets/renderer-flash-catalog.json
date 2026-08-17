@@ -1,0 +1,9 @@
+{
+  "format": "framer-input-lab-public-flash-catalog-v1",
+  "status": "DEVICE_SMOKE_CANDIDATE",
+  "deployable": true,
+  "app": {
+    "bytes": 2062912,
+    "sha256": "49cbf8801e3d86b20e0df21f41a2410b3e4d8547f8f64021ca6ed4bd85168840"
+  }
+}

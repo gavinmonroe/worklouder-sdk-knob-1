@@ -1,8 +1,8 @@
 # Music ID1 media RPC
 
 Status: the composite-art/radial-UI transport is LIVE-PROVEN and physically accepted on the Framer F1
-with exact app `bfce3956d144ffd6747ebd85f22bbfdb806dbced64afa7e3fee9ec2053c8f682`,
-deployment receipt `device-1786888204784`, and post-write result `DEVICE_HEALTHY`. Correct title,
+with exact app `b9b8eec6250392f593ae664fa8b8cba64bf861f5ef49a427c65be79e6f355817`,
+deployment receipt `device-1786895154649`, and post-write result `DEVICE_HEALTHY`. Correct title,
 artist, album cover, radial background, and progress all passed on the screen. One
 prior candidate failed during method registration because it passed an appended-IROM string to a
 stock ROM copy helper. The next reached `mp.write_info`, but individually destroyed a temporary JSON
@@ -96,26 +96,26 @@ are centered at `y=82`, `204`, and `236`. Cleanup clears borrowed pointers and c
 
 - Source: `examples/music-player/on-device/music-player-id1.S`
 - Standalone ABI: `examples/music-player/generated/on-device-candidate/music-id1-abi.bin`
-  - 4,348 bytes
-  - SHA-256 `8523747be79077d3b98cd970f3be32336467fb0ae655739e70eacea726e7f149`
+  - 4,420 bytes
+  - SHA-256 `443b7aaca676002fc7b6577a2cd8111460f7939e5efc7ce413a0f7f5276dbf1a`
   - ESP32-S3 `elf32-xtensa-le`, zero relocations
-- Combined app: `build/combined-music-string-tuple/framer-0.4.1-combined-music-id1-wpm-id7-app.bin`
-  - 2,032,304 bytes
-  - SHA-256 `bfce3956d144ffd6747ebd85f22bbfdb806dbced64afa7e3fee9ec2053c8f682`
-- Combined IROM: `build/combined-music-string-tuple/combined-music-id1-wpm-id7-irom.bin`
-  - 6,260 bytes
-  - SHA-256 `e9572f0b653bbd7ce671459c3cbe9c1d1fa2aec245126aaaa96773db49c9c66b`
-- Combined merged image: `build/combined-music-string-tuple/framer-0.4.1-combined-music-id1-wpm-id7-merged.bin`
-  - SHA-256 `6858d3abceb03bd70aaa18428795d5119fe69387add35a0a9741c0d33cfda2fd`
+- Combined app: `build/combined-music-fast-gradient/framer-0.4.1-combined-music-id1-wpm-id7-app.bin`
+  - 2,032,368 bytes
+  - SHA-256 `b9b8eec6250392f593ae664fa8b8cba64bf861f5ef49a427c65be79e6f355817`
+- Combined IROM: `build/combined-music-fast-gradient/combined-music-id1-wpm-id7-irom.bin`
+  - 6,332 bytes
+  - SHA-256 `0f979d32f1a9b1203287cb71518b66367c66a1fa9e51a2c5f06be71bd15a804b`
+- Combined merged image: `build/combined-music-fast-gradient/framer-0.4.1-combined-music-id1-wpm-id7-merged.bin`
+  - SHA-256 `dbc29e0d74b30c8244fbe5e04960781ed58945e23cea525de0d44428434ebf54`
 
 The combined builder verifies the live-complete WPM linked literal and text slices byte-for-byte.
 All modifications are after or inside Music ID1; WPM ID7 and its asset page are unchanged.
 
 The corrected candidate was independently rebuilt and byte-compared. It is ESP32-S3 little-endian
-with zero relocations, one DROM/one IROM, six segments, and all 69 SDK tests passing. The focused
+with zero relocations, one DROM/one IROM, six segments, and the SDK test suite passing. The focused
 IROM/RAM-string and proxy/root-lifetime audits pass. Factory-partition headroom remains over
-6.35 MiB. The accepted image checksum is `0xcd` and image digest is
-`dc1537848a774a5e2107432bcc5fe46322f88096685d1cfa30aedaa7283a15ca`. This is an independent
+6.35 MiB. The accepted image checksum is `0x5a` and image digest is
+`be056aaecc4ffa27a8593f6c7489dec18efa91e71547c66f3713f9ba28c37c47`. This is an independent
 static approval backed by a healthy live app-only deployment, accepted RPC transactions, and final
 physical acceptance of the title, artist, real album cover, background, and progress rendering.
 
@@ -132,11 +132,11 @@ healthy boot of the exact final app are now live-proven.
 
 ## Exact live proof
 
-- SDK proof ID: `framer-f1-0.4.1-music-id1-bfce3956`
-- Fast-smoke receipt: `build/device-receipts/device-1786888204784-fast-smoke.json`
-- Receipt SHA-256: `4ff46b80aa30d4b954db1ff43fca3fe2d5cfa04a851d464cbeb9389ab55203c3`
+- SDK proof ID: `framer-f1-0.4.1-music-id1-b9b8eec6`
+- Fast-smoke receipt: `build/device-receipts/device-1786895154649-fast-smoke.json`
+- Receipt SHA-256: `95fbafe93ef45785e02e157f9047d9077bfee7030b4cb346ffa13da88a9550bf`
 - Device result: `DEVICE_HEALTHY`
-- One-shot: real metadata and complete artwork accepted, transaction prefix `c31b97…`
+- One-shot: real metadata and complete artwork accepted, transaction prefix `6dc74f…`
 - Physical display: correct cover/title/artist/background/progress accepted by the user
 - Host arbitration: Apple catalog and active YouTube Music/oEmbed paths both verified with real `80x80` art
 - WPM ID7: linked literal/text slices unchanged byte-for-byte
@@ -148,7 +148,7 @@ Run the hardware-free verification:
 ```sh
 cd f1-widget-sdk
 npm test
-node bin/f1-widget.mjs combined --out build/combined-music-string-tuple
+node bin/f1-widget.mjs combined --out build/combined-music-fast-gradient
 ```
 
 The guarded deployment writes only the application at `0x10000`; it does not touch NVS,
@@ -162,3 +162,14 @@ npm run media:live -- --confirm-live-rpc
 # One deterministic metadata/artwork transaction.
 npm run media:live -- --confirm-live-rpc --once
 ```
+
+For end users, **Download Mac host companion** on any Music-containing Web
+Flasher card is the preferred setup. It provides
+`framer-f1-music-host-macos.zip`; the standalone ZIP requires Node.js 22+ and
+the installed Work Louder Input app. Its launcher starts Input with
+`--inspect=9230` when safe and keeps the publisher in its Terminal window.
+These commands remain the manual developer path. Either way, keep the publisher
+running and leave exactly one firmware-0.4.1 Framer F1 attached over USB/HID;
+Bluetooth-only delivery is not supported. The complete runtime requirements,
+reconnect behavior, and no-update checklist are in
+[`media-transport.md`](media-transport.md).

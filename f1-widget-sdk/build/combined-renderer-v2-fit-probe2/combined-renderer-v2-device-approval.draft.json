@@ -1,0 +1,73 @@
+{
+  "format": "framer-f1-device-candidate-v1",
+  "status": "DEVICE_SMOKE_CANDIDATE",
+  "deployable": true,
+  "target": {
+    "device": "knob_f1",
+    "firmware": "0.4.1",
+    "chip": "ESP32-S3",
+    "mac": "a4:cb:8f:af:32:10"
+  },
+  "write": {
+    "offset": "0x10000",
+    "scope": "factory-app-only",
+    "hardwareWriteApproved": true
+  },
+  "app": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-fit-probe2/framer-0.4.1-music-id1-wpm-id7-renderer-id26-render-v2-app.bin",
+    "bytes": 2128448,
+    "sha256": "c44ce76fe1b0a127f3985d995348c96465f8fb898d7c67aa30a2d950d3828626"
+  },
+  "rollback": {
+    "mode": "accepted-live-receipt-v1",
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/rollbacks/framer-0.4.1-live-49cbf880-renderer-id26-app.bin",
+    "bytes": 2062912,
+    "sha256": "49cbf8801e3d86b20e0df21f41a2410b3e4d8547f8f64021ca6ed4bd85168840",
+    "receipt": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/device-receipts/device-1786904989663-fast-smoke.json",
+      "bytes": 2372,
+      "sha256": "3d821fbc31053f39d49dd945164cf7399a3632d5bbb8a193dd0f7b110d376906"
+    }
+  },
+  "recovery": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/recovery/backups/2026-08-15-framer-f1-a4cb8faf3210-before-custom/full-flash-16mb.bin",
+    "bytes": 16777216,
+    "sha256": "aa6042310d075c9cbd3b992044511c064bb4b84713d0740a3adafcbdb3028fdd"
+  },
+  "runtime": {
+    "allAssetBytesBelow": "0x3c1e0000",
+    "headroomBytes": 50756,
+    "dromMappingProfile": "renderer-v2-terminal-page-v1",
+    "newDromAssets": true,
+    "borrowedFramebufferBytes": 62000,
+    "extraFramebufferBytes": 0,
+    "baseBundleBytes": 748,
+    "f2epBytes": 9536,
+    "dromExtensionBytes": 65536,
+    "integratedIromModuleBytes": 19616,
+    "baseBundle": {
+      "address": "0x3c1d1190",
+      "bytes": 748,
+      "sha256": "5f1edc6879adcec0d25d5e6c999bfc80e19089aa05a72fbd14f3f5acd8899f2e"
+    },
+    "f2ep": {
+      "address": "0x3c1d147c",
+      "bytes": 9536,
+      "sha256": "af34f7f98587d31929799e3218beb47582a0ec796085f4d36859d37a60469b08"
+    },
+    "acceptedDromPrefixBytes": 725360,
+    "acceptedIromBytes": 1179384,
+    "iromEndExclusive": "0x42120000",
+    "runtimeMapPatch": {
+      "rodataEndOffset": "0x914",
+      "rodataEndValue": "0x3c1d39bc",
+      "psramOffsets": [
+        "0xbdd18",
+        "0xbdd1c"
+      ],
+      "psramStartValue": "0x3c1e0000"
+    },
+    "nativeContractAccepted": true,
+    "manualScreen26AcceptancePending": true
+  }
+}

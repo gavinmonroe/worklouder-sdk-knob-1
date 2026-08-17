@@ -1,0 +1,76 @@
+{
+  "format": "framer-f1-device-deployment-receipt-v1",
+  "mode": "fast-smoke",
+  "target": {
+    "device": "knob_f1",
+    "firmware": "0.4.1",
+    "mac": "a4:cb:8f:af:32:10"
+  },
+  "app": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-events/framer-0.4.1-music-id1-wpm-id7-renderer-id26-render-v2-app.bin",
+    "bytes": 2128448,
+    "sha256": "c44ce76fe1b0a127f3985d995348c96465f8fb898d7c67aa30a2d950d3828626",
+    "flashOffset": "0x10000"
+  },
+  "rollback": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/rollbacks/framer-0.4.1-live-49cbf880-renderer-id26-app.bin",
+    "bytes": 2062912,
+    "sha256": "49cbf8801e3d86b20e0df21f41a2410b3e4d8547f8f64021ca6ed4bd85168840"
+  },
+  "recovery": {
+    "manifest": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/recovery/backups/2026-08-15-framer-f1-a4cb8faf3210-before-custom/manifest.json",
+    "fullFlash": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/recovery/backups/2026-08-15-framer-f1-a4cb8faf3210-before-custom/full-flash-16mb.bin",
+    "bytes": 16777216,
+    "sha256": "aa6042310d075c9cbd3b992044511c064bb4b84713d0740a3adafcbdb3028fdd",
+    "mac": "a4:cb:8f:af:32:10"
+  },
+  "normalBefore": {
+    "device": {
+      "portPath": "DevSrvsID:4295113474",
+      "devicePid": "33686",
+      "connectionType": 1,
+      "deviceType": "knob_f1",
+      "layoutType": "ansi",
+      "isUsbConnection": true
+    },
+    "version": "0.4.1",
+    "status": {
+      "firmwareVersion": "0.4.1",
+      "selectedProfileIndex": 0,
+      "selectedLayerIndex": 1,
+      "batteryPercentage": 100,
+      "isCharging": false
+    }
+  },
+  "serialIdentity": {
+    "chip": "ESP32-S3",
+    "mac": "a4:cb:8f:af:32:10",
+    "secureBoot": false,
+    "flashEncryption": false,
+    "flashBytes": 16777216
+  },
+  "write": {
+    "baud": 921600,
+    "hashVerifiedByEsptool": true,
+    "appOnly": true
+  },
+  "postBoot": {
+    "device": {
+      "portPath": "DevSrvsID:4295114452",
+      "devicePid": "33686",
+      "connectionType": 1,
+      "deviceType": "knob_f1",
+      "layoutType": "ansi",
+      "isUsbConnection": true
+    },
+    "version": "0.4.1",
+    "status": {
+      "firmwareVersion": "0.4.1",
+      "selectedProfileIndex": 0,
+      "selectedLayerIndex": 1,
+      "batteryPercentage": 100,
+      "isCharging": false
+    }
+  },
+  "elapsedMs": 26786
+}

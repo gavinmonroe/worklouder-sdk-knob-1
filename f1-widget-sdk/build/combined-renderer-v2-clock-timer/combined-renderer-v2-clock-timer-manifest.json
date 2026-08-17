@@ -1,0 +1,494 @@
+{
+  "format": "framer-f1-combined-renderer-v2-clock-timer-candidate-v1",
+  "status": "DEVICE_SMOKE_CANDIDATE",
+  "deployable": true,
+  "target": {
+    "device": "knob_f1",
+    "firmware": "0.4.1",
+    "screenIds": {
+      "music": 1,
+      "wpm": 7,
+      "focusClock": 26,
+      "focusTimer": 27
+    }
+  },
+  "liveBase": {
+    "proofId": "framer-f1-0.4.1-music-wpm-renderer-v2-focus-49590ca4",
+    "app": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/rollbacks/framer-0.4.1-live-49590ca4-focus-dial-app.bin",
+      "bytes": 2062912,
+      "sha256": "49590ca4dc0a26c5b998a83d217eb4e2d0b4586f5894cad00d9b48defd7eacf4"
+    },
+    "receipt": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/device-receipts/device-1786932732117-fast-smoke.json",
+      "bytes": 2397,
+      "sha256": "1f613e2f375692283c3285b742b88f0a4ab8415712281b30de2ad3b676a28523",
+      "appOnly": true,
+      "postBootHealthy": true,
+      "esptoolWriteHashVerified": true
+    }
+  },
+  "setup": {
+    "soleWrapper": "f1_combined_setup_wrapper",
+    "stockSetupCalls": 1,
+    "order": [
+      "stock",
+      "music_id1_register",
+      "stage3e34_register_wpm",
+      "renderer_id26_register",
+      "renderer_v2_decode_assets",
+      "renderer_v2_native_attach",
+      "renderer_scene_rpc_register",
+      "renderer_v2_rpc_register"
+    ],
+    "additiveController": {
+      "id": 27,
+      "registeredBy": "renderer_v2_native_attach",
+      "controllerBytes": 136,
+      "addController": "0x4204da84",
+      "addNavigation": "0x420293a8"
+    },
+    "mutation": {
+      "address": "0x421170c5",
+      "bytes": 3,
+      "acceptedBytes": "a5b301",
+      "candidateBytes": "a5b701",
+      "preservedByteForByte": false,
+      "purpose": "redirect accepted WPM+renderer chain call to the fused renderer-v1+v2 IROM cavity entry"
+    },
+    "runtimeMapMutations": []
+  },
+  "preservation": {
+    "musicLiteral": {
+      "offset": 236,
+      "bytes": 148,
+      "sha256": "54158beff47a8dc6feee68df2656cd405849711d1adb59ad137471c76856d145",
+      "preservedByteForByte": true
+    },
+    "musicText": {
+      "offset": 2152,
+      "bytes": 4180,
+      "sha256": "e72917f53aeb3963a9adc7cb1a45aef083d762ed49019a4d6e3ba220f7e92c4e",
+      "preservedByteForByte": true
+    },
+    "wpmLiteral": {
+      "offset": 16,
+      "bytes": 220,
+      "sha256": "c447cf2300462ad218ab7d687595a5f178c06f0ca9ee5b4adadd2c3d65d24646",
+      "preservedByteForByte": true
+    },
+    "wpmText": {
+      "offset": 444,
+      "bytes": 1708,
+      "sha256": "4934ea5a2ec030cb689953d813d0995854d911546b4d4ebd122014bf4b49ec0c",
+      "preservedByteForByte": true
+    },
+    "rendererV1Behavior": {
+      "source": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/custom-firmware/experimental/renderer-v1-id26.c",
+      "screenId": 26,
+      "sceneRpcSource": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/examples/renderer-id26/on-device/renderer-v1-scene-rpc.S",
+      "retainedInIntegratedRebuild": true
+    },
+    "allLiveDromAssets": {
+      "bytes": 725360,
+      "sha256": "e108e7e3aefc9cccaa1abc22eb9de77026e8a1d9e145e1a8219edb96917c47f1",
+      "preservedByteForByte": true,
+      "appendedBytes": 0,
+      "mutationBytes": 0,
+      "reusedExistingBootstrapBlob": {
+        "address": "0x3c1cf400",
+        "bytes": 3055,
+        "sha256": "843d7848a8ad206b2314e2a3025ba0b50b78dfa537d6909e8f5c456a69885337",
+        "capacity": 3072
+      }
+    }
+  },
+  "rendererV2": {
+    "screenId": 26,
+    "timerScreenId": 27,
+    "nativeAbi": {
+      "attach": {
+        "symbol": "renderer_v2_native_attach",
+        "signature": "void *(void *setup_arg0, void *setup_arg1, void *renderer_v1_controller, const uint8_t *persistent_f2ep_data, uint32_t f2ep_bytes)",
+        "setupArguments": "accepted chain supplies registry then navigation; adapter uses them to register controller/nav ID27",
+        "ownership": "borrows persistent immutable byte-addressable DROM-or-RAM; runtime never writes or frees it; null must leave renderer-v1 usable"
+      },
+      "rpcRegister": {
+        "symbol": "renderer_v2_rpc_register",
+        "signature": "void *(void *renderer_v1_controller, void *accepted_scene_rpc_state)",
+        "method": "widget.v2.event",
+        "behavior": "register one bounded callback; callback validates fixed id 0xB201 and enqueues only"
+      },
+      "hostEvent": {
+        "symbol": "renderer_v2_native_host_event",
+        "signature": "uint32_t(void *renderer_v1_controller, uint16_t id, int32_t value)",
+        "eventId": 45569,
+        "behavior": "nonblocking fixed-capacity enqueue; no LVGL or framebuffer access outside the UI callback"
+      },
+      "sceneHandoff": {
+        "prepare": "uint32_t renderer_v2_native_prepare(void *controller, const uint8_t *package, uint32_t package_bytes, uint32_t generation)",
+        "commit": "uint32_t renderer_v2_native_commit(void *controller)",
+        "cancel": "uint32_t renderer_v2_native_cancel(void *controller)",
+        "ordering": "hash exact 92,806-byte F1WB+focus-F2EP+timer-F2EP package -> prepare all three -> renderer-v1 stage 62,404-byte F1WB prefix -> commit; cancel if stage fails",
+        "lifetime": "scene store becomes immutable and BUSY for the rest of this controlled-smoke boot",
+        "activation": "UI tick switches only when renderer-v1 active bundle pointer and generation match the committed pair"
+      },
+      "ui": {
+        "tick": "attach replaces renderer controller vtable slot 6 and delegates to accepted renderer_v1_tick before F2EP patches",
+        "encoder": "attach replaces vtable slot 9; consume Fn+encoder ID1 only when the F2EP handler matches, else delegate",
+        "framebuffer": "borrow renderer-v1 controller framebuffer at byte offset 160; allocate no second framebuffer",
+        "timerProxy": "bounded ID27 proxy calls the saved renderer-v1 tick on ID26 before every timer patch, owns only a 136-byte controller, and shares the exact framebuffer",
+        "hiddenTimerPolicy": "pause while ID27 is hidden; resume from the unchanged remainingSeconds on re-entry"
+      },
+      "rtc": {
+        "decodeAddress": "0x42068f04",
+        "monotonicAddress": "0x4037e028",
+        "cadence": "once per visible ID26 second plus first tick/re-entry",
+        "freshnessUs": 20000,
+        "ordering": "queued B201 and synthetic tick first; valid coherent RTC snapshot overwrites secondsOfDay before publication; invalid/slow retains last-good"
+      }
+    },
+    "baseScene": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-timer/render-v2-base.f1wb",
+      "bytes": 748,
+      "sha256": "5f1edc6879adcec0d25d5e6c999bfc80e19089aa05a72fbd14f3f5acd8899f2e",
+      "storage": "boot-lifetime decoded RAM",
+      "ramOffset": 0
+    },
+    "program": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-timer/render-v2-events.f2ep",
+      "bytes": 9536,
+      "sha256": "af34f7f98587d31929799e3218beb47582a0ec796085f4d36859d37a60469b08",
+      "storage": "boot-lifetime decoded RAM",
+      "ramOffset": 748
+    },
+    "module": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-timer/renderer-v2-clock-timer.bin",
+      "baseAddress": "0x421187cc",
+      "entryAddress": "0x42118c40",
+      "bytes": 23344,
+      "sha256": "750c403518845586929cfcd899bfdd3d07b735f2ce3b4a3910ea00676e93516b",
+      "relocations": 0,
+      "deterministicRebuilds": 2,
+      "implementation": "bounded-native",
+      "source": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/custom-firmware/experimental/renderer-v2-f2ep-native.c",
+      "placement": {
+        "segmentIndex": 3,
+        "kind": "fixed-cavity-replacement",
+        "range": [
+          "0x421187cc",
+          "0x4211e2fc"
+        ],
+        "cavityBytes": 30540,
+        "chipBoundExclusive": "0x42120000"
+      }
+    },
+    "compressedAssets": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-timer/renderer-v2-lzss-assets.bin",
+      "address": "0x3c1cf400",
+      "bytes": 3055,
+      "sha256": "843d7848a8ad206b2314e2a3025ba0b50b78dfa537d6909e8f5c456a69885337",
+      "decodedBytes": 10284,
+      "decodedSha256": "1b01bbba47f7462abad20dbf3fc572b22f25806900a8c6f7823c579792309ca5",
+      "codec": "lzss-1k-len3-66-v1",
+      "capacity": 3072,
+      "mappingRule": "already-mapped DROM page 1C; no segment growth or cpu_start patch"
+    },
+    "nativeSources": {
+      "c": {
+        "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/custom-firmware/experimental/renderer-v2-f2ep-native.c",
+        "bytes": 62781,
+        "sha256": "2dc8349ae78d56a9d15f15c521afdcf34d1f03cf21ac840a248edfab9ddb20b4"
+      },
+      "header": {
+        "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/custom-firmware/experimental/renderer-v2-f2ep-native.h",
+        "bytes": 5943,
+        "sha256": "a8363c441ae632026a5dc899b89c5fa8442d05d34c665276a17c62e4858fb683"
+      }
+    },
+    "golden": {
+      "admit": "PASS",
+      "bootstrapAdmission": "PASS",
+      "focusBaseGate": "PASS",
+      "bootstrapBaseGate": "PASS",
+      "transition": "PASS",
+      "fuzz": "PASS",
+      "scenario": "PASS",
+      "frameSha256": [
+        "2c9c7d1240774a62d1f6ebee18c8d4c0cbfa308ffd6ef009f8ca8abde5094dc9",
+        "83f3c93411e4ebf2a68e787276ef1746eb81befe95336c8cd509c92f117dc860",
+        "8710ff5ab7400b8e95d599d87080aee4df6d5b02d7b412896dec57f7982b45d8",
+        "745bc0fa5b315bd126b7aadc5a61378111bd827cee1b3a45f0e1a55ee8e92709",
+        "d31752445903982fb7d6b3a7181e4b8db899e4527edb7e5edaaf7b58c66bf1f6",
+        "9381f15a6ecc525975c404a70938c8d07531e1746bcdb8788534ebfe5da93f54",
+        "9381f15a6ecc525975c404a70938c8d07531e1746bcdb8788534ebfe5da93f54"
+      ],
+      "timerFrameSha256": [
+        "231025e8c198ee15d19c9ebe9729457f13cdb780e0d34a39926eee0624f945b0",
+        "6b8dbeaa03eb11b47921933b58d90ce8949d7bc37f6f13801da1e34c346d1303",
+        "231025e8c198ee15d19c9ebe9729457f13cdb780e0d34a39926eee0624f945b0",
+        "248b45b31548b28783b374188df0eaf8f0b5a419460aaba7fc03fa16df20ff0c",
+        "cd424b29d4c1e1050f254574f33d66ea90e224a5ba42602fb9f5e8ef8e02d9b3",
+        "d51d39032aad0edfc450cee6e6b1a4e5088cee0aee01579a2fc5305d2a0351b7",
+        "d51d39032aad0edfc450cee6e6b1a4e5088cee0aee01579a2fc5305d2a0351b7"
+      ],
+      "scenarioOutput": "seconds=7920 knob=3 generation=14 sequence=19 fn=3 rpc=1 fail_last_good=1",
+      "timerScenarioOutput": "initial=1500 plus=1800 minus=1500 clamp_min=300 clamp_max=5700 tick=5699 hidden=pause reentry=5699 same_tick=pass",
+      "wallRuntimeOutput": "initial=86399 rollover=0 invalid_last_good=1 malformed_bcd_last_good=1 queued_host_overridden=3723 latency_reject=pass reentry=7384 polls=7",
+      "fuzzOutput": "mutations=2048 structural_bounds=6 frozen_digest=pass",
+      "transitionOutput": "EMPTY-PREPARED-CANCEL-EMPTY-PREPARED-COMMITTED-ACTIVE generation_pair=pass old_on_focus=blocked error_gate=closed stale_epoch=reject null_prepare=reject store_latched_busy=pass first_timer_detent=preserved",
+      "contractsOutput": "queue_capacity=8 ninth_fn=consumed_not_enqueued fallback=pass lock_busy=last_good rpc_b201=pass u32_divisor=pass"
+    },
+    "focusDial": {
+      "activation": "one exact generation-paired scene-store commit per boot",
+      "expectedGeneration": 1,
+      "generation": 2,
+      "sceneStore": {
+        "bytes": 98304,
+        "packageBytes": 92806,
+        "chunks": 31,
+        "immutableAfterCommit": true
+      },
+      "baseFrame": {
+        "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-timer/focus-dial.base.rgb565",
+        "bytes": 62000,
+        "sha256": "8c7395f123a199f0428350b5061cc8313cbbbab39239f6487bd93f1ec44c8bb3",
+        "pixelFormat": "RGB565-LE",
+        "viewport": "100x310"
+      },
+      "rasterBundleTemplate": {
+        "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-timer/focus-dial.generation-1.f1wb",
+        "generation": 1,
+        "bytes": 62404,
+        "sha256": "d404eb952f42e7667ffe015948c3ebfd2f410856f2815354d8516e7b93e73d68",
+        "f1raBytes": 62072,
+        "f1raSha256": "0c47b50e94db92f48d3be24b86d523a5074dfb38ed1ec4ed878824923e58cad8",
+        "fps": 1,
+        "cadenceMs": 1000,
+        "slotName": "focus-dial"
+      },
+      "program": {
+        "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-timer/focus-dial.f2ep",
+        "bytes": 15162,
+        "sha256": "6cacd3e546a8ee2792f2df6644cb24e71a56e59af347a9ea93c5fa7be22a8e5f"
+      },
+      "generationOnePackage": {
+        "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-timer/focus-clock-timer.generation-1.package.bin",
+        "bytes": 92806,
+        "sha256": "23fc839f72ce6b3ba4eee669929a139f1e51754a6276ffddc46423997a2bfc40"
+      },
+      "generationTwoPackage": {
+        "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-timer/focus-clock-timer.generation-2.package.bin",
+        "bytes": 92806,
+        "sha256": "d618954f7c70e8eaf24e5b5bd0cb89cc3db65a416a15422dec0116742f9b1480"
+      },
+      "publisher": {
+        "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/examples/render-v2-focus-timer/tools/push-focus-timer-package.mjs",
+        "command": "node /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/examples/render-v2-focus-timer/tools/push-focus-timer-package.mjs --confirm-live-rpc",
+        "explicitLiveAuthority": "--confirm-live-rpc",
+        "uiActivationWaitMs": 250,
+        "postCommitHostClockSync": null
+      }
+    },
+    "focusTimer": {
+      "screenId": 27,
+      "program": {
+        "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-timer/focus-timer.f2ep",
+        "bytes": 15240,
+        "sha256": "82555e619d6b61db47f2587e1cc3008a60f66ddffa36435aee2c41990dac0455"
+      },
+      "input": {
+        "modifier": "Fn",
+        "encoderId": 1,
+        "stepSeconds": 300,
+        "consumeOnlyModifiedBottomEncoder": true,
+        "unmodifiedFallsThroughToNavigation": true
+      },
+      "countdown": {
+        "initialSeconds": 1500,
+        "clampSeconds": [
+          300,
+          5700
+        ],
+        "tickSeconds": 1,
+        "editVisibleSameUiTick": true,
+        "autoRunsAfterEdit": true
+      },
+      "lifecycle": {
+        "hiddenPolicy": "pause",
+        "sharedFramebufferWithScreenId": 26,
+        "fullBaseRepaintBeforeEveryPatch": true,
+        "proxyControllerBytes": 136
+      }
+    },
+    "rtc": {
+      "source": "stock-wl-rtc-synchronous-snapshot",
+      "decode": {
+        "address": "0x42068f04",
+        "bytes": 499,
+        "sha256": "68b2d186e4ae76f0a074a87988acfb643fe461047ba0c610bbe572a7b546c2aa"
+      },
+      "monotonic": {
+        "address": "0x4037e028",
+        "bytes": 24,
+        "sha256": "75e03adc4a2e9d122f0accb175d4eabbabacf8b20982c9afda3f55f865b3a587"
+      },
+      "freshnessUs": 20000,
+      "hostClockSyncRequired": false,
+      "malformedBcdPolicy": "0xff sentinels plus valid/range gate retain last-good",
+      "activation": "poll first ID26 tick/re-entry and once per visible second"
+    },
+    "rpc": {
+      "method": "widget.v2.event",
+      "fixedEventId": 45569,
+      "fixedEventIdHex": "0xB201",
+      "params": {
+        "id": "uint16 fixed 0xB201",
+        "value": "int32"
+      },
+      "response": "exact RAM-backed status-only acknowledgment",
+      "uiThreadRule": "enqueue only in RPC callback"
+    }
+  },
+  "outputs": {
+    "app": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-timer/framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-timer-app.bin",
+      "bytes": 2062912,
+      "sha256": "7838eea09b7e712a76cbdb5786efa3752079a852aa0bcad49d4cd8c596b070e5"
+    },
+    "merged": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-timer/framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-timer-merged.bin",
+      "bytes": 2128448,
+      "sha256": "7d855ac096bf01979f0beaff368664c2fdcde4d938838b8d8517cab37dcd5ab1"
+    },
+    "code": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-timer/music-id1-wpm-id7-renderer-id26-clock-id27-timer-irom.bin",
+      "bytes": 36872,
+      "sha256": "8ae3c5f306e27df7be2d255bc8d33e5275010e279d17b1e796506b32e2d45df7"
+    },
+    "inspection": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-timer/framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-timer-app.bin",
+      "fileBytes": 2062912,
+      "fileSha256": "7838eea09b7e712a76cbdb5786efa3752079a852aa0bcad49d4cd8c596b070e5",
+      "appOffset": "0x0",
+      "appBytes": 2062912,
+      "appSha256": "7838eea09b7e712a76cbdb5786efa3752079a852aa0bcad49d4cd8c596b070e5",
+      "segmentCount": 6,
+      "segments": [
+        {
+          "index": 0,
+          "headerOffset": "0x18",
+          "dataOffset": "0x20",
+          "loadAddress": "0x3c120020",
+          "length": 725360
+        },
+        {
+          "index": 1,
+          "headerOffset": "0xb1190",
+          "dataOffset": "0xb1198",
+          "loadAddress": "0x3fca4f00",
+          "length": 23136
+        },
+        {
+          "index": 2,
+          "headerOffset": "0xb6bf8",
+          "dataOffset": "0xb6c00",
+          "loadAddress": "0x40374000",
+          "length": 37912
+        },
+        {
+          "index": 3,
+          "headerOffset": "0xc0018",
+          "dataOffset": "0xc0020",
+          "loadAddress": "0x42000020",
+          "length": 1179384
+        },
+        {
+          "index": 4,
+          "headerOffset": "0x1dff18",
+          "dataOffset": "0x1dff20",
+          "loadAddress": "0x4037d418",
+          "length": 96740
+        },
+        {
+          "index": 5,
+          "headerOffset": "0x1f7904",
+          "dataOffset": "0x1f790c",
+          "loadAddress": "0x600fe000",
+          "length": 264
+        }
+      ],
+      "checksum": {
+        "offset": "0x1f7a1f",
+        "value": "0x8a",
+        "valid": true
+      },
+      "digest": {
+        "offset": "0x1f7a20",
+        "sha256": "489b32f5bea4a59121115930e25e2fea3daec90f6883ef1bcb1503abe60639ba",
+        "valid": true
+      },
+      "factoryPartitionFit": true,
+      "factoryPartitionHeadroom": 6325696
+    }
+  },
+  "rollback": {
+    "immediate": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/rollbacks/framer-0.4.1-live-49590ca4-focus-dial-app.bin",
+      "bytes": 2062912,
+      "sha256": "49590ca4dc0a26c5b998a83d217eb4e2d0b4586f5894cad00d9b48defd7eacf4",
+      "receipt": {
+        "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/device-receipts/device-1786932732117-fast-smoke.json",
+        "sha256": "1f613e2f375692283c3285b742b88f0a4ab8415712281b30de2ad3b676a28523"
+      }
+    },
+    "secondaryApp": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/rollbacks/framer-0.4.1-live-49cbf880-renderer-id26-app.bin",
+      "bytes": 2062912,
+      "sha256": "49cbf8801e3d86b20e0df21f41a2410b3e4d8547f8f64021ca6ed4bd85168840"
+    },
+    "secondaryFullFlashRecovery": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/recovery/backups/2026-08-15-framer-f1-a4cb8faf3210-before-custom/full-flash-16mb.bin",
+      "bytes": 16777216,
+      "sha256": "aa6042310d075c9cbd3b992044511c064bb4b84713d0740a3adafcbdb3028fdd"
+    }
+  },
+  "verification": {
+    "deterministicBuild": "PASS",
+    "esp32s3ImageInfo": "PASS",
+    "acceptedBaseReceipt": "PASS",
+    "boundedWrapperCallMutation": "PASS",
+    "fixedIromLength": "PASS",
+    "rendererCavityBound": "PASS",
+    "fixedDromLength": "PASS",
+    "iromDromMmuAliasAvoided": "PASS",
+    "runtimeMapMutations": 0,
+    "mappedPage1cAssetBound": "PASS",
+    "lzssRoundTrip": "PASS",
+    "cpuStartDromPages": 11,
+    "psramBoundaryUnchanged": "PASS",
+    "musicWpmPreservation": "PASS",
+    "rendererV1Rebuilt": "PASS",
+    "acceptedDromPreservedByteForByte": "PASS",
+    "focusCompositeLayout": "PASS",
+    "focusTimerTripleAdmission": "PASS",
+    "timerProxyId27": "PASS",
+    "timerHiddenPolicy": "PAUSE_TESTED",
+    "rtcInitialBoundaryFailureReentry": "PASS",
+    "rtcDecode499BytePin": "PASS",
+    "monotonic24BytePin": "PASS",
+    "nativeGolden": "PASS",
+    "nativeContract": "PASS",
+    "liveHardware": "NOT_RUN"
+  },
+  "flash": {
+    "hardwareAccessDuringBuild": false,
+    "scope": "factory-app-only",
+    "offset": "0x10000",
+    "command": "node /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/bin/f1-widget.mjs deploy --app /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-timer/framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-timer-app.bin --approval /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-timer/combined-renderer-v2-clock-timer-device-approval.draft.json --rollback /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/rollbacks/framer-0.4.1-live-49590ca4-focus-dial-app.bin --confirm-app-only",
+    "blockedCommandTemplate": "node /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/bin/f1-widget.mjs deploy --app /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-timer/framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-timer-app.bin --approval /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-timer/combined-renderer-v2-clock-timer-device-approval.draft.json --rollback /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/rollbacks/framer-0.4.1-live-49590ca4-focus-dial-app.bin --confirm-app-only",
+    "blockedReason": null,
+    "postFlashProvisionCommand": "node /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/examples/render-v2-focus-timer/tools/push-focus-timer-package.mjs --confirm-live-rpc"
+  },
+  "elapsedMs": 822
+}

@@ -239,6 +239,18 @@ export class FramerMediaRuntimeSink {
     return Object.freeze({ accepted, sha256: message.sha256 });
   }
 
+  async heartbeat() {
+    this.assertReady();
+    if (!this.metadataState) return Object.freeze({ accepted: false, reason: "no accepted media state" });
+    const response = await this.transport.rpc("mp.write_info", this.metadataState);
+    return Object.freeze({ accepted: isAcceptedFramerMediaResponse(response) });
+  }
+
+  resetConnectionState() {
+    this.inflight = null;
+    this.metadataState = null;
+  }
+
   async beginArtwork(manifest) {
     this.assertReady();
     if (this.inflight) throw new Error("A Framer artwork transaction is already active.");

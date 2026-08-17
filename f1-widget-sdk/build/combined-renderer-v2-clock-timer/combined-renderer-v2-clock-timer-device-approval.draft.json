@@ -1,0 +1,111 @@
+{
+  "format": "framer-f1-device-candidate-v1",
+  "status": "DEVICE_SMOKE_CANDIDATE",
+  "deployable": true,
+  "target": {
+    "device": "knob_f1",
+    "firmware": "0.4.1",
+    "chip": "ESP32-S3",
+    "mac": "a4:cb:8f:af:32:10"
+  },
+  "write": {
+    "offset": "0x10000",
+    "scope": "factory-app-only",
+    "hardwareWriteApproved": true
+  },
+  "app": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-timer/framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-timer-app.bin",
+    "bytes": 2062912,
+    "sha256": "7838eea09b7e712a76cbdb5786efa3752079a852aa0bcad49d4cd8c596b070e5"
+  },
+  "rollback": {
+    "mode": "accepted-live-receipt-v1",
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/rollbacks/framer-0.4.1-live-49590ca4-focus-dial-app.bin",
+    "bytes": 2062912,
+    "sha256": "49590ca4dc0a26c5b998a83d217eb4e2d0b4586f5894cad00d9b48defd7eacf4",
+    "receipt": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/device-receipts/device-1786932732117-fast-smoke.json",
+      "bytes": 2397,
+      "sha256": "1f613e2f375692283c3285b742b88f0a4ab8415712281b30de2ad3b676a28523"
+    }
+  },
+  "recovery": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/recovery/backups/2026-08-15-framer-f1-a4cb8faf3210-before-custom/full-flash-16mb.bin",
+    "bytes": 16777216,
+    "sha256": "aa6042310d075c9cbd3b992044511c064bb4b84713d0740a3adafcbdb3028fdd"
+  },
+  "runtime": {
+    "allAssetBytesBelow": "0x3c1d0000",
+    "headroomBytes": 17,
+    "dromMappingProfile": "accepted-49590-focus-timer-reuse-v1",
+    "newDromAssets": false,
+    "dromMutationBytes": 0,
+    "borrowedFramebufferBytes": 62000,
+    "extraFramebufferBytes": 0,
+    "screenIds": {
+      "music": 1,
+      "wpm": 7,
+      "focusClock": 26,
+      "focusTimer": 27
+    },
+    "sidecarAllocationBytes": 1284,
+    "timerProxyAllocationBytes": 136,
+    "baseBundleBytes": 748,
+    "f2epBytes": 9536,
+    "decodedAssetRamBytes": 10284,
+    "dromExtensionBytes": 0,
+    "integratedIromModuleBytes": 23344,
+    "integratedIromModuleSha256": "750c403518845586929cfcd899bfdd3d07b735f2ce3b4a3910ea00676e93516b",
+    "integratedIromModuleAddress": "0x421187cc",
+    "integratedIromCavityBytes": 30540,
+    "integratedIromEntryAddress": "0x42118c40",
+    "wrapperCall": {
+      "address": "0x421170c5",
+      "acceptedBytes": "a5b301",
+      "candidateBytes": "a5b701"
+    },
+    "compressedAssets": {
+      "address": "0x3c1cf400",
+      "bytes": 3055,
+      "sha256": "843d7848a8ad206b2314e2a3025ba0b50b78dfa537d6909e8f5c456a69885337",
+      "capacity": 3072,
+      "decodedBytes": 10284,
+      "decodedSha256": "1b01bbba47f7462abad20dbf3fc572b22f25806900a8c6f7823c579792309ca5"
+    },
+    "acceptedDromPrefixBytes": 725360,
+    "acceptedIromBytes": 1179384,
+    "iromEndExclusive": "0x42120000",
+    "runtimeMapPatch": null,
+    "focusSceneStoreBytes": 98304,
+    "focusTimerPackageBytes": 92806,
+    "focusTimerPackageSha256": "d618954f7c70e8eaf24e5b5bd0cb89cc3db65a416a15422dec0116742f9b1480",
+    "focusTimerPackageChunks": 31,
+    "generationOneAccountingPackageSha256": "23fc839f72ce6b3ba4eee669929a139f1e51754a6276ffddc46423997a2bfc40",
+    "focusF1wbBytes": 62404,
+    "focusF1wbSha256": "d404eb952f42e7667ffe015948c3ebfd2f410856f2815354d8516e7b93e73d68",
+    "focusF2epBytes": 15162,
+    "focusF2epSha256": "6cacd3e546a8ee2792f2df6644cb24e71a56e59af347a9ea93c5fa7be22a8e5f",
+    "timerF2epBytes": 15240,
+    "timerF2epSha256": "82555e619d6b61db47f2587e1cc3008a60f66ddffa36435aee2c41990dac0455",
+    "rtc": {
+      "decode": {
+        "address": "0x42068f04",
+        "bytes": 499,
+        "sha256": "68b2d186e4ae76f0a074a87988acfb643fe461047ba0c610bbe572a7b546c2aa"
+      },
+      "monotonic": {
+        "address": "0x4037e028",
+        "bytes": 24,
+        "sha256": "75e03adc4a2e9d122f0accb175d4eabbabacf8b20982c9afda3f55f865b3a587"
+      },
+      "freshnessUs": 20000
+    },
+    "timerHiddenPolicy": "pause-while-id27-hidden",
+    "focusUploadOncePerBoot": true,
+    "nativeContractAccepted": true,
+    "manualScreenAcceptancePending": [
+      26,
+      27
+    ]
+  }
+}

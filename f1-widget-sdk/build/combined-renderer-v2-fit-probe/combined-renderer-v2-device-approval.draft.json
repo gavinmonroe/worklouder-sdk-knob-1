@@ -1,0 +1,50 @@
+{
+  "format": "framer-f1-device-candidate-v1",
+  "status": "DEVICE_SMOKE_CANDIDATE",
+  "deployable": true,
+  "target": {
+    "device": "knob_f1",
+    "firmware": "0.4.1",
+    "chip": "ESP32-S3",
+    "mac": "a4:cb:8f:af:32:10"
+  },
+  "write": {
+    "offset": "0x10000",
+    "scope": "factory-app-only",
+    "hardwareWriteApproved": true
+  },
+  "app": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-fit-probe/framer-0.4.1-music-id1-wpm-id7-renderer-id26-render-v2-app.bin",
+    "bytes": 2128448,
+    "sha256": "a2c40c7490c61dbb5828ca299e74dc9dd13cfcf896c86d58308620eccad071fe"
+  },
+  "rollback": {
+    "mode": "accepted-live-receipt-v1",
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/rollbacks/framer-0.4.1-live-49cbf880-renderer-id26-app.bin",
+    "bytes": 2062912,
+    "sha256": "49cbf8801e3d86b20e0df21f41a2410b3e4d8547f8f64021ca6ed4bd85168840",
+    "receipt": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/device-receipts/device-1786904989663-fast-smoke.json",
+      "bytes": 2372,
+      "sha256": "3d821fbc31053f39d49dd945164cf7399a3632d5bbb8a193dd0f7b110d376906"
+    }
+  },
+  "recovery": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/recovery/backups/2026-08-15-framer-f1-a4cb8faf3210-before-custom/full-flash-16mb.bin",
+    "bytes": 16777216,
+    "sha256": "aa6042310d075c9cbd3b992044511c064bb4b84713d0740a3adafcbdb3028fdd"
+  },
+  "runtime": {
+    "allAssetBytesBelow": "0x3c1d0000",
+    "headroomBytes": 3220,
+    "newDromAssets": true,
+    "borrowedFramebufferBytes": 62000,
+    "extraFramebufferBytes": 0,
+    "baseBundleBytes": 748,
+    "f2epBytes": 9536,
+    "dromExtensionBytes": 65536,
+    "integratedIromModuleBytes": 19616,
+    "nativeContractAccepted": true,
+    "manualScreen26AcceptancePending": true
+  }
+}

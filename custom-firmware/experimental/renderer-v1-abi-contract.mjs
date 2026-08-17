@@ -19,6 +19,17 @@ export const RENDERER_V1_PROVEN_ABI = Object.freeze({
   fnPressedGetter: 0x4210bfac,
   slot6TimerDispatch: 0x4204d680,
   slot9EncoderAbi: Object.freeze({ bottomEncoderId: 1, deltaBits: 8 }),
+  nativeCandidate: Object.freeze({
+    source: "custom-firmware/experimental/renderer-v1-id26.c",
+    registrationSymbol: "renderer_v1_register_id26",
+    stageBundleSymbol: "renderer_v1_stage_bundle",
+    prepareStoreSymbol: "renderer_v1_prepare_store",
+    allocationBytes: 62_164,
+    f1wbCapBytes: 98_304,
+    provisionalAddress: 0x42119000,
+    provisionalBytes: 8_140,
+    provisionalSha256: "942fe3aeb723c24a9d66b2d8b0dfe6fffa04c6ff13c75777daf226456dbbe806",
+  }),
   descriptor: RENDERER_V1.descriptor,
 });
 
@@ -50,13 +61,17 @@ export function auditRendererV1Abi(appImage) {
       framebufferRam: RENDERER_V1_RASTER.runtimePixelBytes,
       descriptorRam: RENDERER_V1_RASTER.runtimeDescriptorBytes,
       decoderScratchRam: 0,
+      nativeControllerAllocation: RENDERER_V1_PROVEN_ABI.nativeCandidate.allocationBytes,
+      admittedBundleBytes: RENDERER_V1_PROVEN_ABI.nativeCandidate.f1wbCapBytes,
       maximumThreeSlotFlash: RENDERER_V1_RASTER.maxThreeSlotFlashBytes,
     }),
-    staticReady: false,
+    staticReady: true,
+    liveReady: false,
     blockers: Object.freeze([
-      "The strict F1RA decoder is executable JS only; no Xtensa decoder ABI is assembled or pinned yet.",
-      "No fixed-RAM three-slot binary layout or atomic producer/100-ms UI-consumer bridge is assembled yet.",
-      "ID26 is strongly supported by dynamic registry/navigation vectors but has not been live-canary tested.",
+      "The repeated one-store freeze/detach handshake is statically and host-native proven but still needs live active/off-screen acceptance.",
+      "A contiguous 62164-byte renderer allocation plus Music/WPM/transport heap pressure has not been proven on live hardware or pinned to PSRAM.",
+      "The candidate must be relinked after the exact live b9b8 Music/WPM slices; its provisional addresses are not raw-copy deployment addresses.",
+      "ID26 and mutable RGB565 descriptor refresh are strongly supported statically but have not passed a live canary.",
     ]),
   });
 }

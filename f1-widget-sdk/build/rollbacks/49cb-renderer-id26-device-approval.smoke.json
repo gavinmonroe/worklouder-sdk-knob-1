@@ -1,0 +1,36 @@
+{
+  "format": "framer-f1-device-candidate-v1",
+  "status": "DEVICE_SMOKE_CANDIDATE",
+  "deployable": true,
+  "target": {
+    "device": "knob_f1",
+    "firmware": "0.4.1",
+    "chip": "ESP32-S3",
+    "mac": "a4:cb:8f:af:32:10"
+  },
+  "write": {
+    "offset": "0x10000",
+    "scope": "factory-app-only",
+    "hardwareWriteApproved": true
+  },
+  "app": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-id26/framer-0.4.1-combined-music-id1-wpm-id7-renderer-id26-app.bin",
+    "bytes": 2062912,
+    "sha256": "49cbf8801e3d86b20e0df21f41a2410b3e4d8547f8f64021ca6ed4bd85168840"
+  },
+  "rollback": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/custom-firmware/build/framer-0.4.1-stage3e3a-i4-canary-app.bin",
+    "sha256": "dd8edaaa2c3aa98a1cbdbda319255cc7d1a0e02d0069f543dd574ef040db4b83"
+  },
+  "runtime": {
+    "newDromAssets": false,
+    "allAssetBytesBelow": "0x3c1d0000",
+    "headroomBytes": 3220,
+    "persistentRamBytes": 170276,
+    "plannedPeakWithSceneStoreBytes": 170276,
+    "rendererRpcAcceptancePending": true,
+    "heapTelemetryAccepted": false,
+    "singleSceneStoreAccepted": false,
+    "screen26VisualAcceptancePending": true
+  }
+}

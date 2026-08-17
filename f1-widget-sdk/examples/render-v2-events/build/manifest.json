@@ -1,0 +1,258 @@
+{
+  "format": "framer-renderer-v2-events-demo-v2",
+  "execution": {
+    "target": "authored-source-to-deterministic-compiled-event-vm",
+    "sourceOfTruth": "prepareRenderV2(widget.html, widget.css, widget.js) -> linkRenderV2 -> F2EP",
+    "deviceEvaluatesJavaScript": false,
+    "authoredFacade": "ES5-compatible widget.on/document.querySelector subset",
+    "optionalMQuickJs": {
+      "required": false,
+      "included": false,
+      "note": "MicroQuickJS is a future optional execution backend, not part of this deterministic prototype."
+    }
+  },
+  "viewport": {
+    "width": 100,
+    "height": 310,
+    "pixelFormat": "RGB565-LE",
+    "borrowedFramebufferBytes": 62000
+  },
+  "source": {
+    "files": [
+      "widget.html",
+      "widget.css",
+      "widget.js"
+    ],
+    "sha256": "39f8b105d777ffabe48d621e8c2dd8557197adcc66be57126c5bd882b0b1bec2"
+  },
+  "compiler": {
+    "preparedFormat": "framer-render-v2-prepared-v1",
+    "sceneSha256": "6270f93c2b7ead55cf28df3d1e829d2a5e1793596e6ce04a1f8c0b8269e89065",
+    "sceneBytes": 220,
+    "glyphs": 15,
+    "atlasSha256": "a995dd91936e5c6f73078e48ea62280ee3086067316805cf6280b52d16e4317a",
+    "atlasBytes": 196,
+    "linkedFormat": "framer-render-v2-linked-v1",
+    "linkedSha256": "af34f7f98587d31929799e3218beb47582a0ec796085f4d36859d37a60469b08",
+    "linkedBudget": {
+      "states": 3,
+      "handlers": 3,
+      "bindings": 8,
+      "patchSets": 3,
+      "variants": 23,
+      "spans": 322,
+      "pixelBytes": 6440,
+      "baseFrameBytes": 62000,
+      "programBytes": 9536
+    },
+    "authoredBytecodeSha256": "c8031686ba8d9cbcabe513b6c88bbfded4ecb194a2137e21f4910d034291a036",
+    "authoredBytecodeBytes": 72,
+    "linkedBytecodeExact": true,
+    "sdkFirmwareBinaryExact": true,
+    "sdkFirmwareManifestExact": true,
+    "hostRuntimeVsFirmwareModel": "pixel-exact",
+    "firmwareModelVsFreshFullSemanticRender": "pixel-exact"
+  },
+  "program": {
+    "format": "framer-renderer-v2-event-program-v1",
+    "sha256": "af34f7f98587d31929799e3218beb47582a0ec796085f4d36859d37a60469b08",
+    "bytes": 9536,
+    "framebuffer": {
+      "width": 100,
+      "height": 310,
+      "strideBytes": 200,
+      "bytes": 62000,
+      "source": "borrowed-renderer-v1",
+      "extraFramebufferBytes": 0
+    },
+    "state": {
+      "slots": 3,
+      "bytes": 12,
+      "names": [
+        "secondsOfDay",
+        "knobVariant",
+        "hostValue"
+      ]
+    },
+    "events": {
+      "recordBytes": 16,
+      "queueRecords": 8,
+      "queueBytes": 128
+    },
+    "vm": {
+      "handlers": 3,
+      "instructions": 9,
+      "bytecodeBytes": 72
+    },
+    "patches": {
+      "patchSets": 3,
+      "variants": 23,
+      "spans": 322,
+      "spanTableBytes": 2576,
+      "pixelBytes": 6440
+    },
+    "bindings": 8
+  },
+  "budget": {
+    "programBinaryBytes": 9536,
+    "patchPayloadBytes": 6440,
+    "patchSpanCount": 322,
+    "stateSlots": 3,
+    "handlerCount": 3,
+    "bindingCount": 8,
+    "borrowedRendererV1FramebufferBytes": 62000,
+    "additionalFramebufferBytes": 0,
+    "eventQueueBytes": 128,
+    "limits": {
+      "patchPayloadBytes": 16384,
+      "patchSpans": 512,
+      "stateSlots": 16,
+      "bindings": 16,
+      "extraFramebufferBytes": 0
+    },
+    "admitted": {
+      "patchPayload": true,
+      "patchSpans": true,
+      "stateSlots": true,
+      "bindings": true,
+      "extraFramebufferBytes": true
+    }
+  },
+  "clock": {
+    "initialSecondsSinceMidnight": 45296,
+    "cadenceMs": 1000,
+    "digitGlyphVariants": 10,
+    "digitBindings": 6,
+    "moduli": [
+      3,
+      10,
+      6,
+      10,
+      6,
+      10
+    ],
+    "fullClockFrameTableEntries": 0
+  },
+  "events": {
+    "fnBottomKnob": {
+      "encoderId": 1,
+      "fnRequired": true
+    },
+    "hostRpc": {
+      "fixedEventId": 45569,
+      "fixedEventIdHex": "0xB201",
+      "mutations": [
+        "#host.textContent",
+        "#host.style.color"
+      ]
+    }
+  },
+  "frames": [
+    {
+      "index": 0,
+      "name": "boot",
+      "event": "initial tick.100ms",
+      "state": {
+        "secondsOfDay": 45296,
+        "knobVariant": 0,
+        "hostValue": 0
+      },
+      "semantic": {
+        "clock": "12:34:56",
+        "knob": "1",
+        "host": "0",
+        "hostColor": "#59E2FF"
+      },
+      "frameGeneration": 1,
+      "descriptorIdentity": 1,
+      "hostGeneration": 1,
+      "hostDiffPixels": 0,
+      "fullSemanticRenderDiffPixels": 0,
+      "rgb565Sha256": "db3d0ccb4a5776a6362a9c428684a382ba7830eb58f354f49085514cc926bb81",
+      "rgb565Bytes": 62000,
+      "changedPixelsFromPrevious": 0,
+      "png": "frame-00-boot.png",
+      "raw": "frame-00-boot.rgb565"
+    },
+    {
+      "index": 1,
+      "name": "clock-plus-1s",
+      "event": "tick.1s",
+      "state": {
+        "secondsOfDay": 45297,
+        "knobVariant": 0,
+        "hostValue": 0
+      },
+      "semantic": {
+        "clock": "12:34:57",
+        "knob": "1",
+        "host": "0",
+        "hostColor": "#59E2FF"
+      },
+      "frameGeneration": 10,
+      "descriptorIdentity": 0,
+      "hostGeneration": 2,
+      "hostDiffPixels": 0,
+      "fullSemanticRenderDiffPixels": 0,
+      "rgb565Sha256": "8ad76bfea892d20a12323a36a75987922f9725356e9ee54ea55c382468fee5f7",
+      "rgb565Bytes": 62000,
+      "changedPixelsFromPrevious": 35,
+      "png": "frame-01-clock-plus-1s.png",
+      "raw": "frame-01-clock-plus-1s.rgb565"
+    },
+    {
+      "index": 2,
+      "name": "fn-knob-plus-1",
+      "event": "input.fn-bottom-knob delta=+1",
+      "state": {
+        "secondsOfDay": 45297,
+        "knobVariant": 1,
+        "hostValue": 0
+      },
+      "semantic": {
+        "clock": "12:34:57",
+        "knob": "2",
+        "host": "0",
+        "hostColor": "#59E2FF"
+      },
+      "frameGeneration": 11,
+      "descriptorIdentity": 1,
+      "hostGeneration": 3,
+      "hostDiffPixels": 0,
+      "fullSemanticRenderDiffPixels": 0,
+      "rgb565Sha256": "781fc654e1525d6b5313bb19cbb6eae16ad39313887c2a8ebe728aba9a9a49e8",
+      "rgb565Bytes": 62000,
+      "changedPixelsFromPrevious": 33,
+      "png": "frame-02-fn-knob-plus-1.png",
+      "raw": "frame-02-fn-knob-plus-1.rgb565"
+    },
+    {
+      "index": 3,
+      "name": "host-rpc-7",
+      "event": "host.rpc:0xB201 value=7",
+      "state": {
+        "secondsOfDay": 45297,
+        "knobVariant": 1,
+        "hostValue": 7
+      },
+      "semantic": {
+        "clock": "12:34:57",
+        "knob": "2",
+        "host": "7",
+        "hostColor": "#FF5F97"
+      },
+      "frameGeneration": 12,
+      "descriptorIdentity": 0,
+      "hostGeneration": 4,
+      "hostDiffPixels": 0,
+      "fullSemanticRenderDiffPixels": 0,
+      "rgb565Sha256": "2767418e35b7d87ef84996952959f926e15541024200e2ac6a0cd9640c4827af",
+      "rgb565Bytes": 62000,
+      "changedPixelsFromPrevious": 61,
+      "png": "frame-03-host-rpc-7.png",
+      "raw": "frame-03-host-rpc-7.rgb565"
+    }
+  ],
+  "contactSheet": "contact-sheet.png",
+  "note": "Hardware-free reference output; it does not alter renderer-v1, Music, WPM Pet, or any device flash artifact."
+}

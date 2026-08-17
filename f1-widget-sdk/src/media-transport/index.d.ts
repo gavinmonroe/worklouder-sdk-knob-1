@@ -150,6 +150,8 @@ export interface MediaRuntimeSink {
   writeArtworkChunk(chunk: ArtworkChunk): Promise<SinkAcceptance>;
   commitArtwork(commit: ArtworkCommit): Promise<SinkAcceptance>;
   abortArtwork?(manifest: ArtworkManifest): Promise<void>;
+  heartbeat?(): Promise<SinkAcceptance>;
+  resetConnectionState?(): void;
 }
 
 export type MediaPollResult = Readonly<{
@@ -162,6 +164,7 @@ export type MediaPollResult = Readonly<{
   inactiveForMs?: number;
   graceMs?: number;
   hardwareAccess?: boolean;
+  heartbeat?: boolean;
 }>;
 
 export const MEDIA_TRANSPORT_PROTOCOL: "framer-host-media-v1";
@@ -379,6 +382,8 @@ export class FramerMediaRuntimeSink implements MediaRuntimeSink {
   writeArtworkChunk(chunk: ArtworkChunk): Promise<SinkAcceptance>;
   commitArtwork(commit: ArtworkCommit): Promise<SinkAcceptance>;
   abortArtwork(manifest?: ArtworkManifest): Promise<void>;
+  heartbeat(): Promise<SinkAcceptance>;
+  resetConnectionState(): void;
 }
 
 export function buildInputWlrpcExpression(method: "mp.write_info" | "mp.write_artwork",
