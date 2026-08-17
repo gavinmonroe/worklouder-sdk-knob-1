@@ -20,14 +20,82 @@ renderer-v1 semantic scenes semantic, then falls back to the same sanitized, ver
 service for richer nested HTML/CSS and gradients. The raster lane parses the bounded widget source but
 never executes it. It fresh-renders the exact RGB565 base plus every declared text, color, and
 `formatTime` variant through host-controlled DOM mutations, then emits absolute F2EP patches only after
-the initial state, layout stability, disjoint dirty regions, individual variants, every binding pair,
-and one combined state pass fresh-render parity. Reflow, CSS animation/transition state, overlapping
-bindings, external content, nondeterministic paint, and F2EP span/pixel budget overflow fail closed.
+the initial state, layout stability, disjoint dirty regions, every individual variant, one deterministic
+alternate for every binding pair, and one deterministic all-bindings state pass fresh-render parity.
+When the complete Cartesian state product fits the 96-render ceiling, every state is fresh-rendered and
+verified. Larger state spaces are admitted only when every dynamic target proves a positive fixed box
+inside the viewport with `contain:size layout paint` (or `contain:strict`), distinct target boxes do not
+overlap, their containment clips are not extended, every emitted patch pixel remains inside its target
+box, and no filtered/blended ancestor couples their paint. Multi-binding `formatTime` targets also require
+tabular numbers, disabled kerning/ligatures/text shadows, and normal horizontal LTR text. The compiler
+still fresh-renders every individual variant plus deterministic pair/all-binding controls; the manifest
+states which verification model was used instead of presenting samples as an exhaustive proof.
+
+Both models first enforce `framer-render-v2-raster-mutation-isolation-v1`: authored mutations are limited to
+`textContent` and `style.color`, while mutation-sensitive CSS fails closed. Attribute/bracket selector
+syntax, `:has()`, `:empty`, `:blank`, `:dir()`, `attr()`, container/style queries, `mix-blend-mode`,
+cross-element value functions, `backdrop-filter`, and escaped CSS identifiers are rejected because they can make one target react only
+to a particular multi-state combination. Reflow, CSS animation/transition state, overlapping bindings,
+external content, nondeterministic paint, and F2EP span/pixel budget overflow also fail closed. Rich
+static gradients, nested layout, transforms, shadows, and ordinary local filters remain supported.
 
 Its focused keyboard test pad maps one configured `KeyboardEvent.code` to host-RPC value `1` on keydown
 and `0` on keyup. Repeat, composition, and editable targets are ignored; release is synthesized on lost
 focus, hidden/page-exit, or device disconnect. This is a browser key-to-host-RPC bridge, not a native
 F2EP `input.key` event.
+
+The separate MicroQuickJS canary contract has a reusable Input Lab simulator in
+`lib/mquickjs-key-events.mjs`. It models the device-side limits exactly: 16 stable numeric key IDs,
+8 order-independent exact-mask chords of 2–4 keys, a 32-record ingress queue, four raw records and two
+coalesced holds per logical batch, a 64-event staged FIFO, 1–50 ms debounce, 100–5,000 ms hold delay,
+and 20–1,000 ms hold cadence. Each simulator owner iteration releases at most three staged events; a
+caller must yield and call again after `morePending` rather than draining in a tight loop.
+It emits `input.key.down`, `input.key.up`, `input.key.hold`, `input.chord.down`, and
+`input.chord.up` event objects with one monotonic sequence and an immutable `heldMask` snapshot;
+`mquickJsEventIsHeld(event, keyId)` mirrors `widget.isHeld(...)`. `BrowserMQuickJsKeyBridge` uses
+`KeyboardEvent.code` only for browser simulation and synthesizes deterministic release edges on blur,
+hidden/page-exit, and disconnect.
+
+`InputLabMQuickJsNativeKeyRecorder` is the constrained learn/record seam. It stores the exact observed opaque
+u32 native token plus level and sequence, then lets the user attach a label or browser code; it never
+guesses a physical key map. Device recording remains disabled unless a keyboard advertises the exact
+stock-first hook, fixed owner-task queue, and observation capabilities.
+
+The browser now probes the physical canary through all 13 bounded
+`widget.mquickjs.cap` pages. It accepts only the exact compact grammar, reports
+screen ID28 as `physicalCanary: true`, and preserves the honest device claims
+`hardwareRuntimeProven: false` and `runtimeUploader: false`. The accepted
+`baseApp` hash is ancestry—not a fabricated running-app self-hash—and the full
+module/package hashes can be compared with a pinned release manifest. Missing,
+duplicated, reordered, rich, over-112-byte, or mismatched pages fail closed.
+
+Declared weather host events use `widget.mquickjs.event` with exact
+`{id,value,auxiliary,generation,revision}` fields. Input Lab allows only one
+outstanding event, requires the initial `Q`, then polls
+`widget.mquickjs.receipt` until the same sequence and fields reach `A`.
+Undeclared IDs and reserved B24D OOM/timeout sentinels are blocked in the normal
+UI. Physical detection and host-event testing do not enable Package Push: the
+button stays disabled while `runtimeUploader=false`, even if an uploader-shaped
+host object is supplied. The external guarded one-hour receipt—not the device
+capability—promotes physical-runtime evidence.
+
+For the Weather example, **Refresh fixture** derives a deterministic offline snapshot
+from the entered ZIP code. Multi-ZIP preview remains available, but the first physical
+canary accepts only US ZIP `60601` because its F2TF location literal is fixed to
+`CHICAGO`; any other ZIP is preview-only and is never sent to the keyboard. For 60601,
+Input Lab reads one coherent ordered telemetry p0..p5 session, then sends exactly
+begin/current/three-day/commit inside one exclusive client transaction, so another
+button or key action cannot interleave between staged records or the pixel check.
+All six payloads share one weather revision, each device-assigned receipt
+sequence must be unique, pre-commit receipts must not expose that revision, and
+the final commit must report it as applied. A second bounded telemetry probe
+distinguishes mailbox commit from pixels: while ID28 is visible, both the VM/mailbox
+and UI weather revisions must match before Input Lab says rendered; while hidden,
+Input Lab says the runtime committed it and rendering is deferred until the next
+ID28 entry. A transient device snapshot-lock collision retries the entire ordered
+p0..p5 session up to three times; Input Lab never resumes at a middle page, and
+malformed grammar or changed identity still fails immediately. This is explicitly
+an offline fixture; it does not claim a live provider or network fetch.
 
 The three distinct seeded previews are `Working`, `Generating`, and `Electric`. Their source,
 settings, and compact compiled payload are stored locally. Render v1 `Apply / Push` compiles all three

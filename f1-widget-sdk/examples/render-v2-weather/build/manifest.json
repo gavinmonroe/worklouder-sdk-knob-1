@@ -1,0 +1,169 @@
+{
+  "format": "framer-render-v2-weather-example-v1",
+  "config": {
+    "postalCode": "60601",
+    "countryCode": "US",
+    "units": "fahrenheit",
+    "refreshMinutes": 30
+  },
+  "snapshot": {
+    "format": "framer-render-v2-weather-snapshot-v1",
+    "config": {
+      "format": "framer-render-v2-weather-config-v1",
+      "postalCode": "60601",
+      "countryCode": "US",
+      "units": "fahrenheit",
+      "refreshMinutes": 30,
+      "forecastDays": 3
+    },
+    "location": {
+      "name": "Chicago",
+      "region": "Illinois",
+      "countryCode": "US",
+      "latitude": 41.8864,
+      "longitude": -87.6186,
+      "timezone": "America/Chicago"
+    },
+    "updatedAt": "2026-02-17T11:00",
+    "current": {
+      "temperature": 45,
+      "condition": {
+        "id": 0,
+        "key": "clear",
+        "dayLabel": "Sunny",
+        "nightLabel": "Clear",
+        "label": "Sunny",
+        "wmoCode": 0,
+        "isDay": true
+      }
+    },
+    "days": [
+      {
+        "date": "2026-02-18",
+        "weekdayId": 3,
+        "weekday": "Wed",
+        "low": 34,
+        "high": 42,
+        "condition": {
+          "id": 1,
+          "key": "partly-cloudy",
+          "dayLabel": "Partly",
+          "nightLabel": "Partly",
+          "label": "Partly",
+          "wmoCode": 1,
+          "isDay": true
+        }
+      },
+      {
+        "date": "2026-02-19",
+        "weekdayId": 4,
+        "weekday": "Thu",
+        "low": 38,
+        "high": 46,
+        "condition": {
+          "id": 2,
+          "key": "cloudy",
+          "dayLabel": "Cloudy",
+          "nightLabel": "Cloudy",
+          "label": "Cloudy",
+          "wmoCode": 3,
+          "isDay": true
+        }
+      },
+      {
+        "date": "2026-02-20",
+        "weekdayId": 5,
+        "weekday": "Fri",
+        "low": 44,
+        "high": 52,
+        "condition": {
+          "id": 5,
+          "key": "rain",
+          "dayLabel": "Rain",
+          "nightLabel": "Rain",
+          "label": "Rain",
+          "wmoCode": 61,
+          "isDay": true
+        }
+      }
+    ]
+  },
+  "source": {
+    "rootClass": "weather-v2",
+    "renderMode": "raster",
+    "delivery": {
+      "mode": "snapshot-package-recompile",
+      "incrementalHostEvents": false,
+      "reason": "host-fetch-then-recompile-and-push-one-render-v2-package"
+    }
+  },
+  "package": {
+    "bytes": 63786,
+    "sha256": "513bc88840a5ecd2e9881624f03f6c66ddd665ed7cbc261093a66e07e749c180",
+    "compatibility": {
+      "currentDevice": {
+        "profileId": "framer-f1-0.4.1-live-clock-timer-exact-v1",
+        "deviceDeployable": false,
+        "diagnostics": [
+          {
+            "severity": "error",
+            "code": "RENDER_V2_EXACT_FIRMWARE_PROFILE",
+            "message": "The currently flashed clock/timer firmware admits one exact four-component package, not arbitrary Input Lab programs."
+          },
+          {
+            "severity": "error",
+            "code": "RENDER_V2_PACKAGE_FORMAT_UNSUPPORTED",
+            "message": "Target expects framer-render-v2-focus-timer-package-v2; compiler emitted framer-render-v2-package-v1."
+          }
+        ],
+        "packageBytes": 63786,
+        "packageSha256": "513bc88840a5ecd2e9881624f03f6c66ddd665ed7cbc261093a66e07e749c180",
+        "requiredCapability": "framer-f1-render-v2-structural-v1"
+      },
+      "structuralV1": {
+        "profileId": "framer-f1-render-v2-structural-v1",
+        "deviceDeployable": true,
+        "diagnostics": [],
+        "packageBytes": 63786,
+        "packageSha256": "513bc88840a5ecd2e9881624f03f6c66ddd665ed7cbc261093a66e07e749c180",
+        "requiredCapability": "framer-f1-render-v2-structural-v1"
+      }
+    }
+  },
+  "budget": {
+    "packageBytes": 63786,
+    "sceneStoreBytes": 98304,
+    "sceneStoreHeadroomBytes": 34518,
+    "framebufferBytes": 62000,
+    "additionalFramebufferBytes": 0,
+    "states": 1,
+    "handlers": 1,
+    "bindings": 3,
+    "patchSets": 3,
+    "variants": 9,
+    "spans": 63,
+    "pixelBytes": 630,
+    "baseFrameBytes": 62000,
+    "programBytes": 1382
+  },
+  "rasterProof": {
+    "format": "framer-render-v2-raster-proof-v1",
+    "chromeProduct": "Chrome/151.0.7922.138",
+    "freshRenders": 15,
+    "initialVariants": 3,
+    "individualVariants": 9,
+    "pairwiseStates": 3,
+    "combinedStates": 1,
+    "baseFrameSha256": "ad2d2bd0d8cfd53779f22fee8b6035cca7e2556328846db6965a3fb5ba913313",
+    "layoutSha256": "34e5b9429a5ec0b52afa923c723707d8717a39fbc90c6a4078d88b28b17167f0"
+  },
+  "interaction": {
+    "event": "input.fn-bottom-knob",
+    "encoderId": 1,
+    "behavior": "cycles the highlighted forecast row"
+  },
+  "liveWeather": {
+    "supportedToday": "host fetch + package recompile/push",
+    "incrementalEvents": "contracted but blocked on weather edge requirements"
+  }
+}

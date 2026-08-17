@@ -24,8 +24,10 @@ async function start(context, captureProvider = { capture: async () => { throw n
 }
 
 function deterministicRasterProvider() {
-  return { capture: async () => { throw new Error("v1 capture not used"); },
+  return { renderV2CaptureCalls: 0,
+    capture: async () => { throw new Error("v1 capture not used"); },
     async captureRenderV2Variants({ cases }) {
+      this.renderV2CaptureCalls += 1;
       const layout = { elements: [[0, "HTML", "", 2, 0, 0, 6400, 19840, 100, 310, 100, 310]],
         document: [100, 310, 100, 310, 100, 310, 100, 310] };
       return { format: "framer-render-v2-chromium-captures-v1",
@@ -85,10 +87,32 @@ test("hosted Render-v2 API compiles and replays bounded device-identical events"
     body: JSON.stringify({ ...fixture, events: Array.from({ length: 65 }, () => ({ kind: "tick.1s" })) }) });
   assert.equal(historyResponse.status, 422);
   assert.equal((await historyResponse.json()).error, "RENDER_V2_EVENT_HISTORY_OVERSIZE");
+  for (const value of [-128, 127]) {
+    const boundary = await fetch(`${base}/api/render-v2/simulate`, { method: "POST", headers,
+      body: JSON.stringify({ ...fixture,
+        events: [{ kind: "input.fn-bottom-knob", flags: 1, id: 1, value }] }) });
+    assert.equal(boundary.status, 200, `native signed-int8 encoder boundary ${value} must replay`);
+  }
+  for (const [event, message] of [
+    [{ kind: "tick.1s", flags: 1, id: 0, value: 1 }, /flags=0, id=0, and value=1/u],
+    [{ kind: "tick.100ms", flags: 0, id: 1, value: 1 }, /flags=0, id=0, and value=1/u],
+    [{ kind: "tick.1s", flags: 0, id: 0, value: 0 }, /value=1/u],
+    [{ kind: "tick.100ms", flags: 0, id: 0, value: 2 }, /value=1/u],
+    [{ kind: "host.rpc", flags: 1, id: 9, value: 1 }, /flags=0/u],
+    [{ kind: "input.fn-bottom-knob", flags: 1, id: 1, value: -129 }, /signed-int8/u],
+    [{ kind: "input.fn-bottom-knob", flags: 1, id: 1, value: 128 }, /signed-int8/u],
+    [{ kind: "input.fn-bottom-knob", flags: 1, id: 1, value: 0 }, /nonzero signed-int8/u],
+  ]) {
+    const hostile = await fetch(`${base}/api/render-v2/simulate`, { method: "POST", headers,
+      body: JSON.stringify({ ...fixture, events: [event] }) });
+    assert.equal(hostile.status, 422);
+    assert.match((await hostile.json()).message, message);
+  }
 });
 
 test("hosted Render-v2 API auto-falls back to the proven Chromium raster lane", async (context) => {
-  const base = await start(context, deterministicRasterProvider());
+  const captureProvider = deterministicRasterProvider();
+  const base = await start(context, captureProvider);
   const handshake = await fetch(`${base}/api/bridge`, { headers: proxyHeaders }).then((response) => response.json());
   const headers = { ...proxyHeaders, "content-type": "application/json",
     "x-input-lab-session": handshake.sessionToken };
@@ -108,4 +132,19 @@ test("hosted Render-v2 API auto-falls back to the proven Chromium raster lane", 
   assert.equal(compiled.rasterProof.freshRenders, 4);
   assert.equal(compiled.manifest.scene.renderSource, "pinned-chromium-rgb565");
   assert.equal(compiled.manifest.scene.proof.individualVariants, 2);
+  assert.equal(captureProvider.renderV2CaptureCalls, 1);
+  const cachedCompile = await fetch(`${base}/api/render-v2/compile`, { method: "POST", headers,
+    body: JSON.stringify(fixture) });
+  assert.equal(cachedCompile.status, 200);
+  assert.equal((await cachedCompile.json()).packageBase64, compiled.packageBase64);
+  assert.equal(captureProvider.renderV2CaptureCalls, 1,
+    "an unchanged explicit compile/reset must reuse the complete parity-proven raster package");
+  const simulatedResponse = await fetch(`${base}/api/render-v2/simulate`, { method: "POST", headers,
+    body: JSON.stringify({ ...fixture, events: [{ kind: "host.rpc", id: 9, value: 1 }] }) });
+  assert.equal(simulatedResponse.status, 200);
+  const simulated = await simulatedResponse.json();
+  assert.equal(simulated.state.value, 1);
+  assert.notEqual(simulated.frameSha256, compiled.frameSha256);
+  assert.equal(captureProvider.renderV2CaptureCalls, 1,
+    "event replay must reuse the proven compilation instead of recapturing Chromium variants");
 });

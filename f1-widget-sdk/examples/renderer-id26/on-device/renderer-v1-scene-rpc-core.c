@@ -283,11 +283,15 @@ static s32 decode_base64(const u8 *input, u32 input_bytes, u8 *output, u32 outpu
   }
   return out == output_bytes;
 }
+#ifndef SCENE_INVALIDATE_HOOK
+#define SCENE_INVALIDATE_HOOK(state) ((void)0)
+#endif
 static void invalidate(RendererSceneRpcState *state) {
 #if SCENE_V2_ENABLED
   u32 retained;
 #endif
   if (state == (RendererSceneRpcState *)0) return;
+  SCENE_INVALIDATE_HOOK(state);
 #if SCENE_V2_ENABLED
   retained = state->flags & SCENE_FLAG_V2_STORE_LATCH;
   state->flags = retained;

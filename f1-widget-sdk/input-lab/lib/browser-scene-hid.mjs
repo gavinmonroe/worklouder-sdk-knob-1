@@ -1,4 +1,5 @@
 import { FramerHidClient, requestFramerHid } from "../../../web-flasher/src/lib/framer-hid.js";
+import { InputLabMQuickJsRpcClient } from "./mquickjs-device-rpc.mjs";
 
 export const BROWSER_SCENE_RPC_PROTOCOL = "framer-widget-scene-rpc-v1";
 export const BROWSER_SCENE_RPC_LIMITS = Object.freeze({ maxBundleBytes: 96 * 1024,
@@ -25,6 +26,16 @@ function invariant(value, message, code) {
 function statusOnly(response) {
   return response && typeof response === "object" && !Array.isArray(response) &&
     Object.keys(response).length === 1 && ["ok", "error"].includes(response.status);
+}
+
+function canonicalUnsignedDecimal(value, label, maximum) {
+  invariant(typeof value === "string" && /^(?:0|[1-9][0-9]*)$/u.test(value),
+    `${label} must be a canonical unsigned decimal string.`,
+  "RENDER_V2_DEVICE_ADMISSION_UNAVAILABLE");
+  const parsed = Number(value);
+  invariant(Number.isSafeInteger(parsed) && parsed >= 0 && parsed <= maximum,
+    `${label} is outside its admitted range.`, "RENDER_V2_DEVICE_ADMISSION_UNAVAILABLE");
+  return parsed;
 }
 
 async function sha256Hex(bytes) {
@@ -69,20 +80,33 @@ async function createUpload(input, expectedGeneration) {
 
 function exactGenericCapabilities(value) {
   const keys = ["chunkRawBytes", "committedGeneration", "maxBundleBytes", "maxChunks", "packageFormat",
-    "protocol", "renderV2Profile", "status"];
+    "protocol", "renderV2Profile", "status", "v1Packages"];
   invariant(value && typeof value === "object" && !Array.isArray(value) &&
     Object.keys(value).sort().join(",") === keys.sort().join(",") && value.status === "ok" &&
     value.protocol === BROWSER_RENDER_V2_PROFILE.protocol &&
     value.renderV2Profile === BROWSER_RENDER_V2_PROFILE.renderV2Profile &&
-    value.packageFormat === BROWSER_RENDER_V2_PROFILE.packageFormat &&
-    value.maxBundleBytes === BROWSER_RENDER_V2_PROFILE.maxBundleBytes &&
-    value.chunkRawBytes === BROWSER_RENDER_V2_PROFILE.chunkRawBytes &&
-    value.maxChunks === BROWSER_RENDER_V2_PROFILE.maxChunks &&
-    Number.isInteger(value.committedGeneration) && value.committedGeneration >= 0 &&
-    value.committedGeneration < 0xffffffff,
+    value.packageFormat === BROWSER_RENDER_V2_PROFILE.packageFormat && value.v1Packages === "true",
   "Keyboard does not advertise the exact generic Render-v2 admission profile.",
   "RENDER_V2_DEVICE_ADMISSION_UNAVAILABLE");
-  return Object.freeze({ ...value });
+  const maxBundleBytes = canonicalUnsignedDecimal(value.maxBundleBytes, "maxBundleBytes", 0xffffffff);
+  const chunkRawBytes = canonicalUnsignedDecimal(value.chunkRawBytes, "chunkRawBytes", 0xffffffff);
+  const maxChunks = canonicalUnsignedDecimal(value.maxChunks, "maxChunks", 0xffffffff);
+  const committedGeneration = canonicalUnsignedDecimal(value.committedGeneration,
+    "committedGeneration", 0xffffffff - 1);
+  invariant(maxBundleBytes === BROWSER_RENDER_V2_PROFILE.maxBundleBytes &&
+    chunkRawBytes === BROWSER_RENDER_V2_PROFILE.chunkRawBytes &&
+    maxChunks === BROWSER_RENDER_V2_PROFILE.maxChunks,
+  "Keyboard does not advertise the exact generic Render-v2 transport limits.",
+  "RENDER_V2_DEVICE_ADMISSION_UNAVAILABLE");
+  return Object.freeze({ status: value.status, protocol: value.protocol,
+    renderV2Profile: value.renderV2Profile, packageFormat: value.packageFormat,
+    maxBundleBytes, chunkRawBytes, maxChunks, committedGeneration, v1Packages: true });
+}
+
+function claimsGenericRenderV2(value) {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value) &&
+    (value.renderV2Profile === BROWSER_RENDER_V2_PROFILE.renderV2Profile ||
+      value.packageFormat === BROWSER_RENDER_V2_PROFILE.packageFormat));
 }
 
 function validateBrowserRenderV2Package(input) {
@@ -98,6 +122,7 @@ function validateBrowserRenderV2Package(input) {
   invariant(f1wbBytes === 62_404 && f1wbBytes + 64 <= input.length && input[20] === 1 && input[21] === 2 &&
     input[22] >= 1 && input[22] <= 16 && input[23] === 0 && view.getUint32(24, true) === 332 &&
     view.getUint32(28, true) === 62_072 && view.getUint32(32, true) === 0 && view.getUint32(36, true) === 0 &&
+    input.subarray(120, 124).every((byte) => byte === 0) &&
     input.subarray(124, 332).every((byte) => byte === 0),
   "Browser Render-v2 F1WB descriptor is not the canonical one-frame raster base.");
   const raster = 332;
@@ -118,8 +143,8 @@ function validateBrowserRenderV2Package(input) {
 export async function createBrowserRenderV2Upload(input, expectedGeneration) {
   invariant(Number.isInteger(expectedGeneration) && expectedGeneration >= 0 && expectedGeneration < 0xffffffff,
     "Browser Render-v2 expected generation must be a uint32 below its maximum.");
-  const f1wbBytes = validateBrowserRenderV2Package(input);
   const bytes = new Uint8Array(input);
+  const f1wbBytes = validateBrowserRenderV2Package(bytes);
   const generation = expectedGeneration + 1;
   new DataView(bytes.buffer, bytes.byteOffset, f1wbBytes).setUint32(8, generation, true);
   const sha256 = await sha256Hex(bytes);
@@ -152,6 +177,12 @@ export class BrowserFramerSceneClient {
     this.committedGeneration = initialGeneration;
     this.indeterminate = false;
     this.renderV2Capabilities = null;
+    this.renderV2CapabilityStatus = "unknown";
+    this.mquickJsCapabilities = null;
+    this.mquickJsCapabilityStatus = "unknown";
+    this.mquickJsRpc = new InputLabMQuickJsRpcClient({
+      call: (method, params) => this.hidClient.call(method, params),
+    });
     this.operationQueue = Promise.resolve();
   }
 
@@ -172,16 +203,67 @@ export class BrowserFramerSceneClient {
   async close() { return this.runExclusive(() => this.hidClient.close()); }
 
   async probeRenderV2Capabilities({ force = false } = {}) {
+    invariant(!this.indeterminate, "Prior browser scene commit is indeterminate; reconnect before another operation.");
     return this.runExclusive(() => this.#probeRenderV2Capabilities(force));
   }
 
   async queryRenderV2Capabilities(options = {}) { return this.probeRenderV2Capabilities(options); }
 
+  async probeMQuickJsCapabilities(options = {}) {
+    invariant(!this.indeterminate, "Prior browser scene commit is indeterminate; reconnect before another operation.");
+    return this.runExclusive(async () => {
+      try {
+        this.mquickJsCapabilities = await this.mquickJsRpc.probeCapability(options);
+        this.mquickJsCapabilityStatus = "physical-canary";
+        return this.mquickJsCapabilities;
+      } catch (error) {
+        this.mquickJsCapabilityStatus = error.code === "MQUICKJS_CANARY_CAPABILITY_INCOMPATIBLE" ?
+          "incompatible" : "unavailable";
+        throw error;
+      }
+    });
+  }
+
+  async queryMQuickJsCapabilities(options = {}) { return this.probeMQuickJsCapabilities(options); }
+
+  async probeMQuickJsTelemetry() {
+    invariant(!this.indeterminate, "Prior browser scene commit is indeterminate; reconnect before another operation.");
+    return this.runExclusive(() => this.mquickJsRpc.probeTelemetry());
+  }
+
+  async sendMQuickJsHostEvent(request, options = {}) {
+    invariant(!this.indeterminate, "Prior browser scene commit is indeterminate; reconnect before another operation.");
+    return this.runExclusive(() => this.mquickJsRpc.sendHostEvent(request, options));
+  }
+
+  async runMQuickJsTransaction(operation) {
+    invariant(!this.indeterminate, "Prior browser scene commit is indeterminate; reconnect before another operation.");
+    invariant(typeof operation === "function", "MicroQuickJS transaction requires one bounded operation.");
+    return this.runExclusive(() => operation(Object.freeze({
+      probeTelemetry: () => this.mquickJsRpc.probeTelemetry(),
+      sendHostEvent: (request, options = {}) => this.mquickJsRpc.sendHostEvent(request, options),
+      sendHostEvents: (requests, options = {}) => this.mquickJsRpc.sendHostEvents(requests, options),
+    })));
+  }
+
   async #probeRenderV2Capabilities(force) {
     if (!force && this.renderV2Capabilities) return this.renderV2Capabilities;
-    const response = await this.hidClient.call(METHODS.capabilities,
-      { protocol: BROWSER_RENDER_V2_PROFILE.protocol });
-    this.renderV2Capabilities = exactGenericCapabilities(response);
+    let response;
+    try {
+      response = await this.hidClient.call(METHODS.capabilities,
+        { protocol: BROWSER_RENDER_V2_PROFILE.protocol });
+    } catch (error) {
+      this.renderV2CapabilityStatus = "legacy-or-unavailable";
+      throw error;
+    }
+    try {
+      this.renderV2Capabilities = exactGenericCapabilities(response);
+    } catch (error) {
+      this.renderV2CapabilityStatus = claimsGenericRenderV2(response)
+        ? "generic-incompatible" : "legacy-or-unavailable";
+      throw error;
+    }
+    this.renderV2CapabilityStatus = "generic";
     this.committedGeneration = this.renderV2Capabilities.committedGeneration;
     return this.renderV2Capabilities;
   }
@@ -190,6 +272,10 @@ export class BrowserFramerSceneClient {
 
   async #pushBundle(bytes, { onProgress = null } = {}) {
     invariant(!this.indeterminate, "Prior browser scene commit is indeterminate; reconnect before another Push.");
+    invariant(this.renderV2CapabilityStatus !== "generic-incompatible" &&
+      (this.renderV2CapabilityStatus !== "generic" || this.renderV2Capabilities?.v1Packages === true),
+    "Connected generic renderer does not explicitly admit V1 packages.",
+    "RENDER_V1_DEVICE_ADMISSION_UNAVAILABLE");
     for (let recovery = 0; recovery <= BROWSER_SCENE_RPC_LIMITS.generationRecoveryWindow; recovery += 1) {
       const expectedGeneration = this.committedGeneration + recovery;
       const upload = await createUpload(bytes, expectedGeneration);
@@ -216,6 +302,11 @@ export class BrowserFramerSceneClient {
         catch (cause) { this.indeterminate = true; throw Object.assign(new Error(
           "Scene commit reply is indeterminate; reconnect before another Push.", { cause }),
         { code: "SCENE_COMMIT_INDETERMINATE" }); }
+        if (!statusOnly(committed)) {
+          this.indeterminate = true;
+          throw Object.assign(new Error("Scene commit reply is indeterminate; reconnect before another Push."),
+            { code: "SCENE_COMMIT_INDETERMINATE" });
+        }
         invariant(statusOnly(committed) && committed.status === "ok", "Scene commit was rejected.", "SCENE_RPC_REJECTED");
         begun = false;
         this.committedGeneration = upload.commit.generation;
@@ -267,6 +358,11 @@ export class BrowserFramerSceneClient {
       catch (cause) { this.indeterminate = true; throw Object.assign(new Error(
         "Render-v2 commit reply is indeterminate; reconnect before another Push.", { cause }),
       { code: "SCENE_COMMIT_INDETERMINATE" }); }
+      if (!statusOnly(committed)) {
+        this.indeterminate = true;
+        throw Object.assign(new Error("Render-v2 commit reply is indeterminate; reconnect before another Push."),
+          { code: "SCENE_COMMIT_INDETERMINATE" });
+      }
       invariant(statusOnly(committed) && committed.status === "ok",
         "Render-v2 scene commit was rejected.", "SCENE_RPC_REJECTED");
       begun = false;
@@ -286,6 +382,7 @@ export class BrowserFramerSceneClient {
 
   async sendRenderV2HostEvent(id, value) {
     return this.runExclusive(async () => {
+      invariant(!this.indeterminate, "Prior browser scene commit is indeterminate; reconnect before another operation.");
       await this.#probeRenderV2Capabilities(false);
       invariant(Number.isInteger(id) && id >= 1 && id <= 0xffff,
         "Render-v2 host event id must be in 1..65535.");

@@ -1,0 +1,21 @@
+{
+  "status": "OFFLINE_PACKAGE_ONLY_NOT_DEVICE_APPROVAL",
+  "profileId": "framer-f1-render-v2-mquickjs-v1",
+  "packageAbiSha256": "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
+  "generation": 1,
+  "bytes": 1576,
+  "sha256": "68a53cd4300cdfe5f8c22071f0488046f6e21a11ee9054e162bfd74b0ae8fdb9",
+  "sourceSha256": "fc6b426f49579872eb6f961f141863aecd078f187809459e0c56743d02039fe9",
+  "budget": {
+    "packageBytes": 1576,
+    "packageHeadroomBytes": 96728,
+    "sourceBytes": 1350,
+    "events": 6,
+    "targets": 0,
+    "keys": 2,
+    "chords": 1,
+    "rasterBaseBytes": 0
+  },
+  "syntheticNativeTokens": true,
+  "hardwareRuntimeProven": false
+}

@@ -1,0 +1,14 @@
+.weather-v2{position:relative;width:100px;height:310px;overflow:hidden;background:#000;color:#f5f5f4;font-family:"HKNova",ui-sans-serif,system-ui,sans-serif;font-variant-numeric:tabular-nums}
+.weather-mark{position:absolute;left:41px;top:17px;width:24px;height:17px}
+.weather-mark i,.weather-mark b{position:absolute;display:block;background:#f5f5f4}
+.weather-mark i{left:0;bottom:0;width:24px;height:11px;border-radius:6px}
+.weather-mark b{right:3px;top:0;width:11px;height:11px;border-radius:50%}
+.weather-location{position:absolute;left:8px;right:8px;top:39px;height:12px;color:#8c8782;text-align:center;font:600 7px/12px "HKNova",ui-sans-serif,system-ui,sans-serif;white-space:nowrap;overflow:hidden}
+.weather-title{position:absolute;left:8px;right:8px;top:57px;height:30px;text-align:center;font:500 22px/30px "HKNova",ui-sans-serif,system-ui,sans-serif}
+.weather-current{position:absolute;box-sizing:border-box;left:8px;top:99px;width:84px;height:74px;border-radius:10px;background:#ff8a00;color:#090909;text-align:center;padding-top:9px}
+.weather-current strong{display:block;font:500 31px/34px "HKNova",ui-sans-serif,system-ui,sans-serif;letter-spacing:-1px}
+.weather-current span{display:block;font:600 13px/19px "HKNova",ui-sans-serif,system-ui,sans-serif}
+.weather-forecast{position:absolute;left:8px;top:190px;width:84px;height:102px;display:grid;grid-template-rows:repeat(3,34px)}
+.weather-day{display:grid;grid-template-columns:31px 18px 13px 18px;align-items:center;width:84px;height:34px;color:#f5f5f4;font:600 11px/34px ui-monospace,SFMono-Regular,Menlo,monospace}
+.weather-day span{text-align:left}.weather-day b{font:inherit;text-align:right}.weather-day i{font:600 15px/34px ui-monospace,SFMono-Regular,Menlo,monospace;text-align:center;font-style:normal}
+#forecast-1{color:#ff8a00}#forecast-2,#forecast-3{color:#77736f}

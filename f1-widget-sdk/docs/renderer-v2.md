@@ -177,13 +177,23 @@ from its retained value when ID27 is shown again. It is not a hidden wall-clock
 alarm. This behavior avoids a second background task and keeps LVGL and
 framebuffer access on the visible UI callback.
 
-## Full JavaScript option
+## MicroQuickJS canary
 
-[MicroQuickJS](https://github.com/bellard/mquickjs) is the strongest future
-candidate. Its project reports operation with as little as 10 KiB RAM and
-about 100 KiB ROM on ARM Thumb-2, a fixed caller-supplied heap, compacting GC,
-and a strict ES5-like subset. It still supplies no DOM, layout, or renderer,
-and this workspace has not proven an ESP32-S3/Xtensa integration.
+Render v2 now has two deliberately separate execution profiles:
+
+- `framer-f1-render-v2-structural-v1` statically lowers the documented
+  JavaScript-shaped subset into F2EP. This is the profile used by the current
+  clock and timer. No JavaScript engine or `jsdom` runs on the keyboard.
+- `framer-f1-render-v2-mquickjs-v1` is the capability-gated canary profile. It
+  transports admitted UTF-8 source in an `F2JS` package for evaluation by
+  MicroQuickJS on the device. It never falls back to F2EP when that exact
+  capability is absent.
+
+[MicroQuickJS](https://github.com/bellard/mquickjs) supplies a strict,
+mostly-ES5 JavaScript engine with a caller-owned heap and compacting GC. It
+does not supply a DOM, layout engine, CSS engine, renderer, network stack, or
+browser globals. The canary therefore exposes only a small declared facade;
+`deviceRunsJsdom` is always false.
 
 [JerryScript](https://jerryscript.net/) is the fallback embedded engine; its
 project targets under 64 KiB RAM and under 200 KiB ROM. Full
@@ -192,26 +202,66 @@ and interrupt controls but is materially larger. None of these engines turns
 HTML/CSS into pixels. Each would call the same tiny native event/UI facade used
 by the deterministic runtime.
 
-An offline cross-build removes one uncertainty. MQuickJS commit
-`203d5bb79789bc47b74855d9207415dab71661a0` (2026-06-04) compiles with the
-workspace's Xtensa ESP32-S3 GCC 13.2.0 as ELF32 little-endian Xtensa. The core
-object is 73,292 bytes of text. Its complete upstream C-API example linked
-against the toolchain's newlib/nosys support is 137,428 bytes of text, 280 bytes
-of initialized data, and 376 bytes of BSS. This proves compiler/ISA
-compatibility only. It does **not** prove ESP-IDF task integration, fixed-heap
-placement, timing, interrupt behavior, or safety inside the patched stock
-firmware.
+The workspace pins MQuickJS commit
+`203d5bb79789bc47b74855d9207415dab71661a0`. A real host execution harness and
+deterministic ESP32-S3 Xtensa module link now pass with a fixed 65,536-byte
+caller heap, a 2,000 microsecond cooperative callback deadline, no system
+allocator, and reset/last-good recovery for exception, timeout, OOM, and
+failed publication. Moving-GC ASan tests are mandatory because values can move
+while JavaScript properties are allocated.
 
-Before enabling an engine on hardware, require all of the following:
+The matching `F2JS` v1 package is a bounded 98,304-byte container. It carries
+canonical UTF-8 source (never version-specific bytecode), exact resource
+limits, declared event and target records, SHA-256 integrity fields, and an
+optional canonical one-frame raster base. A device is compatible only when it
+reports the exact engine commit, package format, package-ABI digest, heap,
+deadline, and declared limits.
 
-1. Xtensa ESP32-S3 little-endian cross-build with no unresolved runtime ABI.
-2. Fixed 32-64 KiB heap and repeatable OOM recovery.
-3. A per-callback deadline (initial target 2 ms) and interrupt proof.
+The SDK prepends the exact canonical directive `"use strict";` when it is not
+already present, counts that prefix against the 8,192-byte source cap, and the
+device loader independently requires it before evaluation. This makes
+`mquickjs-es5-strict-v1` a tested runtime property rather than an editor label.
+
+The canary input contract includes `tick.100ms`, `tick.1s`,
+`input.fn-bottom-knob`, declared `host.rpc:<id>`, `input.key.down`,
+`input.key.up`, `input.key.hold`, `input.chord.down`, and `input.chord.up`.
+Admission allows at most 16 declared keys and eight exact, order-independent
+two-to-four-key chords. Native key identity is an opaque 32-bit token mapped by
+the package to a stable JavaScript key ID. The runtime owns a 16-bit held-key
+bitmap, bounded debounce/hold timing, overflow resynchronization, and synthetic
+release. The stock keyboard callback adapter and physical token discovery are
+still hardware-canary gates, so Input Lab must not claim a physical key name
+until the device reports this profile and the mapping has been learned.
+
+The linked engine module fits in separate flash pages and can be mapped through
+the stock ESP-IDF MMU API without growing the existing IROM segment or removing
+the accepted clock/timer image. This is a static layout result, not a device
+receipt. A resident loader, dedicated VM-owner task, immutable source copy,
+bounded event queue, atomic UI mailbox, cache-off quiescence, capability RPC,
+task-stack telemetry, physical key hook, and soak test must all pass before the
+profile is advertised or flashed.
+
+Before enabling the canary on hardware, require all of the following:
+
+1. Exact Xtensa module, resident-loader, source-package, and capability ABI
+   digests with no relocations, undefined symbols, or writable module data.
+2. Fixed 64 KiB heap and repeatable OOM, timeout, exception, and reset recovery.
+3. A 2 ms per-callback cooperative deadline and a dedicated VM task with fixed
+   internal stack and high-water telemetry.
 4. No LVGL calls outside the UI task.
-5. Last-good-frame recovery after timeout, exception, or VM reset.
-6. Steady-state internal/PSRAM telemetry with Music and WPM still active.
-7. Authenticated source or compiler output. QuickJS-family bytecode is
-   version-specific and is not a security boundary.
+5. Last-good-frame recovery and an atomic revision mailbox after handler
+   failure, queue overflow, disconnect, or hidden-screen transition.
+6. Stock-first key down/up proof, chord/hold/resync proof, and teardown that
+   preserves normal keyboard behavior.
+7. Steady-state internal/PSRAM/task telemetry with Music, WPM, clock, and timer
+   still active, followed by a physical soak and exact device receipt.
+8. Complete package SHA/bounds/profile admission before publication. The SHA is
+   an integrity check, not cryptographic authentication; QuickJS-family
+   bytecode is version-specific and is not accepted by this profile.
+9. Sufficient internal heap before the one-shot MMU-map sequence. The pinned
+   ESP-IDF mapper can leave its private list unsafe after an allocation failure,
+   so first-map OOM is a reboot/rollback condition and must never be retried in
+   place.
 
 ESP-IDF's [external RAM guidance](https://docs.espressif.com/projects/esp-idf/en/latest/esp32s3/api-guides/external-ram.html)
 also requires accounting for cache-disabled periods and cache pressure. Keep
@@ -220,11 +270,12 @@ during flash/NVS operations.
 
 ## Production direction
 
-Ship the deterministic compiler target first. Treat MicroQuickJS as an
-optional backend for scripts that genuinely need richer logic, while retaining
-the same event schema, node/property allowlist, dirty-patch renderer, resource
-limits, and recovery behavior. That makes a future JavaScript engine an
-execution choice rather than a rewrite of the widget format.
+Keep the deterministic F2EP compiler as the default backend. Treat MicroQuickJS
+as an explicit optional backend for scripts that genuinely need richer logic,
+while retaining the same declared event schema, node/property allowlist,
+renderer, resource limits, atomic publication, and recovery behavior. Input Lab
+must select it only after exact capability negotiation and must keep preview,
+package admission, deployment, and telemetry visibly distinct from F2EP.
 
 ## Native and device lane
 

@@ -142,6 +142,13 @@ run on the keyboard. See [`docs/renderer-v2.md`](docs/renderer-v2.md) for the
 supported source surface, measured budgets, engine research, and remaining
 native/device work.
 
+The optional MicroQuickJS lane now has a separate, candid developer contract
+and deterministic offline package example. It transports bounded strict UTF-8
+source in `F2JS`; it does not run `jsdom`, and it is not yet proven on a
+physical keyboard. See
+[`docs/render-v2-mquickjs.md`](docs/render-v2-mquickjs.md) and
+[`examples/render-v2-mquickjs-canary`](examples/render-v2-mquickjs-canary).
+
 ## Commands
 
 - `init <directory>` creates a complete project and refuses to overwrite it.
@@ -234,6 +241,10 @@ live RPC requires the matching proof ID and explicit `--confirm-live-rpc`.
 - [`docs/renderer-v2.md`](docs/renderer-v2.md): event-driven renderer-v1
   extension, safe script compiler, F2EP ABI, clock/knob/RPC prototype, embedded
   JavaScript-engine research, and the native integration gates.
+- [`docs/render-v2-mquickjs.md`](docs/render-v2-mquickjs.md): the separate
+  capability-gated `F2JS`/MicroQuickJS profile, exact event/API contract,
+  key/chord examples, limits, recovery model, Input Lab target, offline
+  handoff, and physical-canary checklist.
 
 ```sh
 npm --prefix f1-widget-sdk test

@@ -21,6 +21,7 @@
       "import": "./src/media-transport/index.mjs"
     },
     "./input-lab": {
+      "types": "./input-lab/lib/index.d.ts",
       "import": "./input-lab/lib/index.mjs"
     }
   },
@@ -32,6 +33,7 @@
     "stage3e3": "node bin/f1-widget.mjs stage3e3",
     "renderer:matrix": "node examples/jp-matrix/build.mjs",
     "renderer:raster-example": "node examples/less-but-better/build.mjs",
+    "renderer-v2:generic-firmware": "node src/generic-render-v2-firmware.mjs",
     "media:status": "node bin/f1-widget.mjs media status",
     "media:mock": "node bin/f1-widget.mjs media mock",
     "media:live": "node examples/music-player/tools/run-live-media.mjs",

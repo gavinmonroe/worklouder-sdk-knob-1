@@ -1,0 +1,21 @@
+<svg id="weatherScreen" xmlns="http://www.w3.org/2000/svg" width="100" height="310" viewBox="0 0 100 310">
+  <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#051220"/><stop offset="1" stop-color="#0a2948"/></linearGradient></defs>
+  <style>.sans{font-family:Arial,sans-serif}.day{font:700 9px Arial;fill:#eef7ff}.cond{font:7px Arial;fill:#83a5bf}.temps{font:700 8px Arial;fill:#eef7ff;text-anchor:end}</style>
+  <rect width="100" height="310" rx="6" fill="url(#sky)"/>
+  <text id="place" x="8" y="22" class="sans" font-size="8" font-weight="700" fill="#eef7ff">CHICAGO</text>
+  <text id="status" x="92" y="22" class="sans" font-size="6" text-anchor="end" fill="#55c2ff">LIVE</text>
+  <rect x="7" y="62" width="86" height="80" rx="8" fill="#0b2f53"/><rect x="7" y="62" width="3" height="80" rx="1" fill="#2a84da"/>
+  <text id="currentTemp" x="14" y="105" class="sans" font-size="30" font-weight="400" fill="#f5fbff">45°F</text>
+  <text id="currentCond" x="14" y="126" class="sans" font-size="10" fill="#67b9ff">Rain</text>
+  <text id="age" x="88" y="137" class="sans" font-size="6" text-anchor="end" fill="#8ca7bc">1s ago</text>
+  <text id="d1Name" x="12" y="178" class="day">Tue</text>
+  <text id="d1Cond" x="12" y="190" class="cond">Snow</text>
+  <text id="d1Temps" x="88" y="183" class="temps">34°F  43°F</text>
+  <text id="d2Name" x="12" y="219" class="day">Wed</text>
+  <text id="d2Cond" x="12" y="231" class="cond">Storm</text>
+  <text id="d2Temps" x="88" y="224" class="temps">36°F  46°F</text>
+  <text id="d3Name" x="12" y="260" class="day">Thu</text>
+  <text id="d3Cond" x="12" y="272" class="cond">Sunny</text>
+  <text id="d3Temps" x="88" y="265" class="temps">38°F  49°F</text>
+  <text id="retry" x="50" y="301" class="sans" font-size="6" text-anchor="middle" fill="#ff9b71" visibility="hidden"></text>
+</svg>

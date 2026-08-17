@@ -282,6 +282,117 @@ function normalizeSettings(value = {}) {
   return Object.freeze(settings);
 }
 
+export const RENDER_V2_CHROMIUM_CAPTURE_LIMITS = Object.freeze({
+  maxCases: 96,
+  maxMutationsPerCase: 16,
+  maxTargets: 16,
+  maxTextScalars: 32,
+});
+
+function validateRenderV2MutationCases({ targets, cases }) {
+  invariant(Array.isArray(targets) && targets.length >= 1 &&
+    targets.length <= RENDER_V2_CHROMIUM_CAPTURE_LIMITS.maxTargets,
+  `Render v2 Chromium capture requires 1..${RENDER_V2_CHROMIUM_CAPTURE_LIMITS.maxTargets} targets.`);
+  const targetSet = new Set();
+  for (const target of targets) {
+    invariant(typeof target === "string" && /^[a-z][\w-]{0,31}$/iu.test(target) && !targetSet.has(target),
+      "Render v2 Chromium targets must be unique bounded HTML ids.");
+    targetSet.add(target);
+  }
+  invariant(Array.isArray(cases) && cases.length >= 2 &&
+    cases.length <= RENDER_V2_CHROMIUM_CAPTURE_LIMITS.maxCases,
+  `Render v2 Chromium capture requires 2..${RENDER_V2_CHROMIUM_CAPTURE_LIMITS.maxCases} cases.`);
+  const names = new Set();
+  return Object.freeze(cases.map((entry, caseIndex) => {
+    invariant(entry && typeof entry === "object" && !Array.isArray(entry) &&
+      Object.keys(entry).every((key) => key === "name" || key === "mutations"),
+    `Render v2 Chromium case ${caseIndex} is invalid.`);
+    invariant(typeof entry.name === "string" && /^[a-z0-9:_-]{1,64}$/u.test(entry.name) && !names.has(entry.name),
+      `Render v2 Chromium case ${caseIndex} has an invalid or duplicate name.`);
+    names.add(entry.name);
+    invariant(Array.isArray(entry.mutations) &&
+      entry.mutations.length <= RENDER_V2_CHROMIUM_CAPTURE_LIMITS.maxMutationsPerCase,
+    `Render v2 Chromium case ${entry.name} has too many mutations.`);
+    const seenTargets = new Set();
+    const mutations = entry.mutations.map((mutation, mutationIndex) => {
+      invariant(mutation && typeof mutation === "object" && !Array.isArray(mutation) &&
+        Object.keys(mutation).every((key) => ["targetId", "textContent", "color"].includes(key)),
+      `Render v2 Chromium mutation ${entry.name}/${mutationIndex} is invalid.`);
+      invariant(targetSet.has(mutation.targetId) && !seenTargets.has(mutation.targetId),
+        `Render v2 Chromium case ${entry.name} repeats or references an unknown target.`);
+      seenTargets.add(mutation.targetId);
+      invariant(Object.hasOwn(mutation, "textContent") || Object.hasOwn(mutation, "color"),
+        `Render v2 Chromium mutation ${entry.name}/${mutationIndex} changes nothing.`);
+      if (Object.hasOwn(mutation, "textContent")) {
+        invariant(typeof mutation.textContent === "string" &&
+          Array.from(mutation.textContent).length <= RENDER_V2_CHROMIUM_CAPTURE_LIMITS.maxTextScalars &&
+          Buffer.byteLength(mutation.textContent) <= 256,
+        `Render v2 Chromium mutation ${entry.name}/${mutationIndex} text is outside its bound.`);
+      }
+      if (Object.hasOwn(mutation, "color")) invariant(typeof mutation.color === "string" &&
+        /^#[0-9a-f]{3}(?:[0-9a-f]{3})?$/iu.test(mutation.color),
+      `Render v2 Chromium mutation ${entry.name}/${mutationIndex} color must be #RGB or #RRGGBB.`);
+      return Object.freeze({ ...mutation });
+    });
+    return Object.freeze({ name: entry.name, mutations: Object.freeze(mutations) });
+  }));
+}
+
+function renderV2MutationExpression(mutations, targets) {
+  const payload = Buffer.from(JSON.stringify({ mutations, targets }), "utf8").toString("base64");
+  return `(async()=>{` +
+    `const raw=Uint8Array.from(atob(${JSON.stringify(payload)}),c=>c.charCodeAt(0));` +
+    `const data=JSON.parse(new TextDecoder().decode(raw));` +
+    `for(const change of data.mutations){const matches=document.querySelectorAll("#"+CSS.escape(change.targetId));` +
+    `if(matches.length!==1)throw new Error("dynamic target count "+change.targetId+"="+matches.length);` +
+    `const target=matches[0];if(Object.hasOwn(change,"textContent"))target.textContent=change.textContent;` +
+    `if(Object.hasOwn(change,"color"))target.style.color=change.color;}` +
+    `await document.fonts.ready;await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));` +
+    `const targetCounts=Object.fromEntries(data.targets.map(id=>[id,document.querySelectorAll("#"+CSS.escape(id)).length]));` +
+    `const q=n=>Math.round(n*64);const elements=Array.from(document.querySelectorAll("*")).map((element,index)=>{` +
+    `const r=element.getBoundingClientRect();return[index,element.tagName,element.id,element.childElementCount,` +
+    `q(r.x),q(r.y),q(r.width),q(r.height),element.scrollWidth,element.scrollHeight,element.clientWidth,element.clientHeight]});` +
+    `const targetStyles=Object.fromEntries(data.targets.map(id=>{const element=document.getElementById(id);` +
+    `const r=element.getBoundingClientRect(),s=getComputedStyle(element),ancestorEffects=[];` +
+    `for(let ancestor=element.parentElement;ancestor;ancestor=ancestor.parentElement){const a=getComputedStyle(ancestor);` +
+    `ancestorEffects.push({tagName:ancestor.tagName,id:ancestor.id,filter:a.filter,` +
+    `backdropFilter:a.backdropFilter,mixBlendMode:a.mixBlendMode});}` +
+    `return[id,{tagName:element.tagName,namespaceURI:element.namespaceURI,rect:[r.x,r.y,r.width,r.height],` +
+    `contain:s.contain,display:s.display,overflowClipMargin:s.overflowClipMargin,filter:s.filter,` +
+    `textShadow:s.textShadow,fontKerning:s.fontKerning,fontVariantLigatures:s.fontVariantLigatures,` +
+    `fontVariantNumeric:s.fontVariantNumeric,direction:s.direction,unicodeBidi:s.unicodeBidi,` +
+    `writingMode:s.writingMode,ancestorEffects}]}));` +
+    `const root=document.documentElement,body=document.body;return{targetCounts,animations:document.getAnimations({subtree:true}).length,` +
+    `targetStyles,layout:{elements,document:[root.scrollWidth,root.scrollHeight,root.clientWidth,root.clientHeight,` +
+    `body.scrollWidth,body.scrollHeight,body.clientWidth,body.clientHeight]}}})()`;
+}
+
+async function waitForDocument(cdp, sessionId, signal) {
+  for (let attempt = 0; attempt < 200; attempt += 1) {
+    const ready = await cdp.send("Runtime.evaluate",
+      { expression: "document.readyState", returnByValue: true }, sessionId);
+    if (ready.result?.value === "complete") return;
+    await delay(10, signal);
+  }
+  throw new Error("Chromium document did not finish loading.");
+}
+
+async function captureRgb565Le(cdp, sessionId, signal) {
+  await cdp.send("Page.captureScreenshot",
+    { format: "png", fromSurface: true, captureBeyondViewport: false }, sessionId);
+  const { data } = await cdp.send("Page.captureScreenshot",
+    { format: "png", fromSurface: true, captureBeyondViewport: false }, sessionId);
+  const image = await sharp(Buffer.from(data, "base64")).ensureAlpha().raw()
+    .toBuffer({ resolveWithObject: true });
+  throwIfAborted(signal);
+  invariant(image.info.width === 100 && image.info.height === 310 && image.info.channels === 4,
+    "Chromium capture is not exact 100x310 RGBA.");
+  const rgb565 = rgba8888ToRgb565Frame(image.data, { width: 100, height: 310 });
+  const frame = Buffer.alloc(62_000);
+  rgb565.forEach((color, index) => frame.writeUInt16LE(color, index * 2));
+  return frame;
+}
+
 export class ChromiumRasterCaptureProvider {
   constructor({ chromePath = INPUT_LAB_CHROME, expectedProduct = PINNED_INPUT_LAB_CHROME_PRODUCT,
     spawnProcess = spawn, createWebSocket = (endpoint) => new WebSocket(endpoint), limits } = {}) {
@@ -290,6 +401,83 @@ export class ChromiumRasterCaptureProvider {
     this.spawnProcess = spawnProcess;
     this.createWebSocket = createWebSocket;
     this.limits = normalizeCaptureLimits(limits);
+  }
+
+  /**
+   * Capture a bounded set of fresh, host-controlled DOM states for Render v2.
+   * `mutations` is validated data; authored JavaScript is never inserted or evaluated.
+   */
+  async captureRenderV2Variants({ html, css, targets, cases: rawCases, signal: callerSignal }) {
+    const cases = validateRenderV2MutationCases({ targets, cases: rawCases });
+    const documentSource = sanitizeRasterDocument({ html, css, interaction: "none" });
+    const controller = new AbortController();
+    const onCallerAbort = () => controller.abort(abortReason(callerSignal));
+    callerSignal?.addEventListener("abort", onCallerAbort, { once: true });
+    if (callerSignal?.aborted) onCallerAbort();
+    const jobTimer = setTimeout(() => controller.abort(timeoutError("Chromium Render v2 capture job",
+      this.limits.jobTimeoutMs)), this.limits.jobTimeoutMs);
+    const { signal } = controller;
+    let directory;
+    let chrome;
+    let cdp;
+    try {
+      throwIfAborted(signal);
+      directory = await mkdtemp(join(tmpdir(), "f1-input-lab-render-v2-"));
+      const htmlPath = join(directory, "scene.html");
+      const profilePath = join(directory, "chrome-profile");
+      await writeFile(htmlPath, documentSource);
+      const args = ["--headless=new", "--no-first-run", "--no-default-browser-check", "--disable-background-networking",
+        "--disable-component-update", "--disable-default-apps", "--disable-extensions", "--disable-sync",
+        "--disable-gpu", "--disable-dev-shm-usage", "--disable-lcd-text", "--font-render-hinting=none", "--hide-scrollbars",
+        "--run-all-compositor-stages-before-draw", "--disable-threaded-animation", "--disable-threaded-scrolling",
+        "--force-device-scale-factor=1", `--user-data-dir=${profilePath}`, "--window-size=100,310",
+        "--remote-debugging-address=127.0.0.1", "--remote-debugging-port=0", "about:blank"];
+      chrome = await launchBoundedChrome(this.spawnProcess, this.chromePath, args,
+        { startupTimeoutMs: this.limits.startupTimeoutMs, shutdownGraceMs: this.limits.shutdownGraceMs, signal });
+      cdp = await CdpClient.connect(chrome.webSocketUrl, { createWebSocket: this.createWebSocket,
+        connectTimeoutMs: this.limits.connectTimeoutMs, commandTimeoutMs: this.limits.commandTimeoutMs, signal });
+      const { product } = await cdp.send("Browser.getVersion");
+      invariant(product === this.expectedProduct,
+        `Input Lab Chrome version mismatch: expected ${this.expectedProduct}, received ${product}.`);
+      const { targetId } = await cdp.send("Target.createTarget", { url: "about:blank" });
+      const { sessionId } = await cdp.send("Target.attachToTarget", { targetId, flatten: true });
+      await cdp.send("Page.enable", {}, sessionId);
+      await cdp.send("Emulation.setDeviceMetricsOverride",
+        { width: 100, height: 310, deviceScaleFactor: 1, mobile: false }, sessionId);
+      const captures = [];
+      for (let index = 0; index < cases.length; index += 1) {
+        const entry = cases[index];
+        await cdp.send("Page.navigate",
+          { url: `${pathToFileURL(htmlPath).href}?renderV2Case=${index}` }, sessionId);
+        await waitForDocument(cdp, sessionId, signal);
+        const evaluated = await cdp.send("Runtime.evaluate", { awaitPromise: true, returnByValue: true,
+          expression: renderV2MutationExpression(entry.mutations, targets) }, sessionId);
+        invariant(!evaluated.exceptionDetails,
+          `Chromium rejected controlled Render v2 mutations for ${entry.name}: ${evaluated.exceptionDetails?.text ?? "unknown"}.`);
+        const snapshot = evaluated.result?.value;
+        invariant(snapshot && typeof snapshot === "object" && snapshot.layout,
+          `Chromium returned no Render v2 snapshot for ${entry.name}.`);
+        invariant(Object.values(snapshot.targetCounts).every((count) => count === 1),
+          `Every Render v2 dynamic target must occur exactly once in ${entry.name}.`);
+        invariant(snapshot.animations === 0,
+          "Render v2 Chromium widgets must be static between events; CSS animations/transitions are unsupported.");
+        const frame = await captureRgb565Le(cdp, sessionId, signal);
+        captures.push(Object.freeze({ name: entry.name, mutations: entry.mutations,
+          layout: snapshot.layout, targetStyles: Object.freeze(snapshot.targetStyles), frame }));
+      }
+      await cdp.send("Target.closeTarget", { targetId });
+      cdp.close(); cdp = null;
+      await chrome.close(); chrome = null;
+      return Object.freeze({ format: "framer-render-v2-chromium-captures-v1",
+        browser: Object.freeze({ executable: this.chromePath, product }),
+        cases: Object.freeze(captures) });
+    } finally {
+      clearTimeout(jobTimer);
+      callerSignal?.removeEventListener("abort", onCallerAbort);
+      cdp?.close();
+      await chrome?.close();
+      if (directory) await rm(directory, { recursive: true, force: true });
+    }
   }
 
   async capture({ html, css, settings: rawSettings, signal: callerSignal }) {

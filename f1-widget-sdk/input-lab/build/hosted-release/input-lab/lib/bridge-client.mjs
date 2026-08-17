@@ -69,7 +69,8 @@ export class InputLabBridgeClient {
 
   async request(path, body, { accept = "application/json" } = {}) {
     invariant(this.capabilities, "Input Lab bridge is not connected.");
-    invariant(/^\/api\/(?:compile|capture|bundle)$/u.test(path), "Unsupported Input Lab bridge endpoint.");
+    invariant(/^\/api\/(?:compile|capture|bundle|render-v2\/(?:compile|simulate))$/u.test(path),
+      "Unsupported Input Lab bridge endpoint.");
     return this.fetch(`${this.baseUrl}${path}`, { method: "POST", mode: "cors", credentials: this.credentials,
       headers: { accept, "content-type": "application/json",
         "x-input-lab-session": this.capabilities.sessionToken }, body: JSON.stringify(body) });

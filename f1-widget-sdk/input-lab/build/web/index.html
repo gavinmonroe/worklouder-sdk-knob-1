@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="input-lab-session-token" content="__INPUT_LAB_SESSION_TOKEN__">
     <title>Input Lab</title>
-    <script type="module" crossorigin src="./assets/index-D2yuI-G5.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-DEY-6LZ1.css">
+    <script type="module" crossorigin src="./assets/index-DjBCHLF1.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DZwDUCXb.css">
   </head>
   <body>
     <header class="toolbar">
@@ -26,7 +26,8 @@
       <section class="editors" aria-label="Scene source">
         <div class="settings">
           <label>Renderer <select id="renderer-version"><option value="v1">V1 · HTML/CSS</option><option value="v2">V2 · events</option></select></label>
-          <label class="v1-setting">Mode <select id="mode"><option value="auto">Auto (recommended)</option><option value="semantic">Semantic CSS (strict)</option><option value="raster">Chromium raster</option></select></label>
+          <label class="v2-setting" hidden>Backend <select id="v2-backend"><option value="f2ep">F2EP · static subset</option><option value="mquickjs">MicroQuickJS · canary</option></select></label>
+          <label class="f2ep-setting">Mode <select id="mode"><option value="auto">Auto (recommended)</option><option value="semantic">Semantic CSS (strict)</option><option value="raster">Chromium raster</option></select></label>
           <label class="v1-setting">FPS <input id="fps" type="number" min="1" max="10" step="0.5" value="5"></label>
           <label class="v1-setting">Loop ms <input id="duration" type="number" min="100" max="10000" step="100" value="2000"></label>
           <label class="v1-setting">Max bytes ≤128K <input id="max-bytes" type="number" min="65536" max="131072" step="1024" value="131072"></label>
@@ -38,7 +39,7 @@
         <textarea id="css-source" spellcheck="false" maxlength="131072"></textarea>
         <div id="script-heading" class="source-heading" hidden>
           <label for="js-source">Widget JS</label>
-          <button id="load-v2-example" type="button">Load event example</button>
+          <span class="source-actions"><button id="load-v2-example" type="button">Load event example</button><select id="mquickjs-example" hidden><option value="timer">Timer + keys</option><option value="weather">Weather + RPC</option></select><button id="load-mquickjs-example" type="button" hidden>Load source</button><button id="mquickjs-download" type="button" hidden disabled>Download F2JS</button></span>
         </div>
         <textarea id="js-source" spellcheck="false" maxlength="8192" hidden></textarea>
         <p id="render-v2-notice" class="source-note" hidden>Safe SDK subset: integer state and bounded DOM updates are compiled to F2EP bytecode. Source is parsed, never executed as arbitrary JavaScript or jsdom.</p>
@@ -69,14 +70,14 @@
             <button id="v2-knob-down" type="button" aria-label="Fn plus bottom dial counterclockwise">−1</button>
             <button id="v2-knob-up" type="button" aria-label="Fn plus bottom dial clockwise">+1</button>
           </div>
-          <div class="event-row host-event-row">
+          <div id="f2ep-host-row" class="event-row host-event-row">
             <label for="v2-host-id">Host RPC ID</label>
             <input id="v2-host-id" value="0xB201" inputmode="text" maxlength="6">
             <label for="v2-host-value">Value</label>
             <input id="v2-host-value" type="number" value="1" step="1">
             <button id="v2-host-send" type="button">Send</button>
           </div>
-          <div class="keyboard-rpc-config">
+          <div id="f2ep-key-config" class="keyboard-rpc-config">
             <label for="v2-key-code">KeyboardEvent.code</label>
             <input id="v2-key-code" value="Space" maxlength="32" autocomplete="off" spellcheck="false">
             <label for="v2-key-rpc-id">Host RPC ID</label>
@@ -86,7 +87,34 @@
             Focus here, then press the configured key
           </div>
           <output id="v2-key-status" class="event-status">Browser key → host RPC · down 1 / up 0 · device forwarding unavailable</output>
-          <p class="event-note">This is a bounded browser key-to-host-RPC bridge, not a native <code>input.key</code> event. Repeat, composition, and editable targets are ignored; release is synthesized if focus is lost.</p>
+          <p id="f2ep-key-note" class="event-note">This is a bounded browser key-to-host-RPC bridge, not a native <code>input.key</code> event. Repeat, composition, and editable targets are ignored; release is synthesized if the pad, tab, or browser window loses focus.</p>
+          <div id="mquickjs-controls" hidden>
+            <div class="event-row">
+              <span>Native key model</span>
+              <button id="mq-key0-down" type="button">Key 0 ↓</button>
+              <button id="mq-key0-up" type="button">Key 0 ↑</button>
+            </div>
+            <div class="event-row">
+              <span>Action / chord</span>
+              <button id="mq-key1-down" type="button">Key 1 ↓</button>
+              <button id="mq-key1-up" type="button">Key 1 ↑</button>
+              <button id="mq-key-hold" type="button">Hold</button>
+              <button id="mq-chord" type="button">Chord</button>
+            </div>
+            <div class="event-row host-event-row">
+              <label for="mq-host-id">Host RPC</label><input id="mq-host-id" value="0x7001" maxlength="6">
+              <label for="mq-host-value">Value</label><input id="mq-host-value" type="number" value="300">
+              <label for="mq-host-aux">Aux</label><input id="mq-host-aux" type="number" value="0">
+              <button id="mq-host-send" type="button">Send</button>
+            </div>
+            <div id="mq-weather-settings" class="keyboard-rpc-config" hidden>
+              <label for="mq-zip">ZIP</label><input id="mq-zip" value="60601" maxlength="10" inputmode="numeric">
+              <label for="mq-units">Units</label><select id="mq-units"><option value="fahrenheit">Fahrenheit</option><option value="celsius">Celsius</option></select>
+              <button id="mq-weather-refresh" type="button">Refresh offline weather</button>
+            </div>
+            <div id="mq-key-pad" class="keyboard-test-pad" tabindex="0">Focus here: KeyF / KeyT</div>
+            <p class="event-note">Browser fixture simulation uses the bounded native key/chord model. Edited source is packaged, not executed in the browser. Weather data is deterministic and offline.</p>
+          </div>
           <output id="v2-event-status" class="event-status" aria-live="polite">Compile to begin simulation.</output>
           <dl id="v2-state" class="v2-state" aria-label="Render v2 state"></dl>
           <div id="v2-budget" class="capture-stats" aria-label="Render v2 compile budget"></div>

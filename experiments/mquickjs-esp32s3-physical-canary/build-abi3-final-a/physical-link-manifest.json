@@ -1,0 +1,1083 @@
+{
+  "format": "framer-mquickjs-esp32s3-physical-link-candidate-v1",
+  "status": "PASS_DETERMINISTIC_LINK_PENDING_INDEPENDENT_AUDIT_NO_GO_PHYSICAL",
+  "allocationMapOrdering": "internal-block-before-first-mmu-map-adopt-or-rollback-v1",
+  "telemetrySnapshotProtocol": "p0-locks-snapshot-ordered-p1-p5-expiry-clear-v1",
+  "uiLatencyMetric": "id28-full-proxy-tick-oldtick-base-lzss-f2tf-publish-us-v1",
+  "keyTokenNormalization": "raw-low24-after-stock-first-v1",
+  "mappings": [
+    {
+      "logical": 0,
+      "nativeToken": 44
+    },
+    {
+      "logical": 1,
+      "nativeToken": 225
+    }
+  ],
+  "chordHeldMask": 3,
+  "rejectedLow24Tokens": [
+    229
+  ],
+  "keyNegativeHarness": "low24-e5-observed-never-mapped-pass-v1",
+  "flashable": false,
+  "hardwareTouched": false,
+  "flashCommandGenerated": false,
+  "reason": "Exact link, RPC, package execution, and layout proofs pass; independent audit and guarded physical RAM/RPC/key/soak receipts remain mandatory.",
+  "healthyBase": {
+    "file": "f1-widget-sdk/build/combined-renderer-v2-clock-blue-timer/framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-blue-timer-app.bin",
+    "bytes": 2062912,
+    "sha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
+    "receipt": "f1-widget-sdk/build/device-receipts/device-1786939039376-fast-smoke.json",
+    "receiptSha256": "1363d31eabba2b61e068d760d966ab25f8b17d1c635a4c91ba7ecd2a0de238e9",
+    "screenIdsPreserved": [
+      1,
+      7,
+      26,
+      27
+    ]
+  },
+  "candidateApp": {
+    "file": "experiments/mquickjs-esp32s3-physical-canary/build-abi3-final-a/framer-0.4.1-mqjs-id28-canary-NO-GO-app.bin",
+    "bytes": 2062912,
+    "sha256": "674054a6e9d6536ad2414096cd89c1025e78904dff6b4a1aee0ef8cab434e808",
+    "addedScreenId": 28,
+    "deterministicRebuilds": 2,
+    "segmentCount": 6,
+    "nonIromSegmentsByteIdentical": true,
+    "mutations": [
+      {
+        "address": "0x42118cdd",
+        "bytes": 3,
+        "before": "1df000",
+        "after": "c6df15"
+      },
+      {
+        "address": "0x42041568",
+        "bytes": 4,
+        "beforePointer": "0x4206eae0",
+        "afterPointer": "0x4211e558"
+      },
+      {
+        "range": [
+          "0x4211e460",
+          "0x4211eef0"
+        ],
+        "bytes": 2704,
+        "beforeAllZero": true,
+        "sha256": "cd0e352b46d23193d07c696355442ee2a68311c44ad3a901692627560fbde97c"
+      }
+    ]
+  },
+  "module": {
+    "abiVersion": 3,
+    "moduleAbiSha256": "ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb",
+    "packageAbiSha256": "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
+    "identitySeparation": "descriptor/loader use module ABI3; F2JS package uses package ABI1",
+    "slotA": {
+      "range": [
+        "0x210000",
+        "0x240000"
+      ],
+      "bytes": 196608,
+      "sha256": "b1104134b37c9b6726e96f852b28e1eb971ba3aa4870d44543cfd1c5e8c6a6c1",
+      "identitySemantics": "SHA-256 of padded text[0x20000] concatenated with padded rodata[0x10000]; binary digest is embedded only in resident loader and passed to startup"
+    },
+    "text": {
+      "paddr": "0x210000",
+      "vaddr": "0x423d0000",
+      "usedBytes": 91856,
+      "capacityBytes": 131072,
+      "sha256": "bd46e3473b8493291aadebcf1d093e812a0788866e787663920637a3d76c8c43"
+    },
+    "rodata": {
+      "paddr": "0x230000",
+      "vaddr": "0x3c3f0000",
+      "usedBytes": 23536,
+      "capacityBytes": 65536,
+      "sha256": "72a2a26cb9cb0c0c52ab0ee897ad5d59b0a3c9765d3f495bfe96565b305a8c43"
+    },
+    "relocations": 0,
+    "undefinedSymbols": 0,
+    "writableStaticBytes": 0,
+    "residentBlockBytes": 95568,
+    "startupVaddr": "0x423e3510",
+    "id28IdentityVaddr": "0x423e5d8c",
+    "keySinkVaddr": "0x423e3390",
+    "deterministicRebuilds": 2,
+    "stackUsage": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build-abi3-final-a/module-stack-usage.json",
+      "sha256": "92c1e0a9982e64ebce6123ef4902872adba3201db5505b822f56a98676e4c8e1",
+      "compilerFlag": "-fstack-usage",
+      "allFramesStatic": true,
+      "rpc": {
+        "chains": {
+          "cap": 240,
+          "telemetry": 256,
+          "event": 352,
+          "receipt": 192
+        },
+        "maximumModuleOwnedChainBytes": 352,
+        "acceptedSceneHandlerModuleFrameCeilingBytes": 384,
+        "comparator": "relative accepted-app non-regression; not absolute task headroom",
+        "asmReadIntegerFrameBytes": 32
+      },
+      "ui": {
+        "moduleOwnedRenderChainBytes": 816,
+        "physicalHeadroomClaimed": false
+      }
+    },
+    "loader": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build-abi3-final-a/mqjs-id28-resident-loader.bin",
+      "bytes": 2704,
+      "sha256": "cd0e352b46d23193d07c696355442ee2a68311c44ad3a901692627560fbde97c",
+      "preMapAdmissionBytes": 132432,
+      "allocationBeforeFirstMap": true,
+      "startupAdoptsExactBlock": true,
+      "rollbackBeforeOwnerTask": "map failure frees the owned block but a failed internal cleanup may retain a mapping handle until reset; successful-map/startup-failure attempts unmap then frees exactly once; any unmap failure is a reset/rollback hardware gate",
+      "postAllocationMapAdmission": {
+        "freeMinimumBytes": 36864,
+        "largestMinimumBytes": 4096
+      }
+    }
+  },
+  "assets": {
+    "generation": 19,
+    "weatherCanaryPostalCode": "60601",
+    "canonicalWeather": {
+      "sourceSha256": "68db9d61fa38b0a396e46e88076d75d262a486f2ec4b41b4d398454d7d713e9b",
+      "packageSha256": "88537026c8b217b763c393b82d8787ca08256681265976f7bcff6077b2282d20",
+      "recoveryContract": "hydrate slots0/12/14/15 on callback; status-only publish inherits slots1..11; coherent packed commit alone replaces forecast"
+    },
+    "f2js": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build-abi3-final-a/weather-id28-gen19.f2js",
+      "bytes": 7416,
+      "sha256": "7aeeecde59bd686b3455feadc74b4b7705ca0c8ea933f9b0669cb8dc656c284e",
+      "sourceSha256": "a9b1a833a75f8a296ae5e2575f31ec1030af0c8a944031858e0506456f8864ab",
+      "sourceFile": "experiments/mquickjs-esp32s3-physical-canary/build-abi3-final-a/weather-id28-gen19.js",
+      "handlers": 16,
+      "handlerLimit": 16,
+      "hostileSeventeenthHandler": "REJECTED_EXCEPTION_RECOVERED",
+      "declaredEventRecords": 14,
+      "declaredHandlers": [
+        "host.rpc:B240",
+        "host.rpc:B241",
+        "host.rpc:B242",
+        "host.rpc:B243",
+        "host.rpc:B244",
+        "host.rpc:B24F",
+        "host.rpc:B24D",
+        "host.rpc:B24E",
+        "tick.1s",
+        "tick.100ms",
+        "input.fn-bottom-knob",
+        "input.key.down",
+        "input.key.up",
+        "input.key.hold",
+        "input.chord.down",
+        "input.chord.up"
+      ],
+      "keyTokens": [
+        {
+          "logical": 0,
+          "nativeToken": "0x2c",
+          "evidence": "static-candidate-space"
+        },
+        {
+          "logical": 1,
+          "nativeToken": "0xe1",
+          "evidence": "static-candidate-left-shift"
+        }
+      ],
+      "chordMask": 3,
+      "rasterBaseBytes": 0
+    },
+    "f2tf": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build-abi3-final-a/weather-id28-gen19.f2tf",
+      "bytes": 1375,
+      "sha256": "c436eea7ec9bfc85bbb9514923ea5bf4084ecbcb712ab5c183b9dd2adfd75743",
+      "f2jsSha256": "7aeeecde59bd686b3455feadc74b4b7705ca0c8ea933f9b0669cb8dc656c284e",
+      "baseSha256": "2f8263490c50631c3cdb7f992efde976ac794d8a3e599cc785a1e81bfa0e5c68",
+      "contractSha256": "8220152a09348da34cdd70dd7d370197f2f3fc46a9f45e50d7fb7015bdb8579a"
+    },
+    "base": {
+      "rawBytes": 62000,
+      "rawSha256": "2f8263490c50631c3cdb7f992efde976ac794d8a3e599cc785a1e81bfa0e5c68",
+      "lzssBytes": 2086,
+      "lzssSha256": "dbf16d41750555b7a3403b4b568530a0b5cab1d6b3bf0558c836823749293a12",
+      "codec": "lzss-1k-len3-66-v1",
+      "exactRoundTrip": true
+    }
+  },
+  "runtime": {
+    "allocation": {
+      "placement": "INTERNAL|8BIT only",
+      "bytes": 95568,
+      "count": 1,
+      "embeddedProxyBytes": 144,
+      "psramFallback": false,
+      "startupPreflight": {
+        "freeMinimumBytes": 128336,
+        "largestMinimumBytes": 95568
+      },
+      "loaderPreMapPreflight": {
+        "freeMinimumBytes": 132432,
+        "largestMinimumBytes": 95568
+      },
+      "ordering": "loader allocates and validates exact block before first map; module adopts only at owner-task commit; map/startup failures free the block once, but any failed MMU cleanup is fail-closed and requires reset/rollback rather than an unconditional cleanup claim"
+    },
+    "owner": {
+      "stackBytes": 12288,
+      "engineRuntimeBytes": 4096,
+      "engineHeapBytes": 65536,
+      "priority": 1,
+      "core": 1,
+      "scheduling": "one bounded owner_step then vTaskDelay(1)",
+      "stackHighWaterUnits": "bytes directly from 0x4038daf4; no x4",
+      "telemetryCadenceMs": 100,
+      "fullIterationTiming": true
+    },
+    "uiOrder": [
+      "renderer-v1 old_tick(base restore)",
+      "bounded exact LZSS weather base",
+      "72-byte mailbox snapshot + F2TF overlay",
+      "publish opposite descriptor"
+    ],
+    "uiLatency": {
+      "telemetrySuffix": ";U=<uiMax8>",
+      "unit": "microseconds",
+      "scope": "boot-lifetime atomic maximum for every valid ID28 proxy tick from immediately before old_tick through measured exit, including final publish when reached",
+      "failureAccounting": "LZSS/F2TF admit/render failures increment telemetry publish_failed; hidden target is timed but not counted as failure",
+      "sessionCapturedAtPage0": true,
+      "physicalAcceptance": {
+        "greaterThan": 0,
+        "maximumUs": 100000
+      },
+      "uiAppliedRevisionSource": "last successful F2TF target_metrics.applied_revision"
+    },
+    "framebuffer": "ID26 +160 borrowed; no second framebuffer/store",
+    "hiddenPolicy": "ID28 cleanup seq-cst closes key/knob/tick/poll gates, waits the combined wrapper barrier, then owner-drains a nonterminal FOCUS_LOSS resync; re-entry remains closed until resident+engine input is empty and held/chord mask is zero; host weather stays receipt-controlled",
+    "fatalPolicy": "owner atomically retires event/input/poll producers exactly once when permanently_disabled becomes true; telemetry/receipt remain readable; capability blocks",
+    "publication": "owner admits VM/assets and ACKs; original setup task registers RPC, addController, validates registration-owned registry+20, then addNavigation last; common base slot0 later creates lifecycle-owned root+12 and proxy_build requires its proven INTERNAL range before imageCreate; post-task failures keep mapping inert"
+  },
+  "stockAbi": {
+    "carrier": "0x42004e1c root -> 0x4210ad9c registry -> 0x4210af48 current controller",
+    "setupCarrierAdmission": {
+      "validator": "framer_physical_backend_validate",
+      "invalidCarrierEffect": "return-before-heap-query-allocation-or-map",
+      "order": [
+        "backendValidate",
+        "rejectBranch",
+        "heapFreeQuery",
+        "mallocExactBlock",
+        "firstMmuMap"
+      ]
+    },
+    "publicationDisassembly": {
+      "registrationOwnership": "addController-only-store-registry-plus20-no-root-plus12",
+      "lifecycleOwnership": "base-slot0-store-produced-root-plus12-before-build",
+      "setupCarrierHazard": "failure-branch-reaches-tail-before-a6-assignment"
+    },
+    "backendIdentity": "accepted ID26 controller/framebuffer extent + registry + exact slots6/8/9 + v2 sidecar slot11/magic/delegates; validation precedes allocator query and first map",
+    "proxyOwnership": {
+      "registryOffset20": "addController-owned immediate postcondition",
+      "rootOffset12": "base-slot0 lifecycle-owned; build-time aligned INTERNAL-only admission"
+    },
+    "rootAllocation": {
+      "classBytes": 52,
+      "alwaysInternalThresholdBytes": 256,
+      "capsLiteral": "0x1800 INTERNAL|DEFAULT",
+      "acceptedRange": "0x3fc80000..0x3fd00000",
+      "proof": "full base slot0 -> lv_obj_create/core -> class size -> LVGL zero allocator/port -> stdlib wrapper -> malloc_default plus threshold setter spans pinned"
+    },
+    "acceptedId27AnalogueSourceSha256": "7183c79aabdb2c60a2992608a2ac187a721a2ec2e587123ff64b498be8cceafe",
+    "keyOrdering": "resident wrapper calls exact stock 0x4206eae0 first and preserves its return",
+    "keyActivation": "stock-first; only foreground vtable[8] ID28; observe exact 0x2c/0xe1 down+up without dispatch, then commit gate for subsequent edges",
+    "pinnedSpans": {
+      "setupRegistration": {
+        "address": "0x42118c68",
+        "end": "0x42118ce0",
+        "bytes": 120,
+        "sha256": "62bfdea18af749b67242eb1be51da762200f4cee270e97813d29e77ca10ba643"
+      },
+      "setupFailureCarrier": {
+        "address": "0x42118c7d",
+        "end": "0x42118c85",
+        "bytes": 8,
+        "sha256": "6b0b76b68b49b5b946db569fc4696b2302228f376bb6ae5f01349d80c925e083"
+      },
+      "setupTail": {
+        "address": "0x42118cdd",
+        "end": "0x42118ce0",
+        "bytes": 3,
+        "sha256": "c0c1754d826e9af9771d981f3f524a1de1fbc76f24fefeeb689abb7cf7b356f9"
+      },
+      "keyCallbackLiteral": {
+        "address": "0x42041568",
+        "end": "0x4204156c",
+        "bytes": 4,
+        "sha256": "3d5174006fa28e9caeef531cbcdec7bd1d552b0ab7ad1d4f4a8d30c44c0e1dda"
+      },
+      "rootGetter": {
+        "address": "0x42004e1c",
+        "end": "0x42004e48",
+        "bytes": 44,
+        "sha256": "8b72f275038854a0dc2888d7d21dc7e145d4e2b7a43610efc678dbc6d145ab16"
+      },
+      "registryGetter": {
+        "address": "0x4210ad9c",
+        "end": "0x4210ada3",
+        "bytes": 7,
+        "sha256": "5c2697ef878eef8bf9c46c0cde1f3a28a22ff0973a8298a12b8d13c0a86d9076"
+      },
+      "currentController": {
+        "address": "0x4210af48",
+        "end": "0x4210af4f",
+        "bytes": 7,
+        "sha256": "74a87e9ff6090b9e05988cca6fc9b5185de9ffb44f28712060257e2dea542b16"
+      },
+      "keyCallback": {
+        "address": "0x4206eae0",
+        "end": "0x4206eb48",
+        "bytes": 104,
+        "sha256": "96316a9091816bf7290c75ebe6be76e4ed184ee13fdef6c50b77e791b5ecfa2b"
+      },
+      "keyShiftMask": {
+        "address": "0x42041550",
+        "end": "0x42041554",
+        "bytes": 4,
+        "sha256": "6633cfb1c776a95202ce8dd8b6860a41b35686e615252e728f381fe985bd88a9"
+      },
+      "heapFree": {
+        "address": "0x4037e250",
+        "end": "0x4037e2a0",
+        "bytes": 80,
+        "sha256": "c830d66ccc4cd8d93e006c0ad0623cc880ecb9a96fa21e7e0e5b1583f49bee61"
+      },
+      "heapMalloc": {
+        "address": "0x4037e55c",
+        "end": "0x4037e588",
+        "bytes": 44,
+        "sha256": "c7ed18e365bd48ebbc416104c4a3cdca5408b938a2ea181657c5bc7bc9405a19"
+      },
+      "heapFreeSize": {
+        "address": "0x420c8200",
+        "end": "0x420c822c",
+        "bytes": 44,
+        "sha256": "82ec92f10a1d4332fd9a64effc86e97612d429b057db9e6bc32d0de9eee3c972"
+      },
+      "heapLargest": {
+        "address": "0x420c82c4",
+        "end": "0x420c82d8",
+        "bytes": 20,
+        "sha256": "bac5ed463bc051c397be0412653efa3d42050a6b499c1f7a77bae8ec367709ea"
+      },
+      "taskCreateStatic": {
+        "address": "0x4038e950",
+        "end": "0x4038ea40",
+        "bytes": 240,
+        "sha256": "2db652699cc573d2efce67c8f311670395fb82660e45b289a050e164809f1ed1"
+      },
+      "currentTaskForCore": {
+        "address": "0x4038eb7c",
+        "end": "0x4038eba8",
+        "bytes": 44,
+        "sha256": "5e770160138c6036ad010a0caf05503623a529b571f4081568054138039ee4eb"
+      },
+      "delay": {
+        "address": "0x4038dc3c",
+        "end": "0x4038dc78",
+        "bytes": 60,
+        "sha256": "57bffb5c39a067f9b3ef6ea0a780361636229b18ed9a54982faefe2bf0a59ee7"
+      },
+      "stackWater": {
+        "address": "0x4038daf4",
+        "end": "0x4038db10",
+        "bytes": 28,
+        "sha256": "0ee8bfcb09f7ccfed3dc70fdcd3c266b54e7f548d910a036fbaeab9097466fe0"
+      },
+      "time": {
+        "address": "0x4037e028",
+        "end": "0x4037e040",
+        "bytes": 24,
+        "sha256": "75e03adc4a2e9d122f0accb175d4eabbabacf8b20982c9afda3f55f865b3a587"
+      },
+      "stackScanner": {
+        "address": "0x4038ec1c",
+        "end": "0x4038ec38",
+        "bytes": 28,
+        "sha256": "271d1ad4ca3f3ea4caed6c7aada5d27641d9730e97188e4e68025575a47bc049"
+      },
+      "navigationGetter": {
+        "address": "0x42006888",
+        "end": "0x42006898",
+        "bytes": 16,
+        "sha256": "2adfd5326addf3fef493d6ab35d1d479836913a1b915e9a4171efe89867acbb5"
+      },
+      "addController": {
+        "address": "0x4204da84",
+        "end": "0x4204dae6",
+        "bytes": 98,
+        "sha256": "d5867459d9f2b555f4ff4ea92652ff4aea3b6bde69aabbf225b4c9cbb576ac53"
+      },
+      "baseSlot0LifecycleRoot": {
+        "address": "0x4204d611",
+        "end": "0x4204d61a",
+        "bytes": 9,
+        "sha256": "24fba192588513e1d25b9ee1cd3ba538565d127ae91846d444fcbac24d5e06ca"
+      },
+      "lvObjectCreate": {
+        "address": "0x4209baa8",
+        "end": "0x4209babc",
+        "bytes": 20,
+        "sha256": "e5691014196987d5e799e6abb9be19387cc1f7490764d22265a88a292de2743f"
+      },
+      "lvObjectCreateCore": {
+        "address": "0x4209c0ec",
+        "end": "0x4209c1ac",
+        "bytes": 192,
+        "sha256": "d793a5876c5eff13099b8f5b5edd8400b32eb797d75399a18ef7c7c7c1c1785c"
+      },
+      "lvMallocZero": {
+        "address": "0x420ab86c",
+        "end": "0x420ab894",
+        "bytes": 40,
+        "sha256": "f611775136f65d8ebf6e135013e805917efd17c2924fe2d2bc8e1fa3283703ab"
+      },
+      "lvMallocPort": {
+        "address": "0x420ab768",
+        "end": "0x420ab778",
+        "bytes": 16,
+        "sha256": "cf0b2dc23d6eced7d67165cc07756c0960678be1c35e8a41aff12bc6b87cf62c"
+      },
+      "stdlibMallocWrapper": {
+        "address": "0x4039266c",
+        "end": "0x40392678",
+        "bytes": 12,
+        "sha256": "ba2a66805c0d4b182a4735c36399e594b2c2d2ef8ec25bc40d3785a857d4a389"
+      },
+      "mallocDefault": {
+        "address": "0x4037e588",
+        "end": "0x4037e5f8",
+        "bytes": 112,
+        "sha256": "22b478b01a1397d5ab689ef3afbaf55cb30dafeab97e51f23677293a9e5adc46"
+      },
+      "mallocDefaultCapsLiteral": {
+        "address": "0x40374624",
+        "end": "0x40374628",
+        "bytes": 4,
+        "sha256": "7655dbd34cf6da46e8b1e7fe8b1647def1bfbfe74dfc7df4956dc20f9d4ebd79"
+      },
+      "lvClassSizeHelper": {
+        "address": "0x4210d880",
+        "end": "0x4210d8a0",
+        "bytes": 32,
+        "sha256": "a534e09c2e2c60af62e91ab61aa808a9e36a2692e5f7d1c5e054ff74ff981612"
+      },
+      "lvClassSizeDescriptor": {
+        "address": "0x3c1b1e9c",
+        "end": "0x3c1b1ea0",
+        "bytes": 4,
+        "sha256": "22204591225fcdaaedb9eaf575ccae1142f704b229b723d1359905389a3b8569"
+      },
+      "psramInternalThresholdInit": {
+        "address": "0x420c3964",
+        "end": "0x420c39a2",
+        "bytes": 62,
+        "sha256": "34f593398f1bd0d9b61fa0930c4313e15dd343fad6d6b370c7a434200250e35b"
+      },
+      "psramInternalThresholdSetter": {
+        "address": "0x420c81c8",
+        "end": "0x420c81d2",
+        "bytes": 10,
+        "sha256": "e9a060a8814ea4269231dfcbf8a46ea108e776d74f3159da8fc024ee94c62a00"
+      },
+      "rendererV1Id26": {
+        "address": "0x4211956c",
+        "end": "0x42119574",
+        "bytes": 8,
+        "sha256": "977290e05288793228ad1447885306f8b732edb15acf8a1ee6d671003f899f04"
+      },
+      "rendererV1Encoder": {
+        "address": "0x42119574",
+        "end": "0x421195bc",
+        "bytes": 72,
+        "sha256": "63aa867737586dd2147d9b51afdb4f847358614fe37bbb201647f877db778f1e"
+      },
+      "rendererV1Tick": {
+        "address": "0x4211960c",
+        "end": "0x42119e34",
+        "bytes": 2088,
+        "sha256": "1a8ab157e36f64cb3b09be5b4ee43172bf86bcdb6486a2139fa8a59ff4c74b2a"
+      },
+      "rendererV2EncoderPrefix": {
+        "address": "0x4211c79c",
+        "end": "0x4211c7dc",
+        "bytes": 64,
+        "sha256": "a425d3578faca4f1d41eed2d9fc5c1f4511f74aebb8b81017756ec8a0d46be34"
+      },
+      "rendererV2TickPrefix": {
+        "address": "0x4211dc40",
+        "end": "0x4211dc80",
+        "bytes": 64,
+        "sha256": "2e02b8a56c1554450697c02598eb34ae4ad1b3dca7157470be65cdfcad8b166a"
+      },
+      "addNavigation": {
+        "address": "0x420293a8",
+        "end": "0x420293b8",
+        "bytes": 16,
+        "sha256": "129929f12eb7726028927fdac27d624df1c0e558873fde489dc49f7d08b47c8c"
+      },
+      "imageCreate": {
+        "address": "0x420ae8a0",
+        "end": "0x420ae8b0",
+        "bytes": 16,
+        "sha256": "257132ed2e582d49cb814b0e709239b5968badb8a3143a08e5ab324830f260f8"
+      },
+      "imageSetSource": {
+        "address": "0x420aeef0",
+        "end": "0x420aef00",
+        "bytes": 16,
+        "sha256": "a8fa32979cc2e8239796b00154f07376910b6815f175613d9743cd78d3008d7f"
+      },
+      "objectAlign": {
+        "address": "0x4204f0d0",
+        "end": "0x4204f0e0",
+        "bytes": 16,
+        "sha256": "77671ad32016ce758110635db0efc813ce0f8fd36b1bc26c052a50918ebc9dac"
+      },
+      "inputGetter": {
+        "address": "0x4200c4c0",
+        "end": "0x4200c4d0",
+        "bytes": 16,
+        "sha256": "adb65486e8ab001eb981bb5688f0708b7cebb9704e67ad92b2db32ab2f00e0ef"
+      },
+      "fnPressed": {
+        "address": "0x4210bfac",
+        "end": "0x4210bfbc",
+        "bytes": 16,
+        "sha256": "49e1afb80a907d6d2d8f5be592b842c068d324195e96f50e83ae72d9c2277c29"
+      },
+      "rpcRegistry": {
+        "address": "0x42004afc",
+        "end": "0x42004b28",
+        "bytes": 44,
+        "sha256": "5f5af85220d6da8255e7f679343e6866b991a6baa521c20e2df97dd9355085db"
+      },
+      "rpcRegister": {
+        "address": "0x4211b7c8",
+        "end": "0x4211b7f4",
+        "bytes": 44,
+        "sha256": "ad44433930c1e66f7b42e74acdc08f15b5465bec8e7a61d05cf71c4fca344c4a"
+      },
+      "rpcReadInteger": {
+        "address": "0x4211ba2c",
+        "end": "0x4211ba58",
+        "bytes": 44,
+        "sha256": "e2d725c23ddb82ed50e81e9cf5c2cae8ab65abd0886f37642a46f741a291a2dd"
+      },
+      "rpcReplyStatus": {
+        "address": "0x4211ba58",
+        "end": "0x4211bac8",
+        "bytes": 112,
+        "sha256": "b32c2c68bfdac4bf3dc7e6e192b2276b2271655daf477eeb24a2f084762a14fc"
+      },
+      "rpcMakeRoot": {
+        "address": "0x4211bac8",
+        "end": "0x4211bae4",
+        "bytes": 28,
+        "sha256": "24f9f56110864f03db34bbaafc7711adfc6529194cd021198f5d6143f294be04"
+      },
+      "rpcDestroyRoot": {
+        "address": "0x42004f80",
+        "end": "0x42004f90",
+        "bytes": 16,
+        "sha256": "a1d36c472aedcb81ce712e72b68990e849083140d8a20158c1262a3f4e54b2bb"
+      },
+      "acceptedRpcCapHandler": {
+        "address": "0x4211bae4",
+        "end": "0x4211bb20",
+        "bytes": 60,
+        "sha256": "eaec889034abd2e9b0d16a7db9caa59a2b99679acc811086ec50a734ab597998"
+      },
+      "acceptedRpcStatusHandler": {
+        "address": "0x4211bb20",
+        "end": "0x4211bb5c",
+        "bytes": 60,
+        "sha256": "113e0ecfd1514b18435335d3590f4834c0edc36ccaf2952a0418890585ed6286"
+      },
+      "mmuMap": {
+        "address": "0x420f539c",
+        "end": "0x420f5772",
+        "bytes": 982,
+        "sha256": "cbd61aaf9138bb59e94d50780ee4b5a53ec315cd347eee341e7f1514b07aeab5"
+      },
+      "mmuUnmap": {
+        "address": "0x420f5774",
+        "end": "0x420f58a2",
+        "bytes": 302,
+        "sha256": "a397751ec73aacb36858a2ab98f72503d57e4d9fbb7ca03d7968e54e6ac62163"
+      },
+      "baseVtable": {
+        "address": "0x3c1acc34",
+        "end": "0x3c1acc44",
+        "bytes": 16,
+        "sha256": "c9128709a6bfab7a00768221964b9af618a643239186be59a3a805431cff239e"
+      },
+      "baseSlot0": {
+        "address": "0x4204d5dc",
+        "end": "0x4204d66a",
+        "bytes": 142,
+        "sha256": "311d09653ead24d5347ac8cdb61ac3f0aaf73aac2ba35f97a1e87c57fa42e376"
+      },
+      "baseSlot2": {
+        "address": "0x4204d694",
+        "end": "0x4204d6a4",
+        "bytes": 16,
+        "sha256": "fdc14bd0007f364b98558243b25de974cbe49f423a5d9a39ecc15ea1523e0311"
+      },
+      "baseSlot3": {
+        "address": "0x4210882c",
+        "end": "0x42108833",
+        "bytes": 7,
+        "sha256": "1d55eacbff229f5f1ecc43d1a709e81f6b2b774b0b99497bccd2ae87f2311cfb"
+      },
+      "baseSlot5": {
+        "address": "0x4204d6d0",
+        "end": "0x4204d6e0",
+        "bytes": 16,
+        "sha256": "a76ceef5110151dd806c8494d461f74a8199318fd9a78905127fd737a4379e34"
+      },
+      "baseSlot7": {
+        "address": "0x42108834",
+        "end": "0x4210883b",
+        "bytes": 7,
+        "sha256": "1d55eacbff229f5f1ecc43d1a709e81f6b2b774b0b99497bccd2ae87f2311cfb"
+      },
+      "baseSlot10": {
+        "address": "0x42108844",
+        "end": "0x4210884b",
+        "bytes": 7,
+        "sha256": "1d55eacbff229f5f1ecc43d1a709e81f6b2b774b0b99497bccd2ae87f2311cfb"
+      }
+    }
+  },
+  "rpc": {
+    "capabilityMethod": "widget.mquickjs.cap",
+    "telemetryMethod": "widget.mquickjs.telemetry",
+    "eventMethod": "widget.mquickjs.event",
+    "receiptMethod": "widget.mquickjs.receipt",
+    "status": "LINKED_STATIC_BLOCKED_UNTIL_BOOT_READY",
+    "contexts": 4,
+    "capabilityPages": 13,
+    "telemetryPages": 6,
+    "telemetrySession": {
+      "timeoutMs": 2000,
+      "protocol": "p0-locks-snapshot-ordered-p1-p5-expiry-clear-v1",
+      "behavior": "p0 captures coherent telemetry+uiMax; exact ordered p1..p5 use only cache; p5 clears; duplicate/out-of-order/expired rejects and clears; expired p0 restarts"
+    },
+    "identity": {
+      "baseAppSha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
+      "baseAppMeaning": "accepted healthy ancestry, not final candidate app SHA",
+      "moduleSlotSha256": "b1104134b37c9b6726e96f852b28e1eb971ba3aa4870d44543cfd1c5e8c6a6c1",
+      "packageSha256": "7aeeecde59bd686b3455feadc74b4b7705ca0c8ea933f9b0669cb8dc656c284e"
+    },
+    "eventFields": [
+      "id",
+      "value",
+      "auxiliary",
+      "generation",
+      "revision"
+    ],
+    "receiptStates": [
+      "Q",
+      "A",
+      "R",
+      "B",
+      "H",
+      "F"
+    ],
+    "correlation": "one outstanding event; nonzero tag travels in exact resident queue record; only its consumed completion publishes A/F",
+    "timeoutFault": {
+      "id": "0xB24D",
+      "value": -2147483648,
+      "auxiliary": "0x54494D45",
+      "result": -6,
+      "state": "F"
+    },
+    "oomFault": {
+      "id": "0xB24D",
+      "value": -2147483647,
+      "auxiliary": "0x4F4F4D21",
+      "result": -7,
+      "state": "F"
+    }
+  },
+  "verification": {
+    "exactSourceHost": {
+      "status": "PASS_EXACT_PHYSICAL_SOURCE",
+      "heapHighWater": 63432,
+      "minimumFree": 1408,
+      "callbacks": 43,
+      "commits": 29,
+      "resets": 3,
+      "timeouts": 1,
+      "oom": 1,
+      "sourceRejections": 0,
+      "keyDown": 6,
+      "keyUp": 6,
+      "keyHold": 4,
+      "chordDown": 3,
+      "chordUp": 3
+    },
+    "exactSourceMovingGcAsan": {
+      "status": "PASS_EXACT_PHYSICAL_SOURCE",
+      "heapHighWater": 50272,
+      "minimumFree": 14560,
+      "callbacks": 43,
+      "commits": 29,
+      "resets": 3,
+      "timeouts": 1,
+      "oom": 1,
+      "sourceRejections": 0,
+      "keyDown": 6,
+      "keyUp": 6,
+      "keyHold": 4,
+      "chordDown": 3,
+      "chordUp": 3
+    },
+    "engineSourceSha256": "f634d62094e6c3d08f7d6cf1975edf9afa5b9f53799599014a9a2ac3d09e1c19",
+    "physicalSourceOrdering": {
+      "publicationOrder": "registry-postcondition-addNavigation-navPublished-boot7-rpcReady",
+      "focusCleanup": "nonterminal-seq-cst-gate-epoch-owner-drain",
+      "focusAck": "resident-inputPending-zero-engine-pending-zero-held-zero-poll-cleared",
+      "taskHandlePublication": "setup-release-store-owner-acquire-load-null-safe"
+    },
+    "runtimeProofManifest": {
+      "file": "experiments/mquickjs-esp32s3-runtime-proof/build/runtime-proof-manifest.json",
+      "sha256": "b3b3ce77a91bbb0c7ae5d0a7e7a5c86a8888a5d25cab3fdef0c8947f9e101ed4",
+      "objectSha256": "fa372a35c3a4196b5d89155be8728465bd94ca1309b830be40a160335e964676"
+    },
+    "moduleLoaderProofManifest": {
+      "file": "experiments/mquickjs-esp32s3-module-loader/build/module-loader-manifest.json",
+      "sha256": "a11894abc016838a975da3492935d2ddc7d953c72f44a1efda4ccf86cf155282",
+      "moduleAdapterSourceSha256": "f1df175e69d41d1678e386e077011995df29e6f58e1d88235a5f0ac6d2cb89fc",
+      "publicAbiVersion": 3,
+      "publicAbiSha256": "ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb"
+    },
+    "residentProofManifest": {
+      "file": "experiments/mquickjs-esp32s3-resident-integration/build/resident-integration-manifest.json",
+      "sha256": "6fb1a0782973ceb51d0853816a173dda4b02ec2b64036a55f74a7f9558b71d28",
+      "objectSha256": "426c21185c418b758427335a5743c96415c06d68ed3a7112b8b30a9b73fccd21"
+    },
+    "stockBridgeProofManifest": {
+      "file": "experiments/mquickjs-esp32s3-stock-bridge/build/stock-bridge-manifest.json",
+      "sha256": "0afdc47b8009010fb59ad1308353945a15fa7f9d4e8812354701bea747b64e28",
+      "objectSha256": "0406f9e8341f79d5f6cc602460c1bf405508c5aff4a4be5fa97244beacc4c676"
+    },
+    "sourceClosure": {
+      "format": "framer-mquickjs-physical-source-closure-v1",
+      "sha256": "7ee7b063fb40e20bdf2bd8d58c29cf74475e0902542d4d28f61314a4a636f07e",
+      "files": [
+        {
+          "file": "custom-firmware/lib/esp-app-image.mjs",
+          "bytes": 6572,
+          "sha256": "683aba9404bac926abc8146e348a024c6140728074e99599096fdc7d3d35cc08"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/framer_mquickjs_canary.c",
+          "bytes": 59685,
+          "sha256": "a07258bc6253ac9a5ec29602806406dab4c3a18f85a162e9b432c6f1af6a01e7"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/framer_mquickjs_canary.h",
+          "bytes": 9516,
+          "sha256": "fe11db9d1f9a37b8cab78b52d00756a1c8398c720f5be40301eedbaa8d227036"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/framer_stdlib_gen.c",
+          "bytes": 4769,
+          "sha256": "cfe1c034151bffc36bd3da96c022bba22946bf539a99e67c7a8f02bbcb7f7a7a"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/host_harness.c",
+          "bytes": 31561,
+          "sha256": "b10a98ba8610ea1e8617448480e1b0521533f6836fb40258cc7aaf4ede8813e5"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/cutils.c",
+          "bytes": 4738,
+          "sha256": "670ec34d25203c0273c399206e02a6cc329b260ce88441abce73259af554edb1"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/cutils.h",
+          "bytes": 7964,
+          "sha256": "2f5ff3551a7088b1399c03dd93b2a16f54e2ecf2946486c2dde5bf6dcdec22c7"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/dtoa.c",
+          "bytes": 44839,
+          "sha256": "7bd70f32bb4a490736d4f450f3474bfde81237b75f61398ee10838f944b2096c"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/dtoa.h",
+          "bytes": 3311,
+          "sha256": "a3ad6c1568726245df7d5597aac8a9fcd203eca2cd4717b7bb07e839cde93ad7"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/libm.c",
+          "bytes": 65808,
+          "sha256": "ea464b9395b8d74c0f28dc66e00f85413dd32dd7847ff0814ef4d030d3c78b09"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/libm.h",
+          "bytes": 1802,
+          "sha256": "ef460e2ff7455b9880683e9909332e5f10c6255dd259317a49a7d6ab6bf65d24"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/list.h",
+          "bytes": 3091,
+          "sha256": "484a604d8996a9c23c23d453ec5017af05b2c74de4bb34da8abcd5f5b5880f3e"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/mquickjs.c",
+          "bytes": 571885,
+          "sha256": "7f32ddb315dad043f16f6eaf20c709283201604b3cf52c432b9c7fbe13194cb0"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/mquickjs.h",
+          "bytes": 14630,
+          "sha256": "9715a1b5c12f7a27a46a6171483099866d51a4a2fe8f0833f8f4dbaeee7db90b"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/mquickjs_build.c",
+          "bytes": 27798,
+          "sha256": "bc5b680a58dcb5ca3702899e822b79d1b2a25afb82d99e21a8a82e9f6705ad08"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/mquickjs_build.h",
+          "bytes": 4265,
+          "sha256": "c5578d2ce533e47640c65835535228985f3218a6b8b86ad8846e9e4697473af6"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/mquickjs_opcode.h",
+          "bytes": 10183,
+          "sha256": "2364fcfe308f2fc1993cc4238a2842990a9edaf398e8f43d97b53cd01072e4d0"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/mquickjs_priv.h",
+          "bytes": 12533,
+          "sha256": "5f91ccecfd27737c5259fbcbd3a5b2c0dbe34c15d8f785d85b26637c503990b9"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/softfp_template.h",
+          "bytes": 25100,
+          "sha256": "537bdf6e02bb632a6646bf81efca0aeb5e2ff93c0e1ed15bff1e99c45a0e2d4b"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-module-loader/module_adapter.c",
+          "bytes": 2712,
+          "sha256": "f1df175e69d41d1678e386e077011995df29e6f58e1d88235a5f0ac6d2cb89fc"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-module-loader/resident_loader_canary.c",
+          "bytes": 13795,
+          "sha256": "13c178717677674787f6ed0add1904df56d55c0c894a40538fbc04a77da204d2"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-module-loader/resident_loader_canary.h",
+          "bytes": 659,
+          "sha256": "20fea7277fc63a1f7dbcc04aa734976423187cd677950bf7d4e2a046e9a6e3b2"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/backend_contract.h",
+          "bytes": 3672,
+          "sha256": "951034160881db67a58d9bb59e015b99cf7676a57423686889a440a92ef321f7"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/completion_contract.h",
+          "bytes": 756,
+          "sha256": "2f3ce8f703225446b4f529536ff81b4f9365af072dcac9a7967f85e9db94f5ce"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/fatal_retirement.h",
+          "bytes": 487,
+          "sha256": "74aa16e2a033fde003c9d7dbdda3750491d7c22c8914d6c91424e0816db7e93d"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/focus_contract.h",
+          "bytes": 1787,
+          "sha256": "0a4beedaf5d40e02b39a1c28f97b0bfad92cae00941c69929b2fbcfd439c81c7"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/key_gate.h",
+          "bytes": 1011,
+          "sha256": "2cc044cbb2cd0f63bdbc73882033bc26a1e488c33c89f078af6456ddf411e22c"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/key_token.h",
+          "bytes": 361,
+          "sha256": "21a329163d9ba9bb023c2e3f708462840e4623447f18241f3a5e924d0358271f"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/key_wrapper.c",
+          "bytes": 2670,
+          "sha256": "7ed1dde267c45a1ffa91e9ebd54d6becc5238d88b60fec6c66622e716ca8831c"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/loader.ld",
+          "bytes": 564,
+          "sha256": "1f436498b0d0eafabc55b70029c582f9b22fa55ee9cd52c5db0cf46bac12f4af"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/loader_entry.c",
+          "bytes": 6803,
+          "sha256": "864dc753cca2ba349ec289df97d6c361b0d2ded6fcf4880d34a54c81d6061951"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/module.ld",
+          "bytes": 959,
+          "sha256": "de7aab517c5840e157cb958b6d8b583dc5a7cbb2cf4f882deb02219383840551"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/physical_host_harness.c",
+          "bytes": 26320,
+          "sha256": "a4b742e783c26c5d84d1adabc477d65b123243cfdaf7141c9ce765eec4b078f8"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/physical_integration.c",
+          "bytes": 62689,
+          "sha256": "6b79962ae0b38e441eb14de10d2162f02c6d741a29acb4b467e50040b85e9a40"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/publication_contract.h",
+          "bytes": 1264,
+          "sha256": "6287062b582ee50180e2c6275f58499a88f6b4b1cfccc2c747da28f947e63d73"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/rpc_shims.S",
+          "bytes": 846,
+          "sha256": "24ab8d3fdfe5fc81e550e2071e5a5c1bc946456fdc7d63a942fa23b8d2caea40"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/tail_trampoline.S",
+          "bytes": 653,
+          "sha256": "85ca63712e88cc41b9ae5a4e717e31a0a8875c6b38b06635ac032d523aabc484"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-physical-canary/telemetry_session.h",
+          "bytes": 3032,
+          "sha256": "971000380f5eddc82622ba4b37a3c38d8ce261377292f48ff274560759e48f2a"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-resident-integration/f2js_admission.c",
+          "bytes": 22088,
+          "sha256": "f896aa3c632baf293e0167e1ea5734cc591465b41afd52ab612d7825564a7084"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-resident-integration/f2js_admission.h",
+          "bytes": 2420,
+          "sha256": "9eccbcccfc7fe1583bdb8ac63ddaab27e5e5c7dc623569eb4196546a5b1e66cb"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-resident-integration/resident_integration.c",
+          "bytes": 59281,
+          "sha256": "b2a2cabd01be41bb1964d924fbaa8e98c7ad00386554ee6e7d38282e9a0752e9"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-resident-integration/resident_integration.h",
+          "bytes": 12943,
+          "sha256": "b6b623e6ccba95811815d89e01788335f5963fcae94454a16fedc785ae597413"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-runtime-proof/runtime_proof.c",
+          "bytes": 27274,
+          "sha256": "513aeb257c027d6852db8fa56d4b840626cf56d808e3cfb7b4650165ec037093"
+        },
+        {
+          "file": "experiments/mquickjs-esp32s3-runtime-proof/runtime_proof.h",
+          "bytes": 12026,
+          "sha256": "3ce2f4b00e434c223bedb9f93182a47f0699843ba42fbe26ca995c11aa99fe35"
+        },
+        {
+          "file": "experiments/mquickjs-target-facade/contract.mjs",
+          "bytes": 28068,
+          "sha256": "e1b27503bfade10db950e917dead5ada4da1d956e61232356d277eb84487d2fb"
+        },
+        {
+          "file": "experiments/mquickjs-target-facade/target_facade.c",
+          "bytes": 30299,
+          "sha256": "86aa138caa8a2c1376ce77a54cbe5b785f55456d5d497f05f49573b932e716cd"
+        },
+        {
+          "file": "experiments/mquickjs-target-facade/target_facade.h",
+          "bytes": 4151,
+          "sha256": "2b14bd3fe7de6205f92d7562c1f9fb6f2916b5c8eb124e7ab8b700ab0a67a552"
+        },
+        {
+          "file": "f1-widget-sdk/examples/render-v2-mquickjs-weather-canary/protocol.mjs",
+          "bytes": 4929,
+          "sha256": "71b24a66793855026a53f0dbc01d3161a5e37488a31eee5d0808bca643136b95"
+        },
+        {
+          "file": "f1-widget-sdk/examples/render-v2-mquickjs-weather-canary/weather-widget.js",
+          "bytes": 5667,
+          "sha256": "68db9d61fa38b0a396e46e88076d75d262a486f2ec4b41b4d398454d7d713e9b"
+        },
+        {
+          "file": "f1-widget-sdk/src/render-v2/mquickjs.mjs",
+          "bytes": 26360,
+          "sha256": "9e3773a29677337f90ef99dc0e0ffcaa3812994f6090a355aadc65a1a229307a"
+        }
+      ]
+    },
+    "capabilityIdentitySeparation": "PASS_PACKAGE_509_MODULE_AD484_DISTINCT_DESCRIPTOR_LOADER_CAP_P11_NO_SWAP",
+    "telemetryHostileRefreshInterleave": "PASS_SHARED_HELPER_EXACT_ORDER_EXPIRY_BOUNDARY",
+    "taggedCompletionTelemetry": "PASS_COMPLETION_FIELDS_THEN_COHERENT_P2_REFRESH_THEN_TERMINAL_RECEIPT_RELEASE_LAST_WHILE_ADMISSION_CLOSED",
+    "keyDiscoveryFallthrough": "PASS_FOUR_EDGES_ZERO_MAP_FIFTH_EDGE_FIRST_MAP",
+    "focusReleaseReentry": "PASS_LATE_KEY_AND_FN_WRAPPER_BARRIER_HOST_INTERLEAVE_NONTERMINAL_RELEASE_HIDDEN_NO_HOLD_REENTRY_DOWN_HOLD_UP_CHORD",
+    "weatherFaultRecovery": "PASS_REV7_TIMEOUT_BENIGN_AND_OOM_BENIGN_SLOTS0_11_UNCHANGED_THEN_MONOTONIC_REV8_NORMAL_AND_MOVING_GC_ASAN",
+    "fatalSourceRetirement": "PASS_SHARED_HELPER_ONE_SHOT_PRODUCER_RETIREMENT",
+    "protocolHarnessSources": {
+      "hostHarnessSha256": "a4b742e783c26c5d84d1adabc477d65b123243cfdaf7141c9ce765eec4b078f8",
+      "backendContractSha256": "951034160881db67a58d9bb59e015b99cf7676a57423686889a440a92ef321f7",
+      "publicationContractSha256": "6287062b582ee50180e2c6275f58499a88f6b4b1cfccc2c747da28f947e63d73",
+      "focusContractSha256": "0a4beedaf5d40e02b39a1c28f97b0bfad92cae00941c69929b2fbcfd439c81c7",
+      "completionContractSha256": "2f3ce8f703225446b4f529536ff81b4f9365af072dcac9a7967f85e9db94f5ce",
+      "telemetrySessionSha256": "971000380f5eddc82622ba4b37a3c38d8ce261377292f48ff274560759e48f2a",
+      "keyGateSha256": "2cc044cbb2cd0f63bdbc73882033bc26a1e488c33c89f078af6456ddf411e22c",
+      "keyTokenSha256": "21a329163d9ba9bb023c2e3f708462840e4623447f18241f3a5e924d0358271f",
+      "fatalRetirementSha256": "74aa16e2a033fde003c9d7dbdda3750491d7c22c8914d6c91424e0816db7e93d"
+    },
+    "callbackStack": {
+      "compilerFlag": "-fstack-usage",
+      "allFramesStatic": true,
+      "rpc": {
+        "chains": {
+          "cap": 240,
+          "telemetry": 256,
+          "event": 352,
+          "receipt": 192
+        },
+        "maximumModuleOwnedChainBytes": 352,
+        "acceptedSceneHandlerModuleFrameCeilingBytes": 384,
+        "comparator": "relative accepted-app non-regression; not absolute task headroom",
+        "asmReadIntegerFrameBytes": 32
+      },
+      "ui": {
+        "moduleOwnedRenderChainBytes": 816,
+        "physicalHeadroomClaimed": false
+      }
+    },
+    "lzssRoundTrip": "EXACT",
+    "deterministicModuleAndLoaderRebuilds": 2
+  },
+  "physicalGates": [
+    "independent audit of final app/module/loader hashes and all call spans",
+    "live pre-map and post-allocation internal free/largest receipt on the target keyboard",
+    "live four-method RPC page/queue/applied/fault receipt exercise with UI-jank timing",
+    "observe exact 0x2c and 0xe1 down+up edges while ID28 is foreground before keyEvents becomes true",
+    "measure task stack high-water, callback deadline, OOM/timeout recovery, cache/WDT and UI timing",
+    "guarded boot, rollback, then bounded soak with physical SHA/receipt"
+  ]
+}

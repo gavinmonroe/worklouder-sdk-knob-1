@@ -37,6 +37,7 @@ select, input { border: 1px solid #3f3f46; border-radius: 6px; padding: 6px; col
 .settings label { display: grid; gap: 5px; color: #a8a29e; font-size: 11px; }
 .settings label[hidden] { display: none; }
 .source-heading { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+.source-actions { display: flex; align-items: center; gap: 6px; }
 .source-heading[hidden], #js-source[hidden], .source-note[hidden] { display: none; }
 .source-heading button { padding: 5px 8px; font-size: 11px; }
 #js-source { min-height: 220px; }
@@ -62,6 +63,10 @@ textarea:focus, input:focus { outline: 2px solid #a85d43; outline-offset: 1px; }
 .event-row button { min-width: 47px; padding: 5px 7px; font-size: 11px; }
 .host-event-row { grid-template-columns: auto minmax(0, .8fr) auto minmax(0, .7fr) auto; padding: 7px 0; }
 .host-event-row input { width: 100%; min-width: 0; padding: 5px 6px; font: 11px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; }
+#mquickjs-controls[hidden], #mq-weather-settings[hidden] { display: none; }
+#mquickjs-controls .host-event-row { grid-template-columns: auto minmax(0, .8fr) auto minmax(0, .7fr); }
+#mquickjs-controls .host-event-row button { grid-column: 4; }
+#mq-weather-settings button { grid-column: 1 / -1; }
 .keyboard-rpc-config { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 6px 8px; padding: 8px 0; border-top: 1px solid #2d2d2d; color: #a8a29e; font-size: 10px; }
 .keyboard-rpc-config input { width: 100%; min-width: 0; padding: 5px 6px; font: 11px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; }
 .keyboard-test-pad { width: 100%; min-height: 48px; display: flex; align-items: center; justify-content: center; padding: 8px; border: 1px solid #454545; border-radius: 7px; background: #111; color: #a8a29e; font-size: 11px; text-align: center; cursor: text; }

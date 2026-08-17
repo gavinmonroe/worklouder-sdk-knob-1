@@ -1,0 +1,136 @@
+{
+  "format": "framer-f1-mquickjs-physical-link-audit-v1",
+  "status": "INDEPENDENT_STATIC_LINK_GO_PHYSICAL_NO_GO_PENDING_GUARDED_HARDWARE",
+  "verdict": "GO",
+  "verdictScope": "INDEPENDENT_DETERMINISTIC_STATIC_LINK_ONLY",
+  "reviewer": "codex-runtime-proof-independent-auditor",
+  "overallPhysicalVerdict": "NO_GO_PENDING_GUARDED_HARDWARE",
+  "deployable": false,
+  "hardwareTouched": false,
+  "flashAuthorized": false,
+  "releaseDirectory": "experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-17-id28-abi3-674054a6",
+  "releaseClosureSha256": "4c0c3326dfa56891350d30ae0bcdade2e966882548965a82454f4ff130a751cc",
+  "sourceClosureSha256": "7ee7b063fb40e20bdf2bd8d58c29cf74475e0902542d4d28f61314a4a636f07e",
+  "candidateAppSha256": "674054a6e9d6536ad2414096cd89c1025e78904dff6b4a1aee0ef8cab434e808",
+  "moduleTextSha256": "bd46e3473b8493291aadebcf1d093e812a0788866e787663920637a3d76c8c43",
+  "moduleRodataSha256": "72a2a26cb9cb0c0c52ab0ee897ad5d59b0a3c9765d3f495bfe96565b305a8c43",
+  "moduleSlotSha256": "b1104134b37c9b6726e96f852b28e1eb971ba3aa4870d44543cfd1c5e8c6a6c1",
+  "loaderSha256": "cd0e352b46d23193d07c696355442ee2a68311c44ad3a901692627560fbde97c",
+  "linkManifestSha256": "1e6db47df0b00b1ed6968f0664e9786feaffcc6d6c48442afff121a04eaeaad1",
+  "linkReportSha256": "ff64f7a5ce4479e24b854bf8829198d4ab97ac6637f2fc5d8803273c7927106b",
+  "keyTokenProofSha256": "2ea3289702fc4608518aa40157cf1a89915ac358d44ec137526f9ae0ea228b39",
+  "verifierOutputSha256": "51f25da8884add400b9e4ad0dca889c22eb26c022b092c4285fd00f8de79b4f6",
+  "stackUsageSha256": "92c1e0a9982e64ebce6123ef4902872adba3201db5505b822f56a98676e4c8e1",
+  "packageAbiSha256": "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
+  "moduleAbiSha256": "ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb",
+  "abiIdentity": {
+    "moduleAbiVersion": 3,
+    "descriptorDigest": "ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb",
+    "packageCapabilityPage": 6,
+    "moduleCapabilityPage": 11,
+    "swapRejection": "PASS_PACKAGE_509_MODULE_AD484_DISTINCT_DESCRIPTOR_LOADER_CAP_P11_NO_SWAP"
+  },
+  "telemetrySnapshotProtocol": "p0-locks-snapshot-ordered-p1-p5-expiry-clear-v1",
+  "uiLatencyMetric": "id28-full-proxy-tick-oldtick-base-lzss-f2tf-publish-us-v1",
+  "allocationMapOrdering": "internal-block-before-first-mmu-map-adopt-or-rollback-v1",
+  "keyNegativeHarness": "low24-e5-observed-never-mapped-pass-v1",
+  "keyTokenNormalization": "raw-low24-after-stock-first-v1",
+  "mappings": [
+    {
+      "logical": 0,
+      "nativeToken": 44
+    },
+    {
+      "logical": 1,
+      "nativeToken": 225
+    }
+  ],
+  "chordHeldMask": 3,
+  "rejectedLow24Tokens": [
+    229
+  ],
+  "staticEvidence": {
+    "releaseFilesRehashed": 15,
+    "sourceFilesRehashed": 50,
+    "acceptedAppAbiSpansRehashed": 61,
+    "slotIsExactTextThenRodata": true,
+    "candidateIromMutationAllowlistExact": true,
+    "nonIromSegmentsByteIdentical": true,
+    "descriptorFunctionPointers": 12,
+    "descriptorFunctionPointersAlignedAndInsideUsedText": true,
+    "relocations": 0,
+    "undefinedSymbols": 0,
+    "writableStaticBytes": 0,
+    "responseOwnedValueBytes": 112,
+    "persistentRpcContexts": 4,
+    "persistentMethodCopiesTamperTest": "PASS_4_DISTINCT_BOOT_LIFETIME_COPIES",
+    "runtimeConcurrencyTest": "PASS_TSAN_100000",
+    "independentReadOnlyClosureVerifier": "PASS_READ_ONLY_FROZEN_RELEASE_CLOSURE_NO_HARDWARE",
+    "independentCleanRebuild": "PASS_BYTE_IDENTICAL_APP_TEXT_RODATA_SLOT_LOADER_STACK_AND_WEATHER_ASSETS",
+    "normalizedManifestAndVerifierSemantics": "PASS_EQUAL",
+    "exactSourceHost": "PASS_EXACT_PHYSICAL_SOURCE",
+    "exactSourceMovingGcAsan": "PASS_EXACT_PHYSICAL_SOURCE",
+    "exactHandlers": 16,
+    "eventRecords": 14,
+    "targets": 16,
+    "keys": 2,
+    "chords": 1,
+    "lzssRoundTrip": "EXACT",
+    "weatherFaultRecovery": "PASS_REV7_TIMEOUT_BENIGN_AND_OOM_BENIGN_SLOTS0_11_UNCHANGED_THEN_MONOTONIC_REV8_NORMAL_AND_MOVING_GC_ASAN"
+  },
+  "runtimeProof": {
+    "objectSha256": "fa372a35c3a4196b5d89155be8728465bd94ca1309b830be40a160335e964676",
+    "manifestSha256": "b3b3ce77a91bbb0c7ae5d0a7e7a5c86a8888a5d25cab3fdef0c8947f9e101ed4",
+    "objectBytes": 31744,
+    "textBytes": 6194,
+    "dataBytes": 0,
+    "bssBytes": 0,
+    "undefinedSymbols": 0
+  },
+  "memory": {
+    "placement": "MALLOC_CAP_INTERNAL|MALLOC_CAP_8BIT_ONLY",
+    "singleResidentBlockBytes": 95568,
+    "engineHeapBytes": 65536,
+    "ownerStackBytes": 12288,
+    "loaderPreMapAdmissionBytes": 132432,
+    "postAllocationFreeMinimumBytes": 36864,
+    "postAllocationLargestMinimumBytes": 4096,
+    "psramFallback": false
+  },
+  "rpcStack": {
+    "allFramesStatic": true,
+    "capBytes": 240,
+    "telemetryBytes": 256,
+    "eventBytes": 352,
+    "receiptBytes": 192,
+    "maximumModuleOwnedChainBytes": 352,
+    "acceptedRelativeComparatorBytes": 384,
+    "absolutePhysicalHeadroomClaimed": false
+  },
+  "uiStack": {
+    "moduleOwnedRenderChainBytes": 816,
+    "absolutePhysicalHeadroomClaimed": false
+  },
+  "contracts": {
+    "lifecycleRoot": "registration-owns-registry-plus20-base-slot0-owns-internal-root-plus12-v1",
+    "focusRelease": "combined-key-and-fn-wrapper-barrier-nonterminal-owner-drain-reentry-v1",
+    "taggedCompletion": "completion-fields-coherent-telemetry-then-terminal-receipt-release-last-v1",
+    "hiddenScreen": "ID28 cleanup closes key, knob, tick, and poll gates; waits the combined wrapper barrier; owner-drains nonterminal FOCUS_LOSS; re-entry remains closed until resident and engine input are empty and held/chord mask is zero",
+    "fatalRetirement": "PASS_SHARED_HELPER_ONE_SHOT_PRODUCER_RETIREMENT"
+  },
+  "weatherArtifacts": {
+    "f2jsSha256": "7aeeecde59bd686b3455feadc74b4b7705ca0c8ea933f9b0669cb8dc656c284e",
+    "f2tfSha256": "c436eea7ec9bfc85bbb9514923ea5bf4084ecbcb712ab5c183b9dd2adfd75743",
+    "baseRgb565Sha256": "2f8263490c50631c3cdb7f992efde976ac794d8a3e599cc785a1e81bfa0e5c68",
+    "baseLzssSha256": "dbf16d41750555b7a3403b4b568530a0b5cab1d6b3bf0558c836823749293a12",
+    "canonicalSourceSha256": "68db9d61fa38b0a396e46e88076d75d262a486f2ec4b41b4d398454d7d713e9b",
+    "canonicalPackageSha256": "88537026c8b217b763c393b82d8787ca08256681265976f7bcff6077b2282d20"
+  },
+  "limitations": [
+    "This verdict proves only deterministic static integration and immutable artifact identity; it does not prove execution on the physical keyboard.",
+    "The key map remains capability-gated until exact native tokens 44 and 225 each produce live down and up observations while screen 28 is foreground.",
+    "The 352-byte RPC chain comparison is relative to the accepted scene handler and is not an absolute stock RPC task headroom measurement.",
+    "The 816-byte UI module chain is not an absolute UI task headroom or no-jank claim.",
+    "Live internal heap, RPC registration, WDT/cache behavior, OOM and timeout recovery, UI latency, readback identity, rollback, and soak receipts remain mandatory before physical promotion."
+  ]
+}

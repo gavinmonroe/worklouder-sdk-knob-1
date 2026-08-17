@@ -1,0 +1,30 @@
+{
+  "name": "MicroQuickJS",
+  "upstream": "https://github.com/bellard/mquickjs.git",
+  "commit": "203d5bb79789bc47b74855d9207415dab71661a0",
+  "commitDate": "2026-06-04T16:28:45+02:00",
+  "commitSubject": "added JS_HasException()",
+  "officialFullTreeGitArchiveSha256": "30c200d861f9da8d98600392bac02cf362d4f1ac6b8e14d1eacf78d4e30b2bb1",
+  "license": "MIT",
+  "licenseSha256": "f0b6460337202760cd679ce327ad883985e198c9d82f1cacd080af8dbf7ed673",
+  "files": {
+    "Changelog": "06f601a5e388f465b4e91bdb14a844188c65384e10a1710db3adf0ec618876df",
+    "LICENSE": "f0b6460337202760cd679ce327ad883985e198c9d82f1cacd080af8dbf7ed673",
+    "README.md": "389445d812580eaf5cba81c1e8319e276a28dfdbf49a11d40c473788678523dd",
+    "cutils.c": "670ec34d25203c0273c399206e02a6cc329b260ce88441abce73259af554edb1",
+    "cutils.h": "2f5ff3551a7088b1399c03dd93b2a16f54e2ecf2946486c2dde5bf6dcdec22c7",
+    "dtoa.c": "7bd70f32bb4a490736d4f450f3474bfde81237b75f61398ee10838f944b2096c",
+    "dtoa.h": "a3ad6c1568726245df7d5597aac8a9fcd203eca2cd4717b7bb07e839cde93ad7",
+    "libm.c": "ea464b9395b8d74c0f28dc66e00f85413dd32dd7847ff0814ef4d030d3c78b09",
+    "libm.h": "ef460e2ff7455b9880683e9909332e5f10c6255dd259317a49a7d6ab6bf65d24",
+    "list.h": "484a604d8996a9c23c23d453ec5017af05b2c74de4bb34da8abcd5f5b5880f3e",
+    "mquickjs.c": "7f32ddb315dad043f16f6eaf20c709283201604b3cf52c432b9c7fbe13194cb0",
+    "mquickjs.h": "9715a1b5c12f7a27a46a6171483099866d51a4a2fe8f0833f8f4dbaeee7db90b",
+    "mquickjs_build.c": "bc5b680a58dcb5ca3702899e822b79d1b2a25afb82d99e21a8a82e9f6705ad08",
+    "mquickjs_build.h": "c5578d2ce533e47640c65835535228985f3218a6b8b86ad8846e9e4697473af6",
+    "mquickjs_opcode.h": "2364fcfe308f2fc1993cc4238a2842990a9edaf398e8f43d97b53cd01072e4d0",
+    "mquickjs_priv.h": "5f91ccecfd27737c5259fbcbd3a5b2c0dbe34c15d8f785d85b26637c503990b9",
+    "softfp_template.h": "537bdf6e02bb632a6646bf81efca0aeb5e2ff93c0e1ed15bff1e99c45a0e2d4b",
+    "softfp_template_icvt.h": "6e17a27a248e70c2b065c956e472c40bae0120359356d6d5dccbc9873084c4af"
+  }
+}

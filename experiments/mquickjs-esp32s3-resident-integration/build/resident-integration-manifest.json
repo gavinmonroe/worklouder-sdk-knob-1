@@ -1,0 +1,162 @@
+{
+  "format": "framer-mquickjs-resident-integration-static-proof-v3",
+  "status": "PASS_HOST_XTENSA_RESIDENT_CORE_NO_GO_PHYSICAL_STOCK_BRIDGE",
+  "hardwareRuntimeProven": false,
+  "flashed": false,
+  "sdkPackageAbi": {
+    "version": 1,
+    "sha256": "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
+    "source": "f1-widget-sdk/src/render-v2/mquickjs.mjs"
+  },
+  "engineAbi": {
+    "source": "experiments/mquickjs-esp32s3-canary/framer_mquickjs_canary.h",
+    "headerSha256": "24124da2fa0e6b5f32d7dcf905231f88d312f92d25e533f2f8af4b5c5b6a1f47",
+    "runtimeStorageBytes": 4096,
+    "heapBytes": 65536,
+    "callbackDeadlineUs": 2000,
+    "callbacksPerInputDrain": 3,
+    "worstOwnerDrainUs": 8000,
+    "recoveryOwner": "engine core only; resident adapter performs no duplicate reset"
+  },
+  "admission": {
+    "result": "PASS",
+    "cases": 1205,
+    "corpusBytes": 33283948,
+    "corpusSha256": "747012323dee6fb15f9999888efb75bd5b10cfdebfa2541182285d620a3c3f2b",
+    "sourceOwnership": "fixed framer_f2js_admission storage outside VM task stack",
+    "rasterOwnership": "validated F1WB atomically copied by platform stage callback before advertise",
+    "packageSha256": "9771d3dd82fe13b5867f578421eaa488fad51a8de989561fd0a26c7114d7f570",
+    "rasterPackageSha256": "ea67ff45d59cbc2892bf7da71a37a06a06371c8a1a70a2080f6225be2062d3d3"
+  },
+  "mailbox": {
+    "result": "PASS",
+    "bytes": 72,
+    "slots": 16,
+    "algorithm": "single-writer odd/even seqlock with atomic u32 payload accesses",
+    "threadedTornReadTest": "PASS"
+  },
+  "owner": {
+    "result": "PASS_HOST_ARCHITECTURE",
+    "stackBytes": 12288,
+    "runtimeBytes": 4096,
+    "heapBytes": 65536,
+    "heapPlacement": "PSRAM",
+    "admissionPlacement": "fixed owner storage, never automatic VM-task storage",
+    "fairness": "alternating native drain and admitted ordinary event",
+    "inputProgress": "platform timer invokes poll-due; cooperative <=20ms while held",
+    "eventIngress": "declared builtins plus typed declared host RPC only; every wrapper supplies its captured generation",
+    "ingressBarrier": "generation-tagged atomic admission plus generic/input inflight reference count",
+    "publicationGate": "serialized mailbox publish requires matching active/capability/ingress generation, ADVERTISED state, advertised bit, and non-disabled session",
+    "ownerRuntimeBarrier": "owner runtime inflight count blocks release/destroy while a bounded callback crosses shutdown",
+    "teardownOrder": "serialize publish close; advertise off; close ingress; synchronize generic tick/knob/RPC sources; synchronize stock hook; cancel generation timer; wait owner callback; owner terminal release; wait producers; bounded owner drains; destroy",
+    "platformHandoff": "generic source removal, stock hook removal, and timer cancellation prevent new callbacks and synchronize already-started wrappers before returning",
+    "secondBoot": "reject unless unbooted, heap-null, ASSEMBLING, module-only ready, zero active generation",
+    "faultTeardown": "parser, boot, and runtime faults can quiesce, unmap, then permit flash"
+  },
+  "tests": {
+    "host": "resident_integration parity=1205 mailbox=pass owner=pass recovery_bound=pass teardown=pass teardown_race=pass second_boot=pass input_poll=pass raster=pass event_retirement=pass callback_shutdown=pass tagged_interleave=pass mailbox_bytes=72 admission_bytes=8992 owner_bytes=27104 task_stack_bytes=12288",
+    "sanitizer": {
+      "status": "PASS",
+      "output": "resident_integration parity=1205 mailbox=pass owner=pass recovery_bound=pass teardown=pass teardown_race=pass second_boot=pass input_poll=pass raster=pass event_retirement=pass callback_shutdown=pass tagged_interleave=pass mailbox_bytes=72 admission_bytes=8992 owner_bytes=27104 task_stack_bytes=12288"
+    },
+    "threadSanitizer": {
+      "status": "PASS",
+      "output": "resident_integration parity=1205 mailbox=pass owner=pass recovery_bound=pass teardown=pass teardown_race=pass second_boot=pass input_poll=pass raster=pass event_retirement=pass callback_shutdown=pass tagged_interleave=pass mailbox_bytes=72 admission_bytes=8992 owner_bytes=27104 task_stack_bytes=12288"
+    },
+    "deterministicXtensaBuilds": 2,
+    "physicalGate": "PASS_FAIL_CLOSED"
+  },
+  "xtensa": {
+    "compiler": "xtensa-esp-elf-gcc (crosstool-NG esp-13.2.0_20240530) 13.2.0",
+    "objectBytes": 52384,
+    "objectSha256": "426c21185c418b758427335a5743c96415c06d68ed3a7112b8b30a9b73fccd21",
+    "undefinedSymbols": 0,
+    "writableGlobalDataBytes": 0
+  },
+  "healthyBase": {
+    "app": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-blue-timer/framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-blue-timer-app.bin",
+    "appSha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
+    "existingUiTick": {
+      "address": "0x4211d3b0",
+      "end": "0x4211d5a4",
+      "bytes": 500,
+      "sha256": "d5b81bfe47f94edfdaf52deadb9d1383c5c9ebe7eeecdc57e450fc282aa3c7d6",
+      "signature": "RendererV2TickResult(RendererV2Runtime*,uint16_t*,uint32_t)",
+      "mailboxConsumerImplemented": false
+    }
+  },
+  "stockAbi": {
+    "source": "ESP-IDF v5.3.2",
+    "sourceCommit": "6920def9f050fe55df29954a2e8a41350b76b1d2",
+    "sourceHeaderPins": {
+      "espHeapCapsH": "25c0eed65df0ede58fce9ccd45efd96b8498de734d29d37a19aa2b5832a95ae7",
+      "freertosTaskH": "ac666bcbe4acb21c44cc820631f8c579d089698967015054c5ab42d092dddc2d"
+    },
+    "sourceLevelContracts": {
+      "heapCapsMalloc": "void*(size_t,uint32_t)",
+      "heapCapsFree": "void(void*)",
+      "heapCapsGetFreeSize": "size_t(uint32_t)",
+      "heapCapsGetLargestFreeBlock": "size_t(uint32_t)",
+      "taskCreate": "xTaskCreateStaticPinnedToCore(TaskFunction_t,const char*,uint32_t,void*,UBaseType_t,StackType_t*,StaticTask_t*,BaseType_t)",
+      "taskDelete": "void(TaskHandle_t)",
+      "stackHighWater": "UBaseType_t(TaskHandle_t); result is words, bridge normalizes to bytes"
+    },
+    "acceptedImagePins": {
+      "heapCapsMalloc": null,
+      "heapCapsFree": null,
+      "heapCapsGetFreeSize": null,
+      "heapCapsGetLargestFreeBlock": null,
+      "taskCreateStaticPinnedToCore": null,
+      "taskDelete": null,
+      "taskStackHighWater": null
+    },
+    "physicalCandidateReady": false
+  },
+  "physicalStaticVerdict": {
+    "verdict": "NO_GO",
+    "blockers": [
+      "accepted-image addresses, exact function bounds, and full-byte SHA-256 pins for heap_caps allocation/free/telemetry are not independently proven",
+      "accepted-image xTaskCreateStaticPinnedToCore/vTaskDelete/uxTaskGetStackHighWaterMark addresses, bounds, hashes, config gates, and StaticTask_t size are not proven",
+      "accepted-image generation-bound tick/knob/host-RPC activation and synchronized retirement hooks are not independently proven",
+      "the pinned existing renderer_v2_ui_tick does not consume the 72-byte mailbox; a stable consumer entry and rebuilt full-byte hash do not exist",
+      "the resident core is not inserted into the accepted app and no physical PSRAM/stack/deadline/OOM/timeout/soak receipt exists"
+    ]
+  },
+  "sourceFiles": [
+    {
+      "name": "f2js_admission.h",
+      "bytes": 2420,
+      "sha256": "9eccbcccfc7fe1583bdb8ac63ddaab27e5e5c7dc623569eb4196546a5b1e66cb"
+    },
+    {
+      "name": "f2js_admission.c",
+      "bytes": 22088,
+      "sha256": "f896aa3c632baf293e0167e1ea5734cc591465b41afd52ab612d7825564a7084"
+    },
+    {
+      "name": "resident_integration.h",
+      "bytes": 12943,
+      "sha256": "b6b623e6ccba95811815d89e01788335f5963fcae94454a16fedc785ae597413"
+    },
+    {
+      "name": "resident_integration.c",
+      "bytes": 59281,
+      "sha256": "b2a2cabd01be41bb1964d924fbaa8e98c7ad00386554ee6e7d38282e9a0752e9"
+    },
+    {
+      "name": "host_harness.c",
+      "bytes": 44118,
+      "sha256": "c896298563304a09f3646fddc74330c28378ae891d9f88dc00e5eb3722122995"
+    },
+    {
+      "name": "physical_stock_bridge.c",
+      "bytes": 2849,
+      "sha256": "afd70cb3703d38cd9846241598f84c2766fc0685755a13e5d202ffe7e1345ff8"
+    },
+    {
+      "name": "verify.mjs",
+      "bytes": 19992,
+      "sha256": "1e64d7439256e84a9420c8fd1fd5f9b49afa02993fa45529b5b5fc23e9432a32"
+    }
+  ]
+}

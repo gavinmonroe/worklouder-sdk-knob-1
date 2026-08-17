@@ -25,6 +25,16 @@ const blueTimerAppPath = path.join(blueTimerDir,
   "framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-blue-timer-app.bin");
 const blueTimerApprovalPath = path.join(blueTimerDir,
   "combined-renderer-v2-clock-blue-timer-device-approval.draft.json");
+const genericDir = path.join(root, "f1-widget-sdk/build/combined-renderer-v2-generic-input-lab");
+const genericAppPath = path.join(genericDir,
+  "framer-0.4.1-input-lab-renderer-v2-generic-id26-app.bin");
+const genericApprovalPath = path.join(genericDir,
+  "combined-renderer-v2-generic-input-lab-device-approval.json");
+const genericReceiptPath = path.join(root,
+  "f1-widget-sdk/build/device-receipts/device-1786939039376-fast-smoke.json");
+const focusDialAppPath = path.join(root,
+  "f1-widget-sdk/build/combined-renderer-v2-focus-dial/" +
+  "framer-0.4.1-music-id1-wpm-id7-renderer-id26-focus-dial-app.bin");
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 
 test("49590 focus-dial receipt is an exact accepted-live rollback and rejects substitutions", async () => {
@@ -159,4 +169,83 @@ test("7838 blue-timer profile accepts only the frozen image, package, and visual
   changedAppApproval.app.sha256 = sha256(changedApp);
   assert.throws(() => validateDeviceApproval(changedAppApproval, { appBytes: changedApp,
     rollbackBytes: rollback, rollbackReceiptBytes: receipt }), /frozen candidate/u);
+});
+
+test("generic structural profile pins exact bytes but fails closed on its capability ABI", async () => {
+  const [app, rollback, receipt, approvalText, focusDial, clockTimer] = await Promise.all([
+    readFile(genericAppPath), readFile(blueTimerAppPath), readFile(genericReceiptPath),
+    readFile(genericApprovalPath, "utf8"), readFile(focusDialAppPath), readFile(focusTimerAppPath),
+  ]);
+  const approval = JSON.parse(approvalText);
+  assert.throws(() => validateDeviceApproval(approval, { appBytes: app, rollbackBytes: rollback,
+    rollbackReceiptBytes: receipt }), /fails the exact capability ABI/u);
+
+  for (const substituted of [focusDial, clockTimer, rollback]) {
+    const changed = structuredClone(approval);
+    changed.app.bytes = substituted.length;
+    changed.app.sha256 = sha256(substituted);
+    assert.throws(() => validateDeviceApproval(changed, { appBytes: substituted,
+      rollbackBytes: rollback, rollbackReceiptBytes: receipt }),
+    /Generic Render-v2 approval is not pinned/u);
+  }
+
+  for (const mutate of [
+    (value) => { value.deployable = false; },
+    (value) => { value.runtime.maxTransportBytes = 98_303; },
+    (value) => { value.runtime.maxF2epBytes = 29_823; },
+    (value) => { value.runtime.renderV2Profile = "generic-unreviewed"; },
+    (value) => { value.runtime.packageFormat = "framer-render-v2-package-v2"; },
+    (value) => { value.runtime.v1Packages = false; },
+    (value) => { value.runtime.hostRpcIds = [0xb201]; },
+    (value) => { value.runtime.keyboardKeyEvents = true; },
+    (value) => { value.runtime.nativeRtc = true; },
+    (value) => { value.runtime.bootProgram = true; },
+    (value) => { value.runtime.repeatPush = "overwrite-live-buffers"; },
+    (value) => { value.runtime.ownedBundleAllocationBytes = 62_404; },
+    (value) => { value.runtime.nativeEvents.hostRpc = false; },
+    (value) => { value.runtime.screenIds.inputLab = 27; },
+    (value) => { value.runtime.additionalScreenIds = [27]; },
+    (value) => { value.runtime.integratedIromModuleSha256 = "0".repeat(64); },
+    (value) => { value.runtime.wrapperCall.candidateBytes = "25ba01"; },
+    (value) => { value.runtime.unreviewedCapability = true; },
+    (value) => { value.unreviewedApprovalField = true; },
+    (value) => { value.app.file = focusDialAppPath; },
+    (value) => { value.rollback.file = focusDialAppPath; },
+    (value) => { value.recovery.sha256 = "0".repeat(64); },
+    (value) => {
+      const inherited = { maxF2epBytes: value.runtime.maxF2epBytes,
+        maxTransportBytes: value.runtime.maxTransportBytes };
+      delete value.runtime.maxF2epBytes;
+      delete value.runtime.maxTransportBytes;
+      value.runtime["maxF2epBytes\0maxTransportBytes"] = inherited.maxF2epBytes;
+      Object.setPrototypeOf(value.runtime, inherited);
+    },
+  ]) {
+    const changed = structuredClone(approval);
+    mutate(changed);
+    assert.throws(() => validateDeviceApproval(changed, { appBytes: app,
+      rollbackBytes: rollback, rollbackReceiptBytes: receipt }), /Generic Render-v2/u);
+  }
+
+  const substitutedReceipt = structuredClone(approval);
+  substitutedReceipt.rollback.receipt.file = clockTimerReceiptPath;
+  assert.throws(() => validateDeviceApproval(substitutedReceipt, { appBytes: app,
+    rollbackBytes: rollback, rollbackReceiptBytes: receipt }), /receipt path\/bytes\/SHA/u);
+});
+
+test("public Input Lab flash catalog stays closed to the rejected generic candidate", async () => {
+  const [source, catalogText] = await Promise.all([
+    readFile(path.join(root, "f1-widget-sdk/input-lab/lib/browser-flash.mjs"), "utf8"),
+    readFile(path.join(root, "f1-widget-sdk/input-lab/assets/renderer-flash-catalog.json"), "utf8"),
+  ]);
+  const catalog = JSON.parse(catalogText);
+  assert.deepEqual(catalog, {
+    format: "framer-input-lab-public-flash-catalog-v1",
+    status: "DEVICE_SMOKE_CANDIDATE",
+    deployable: true,
+    app: { bytes: 2_062_912,
+      sha256: "49cbf8801e3d86b20e0df21f41a2410b3e4d8547f8f64021ca6ed4bd85168840" },
+  });
+  assert.match(source, /build\/combined-renderer-id26\//u);
+  assert.doesNotMatch(source, /combined-renderer-v2-generic|371ee26e/iu);
 });

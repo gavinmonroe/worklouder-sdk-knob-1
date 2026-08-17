@@ -1,5 +1,6 @@
 import { DEFAULT_INPUT_LAB_SLOTS, DEFAULT_RASTER_SETTINGS, DEFAULT_RENDER_V2_EVENT_CONFIG, DEFAULT_SLOT_NAMES,
   LEGACY_LESS_BETTER_CSS, LEGACY_LESS_BETTER_HTML } from "./scene-template.mjs";
+import { INPUT_LAB_MQUICKJS_DEFAULTS, normalizeInputLabMQuickJsSettings } from "./mquickjs-canary.mjs";
 
 export const INPUT_LAB_STORAGE_KEY = "framer-f1-input-lab-v1";
 
@@ -27,12 +28,14 @@ function normalizeState(value) {
   const fallback = makeInitialPreviewState();
   if (!value || ![1, 2, 3, 4].includes(value.version) || !Array.isArray(value.slots) || value.slots.length !== 3) return fallback;
   const slots = value.slots.map((input, index) => {
-    const slot = value.version < 3 && index === 1 && isExactLegacySecondSeed(input)
-      ? DEFAULT_INPUT_LAB_SLOTS[index]
-      : input;
+    if (value.version < 3 && index === 1 && isExactLegacySecondSeed(input)) {
+      return DEFAULT_INPUT_LAB_SLOTS[index];
+    }
+    const slot = input;
     return Object.freeze({ id: index,
       name: cleanName(slot?.name, DEFAULT_SLOT_NAMES[index]),
       renderer: slot?.renderer === "v2" ? "v2" : "v1",
+      backend: slot?.backend === "mquickjs" ? "mquickjs" : "f2ep",
       script: typeof slot?.script === "string" ? slot.script : "",
       mode: value.version === 1 && slot?.mode === "semantic" ? "auto"
         : normalizeMode(slot?.mode, DEFAULT_INPUT_LAB_SLOTS[index].mode),
@@ -45,6 +48,7 @@ function normalizeState(value) {
         keyboardRpcId: typeof slot?.eventConfig?.keyboardRpcId === "string"
           ? slot.eventConfig.keyboardRpcId : DEFAULT_RENDER_V2_EVENT_CONFIG.keyboardRpcId,
       }),
+      mquickjs: normalizeInputLabMQuickJsSettings(slot?.mquickjs ?? INPUT_LAB_MQUICKJS_DEFAULTS),
       compiled: slot?.compiled && typeof slot.compiled === "object" ? Object.freeze(slot.compiled) : null,
     });
   });
@@ -66,16 +70,19 @@ export class SavedPreviewStore {
     try { return normalizeState(JSON.parse(this.storage.getItem(this.key) || "null")); } catch { return makeInitialPreviewState(); }
   }
 
-  saveSlot(index, { name, html, css, renderer = "v1", script = "", mode = "auto",
-    settings = DEFAULT_RASTER_SETTINGS, eventConfig = DEFAULT_RENDER_V2_EVENT_CONFIG, compiled = null }) {
+  saveSlot(index, { name, html, css, renderer = "v1", backend = "f2ep", script = "", mode = "auto",
+    settings = DEFAULT_RASTER_SETTINGS, eventConfig = DEFAULT_RENDER_V2_EVENT_CONFIG,
+    mquickjs = INPUT_LAB_MQUICKJS_DEFAULTS, compiled = null }) {
     if (!Number.isInteger(index) || index < 0 || index >= 3) throw new Error("Preview slot must be 0, 1, or 2.");
     const current = this.load();
     const slots = current.slots.map((slot, slotIndex) => slotIndex === index ? Object.freeze({ id: index,
       name: cleanName(name, DEFAULT_SLOT_NAMES[index]), html: String(html), css: String(css),
-      renderer: renderer === "v2" ? "v2" : "v1", script: String(script), mode: normalizeMode(mode),
+      renderer: renderer === "v2" ? "v2" : "v1", backend: backend === "mquickjs" ? "mquickjs" : "f2ep",
+      script: String(script), mode: normalizeMode(mode),
       settings: Object.freeze({ ...DEFAULT_RASTER_SETTINGS, ...settings }),
       eventConfig: Object.freeze({ keyboardCode: String(eventConfig.keyboardCode ?? "Space"),
         keyboardRpcId: String(eventConfig.keyboardRpcId ?? "0xB201") }),
+      mquickjs: normalizeInputLabMQuickJsSettings(mquickjs),
       compiled: compiled && typeof compiled === "object" ? Object.freeze(compiled) : null,
     }) : slot);
     const next = Object.freeze({ version: 4, activeSlot: index, slots });

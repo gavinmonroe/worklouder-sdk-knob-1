@@ -15,6 +15,10 @@ const CAPABILITY_STRINGS = Object.freeze([
   ["max_chunks_value", "32", 212],
   ["generation_key", "committedGeneration", 216],
 ]);
+const REUSED_CAPABILITY_STRINGS = Object.freeze([
+  ["v1_packages_key", "v1Packages", 16],
+  ["v1_packages_value", "true", 28],
+]);
 
 function paddedString(value) {
   const raw = Buffer.from(`${value}\0`, "ascii");
@@ -62,20 +66,21 @@ const CAPABILITY_HANDLER = `${CAPABILITY_STRINGS.map(([label, value, offset]) =>
     call8   renderer_scene_rpc_u32_decimal
     beqz    a10,.Lscene_cap_return_request
     /* Response root at +256; proxy scratch at +248. */
+    addi    a4,a1,256
     l32r    a8,.Lscene_json_allocator
-    s32i    a8,a1,256
+    s32i    a8,a4,0
     movi.n  a9,0
-    s8i     a9,a1,260
-    s32i    a9,a1,264
-    addi    a8,a1,268
-    s32i    a8,a1,300
-    s16i    a9,a1,304
+    s8i     a9,a4,4
+    s32i    a9,a4,8
+    addi    a8,a4,12
+    s32i    a8,a4,44
+    s16i    a9,a4,48
     movi.n  a8,4
-    s16i    a8,a1,306
+    s16i    a8,a4,50
     movi.n  a8,-1
-    s16i    a8,a1,308
-    s8i     a9,a1,316
-    s16i    a8,a1,318
+    s16i    a8,a4,52
+    s8i     a9,a4,60
+    s16i    a8,a4,62
     /* status/ok are persistent RAM substrings in the accepted scene state. */
     addi    a10,a1,248
     addi    a11,a1,256
@@ -87,6 +92,9 @@ const CAPABILITY_HANDLER = `${CAPABILITY_STRINGS.map(([label, value, offset]) =>
     movi.n  a12,0
     l32r    a8,.Lscene_json_assign_string
     callx8  a8
+${field(16, 28)}
+${REUSED_CAPABILITY_STRINGS.map(([label, value, offset]) =>
+  stackStores(label, value, offset)).join("\n")}
 ${field(16, 28)}
 ${field(56, 72)}
 ${field(108, 124)}
@@ -114,7 +122,8 @@ export function genericSceneRpcAssembly(rawSource) {
     source = source.replace(`    .type ${symbol},@function`,
       `    .global ${symbol}\n    .type ${symbol},@function`);
   }
-  const capabilityLiterals = CAPABILITY_STRINGS.map(([label, value]) =>
+  const capabilityLiterals = [...CAPABILITY_STRINGS, ...REUSED_CAPABILITY_STRINGS]
+    .map(([label, value]) =>
     literalWords(label, value)).join("\n");
   const firstText = `    .section .text.renderer_scene_rpc,"ax",@progbits`;
   assert(source.includes(firstText), "Scene RPC source lost its first text section.");
@@ -138,7 +147,8 @@ ${CAPABILITY_HANDLER}
     .size renderer_scene_rpc_handle_capabilities,.-renderer_scene_rpc_handle_capabilities`);
   assert(!source.includes(marker) &&
     source.includes("renderer_scene_rpc_u32_decimal") &&
-    source.includes(".Lcap_generation_key_0"),
+    source.includes(".Lcap_generation_key_0") &&
+    source.includes(".Lcap_v1_packages_key_0"),
   "Generic capability response transformation did not complete.");
   return source;
 }

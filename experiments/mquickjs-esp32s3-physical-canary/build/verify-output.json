@@ -1,0 +1,227 @@
+{
+  "status": "PASS_DETERMINISTIC_LINK_PENDING_INDEPENDENT_AUDIT_NO_GO_PHYSICAL",
+  "candidateApp": {
+    "file": "experiments/mquickjs-esp32s3-physical-canary/build/framer-0.4.1-mqjs-id28-canary-NO-GO-app.bin",
+    "bytes": 2062912,
+    "sha256": "2a6b1f209ec99e6ba7df01604c59d2d2c5d3556c37e421530a9ca58a4bd97b54",
+    "addedScreenId": 28,
+    "deterministicRebuilds": 2,
+    "segmentCount": 6,
+    "nonIromSegmentsByteIdentical": true,
+    "mutations": [
+      {
+        "address": "0x42118cdd",
+        "bytes": 3,
+        "before": "1df000",
+        "after": "c6df15"
+      },
+      {
+        "address": "0x42041568",
+        "bytes": 4,
+        "beforePointer": "0x4206eae0",
+        "afterPointer": "0x4211e554"
+      },
+      {
+        "range": [
+          "0x4211e460",
+          "0x4211edd4"
+        ],
+        "bytes": 2420,
+        "beforeAllZero": true,
+        "sha256": "286001548ad490efbf3748b1ab0f207143a3b061c2457e28e713c48ffd308af5"
+      }
+    ]
+  },
+  "module": {
+    "abiVersion": 2,
+    "packageAbiSha256": "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
+    "slotA": {
+      "range": [
+        "0x210000",
+        "0x240000"
+      ],
+      "bytes": 196608,
+      "sha256": "09e7ad82613fc564fe4489d4baa60a323e2d8e5475bcc45f29ad296800b30732",
+      "identitySemantics": "SHA-256 of padded text[0x20000] concatenated with padded rodata[0x10000]; binary digest is embedded only in resident loader and passed to startup"
+    },
+    "text": {
+      "paddr": "0x210000",
+      "vaddr": "0x423d0000",
+      "usedBytes": 90912,
+      "capacityBytes": 131072,
+      "sha256": "b409ae8acde764cb66441d44a96c5438c04086ffd5eb91f5b1b785e6c8229ed4"
+    },
+    "rodata": {
+      "paddr": "0x230000",
+      "vaddr": "0x3c3f0000",
+      "usedBytes": 23216,
+      "capacityBytes": 65536,
+      "sha256": "ea834409742505a123d96b9c3670350ae3c62bab2b3b1bdbeff6a992b85ec64d"
+    },
+    "relocations": 0,
+    "undefinedSymbols": 0,
+    "writableStaticBytes": 0,
+    "residentBlockBytes": 95504,
+    "startupVaddr": "0x423e3148",
+    "id28IdentityVaddr": "0x423e59e0",
+    "keySinkVaddr": "0x423e2fec",
+    "deterministicRebuilds": 2,
+    "stackUsage": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build/module-stack-usage.json",
+      "sha256": "167d2644441bc2a814c2e8d364c73f508f64a902fa320abed388333dcc2844da",
+      "compilerFlag": "-fstack-usage",
+      "allFramesStatic": true,
+      "rpc": {
+        "chains": {
+          "cap": 240,
+          "telemetry": 256,
+          "event": 352,
+          "receipt": 192
+        },
+        "maximumModuleOwnedChainBytes": 352,
+        "acceptedSceneHandlerModuleFrameCeilingBytes": 384,
+        "comparator": "relative accepted-app non-regression; not absolute task headroom",
+        "asmReadIntegerFrameBytes": 32
+      },
+      "ui": {
+        "moduleOwnedRenderChainBytes": 816,
+        "physicalHeadroomClaimed": false
+      }
+    },
+    "loader": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build/mqjs-id28-resident-loader.bin",
+      "bytes": 2420,
+      "sha256": "286001548ad490efbf3748b1ab0f207143a3b061c2457e28e713c48ffd308af5",
+      "preMapAdmissionBytes": 132368,
+      "allocationBeforeFirstMap": true,
+      "startupAdoptsExactBlock": true,
+      "rollbackBeforeOwnerTask": "unmap then free exactly once",
+      "postAllocationMapAdmission": {
+        "freeMinimumBytes": 36864,
+        "largestMinimumBytes": 4096
+      }
+    }
+  },
+  "assets": {
+    "generation": 19,
+    "weatherCanaryPostalCode": "60601",
+    "f2js": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build/weather-id28-gen19.f2js",
+      "bytes": 7076,
+      "sha256": "2e359efcf0c60b02c3eb08a9898527de2381291e0f5e5dadc2583f598edb3ddc",
+      "sourceSha256": "ed64f7d8cadf5777ed0ca117b4f334ea1624ef5b5be40a81af9fb21d104fa8f4",
+      "sourceFile": "experiments/mquickjs-esp32s3-physical-canary/build/weather-id28-gen19.js",
+      "handlers": 16,
+      "handlerLimit": 16,
+      "hostileSeventeenthHandler": "REJECTED_EXCEPTION_RECOVERED",
+      "declaredEventRecords": 14,
+      "declaredHandlers": [
+        "host.rpc:B240",
+        "host.rpc:B241",
+        "host.rpc:B242",
+        "host.rpc:B243",
+        "host.rpc:B244",
+        "host.rpc:B24F",
+        "host.rpc:B24D",
+        "host.rpc:B24E",
+        "tick.1s",
+        "tick.100ms",
+        "input.fn-bottom-knob",
+        "input.key.down",
+        "input.key.up",
+        "input.key.hold",
+        "input.chord.down",
+        "input.chord.up"
+      ],
+      "keyTokens": [
+        {
+          "logical": 0,
+          "nativeToken": "0x2c",
+          "evidence": "static-candidate-space"
+        },
+        {
+          "logical": 1,
+          "nativeToken": "0xe1",
+          "evidence": "static-candidate-left-shift"
+        }
+      ],
+      "chordMask": 3,
+      "rasterBaseBytes": 0
+    },
+    "f2tf": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build/weather-id28-gen19.f2tf",
+      "bytes": 1375,
+      "sha256": "3a7c43c278dc9514c2ded0d7c07d0e5a7f3e89fe7b3cf8ae1f16977e3a5ae679",
+      "f2jsSha256": "2e359efcf0c60b02c3eb08a9898527de2381291e0f5e5dadc2583f598edb3ddc",
+      "baseSha256": "2f8263490c50631c3cdb7f992efde976ac794d8a3e599cc785a1e81bfa0e5c68",
+      "contractSha256": "8220152a09348da34cdd70dd7d370197f2f3fc46a9f45e50d7fb7015bdb8579a"
+    },
+    "base": {
+      "rawBytes": 62000,
+      "rawSha256": "2f8263490c50631c3cdb7f992efde976ac794d8a3e599cc785a1e81bfa0e5c68",
+      "lzssBytes": 2086,
+      "lzssSha256": "dbf16d41750555b7a3403b4b568530a0b5cab1d6b3bf0558c836823749293a12",
+      "codec": "lzss-1k-len3-66-v1",
+      "exactRoundTrip": true
+    }
+  },
+  "rpc": {
+    "capabilityMethod": "widget.mquickjs.cap",
+    "telemetryMethod": "widget.mquickjs.telemetry",
+    "eventMethod": "widget.mquickjs.event",
+    "receiptMethod": "widget.mquickjs.receipt",
+    "status": "LINKED_STATIC_BLOCKED_UNTIL_BOOT_READY",
+    "contexts": 4,
+    "capabilityPages": 13,
+    "telemetryPages": 6,
+    "telemetrySession": {
+      "timeoutMs": 2000,
+      "protocol": "p0-locks-snapshot-ordered-p1-p5-expiry-clear-v1",
+      "behavior": "p0 captures coherent telemetry+uiMax; exact ordered p1..p5 use only cache; p5 clears; duplicate/out-of-order/expired rejects and clears; expired p0 restarts"
+    },
+    "identity": {
+      "baseAppSha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
+      "baseAppMeaning": "accepted healthy ancestry, not final candidate app SHA",
+      "moduleSlotSha256": "09e7ad82613fc564fe4489d4baa60a323e2d8e5475bcc45f29ad296800b30732",
+      "packageSha256": "2e359efcf0c60b02c3eb08a9898527de2381291e0f5e5dadc2583f598edb3ddc"
+    },
+    "eventFields": [
+      "id",
+      "value",
+      "auxiliary",
+      "generation",
+      "revision"
+    ],
+    "receiptStates": [
+      "Q",
+      "A",
+      "R",
+      "B",
+      "H",
+      "F"
+    ],
+    "correlation": "one outstanding event; nonzero tag travels in exact resident queue record; only its consumed completion publishes A/F",
+    "timeoutFault": {
+      "id": "0xB24D",
+      "value": -2147483648,
+      "auxiliary": "0x54494D45",
+      "result": -6,
+      "state": "F"
+    },
+    "oomFault": {
+      "id": "0xB24D",
+      "value": -2147483647,
+      "auxiliary": "0x4F4F4D21",
+      "result": -7,
+      "state": "F"
+    }
+  },
+  "physicalGates": [
+    "independent audit of final app/module/loader hashes and all call spans",
+    "live pre-map and post-allocation internal free/largest receipt on the target keyboard",
+    "live four-method RPC page/queue/applied/fault receipt exercise with UI-jank timing",
+    "observe exact 0x2c and 0xe1 down+up edges while ID28 is foreground before keyEvents becomes true",
+    "measure task stack high-water, callback deadline, OOM/timeout recovery, cache/WDT and UI timing",
+    "guarded boot, rollback, then bounded soak with physical SHA/receipt"
+  ]
+}

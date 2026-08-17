@@ -47,8 +47,11 @@ export function appendRenderV2PreviewEvent(events, event) {
 
 export function createRenderV2ApiSource(source, events) {
   invariant(source && typeof source === "object", "Render v2 source is missing.");
+  const renderMode = source.mode ?? source.renderMode ?? "auto";
+  invariant(["auto", "semantic", "raster"].includes(renderMode),
+    "Render v2 mode must be auto, semantic, or raster.");
   const request = { html: String(source.html ?? ""), css: String(source.css ?? ""),
-    script: String(source.script ?? ""), rootClass: "render-v2",
+    script: String(source.script ?? ""), rootClass: "render-v2", renderMode,
     ...(source.name ? { name: String(source.name).slice(0, 32) } : {}) };
   if (events !== undefined) {
     invariant(Array.isArray(events) && events.length <= INPUT_LAB_RENDER_V2_MAX_EVENTS,

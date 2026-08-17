@@ -1,0 +1,292 @@
+{
+  "format": "framer-render-v2-mquickjs-weather-canary-v1",
+  "status": "STATIC_OFFLINE_NOT_FLASHABLE",
+  "hardwareRuntimeProven": false,
+  "package": {
+    "profileId": "framer-f1-render-v2-mquickjs-v1",
+    "packageAbiSha256": "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
+    "generation": 18,
+    "bytes": 68856,
+    "sha256": "88537026c8b217b763c393b82d8787ca08256681265976f7bcff6077b2282d20",
+    "sourceSha256": "68db9d61fa38b0a396e46e88076d75d262a486f2ec4b41b4d398454d7d713e9b",
+    "bodySha256": "9b62dd599222e6f0bdcf5923808a0ca47aabed346ed142ded3069f86fccbe1a5",
+    "budget": {
+      "packageBytes": 68856,
+      "packageHeadroomBytes": 29448,
+      "sourceBytes": 5667,
+      "events": 9,
+      "targets": 16,
+      "keys": 0,
+      "chords": 0,
+      "rasterBaseBytes": 62404
+    }
+  },
+  "screen": {
+    "id": "weather-mqjs",
+    "separateScreen": true,
+    "logicalSize": {
+      "width": 100,
+      "height": 310
+    },
+    "targetCount": 16,
+    "targets": [
+      {
+        "id": "weatherScreen",
+        "writes": [
+          "hidden"
+        ]
+      },
+      {
+        "id": "place",
+        "writes": [
+          "textContent"
+        ]
+      },
+      {
+        "id": "status",
+        "writes": [
+          "textContent",
+          "color"
+        ]
+      },
+      {
+        "id": "currentTemp",
+        "writes": [
+          "textContent"
+        ]
+      },
+      {
+        "id": "currentCond",
+        "writes": [
+          "textContent",
+          "color"
+        ]
+      },
+      {
+        "id": "age",
+        "writes": [
+          "textContent"
+        ]
+      },
+      {
+        "id": "d1Name",
+        "writes": [
+          "textContent"
+        ]
+      },
+      {
+        "id": "d1Cond",
+        "writes": [
+          "textContent",
+          "color"
+        ]
+      },
+      {
+        "id": "d1Temps",
+        "writes": [
+          "textContent"
+        ]
+      },
+      {
+        "id": "d2Name",
+        "writes": [
+          "textContent"
+        ]
+      },
+      {
+        "id": "d2Cond",
+        "writes": [
+          "textContent",
+          "color"
+        ]
+      },
+      {
+        "id": "d2Temps",
+        "writes": [
+          "textContent"
+        ]
+      },
+      {
+        "id": "d3Name",
+        "writes": [
+          "textContent"
+        ]
+      },
+      {
+        "id": "d3Cond",
+        "writes": [
+          "textContent",
+          "color"
+        ]
+      },
+      {
+        "id": "d3Temps",
+        "writes": [
+          "textContent"
+        ]
+      },
+      {
+        "id": "retry",
+        "writes": [
+          "textContent",
+          "hidden"
+        ]
+      }
+    ],
+    "slotContract": {
+      "appliedRevision": 0,
+      "currentTemperatureAscii": 1,
+      "currentMeta": 2,
+      "day1Meta": 3,
+      "day1LowAscii": 4,
+      "day1HighAscii": 5,
+      "day2Meta": 6,
+      "day2LowAscii": 7,
+      "day2HighAscii": 8,
+      "day3Meta": 9,
+      "day3LowAscii": 10,
+      "day3HighAscii": 11,
+      "ageSeconds": 12,
+      "freshness": 13,
+      "retrySeconds": 14,
+      "flags": 15
+    },
+    "capabilityGate": {
+      "renderV2Profile": "framer-f1-render-v2-mquickjs-v1",
+      "packageFormat": "framer-render-v2-mquickjs-package-v1",
+      "packageAbiSha256": "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
+      "engineCommit": "203d5bb79789bc47b74855d9207415dab71661a0",
+      "javascriptProfile": "mquickjs-es5-strict-v1",
+      "deviceEvaluatesJavaScript": true,
+      "deviceRunsJsdom": false,
+      "maxPackageBytes": "98304",
+      "maxSourceBytes": "8192",
+      "heapBytes": "65536",
+      "callbackDeadlineUs": "2000",
+      "maxHandlers": "16",
+      "maxTargets": "16",
+      "maxKeys": "16",
+      "maxChords": "8",
+      "weatherSnapshotProtocol": "revision-stage-commit-v1",
+      "targetFacade": "weather-int16-targets-v1",
+      "deliveryReceipt": "applied-revision-v1",
+      "dispatchReceipt": "exact-event-applied-v1",
+      "hiddenScreenPolicy": "suspend-and-replay-latest-v1"
+    },
+    "pushAllowed": false
+  },
+  "protocol": {
+    "rpc": {
+      "begin": 45632,
+      "current": 45633,
+      "days": [
+        45634,
+        45635,
+        45636
+      ],
+      "providerStatus": 45645,
+      "visibility": 45646,
+      "commit": 45647
+    },
+    "requiredHostRpcIds": [
+      45632,
+      45633,
+      45634,
+      45635,
+      45636,
+      45645,
+      45646,
+      45647
+    ],
+    "handlers": 9,
+    "revisionRecords": 6,
+    "requiredStageMask": 15,
+    "flowControl": {
+      "outcomes": [
+        "busy",
+        "rejected",
+        "queued",
+        "applied"
+      ],
+      "scalarDispatchReceipt": "exact-event-applied-v1",
+      "revisionReceipt": "appliedRevision"
+    },
+    "freshness": {
+      "empty": 0,
+      "fresh": 1,
+      "stale": 2,
+      "errorWithLastGood": 3,
+      "errorWithoutSnapshot": 4,
+      "staleAfterSeconds": 1800
+    }
+  },
+  "offlineGolden": {
+    "delivery": {
+      "status": "applied",
+      "appliedRevision": 1
+    },
+    "slots": [
+      1,
+      13620,
+      21,
+      50,
+      13363,
+      13108,
+      59,
+      13875,
+      13876,
+      4,
+      14387,
+      14644,
+      1,
+      1,
+      0,
+      1
+    ],
+    "view": {
+      "appliedRevision": 1,
+      "location": "Chicago",
+      "unit": "F",
+      "hidden": false,
+      "hasGood": true,
+      "providerError": false,
+      "status": "LIVE",
+      "statusColor": "#55c2ff",
+      "current": {
+        "temperature": "45°F",
+        "condition": "Rain"
+      },
+      "age": "1s ago",
+      "retry": "",
+      "days": [
+        {
+          "weekday": "Tue",
+          "condition": "Snow",
+          "low": "34°F",
+          "high": "43°F"
+        },
+        {
+          "weekday": "Wed",
+          "condition": "Storm",
+          "low": "36°F",
+          "high": "46°F"
+        },
+        {
+          "weekday": "Thu",
+          "condition": "Sunny",
+          "low": "38°F",
+          "high": "49°F"
+        }
+      ]
+    },
+    "svgSha256": "aca52f6f13cb46ef2587df95db056663eb83b1caa72127d376911c810398d4db"
+  },
+  "hiddenScreenPolicy": "dispatch hide once, suspend JS/ticks, retain last-good, queue latest host snapshot, resume with elapsed seconds, then replay latest complete revision without a tick backlog",
+  "providerBoundary": "host-only ZIP lookup; deterministic no-network provider used for this proof",
+  "blockers": [
+    "resident F2JS parser/task/mailbox is not yet physical-device proven",
+    "no physical integer-slot to declared-target text/color/hidden facade exists",
+    "stock RPC has no exact per-event/control receipt plus busy/rejected/queued and appliedRevision ABI yet",
+    "hidden-screen suspension/resume and latest-only replay are not wired into stock navigation"
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "delivery": {
+    "status": "applied",
+    "appliedRevision": 1
+  },
+  "slots": [
+    1,
+    13620,
+    21,
+    50,
+    13363,
+    13108,
+    59,
+    13875,
+    13876,
+    4,
+    14387,
+    14644,
+    1,
+    1,
+    0,
+    1
+  ],
+  "view": {
+    "appliedRevision": 1,
+    "location": "Chicago",
+    "unit": "F",
+    "hidden": false,
+    "hasGood": true,
+    "providerError": false,
+    "status": "LIVE",
+    "statusColor": "#55c2ff",
+    "current": {
+      "temperature": "45°F",
+      "condition": "Rain"
+    },
+    "age": "1s ago",
+    "retry": "",
+    "days": [
+      {
+        "weekday": "Tue",
+        "condition": "Snow",
+        "low": "34°F",
+        "high": "43°F"
+      },
+      {
+        "weekday": "Wed",
+        "condition": "Storm",
+        "low": "36°F",
+        "high": "46°F"
+      },
+      {
+        "weekday": "Thu",
+        "condition": "Sunny",
+        "low": "38°F",
+        "high": "49°F"
+      }
+    ]
+  },
+  "svgSha256": "aca52f6f13cb46ef2587df95db056663eb83b1caa72127d376911c810398d4db"
+}

@@ -22,6 +22,12 @@ test("public pipeline emits one structurally admitted F1WB||F2EP package with ex
   const { compilation } = await compileFixture();
   const value = compilation.package;
   assert.equal(value.binary.subarray(0, 4).toString("ascii"), "F1WB");
+  assert.equal(value.binary.readUInt32LE(12), 62_404);
+  assert.equal(value.binary.readUInt32LE(24), 332);
+  assert.equal(value.binary.readUInt32LE(28), 62_072);
+  assert.equal(value.binary.subarray(332, 336).toString("ascii"), "F1RA");
+  assert.equal(value.binary.readUInt32LE(332 + 24), 62_072);
+  assert.equal(value.binary.readUInt32LE(332 + 64 + 4), 62_000);
   assert.equal(value.binary.readUInt32LE(12), value.program.offset);
   assert.equal(value.binary.subarray(value.program.offset, value.program.offset + 4).toString("ascii"), "F2EP");
   assert.equal(value.binary.readUInt32LE(value.program.offset + 12), value.program.bytes);
@@ -38,6 +44,16 @@ test("public pipeline emits one structurally admitted F1WB||F2EP package with ex
   assert.equal(decoded.program.inspection.structurallyAdmitted, true);
   const leaked = value.binary; leaked.fill(0);
   assert.equal(value.binary.subarray(0, 4).toString("ascii"), "F1WB", "package bytes must be defensively copied");
+  const untrustedPackage = value.binary;
+  const ownedPackage = decodeRenderV2Package(untrustedPackage);
+  untrustedPackage.fill(0);
+  assert.equal(ownedPackage.binary.subarray(0, 4).toString("ascii"), "F1WB",
+    "decoder must not retain an alias to untrusted package bytes");
+  const untrustedProgram = value.f2ep;
+  const ownedInspection = inspectRenderV2Program(untrustedProgram);
+  untrustedProgram.fill(0);
+  assert.equal(ownedInspection.binary.subarray(0, 4).toString("ascii"), "F2EP",
+    "inspector must not retain an alias to untrusted program bytes");
 });
 
 test("generic upload rewrites only F1WB generation and hashes/chunks the whole package", async () => {
@@ -77,7 +93,7 @@ test("structural admission rejects zero RPC ids, canonical F2EP tamper, dimensio
   const badDimension = compilation.package.binary;
   badDimension.writeUInt16LE(99, 332 + 6);
   createHash("sha256").update(badDimension.subarray(332, 62_404)).digest().copy(badDimension, 20 + 20);
-  assert.throws(() => decodeRenderV2Package(badDimension), /100x310|header/u);
+  assert.throws(() => decodeRenderV2Package(badDimension), /100x310|header|native one-frame/u);
   assert.throws(() => decodeRenderV2Package(Buffer.concat([compilation.package.binary,
     Buffer.alloc(98_305 - compilation.package.binary.length)])), /scene store/u);
 
@@ -87,4 +103,11 @@ test("structural admission rejects zero RPC ids, canonical F2EP tamper, dimensio
     atlasFactory: () => ({}) }), /8192/u);
   assert.equal(assessRenderV2PackageCompatibility(compilation.package,
     { profile: RENDER_V2_CURRENT_DEVICE_PROFILE }).deviceDeployable, false);
+  const forgedMetadata = { format: "framer-render-v2-package-v1",
+    binary: Buffer.concat([compilation.package.binary, Buffer.from([0])]),
+    sha256: compilation.package.sha256,
+    program: compilation.package.program };
+  assert.throws(() => assessRenderV2PackageCompatibility(forgedMetadata,
+    { profile: RENDER_V2_GENERIC_ADMISSION_PROFILE }), /length|trailing|unclaimed/u,
+  "compatibility must decode actual bytes instead of trusting format-tagged cached metadata");
 });

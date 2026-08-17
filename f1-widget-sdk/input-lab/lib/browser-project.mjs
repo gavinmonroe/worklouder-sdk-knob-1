@@ -14,11 +14,16 @@ function normalizeSource(slot, index) {
     `Preview ${index + 1} must contain HTML and CSS text.`);
   return Object.freeze({ id: index, name: String(slot.name ?? `Preview ${index + 1}`).trim().slice(0, 32),
     renderer: slot.renderer === "v2" ? "v2" : "v1",
+    backend: slot.backend === "mquickjs" ? "mquickjs" : "f2ep",
     mode: ["auto", "semantic", "raster"].includes(slot.mode) ? slot.mode : "auto",
     html: slot.html, css: slot.css, script: typeof slot.script === "string" ? slot.script : "",
     settings: Object.freeze({ ...(slot.settings ?? {}) }),
     eventConfig: Object.freeze({ keyboardCode: String(slot.eventConfig?.keyboardCode ?? "Space"),
-      keyboardRpcId: String(slot.eventConfig?.keyboardRpcId ?? "0xB201") }) });
+      keyboardRpcId: String(slot.eventConfig?.keyboardRpcId ?? "0xB201") }),
+    mquickjs: Object.freeze({ example: slot.mquickjs?.example === "weather" ? "weather" : "timer",
+      postalCode: String(slot.mquickjs?.postalCode ?? "60601"),
+      countryCode: String(slot.mquickjs?.countryCode ?? "US"),
+      units: slot.mquickjs?.units === "celsius" ? "celsius" : "fahrenheit" }) });
 }
 
 function cssUrlsAreLocal(source) {

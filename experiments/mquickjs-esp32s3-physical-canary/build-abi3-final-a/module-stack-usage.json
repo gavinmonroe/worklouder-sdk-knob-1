@@ -1,0 +1,3600 @@
+{
+  "proof": {
+    "compilerFlag": "-fstack-usage",
+    "allFramesStatic": true,
+    "rpc": {
+      "chains": {
+        "cap": 240,
+        "telemetry": 256,
+        "event": 352,
+        "receipt": 192
+      },
+      "maximumModuleOwnedChainBytes": 352,
+      "acceptedSceneHandlerModuleFrameCeilingBytes": 384,
+      "comparator": "relative accepted-app non-regression; not absolute task headroom",
+      "asmReadIntegerFrameBytes": 32
+    },
+    "ui": {
+      "moduleOwnedRenderChainBytes": 816,
+      "physicalHeadroomClaimed": false
+    }
+  },
+  "records": [
+    {
+      "object": "adapter.o",
+      "function": "framer_mqjs_module_probe",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "adapter.o",
+      "function": "abort",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "cutils.o",
+      "function": "pstrcpy",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "cutils.o",
+      "function": "pstrcat",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "cutils.o",
+      "function": "strstart",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "cutils.o",
+      "function": "has_suffix",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "cutils.o",
+      "function": "__unicode_to_utf8",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "cutils.o",
+      "function": "__unicode_from_utf8",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "cutils.o",
+      "function": "__utf8_get",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "dtoa.o",
+      "function": "mpb_renorm",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "dtoa.o",
+      "function": "u32toa_len",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "dtoa.o",
+      "function": "to_digit",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "dtoa.o",
+      "function": "mpb_mul1_base",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "dtoa.o",
+      "function": "mul_log2_radix",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "dtoa.o",
+      "function": "pow_ui",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "dtoa.o",
+      "function": "mp_div1norm.constprop",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "dtoa.o",
+      "function": "mpb_shr_round",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "dtoa.o",
+      "function": "output_digits",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "dtoa.o",
+      "function": "round_to_d.constprop",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "dtoa.o",
+      "function": "mul_pow",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "dtoa.o",
+      "function": "mul_pow_round",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "dtoa.o",
+      "function": "u32toa",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "dtoa.o",
+      "function": "i32toa",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "dtoa.o",
+      "function": "u64toa",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "dtoa.o",
+      "function": "i64toa",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "dtoa.o",
+      "function": "u64toa_radix",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "object": "dtoa.o",
+      "function": "i64toa_radix",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "dtoa.o",
+      "function": "js_dtoa_max_len",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "dtoa.o",
+      "function": "js_dtoa",
+      "bytes": 128,
+      "kind": "static"
+    },
+    {
+      "object": "dtoa.o",
+      "function": "js_atod",
+      "bytes": 128,
+      "kind": "static"
+    },
+    {
+      "object": "f2js.o",
+      "function": "read_u32",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "f2js.o",
+      "function": "bytes_equal",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "f2js.o",
+      "function": "bytes_zero",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "f2js.o",
+      "function": "copy_bytes",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "f2js.o",
+      "function": "sha256_block",
+      "bytes": 160,
+      "kind": "static"
+    },
+    {
+      "object": "f2js.o",
+      "function": "canonical_utf8",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "f2js.o",
+      "function": "framer_f2js_sha256",
+      "bytes": 192,
+      "kind": "static"
+    },
+    {
+      "object": "f2js.o",
+      "function": "framer_f2js_admit",
+      "bytes": 320,
+      "kind": "static"
+    },
+    {
+      "object": "f2js.o",
+      "function": "framer_f2js_result_name",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "mul_u64",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "rint_sf64",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "eval_poly",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "R",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "kernel_log2",
+      "bytes": 96,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_log_internal",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_lrint",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_fmod",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_floor",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_ceil",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_trunc",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_round_inf",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_fabs",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_scalbn",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "kernel_exp",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_sqrt",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_rem_pio2",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_sin_cos",
+      "bytes": 96,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_sin",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_cos",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_tan",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_asin",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_acos",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_atan",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_atan2",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_exp",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_log2",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_log",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_log10",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "libm.o",
+      "function": "js_pow",
+      "bytes": 96,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "framer_physical_telemetry_session_select",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "zero_bytes",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "digest_hex",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "now_ms",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "current_task_token",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "platform_free",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "platform_now_us",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "platform_now_ms",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "platform_thread",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "platform_reschedule",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "framer_physical_weather_id",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "platform_stack_water",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "proxy_encoder",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "refresh_runtime_telemetry",
+      "bytes": 528,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "publish_staged_completion",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "rpc_begin_ready",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "rpc_read_page",
+      "bytes": 96,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "proxy_cleanup",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "proxy_build",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "platform_allocate",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "platform_schedule_poll",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "platform_cancel_poll",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "platform_remove_input",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "platform_activate_input",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "platform_remove_events",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "platform_activate_events",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "decode_lzss.constprop",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "proxy_tick",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "owner_task",
+      "bytes": 256,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "block_from_rpc",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "rpc_callback_common",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "rpc_cap_callback",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "rpc_telemetry_callback",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "rpc_event_callback",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "rpc_receipt_callback",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "rpc_receipt_handler",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "rpc_event_handler",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "rpc_telemetry_handler",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "rpc_cap_handler",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "framer_physical_key_after_stock",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "physical.o",
+      "function": "framer_physical_module_startup",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "zero_bytes",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "copy_bytes",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "owner_now_us",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "owner_thread_token",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "owner_publish_gate_unlock",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "owner_issue_terminal_release_on_task",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "owner_publish_gate_lock",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "schedule_input_poll",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "owner_ingress_leave",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "owner_runtime_leave",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "string_equal",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "owner_reschedule",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "owner_request_terminal_release",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "owner_ingress_enter",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "owner_enqueue_admitted",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_mailbox_init",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_mailbox_write",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "owner_publish",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_mailbox_try_read",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_capability_init",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_capability_set_ready",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_capability_advertise",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_capability_begin_quiesce",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_capability_finish_quiesce",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_capability_can_unmap",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_capability_mark_unmapped",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_capability_flash_write_allowed",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_capability_fault",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_owner_init_shell",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_owner_mark_module_mapped",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_owner_enqueue",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_owner_enqueue_host_rpc_tagged",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_owner_enqueue_host_rpc",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_owner_take_tagged_completion",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_owner_notify_input",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_owner_input_after_stock",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_owner_release_all",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_owner_get_input_observation",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_owner_input_poll_due",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_owner_step",
+      "bytes": 384,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_owner_begin_quiesce",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_owner_stop_on_task",
+      "bytes": 368,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_owner_boot_on_task",
+      "bytes": 224,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_owner_get_telemetry",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "zero_bytes",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "append_character",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "append_text",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "append_hex32",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "append_hex64",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "copy_string",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "is_lower_hex_digest",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_rpc_init",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_rpc_begin",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_rpc_end",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_receipt_init",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_receipt_publish",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_receipt_try_read",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_status_copy",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_receipt_format",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_capability_format",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_telemetry_format",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_key_probe_init",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_key_probe_observe",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_key_probe_can_commit",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_key_probe_commit",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_key_probe_try_read",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_key_probe_map",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_visibility_init",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_visibility_set",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_visibility_publish",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_visibility_take_replay",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_allocate_internal",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_release_internal",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_producer_init",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_producer_enter",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_producer_leave",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_producer_retire",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_producer_retired",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_owner_iteration",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime-proof.o",
+      "function": "framer_runtime_live_flash_write_allowed",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "bswap32",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "from_hex",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_putchar",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "get_special_prop",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_rehash_props",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "dummy_write_func",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "skip_spaces",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_reverse_val",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "is_ident_first",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "is_ident_next",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "get_line_col",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "is_regexp_allowed",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_escape",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "get_prev_opcode",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "find_var",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "pop_break_entry",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "get_mblock_size",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_free",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_shrink",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_shrink_byte_array",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_shrink_value_array",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "mtag_has_references",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "gc_mark",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "gc_mark_flush",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "gc_mark_root",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "gc_thread_pointer",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_set_length",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "unicode_is_space_non_ascii",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_sort_swap",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "parse_digits",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "range_sort_cmp",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "range_sort_swap",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "range_compress",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "is_line_terminator",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "is_word_char",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_regexp_flags",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_regexp_flags_str",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "is_owner_thread",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "sample_memory",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "interrupt_handler",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "begin_deadline",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "find_handler",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "snprintf_write_func",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "unicode_to_utf8",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "get_short_string",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "emit_input_event",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "reconcile_chord",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "advance_input_to",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "string_get_cp",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_byte_array_to_string",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "event_from_name",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "finish_input_producer",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_IsFunctionObject$part$0",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "rqsort_idx$part$0",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "pad",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_vprintf",
+      "bytes": 96,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_vsnprintf",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "cprintf",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_snprintf",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_error",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_error_mem",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_printf",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "dump_string",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_dump_float64",
+      "bytes": 384,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "re_parse_expect",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_expect1",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_IsString.constprop",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "string_buffer_pop",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_IsFunction.constprop",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "unicode_from_utf8.constprop",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "get_class_atom",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "may_drop_result",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_pop_val.isra",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "find_ext_var.isra",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_eq_get_type.isra",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_function_get_length_name1.isra",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "find_own_property.isra",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_HasProperty.isra",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_ToBool.isra",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "get_string_ptr.isra",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_compare.isra",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "find_atom.isra",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "bc_reloc_value",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_get_object_class.isra",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_IsObject.isra",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "get_ugolomb",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_convert_pos",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_len",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "string_getcp",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "emit_label",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "gc_compact_heap",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_indexof",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "gc_mark_all",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_PushGCRef",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_PopGCRef",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_AddGCRef",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_DeleteGCRef",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_Throw",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_GetClassID",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_SetOpaque",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_GetOpaque",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_IsFunction",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_IsError",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_IsNumber",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_IsString",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_HasException",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_GetException",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_FreeContext",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "release_context",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_SetContextOpaque",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_GetContextOpaque",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_SetInterruptHandler",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_SetLogFunc",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_SetRandomSeed",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_GetGlobalObject",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_PushArg",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_PrintValue",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_PrintValueF",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_DumpMemory",
+      "bytes": 128,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_DumpValueF",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_DumpValue",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_GC",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_PrepareBytecode",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_IsBytecode",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_RelocateBytecode2",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_RelocateBytecode",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_object_keys",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_Call",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_ToPrimitive",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_ToString",
+      "bytes": 176,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_ToCStringLen",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_ToCString",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "build_backtrace",
+      "bytes": 240,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_ThrowError",
+      "bytes": 224,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_ThrowOutOfMemory",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_StackCheck",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "push_break_entry",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_push_val",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_call",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_expr",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "compute_stack_size_push",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_function_call",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_malloc",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_NewObjectProtoClass1",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_NewObjectProtoClass",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_NewObjectClass",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_NewObject",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_object_constructor",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_NewObjectClassUser",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "stdlib_init_class",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_NewCFunctionParams",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "__JS_NewFloat64",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_NewFloat64",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_NewInt64",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_NewInt32",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_NewUint32",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "get_var_ref",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_alloc_value_array",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_alloc_props",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_NewObjectPrealloc",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_NewArray",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_resize_value_array2",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "add_func_ext_var",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "add_var",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "define_var",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "cpool_add",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_update_props",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_function_bind",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_alloc_byte_array",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_MakeUniqueString",
+      "bytes": 128,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_dtoa2",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_atod1",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "string_buffer_push",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_resize_byte_array",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "emit_claim_size",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "emit_insert",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "emit_u8",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "re_emit_op_u8",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "emit_u32",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "re_parse_disjunction",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "add_interval_intersect",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "re_range_optimize",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "re_emit_goto_u8_u32.constprop.isra",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "re_emit_range_base",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "emit_u16",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_regexp",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "re_parse_alternative",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "pc2line_put_bits_short",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "pc2line_put_bits",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "put_ugolomb",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "emit_op_pos",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "emit_op",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "emit_goto",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "emit_push_short_int",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_emit_push_const",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_emit_push_number",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "emit_var",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "set_eval_ret_undefined",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "get_lvalue",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "put_lvalue",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "emit_op_param",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "define_hoisted_functions",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_alloc_function_bytecode",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_alloc_string",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_NewStringLen",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_NewString",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_object_toString",
+      "bytes": 96,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_sub_string_utf8",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_sub_string",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_ThrowTypeErrorNotAnObject",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_object_getPrototypeOf",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_DefinePropertyInternal",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_NewContext2",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_NewContext",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "create_context",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_DefinePropertyValue",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_closure",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "__js_poll_interrupt",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "lre_exec",
+      "bytes": 128,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_set_prototype_internal",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "string_buffer_concat_str",
+      "bytes": 96,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_ConcatString",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "string_buffer_putc",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_string",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "next_token",
+      "bytes": 96,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_expect",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_expr_paren",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_block",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_skip_parens",
+      "bytes": 160,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_var",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_expect_semi",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_function_decl",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_source_element",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_unary",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_expr_binary",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_logical_and_or",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_cond_expr",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_assign_expr",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_expr_comma",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_statement",
+      "bytes": 96,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "string_buffer_concat_utf8.isra",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "string_buffer_concat_utf16.isra",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "string_buffer_puts.isra",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_to_quoted_string",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_LoadBytecode",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_function_get_prototype",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_function_set_prototype",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_function_get_length_name",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_function_toString",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_function_apply",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_function_bound",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_boolean_constructor",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_toString",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_object_setPrototypeOf",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_object_create",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_error_get_message",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_get_array",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_get_length",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_pop",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_resize",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_push",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "get_typed_array",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_get_regexp",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_framer_commit",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_get_length",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_Parse2",
+      "bytes": 480,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_Parse",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_framer_on",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_ToPropertyKey",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_postfix_expr",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_object_hasOwnProperty",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "string_buffer_concat",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_number_parseFloat",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_ToStringCheckObject",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_concat",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_toLowerCase",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_trim",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_constructor",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_error_constructor",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_ToNumber",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_ToInt32Internal",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_ToInt32",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_number_parseInt",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_fromCharCode",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_set_length",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_constructor",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_framer_get_int",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_binary_logic_slow",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_not_slow",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_ToUint32",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_framer_set_int",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_ToInt32Sat",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_ToInt32Clamp",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_slice",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_substring",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_charAt",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_GetPropertyInternal",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_GetProperty",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_GetPropertyStr",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_framer_is_held",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "classify_exception",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_GetPropertyUint32",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_object_defineProperty",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_get_length32",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_repeat",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_ToIndex",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_binary_arith_slow",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_unary_arith_slow",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_post_inc_slow",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_strict_eq",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_number_constructor",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_thisNumberValue",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_number_toString",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_number_toFixed",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_number_toExponential",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_number_toPrecision",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_indexOf",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_add_slow",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_relational_slow",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_eq_slow",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_SetPropertyInternal",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_SetPropertyStr",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "set_event_property.isra",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_SetPropertyUint32",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_parse_json_value",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_Run",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_Eval",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "evaluate",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "recover_last_good.isra",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_function_constructor",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_sort_cmp",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "dispatch_staged_iteration",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_concat_subst.isra",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_error_toString",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_shift",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_join",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_toString",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_IsArray",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_isArray",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_reverse",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_concat",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_indexOf",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_slice",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_splice",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_every",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_reduce",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_sort",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_math_min_max",
+      "bytes": 96,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_math_sign",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_math_fround",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_math_imul",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_math_clz32",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_math_atan2",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_math_pow",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_math_random",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_buffer_alloc",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_buffer_constructor",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_array_buffer_get_byteLength",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_typed_array_base_constructor",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_typed_array_constructor",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_typed_array_get_length",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_typed_array_subarray",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_typed_array_set",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "JS_NewDate",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_date_valueOf",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_global_eval",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_global_isNaN",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_global_isFinite",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_json_parse",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_json_stringify",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_regexp_get_lastIndex",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_regexp_get_source",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_regexp_set_lastIndex",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_regexp_get_flags",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_regexp_constructor",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_regexp_exec",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_replace",
+      "bytes": 128,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_split",
+      "bytes": 96,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_match",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "js_string_search",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "framer_mqjs_init",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "framer_mqjs_load",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "framer_mqjs_dispatch",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "framer_mqjs_input_enqueue",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "framer_mqjs_input_request_release_all",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "framer_mqjs_input_request_focus_release",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "framer_mqjs_input_drain",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "framer_mqjs_input_get_observation",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "framer_mqjs_get_telemetry",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "framer_mqjs_get_last_good_slots",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "runtime.o",
+      "function": "framer_mqjs_destroy",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "target.o",
+      "function": "read_u32",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "target.o",
+      "function": "bytes_equal",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "target.o",
+      "function": "glyph_index",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "target.o",
+      "function": "append_byte",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "target.o",
+      "function": "append_ascii",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "target.o",
+      "function": "append_i32",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "target.o",
+      "function": "packed_ascii",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "target.o",
+      "function": "copy_table",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "target.o",
+      "function": "target_pixels",
+      "bytes": 96,
+      "kind": "static"
+    },
+    {
+      "object": "target.o",
+      "function": "framer_tf_crc32",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "target.o",
+      "function": "framer_tf_admit",
+      "bytes": 160,
+      "kind": "static"
+    },
+    {
+      "object": "target.o",
+      "function": "framer_tf_snapshot_mailbox",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "target.o",
+      "function": "render_internal",
+      "bytes": 576,
+      "kind": "static"
+    },
+    {
+      "object": "target.o",
+      "function": "framer_tf_render",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "target.o",
+      "function": "framer_tf_render_probe",
+      "bytes": 48,
+      "kind": "static"
+    }
+  ]
+}

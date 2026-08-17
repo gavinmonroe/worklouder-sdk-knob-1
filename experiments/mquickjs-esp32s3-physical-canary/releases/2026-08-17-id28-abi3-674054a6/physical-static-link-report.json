@@ -1,0 +1,100 @@
+{
+  "format": "framer-f1-mquickjs-physical-static-link-report-v1",
+  "status": "STATIC_LINK_GO_PENDING_INDEPENDENT_AUDIT",
+  "verdict": "GO",
+  "verdictScope": "DETERMINISTIC_STATIC_LINK_ONLY",
+  "overallPhysicalVerdict": "NO_GO_PENDING_INDEPENDENT_AUDIT_AND_GUARDED_HARDWARE",
+  "deployable": false,
+  "hardwareTouched": false,
+  "flashCommandGenerated": false,
+  "candidateAppSha256": "674054a6e9d6536ad2414096cd89c1025e78904dff6b4a1aee0ef8cab434e808",
+  "moduleTextSha256": "bd46e3473b8493291aadebcf1d093e812a0788866e787663920637a3d76c8c43",
+  "moduleRodataSha256": "72a2a26cb9cb0c0c52ab0ee897ad5d59b0a3c9765d3f495bfe96565b305a8c43",
+  "moduleSlotSha256": "b1104134b37c9b6726e96f852b28e1eb971ba3aa4870d44543cfd1c5e8c6a6c1",
+  "loaderSha256": "cd0e352b46d23193d07c696355442ee2a68311c44ad3a901692627560fbde97c",
+  "packageAbiSha256": "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
+  "moduleAbiSha256": "ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb",
+  "sourceClosureSha256": "7ee7b063fb40e20bdf2bd8d58c29cf74475e0902542d4d28f61314a4a636f07e",
+  "telemetrySnapshotProtocol": "p0-locks-snapshot-ordered-p1-p5-expiry-clear-v1",
+  "uiLatencyMetric": "id28-full-proxy-tick-oldtick-base-lzss-f2tf-publish-us-v1",
+  "allocationMapOrdering": "internal-block-before-first-mmu-map-adopt-or-rollback-v1",
+  "keyNegativeHarness": "low24-e5-observed-never-mapped-pass-v1",
+  "keyTokenNormalization": "raw-low24-after-stock-first-v1",
+  "mappings": [
+    {
+      "logical": 0,
+      "nativeToken": 44
+    },
+    {
+      "logical": 1,
+      "nativeToken": 225
+    }
+  ],
+  "chordHeldMask": 3,
+  "rejectedLow24Tokens": [
+    229
+  ],
+  "canonicalWeather": {
+    "sourceSha256": "68db9d61fa38b0a396e46e88076d75d262a486f2ec4b41b4d398454d7d713e9b",
+    "packageSha256": "88537026c8b217b763c393b82d8787ca08256681265976f7bcff6077b2282d20",
+    "recovery": "rev7-timeout-benign-oom-benign-preserved-then-monotonic-rev8-pass-v1"
+  },
+  "canaryEngineSourceSha256": "f634d62094e6c3d08f7d6cf1975edf9afa5b9f53799599014a9a2ac3d09e1c19",
+  "focusReleaseContract": "combined-key-and-fn-wrapper-barrier-nonterminal-owner-drain-reentry-v1",
+  "taggedCompletionContract": "completion-fields-coherent-telemetry-then-terminal-receipt-release-last-v1",
+  "lifecycleRootContract": "registration-owns-registry-plus20-base-slot0-owns-internal-root-plus12-v1",
+  "files": {
+    "candidateApp": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-17-id28-abi3-674054a6/framer-0.4.1-mqjs-id28-canary-NO-GO-app.bin",
+      "bytes": 2062912,
+      "sha256": "674054a6e9d6536ad2414096cd89c1025e78904dff6b4a1aee0ef8cab434e808"
+    },
+    "moduleText": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-17-id28-abi3-674054a6/mqjs-id28-text-page.bin",
+      "bytes": 131072,
+      "sha256": "bd46e3473b8493291aadebcf1d093e812a0788866e787663920637a3d76c8c43"
+    },
+    "moduleRodata": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-17-id28-abi3-674054a6/mqjs-id28-rodata-page.bin",
+      "bytes": 65536,
+      "sha256": "72a2a26cb9cb0c0c52ab0ee897ad5d59b0a3c9765d3f495bfe96565b305a8c43"
+    },
+    "moduleSlot": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-17-id28-abi3-674054a6/mqjs-id28-slot-a.bin",
+      "bytes": 196608,
+      "sha256": "b1104134b37c9b6726e96f852b28e1eb971ba3aa4870d44543cfd1c5e8c6a6c1",
+      "semantics": "sha256(text[0x210000,0x230000)+rodata[0x230000,0x240000))"
+    },
+    "loader": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-17-id28-abi3-674054a6/mqjs-id28-resident-loader.bin",
+      "bytes": 2704,
+      "sha256": "cd0e352b46d23193d07c696355442ee2a68311c44ad3a901692627560fbde97c"
+    },
+    "detailedManifest": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-17-id28-abi3-674054a6/physical-link-manifest.json",
+      "bytes": 43193,
+      "sha256": "1e6db47df0b00b1ed6968f0664e9786feaffcc6d6c48442afff121a04eaeaad1"
+    },
+    "verifierOutput": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-17-id28-abi3-674054a6/verify-output.json",
+      "bytes": 8833,
+      "sha256": "51f25da8884add400b9e4ad0dca889c22eb26c022b092c4285fd00f8de79b4f6"
+    },
+    "keyTokenProof": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-17-id28-abi3-674054a6/key-token-proof.json",
+      "bytes": 4817,
+      "sha256": "2ea3289702fc4608518aa40157cf1a89915ac358d44ec137526f9ae0ea228b39"
+    }
+  },
+  "binaryFreeze": {
+    "candidateModuleLoaderChangedByThisReport": false,
+    "candidateAppSha256": "674054a6e9d6536ad2414096cd89c1025e78904dff6b4a1aee0ef8cab434e808",
+    "moduleSlotSha256": "b1104134b37c9b6726e96f852b28e1eb971ba3aa4870d44543cfd1c5e8c6a6c1",
+    "loaderSha256": "cd0e352b46d23193d07c696355442ee2a68311c44ad3a901692627560fbde97c"
+  },
+  "gatesRemaining": [
+    "independent audit must issue exact framer-f1-mquickjs-physical-link-audit-v1 GO over this report and key proof",
+    "workflow approval must be generated and validated before any write",
+    "guarded physical RAM/RPC/key/fault/UI-latency/rollback/soak receipts remain mandatory"
+  ]
+}

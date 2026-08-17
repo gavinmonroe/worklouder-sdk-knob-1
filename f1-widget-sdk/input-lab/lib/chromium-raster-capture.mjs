@@ -352,8 +352,18 @@ function renderV2MutationExpression(mutations, targets) {
     `const q=n=>Math.round(n*64);const elements=Array.from(document.querySelectorAll("*")).map((element,index)=>{` +
     `const r=element.getBoundingClientRect();return[index,element.tagName,element.id,element.childElementCount,` +
     `q(r.x),q(r.y),q(r.width),q(r.height),element.scrollWidth,element.scrollHeight,element.clientWidth,element.clientHeight]});` +
+    `const targetStyles=Object.fromEntries(data.targets.map(id=>{const element=document.getElementById(id);` +
+    `const r=element.getBoundingClientRect(),s=getComputedStyle(element),ancestorEffects=[];` +
+    `for(let ancestor=element.parentElement;ancestor;ancestor=ancestor.parentElement){const a=getComputedStyle(ancestor);` +
+    `ancestorEffects.push({tagName:ancestor.tagName,id:ancestor.id,filter:a.filter,` +
+    `backdropFilter:a.backdropFilter,mixBlendMode:a.mixBlendMode});}` +
+    `return[id,{tagName:element.tagName,namespaceURI:element.namespaceURI,rect:[r.x,r.y,r.width,r.height],` +
+    `contain:s.contain,display:s.display,overflowClipMargin:s.overflowClipMargin,filter:s.filter,` +
+    `textShadow:s.textShadow,fontKerning:s.fontKerning,fontVariantLigatures:s.fontVariantLigatures,` +
+    `fontVariantNumeric:s.fontVariantNumeric,direction:s.direction,unicodeBidi:s.unicodeBidi,` +
+    `writingMode:s.writingMode,ancestorEffects}]}));` +
     `const root=document.documentElement,body=document.body;return{targetCounts,animations:document.getAnimations({subtree:true}).length,` +
-    `layout:{elements,document:[root.scrollWidth,root.scrollHeight,root.clientWidth,root.clientHeight,` +
+    `targetStyles,layout:{elements,document:[root.scrollWidth,root.scrollHeight,root.clientWidth,root.clientHeight,` +
     `body.scrollWidth,body.scrollHeight,body.clientWidth,body.clientHeight]}}})()`;
 }
 
@@ -453,7 +463,7 @@ export class ChromiumRasterCaptureProvider {
           "Render v2 Chromium widgets must be static between events; CSS animations/transitions are unsupported.");
         const frame = await captureRgb565Le(cdp, sessionId, signal);
         captures.push(Object.freeze({ name: entry.name, mutations: entry.mutations,
-          layout: snapshot.layout, frame }));
+          layout: snapshot.layout, targetStyles: Object.freeze(snapshot.targetStyles), frame }));
       }
       await cdp.send("Target.closeTarget", { targetId });
       cdp.close(); cdp = null;

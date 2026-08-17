@@ -1,0 +1,37 @@
+:root {
+  color-scheme: dark;
+  font-family: "HKNova", ui-sans-serif, system-ui, sans-serif;
+  color: #f5f5f4;
+  background: #171717;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; min-width: 720px; min-height: 100vh; background: #171717; }
+button, input, select { font: inherit; }
+.toolbar { height: 52px; display: flex; align-items: center; gap: 12px; padding: 0 20px; border-bottom: 1px solid #343434; background: #1c1c1c; }
+.toolbar strong { font-size: 15px; }
+.toolbar span { flex: 1; color: #a8a29e; font-size: 12px; }
+button { border: 1px solid #525252; border-radius: 7px; padding: 7px 11px; color: #e7e5e4; background: #262626; cursor: pointer; }
+button:hover { background: #303030; }
+button:disabled { cursor: wait; opacity: .58; }
+button.primary { border-color: #d97757; background: #d97757; color: #1c1917; font-weight: 700; }
+main { display: grid; grid-template-columns: minmax(360px, 520px) 300px; min-height: calc(100vh - 52px); }
+.configuration, .preview-column { padding: 24px; }
+.configuration { border-right: 1px solid #343434; }
+form { display: grid; grid-template-columns: 120px minmax(180px, 1fr); align-items: center; gap: 12px 16px; }
+label { color: #d6d3d1; font-size: 13px; font-weight: 650; }
+input, select { width: 100%; border: 1px solid #3f3f46; border-radius: 6px; padding: 8px; color: #e7e5e4; background: #111; }
+input:focus, select:focus { outline: 2px solid #a85d43; outline-offset: 1px; }
+form button { grid-column: 2; justify-self: start; margin-top: 4px; }
+#weather-status { display: block; min-height: 36px; margin-top: 22px; padding-top: 14px; border-top: 1px solid #343434; color: #a8a29e; font-size: 12px; line-height: 1.5; }
+#weather-values { display: grid; grid-template-columns: 1fr auto; gap: 6px 18px; margin: 14px 0 0; font: 12px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; }
+#weather-values:empty { display: none; }
+#weather-values dt { color: #8c8782; }
+#weather-values dd { margin: 0; color: #f5f5f4; font-variant-numeric: tabular-nums; }
+.note { max-width: 440px; margin: 22px 0 0; color: #8c8782; font-size: 11px; line-height: 1.55; }
+.preview-column { display: flex; flex-direction: column; align-items: center; gap: 14px; background: #141414; }
+.device-frame { width: 232px; padding: 14px; border: 1px solid #3f3f46; border-radius: 10px; background: #090909; }
+#device-preview, #browser-preview { display: block; width: 200px; height: 620px; border: 0; background: #000; image-rendering: pixelated; }
+#device-preview[hidden], #browser-preview[hidden] { display: none; }
+#package-status { width: 232px; color: #a8a29e; font: 11px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; overflow-wrap: anywhere; }
+@media (max-width: 760px) { body { min-width: 0; } main { grid-template-columns: 1fr; } .configuration { border-right: 0; border-bottom: 1px solid #343434; } }

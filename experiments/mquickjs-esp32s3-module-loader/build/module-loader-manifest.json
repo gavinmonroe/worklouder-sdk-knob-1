@@ -1,0 +1,260 @@
+{
+  "format": "framer-f1-mquickjs-fixed-mmap-canary-v1",
+  "status": "PASS_STATIC_MODULE_LOADER_FEASIBILITY",
+  "hardwareRuntimeProven": false,
+  "flashed": false,
+  "healthyBase": {
+    "app": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-blue-timer/framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-blue-timer-app.bin",
+      "bytes": 2062912,
+      "sha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
+      "flashOffset": "0x10000",
+      "flashEnd": "0x207a40"
+    },
+    "receipt": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/device-receipts/device-1786939039376-fast-smoke.json",
+      "sha256": "1363d31eabba2b61e068d760d966ab25f8b17d1c635a4c91ba7ecd2a0de238e9"
+    },
+    "preservedScreens": [
+      26,
+      27
+    ],
+    "loaderInsertion": {
+      "vaddr": "0x4211e460",
+      "capacityBytes": 6840,
+      "acceptedTailWasAllZero": true
+    }
+  },
+  "companionCoreCanary": {
+    "sourceSha256": "f634d62094e6c3d08f7d6cf1975edf9afa5b9f53799599014a9a2ac3d09e1c19",
+    "targetRawSha256": "74a4416f9ceced9e5f5785637dc839d010f0dde58856330ec747803c55e18c1c",
+    "runtimeStorageBytes": 4096,
+    "minimumHeapBytes": 65536,
+    "maxEventAttemptsPerOwnerCall": 3,
+    "worstFailureRecoverySliceUs": 8000
+  },
+  "mmu": {
+    "pageBytes": 65536,
+    "sharedLinearRange": [
+      "0x00000000",
+      "0x02000000"
+    ],
+    "iromReserved": [
+      "0x00000000",
+      "0x120000"
+    ],
+    "dromReservationBytes": 720896,
+    "psram": {
+      "bytes": 2097152,
+      "linearRange": [
+        "0x001d0000",
+        "0x003d0000"
+      ]
+    },
+    "freeBeforeModule": {
+      "linearRange": [
+        "0x3d0000",
+        "0x2000000"
+      ],
+      "bytes": 29556736
+    },
+    "freeAfterModule": {
+      "linearRange": [
+        "0x00400000",
+        "0x2000000"
+      ],
+      "bytes": 29360128
+    },
+    "callOrder": [
+      "serialized one-shot startup; no concurrent esp_mmu_map caller",
+      "temporary DATA|8BIT(0x12) map 128 KiB text; require 0x3c3d0000; full-page SHA-256; unmap",
+      "temporary DATA|8BIT(0x12) map 64 KiB rodata; require 0x3c3d0000; full-page SHA-256; unmap",
+      "EXEC|32BIT(0x09) map text first; require 0x423d0000",
+      "READ|8BIT(0x12) map rodata second; require 0x3c3f0000"
+    ],
+    "stockAbi": {
+      "espMmuMap": {
+        "address": "0x420f539c",
+        "bytes": 982,
+        "sha256": "cbd61aaf9138bb59e94d50780ee4b5a53ec315cd347eee341e7f1514b07aeab5",
+        "signature": "esp_err_t(uint32_t,size_t,mmu_target_t,mmu_mem_caps_t,int,void**)"
+      },
+      "espMmuUnmap": {
+        "address": "0x420f5774",
+        "bytes": 302,
+        "sha256": "a397751ec73aacb36858a2ab98f72503d57e4d9fbb7ca03d7968e54e6ac62163",
+        "signature": "esp_err_t(void*)"
+      },
+      "source": "ESP-IDF v5.3.2 components/esp_mm/esp_mmu_map.c",
+      "sourceCommit": "6920def9f050fe55df29954a2e8a41350b76b1d2",
+      "threadSafety": "not-thread-safe; map once during controlled startup before VM task launch"
+    },
+    "runtimeReservationPins": {
+      "iramSegmentOffsets": {
+        "instructionReservedEnd": "0x90c=0x42116d12",
+        "instructionReservedStart": "0x910=0x42000020",
+        "rodataReservedEnd": "0x914=0x3c1c1190",
+        "rodataReservedStart": "0x918=0x3c120020"
+      },
+      "iromPsramStartOffsets": [
+        "0xbdd18=0x3c1d0000",
+        "0xbdd1c=0x3c1d0000"
+      ]
+    }
+  },
+  "factoryFlash": {
+    "bytes": 8388608,
+    "range": [
+      "0x10000",
+      "0x810000"
+    ],
+    "slotA": {
+      "range": [
+        "0x210000",
+        "0x240000"
+      ],
+      "bytes": 196608
+    },
+    "slotB": {
+      "range": [
+        "0x240000",
+        "0x270000"
+      ],
+      "bytes": 196608
+    },
+    "unusedGapBeforeSlotABytes": 34240,
+    "headroomAfterSlotBBytes": 5898240
+  },
+  "module": {
+    "format": "elf32-xtensa-le",
+    "deterministicBuilds": 2,
+    "runtimeStorageBytes": 4096,
+    "minimumHeapBytes": 65536,
+    "externalWritableStorageOnly": true,
+    "publicAbi": {
+      "version": 3,
+      "sha256": "ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb",
+      "wordEncoding": "digest bytes stored unchanged as eight little-endian u32 words",
+      "upstreamCommit": "203d5bb79789bc47b74855d9207415dab71661a0",
+      "generatedStdlibSha256": "0b6ed1dd634306b21d08ad68616968a9924624b4b05c69ab6cd6c11b88fac8c8",
+      "sdkPackageAbi": {
+        "version": 1,
+        "sha256": "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
+        "source": "f1-widget-sdk/src/render-v2/mquickjs.mjs"
+      },
+      "exports": [
+        "probe",
+        "init",
+        "load",
+        "dispatch",
+        "input_enqueue",
+        "input_request_release_all",
+        "input_request_focus_release",
+        "input_drain",
+        "input_get_observation",
+        "get_telemetry",
+        "get_last_good_slots",
+        "destroy"
+      ]
+    },
+    "text": {
+      "paddr": "0x210000",
+      "vaddr": "0x423d0000",
+      "usedBytes": 68172,
+      "capacityBytes": 131072,
+      "prefetchGuardBytes": 62900,
+      "guardFill": "zero",
+      "paddedSha256": "7b1f55fc50f1de913a27d533aef63adb6f9fee8e12be083661ccd8f40e7f34ca",
+      "residentSha256Admission": true
+    },
+    "rodata": {
+      "paddr": "0x230000",
+      "vaddr": "0x3c3f0000",
+      "usedBytes": 10776,
+      "capacityBytes": 65536,
+      "guardBytes": 54760,
+      "guardFill": "zero",
+      "paddedSha256": "a9ece5ee4915cab62970d448d83f11ebb81d850c289ad9b76e28bc7b9fb02953",
+      "residentSha256Admission": true
+    },
+    "relocations": 0,
+    "undefinedSymbols": 0,
+    "dataBytes": 0,
+    "bssBytes": 0
+  },
+  "residentLoader": {
+    "vaddr": "0x4211e460",
+    "usedBytes": 1956,
+    "capacityBytes": 6840,
+    "remainingBridgeBytes": 4884,
+    "sha256": "c62464094b5a5e60905c0179c598d476d4286789323bcc88d2a1f3d9e55ced7a",
+    "relocations": 0,
+    "undefinedSymbols": 0,
+    "rodataBytes": 0,
+    "dataBytes": 0,
+    "bssBytes": 0,
+    "integrity": "resident SHA-256 of both complete padded mappings plus host SHA-256/esptool readback",
+    "integrityScope": "fail-closed byte identity relative to the pinned loader-enabled app; not publisher authenticity or resistance to an attacker who can rewrite app flash (secure boot and flash encryption are off)",
+    "sha256Kat": "resident SHA-256 KAT/pages/tamper + unmap fail-close: PASS",
+    "capabilityGate": "do not advertise mquickjs until map, descriptor, probe, VM init, and task/mailbox startup all succeed",
+    "teardown": "unmap returns failure; caller records telemetry and disables the capability"
+  },
+  "buildToolchain": {
+    "compiler": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/xtensa-esp32s3-elf-gcc",
+    "compilerOverride": false,
+    "identity": "xtensa-esp-elf-gcc (crosstool-NG esp-13.2.0_20240530) 13.2.0",
+    "expectedIdentity": "xtensa-esp-elf-gcc (crosstool-NG esp-13.2.0_20240530) 13.2.0"
+  },
+  "runtimeArchitectureRequiredForHardwareCanary": {
+    "vmTask": "dedicated 12,288-byte internal fixed stack; sole engine/runtime owner",
+    "eventIngress": "bounded producer queue; no parser/GC on LVGL callback stack",
+    "inputDrainBounds": {
+      "queueRecords": 32,
+      "consumedRecordsPerBatch": 4,
+      "coalescedHoldsPerBatch": 2,
+      "pendingEventCapacity": 64,
+      "maxEventAttemptsPerOwnerCall": 3,
+      "maxResyncEvents": 18,
+      "maxLogicalEventsPerBatch": 62,
+      "maxJsCallbacksPerOwnerCall": 3,
+      "maxFailedCallbacksPerOwnerCall": 1,
+      "maxRecoveriesPerOwnerCall": 1,
+      "stopOnFirstCallbackFailure": true,
+      "successfulCallbackSliceUs": 6000,
+      "worstFailureRecoverySliceUs": 8000,
+      "yieldOnMorePendingRequired": true
+    },
+    "apply": "72-byte single-writer seqlock target: atomic u32 sequence + 16 int32 slots + u32 admitted revision",
+    "uiTick": "consume latest complete mailbox revision and apply through existing F2EP bindings",
+    "source": "8,192 UTF-8 bytes plus readable NUL, caller-owned and immutable; exact required prefix is \"use strict\";\\n",
+    "runtimeStorage": "4,096 bytes, caller-owned, 8-byte aligned",
+    "heap": "65,536-byte fixed caller allocation, prefer PSRAM; never access while flash cache is disabled",
+    "deadlineUs": 2000,
+    "recovery": "retain last-good state; first callback failure stops the owner call after one bounded recovery, leaves later FIFO snapshots queued, and requires a scheduler yield before retry; watchdog remains armed",
+    "mappingSerialization": "map before VM allocation/task start; stop/quiesce/destroy task before unmap or flash update",
+    "stockMapAllocationGate": "measure/reserve internal heap before first map and log pre/post free/largest block; ESP-IDF v5.3.2 first-map allocation failure may leave TAILQ state unsafe, so disable capability and reboot/rollback without an in-boot retry on any map allocation failure"
+  },
+  "integrationGapsBlockingPhysicalRuntimeProof": [
+    "resident F2JS parser/integrity+profile admission adapter for SDK package ABI v1: exact raw-byte F2JS/F1WB/F1RA magic; high-bit target-ID rejection before text conversion; canonical UTF-8 one-slot F1WB name; zero slot-name padding [104+nameLength,120); bounds, resealed hashes, and profile checks; package SHA alone is not authenticity",
+    "real resident trampoline/startup bridge re-link at accepted chain tail 0x42118cdd after preserved ID26/27 registration",
+    "exact stock heap_caps/static-task/key-hook ABIs and lifecycle bridge",
+    "measured internal-heap reserve for esp_mmu_map metadata plus pre/post telemetry and no-retry reboot policy on map allocation failure",
+    "linked/tested 72-byte mailbox consumer into existing F2EP renderer",
+    "physical PSRAM heap, 12 KiB stack high-water, 2 ms deadline, OOM/timeout recovery and soak receipts"
+  ],
+  "packaging": {
+    "currentArtifactSelects": "slot A via compile-time paddr 0x210000; slot B use requires a deterministic resident-loader relink and a new loader-enabled app SHA",
+    "selectorPolicy": "no mutable/dynamic slot selector in the resident loader; paddr and both full-page digests are compile-time pins",
+    "update": [
+      "write and readback-verify inactive 192 KiB module slot",
+      "relink the resident loader if the selected slot paddr changes",
+      "write loader-enabled app last",
+      "reboot and require exact capability/SHA receipt"
+    ],
+    "rollback": [
+      "write healthy 36317013 app first so no module is referenced",
+      "module slots may then be left inert or erased independently"
+    ],
+    "partialWritePolicy": "never select a slot until both padded pages match the pinned digests"
+  }
+}

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Weather widget</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="toolbar">
+      <strong>Weather widget</strong>
+      <span id="compiler-status">Compiler: checking…</span>
+      <button id="connect-keyboard" type="button">Connect keyboard</button>
+      <button id="apply-widget" class="primary" type="button" disabled>Apply to ID26</button>
+    </header>
+    <main>
+      <section class="configuration" aria-label="Weather configuration">
+        <form id="weather-form">
+          <label for="postal-code">ZIP code</label>
+          <input id="postal-code" name="postalCode" inputmode="numeric" autocomplete="postal-code"
+            pattern="[0-9]{5}(-[0-9]{4})?" maxlength="10" required value="60601">
+
+          <label for="units">Temperature</label>
+          <select id="units" name="units">
+            <option value="fahrenheit">Fahrenheit</option>
+            <option value="celsius">Celsius</option>
+          </select>
+
+          <label for="refresh-minutes">Refresh</label>
+          <select id="refresh-minutes" name="refreshMinutes">
+            <option value="15">Every 15 minutes</option>
+            <option value="30" selected>Every 30 minutes</option>
+            <option value="60">Every hour</option>
+            <option value="120">Every 2 hours</option>
+          </select>
+
+          <button id="refresh-weather" type="submit">Refresh weather</button>
+        </form>
+
+        <output id="weather-status" role="status" aria-live="polite">Waiting for weather.</output>
+        <dl id="weather-values" aria-label="Normalized weather values"></dl>
+        <p class="note">Weather is fetched on this host. The keyboard receives only bounded RGB565 and event data.
+          Automatic refresh updates the preview; device Apply remains explicit.</p>
+      </section>
+
+      <section class="preview-column" aria-label="Device preview">
+        <div class="device-frame">
+          <canvas id="device-preview" width="100" height="310" hidden></canvas>
+          <iframe id="browser-preview" title="Weather widget browser preview" sandbox></iframe>
+        </div>
+        <output id="package-status">No package compiled.</output>
+      </section>
+    </main>
+    <script type="module" src="app.mjs"></script>
+  </body>
+</html>

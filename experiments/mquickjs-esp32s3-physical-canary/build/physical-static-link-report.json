@@ -1,0 +1,97 @@
+{
+  "format": "framer-f1-mquickjs-physical-static-link-report-v1",
+  "status": "STATIC_LINK_GO_PENDING_INDEPENDENT_AUDIT",
+  "verdict": "GO",
+  "verdictScope": "DETERMINISTIC_STATIC_LINK_ONLY",
+  "overallPhysicalVerdict": "NO_GO_PENDING_INDEPENDENT_AUDIT_AND_GUARDED_HARDWARE",
+  "deployable": false,
+  "hardwareTouched": false,
+  "flashCommandGenerated": false,
+  "candidateAppSha256": "d6c5ce7515b24d8a5cdd4329ba5574e65b6b6924b96a83bb3533dfae8c74ed01",
+  "moduleTextSha256": "c450cf986c64d198c404bd58475fdd0716be9fa112759afeec4aa3498041d466",
+  "moduleRodataSha256": "c0c35356dcec4b036a13bba8cab9c7d39df9f5fe4a78e7a589da5706ca1110df",
+  "moduleSlotSha256": "a8753bd2ff891d9779a04fa5aa4c249c1959883dd7559d76d1e71245fa2c7204",
+  "loaderSha256": "ee5d2b743e1765c3dad6cbcf4350bd9a6aa3df77f4f12477b02226e502e88a6b",
+  "telemetrySnapshotProtocol": "p0-locks-snapshot-ordered-p1-p5-expiry-clear-v1",
+  "uiLatencyMetric": "id28-full-proxy-tick-oldtick-base-lzss-f2tf-publish-us-v1",
+  "allocationMapOrdering": "internal-block-before-first-mmu-map-adopt-or-rollback-v1",
+  "keyNegativeHarness": "low24-e5-observed-never-mapped-pass-v1",
+  "keyTokenNormalization": "raw-low24-after-stock-first-v1",
+  "mappings": [
+    {
+      "logical": 0,
+      "nativeToken": 44
+    },
+    {
+      "logical": 1,
+      "nativeToken": 225
+    }
+  ],
+  "chordHeldMask": 3,
+  "rejectedLow24Tokens": [
+    229
+  ],
+  "canonicalWeather": {
+    "sourceSha256": "68db9d61fa38b0a396e46e88076d75d262a486f2ec4b41b4d398454d7d713e9b",
+    "packageSha256": "88537026c8b217b763c393b82d8787ca08256681265976f7bcff6077b2282d20",
+    "recovery": "rev7-timeout-benign-oom-benign-preserved-then-monotonic-rev8-pass-v1"
+  },
+  "canaryEngineSourceSha256": "f634d62094e6c3d08f7d6cf1975edf9afa5b9f53799599014a9a2ac3d09e1c19",
+  "focusReleaseContract": "combined-key-and-fn-wrapper-barrier-nonterminal-owner-drain-reentry-v1",
+  "taggedCompletionContract": "completion-fields-coherent-telemetry-then-terminal-receipt-release-last-v1",
+  "lifecycleRootContract": "registration-owns-registry-plus20-base-slot0-owns-internal-root-plus12-v1",
+  "files": {
+    "candidateApp": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build/framer-0.4.1-mqjs-id28-canary-NO-GO-app.bin",
+      "bytes": 2062912,
+      "sha256": "d6c5ce7515b24d8a5cdd4329ba5574e65b6b6924b96a83bb3533dfae8c74ed01"
+    },
+    "moduleText": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build/mqjs-id28-text-page.bin",
+      "bytes": 131072,
+      "sha256": "c450cf986c64d198c404bd58475fdd0716be9fa112759afeec4aa3498041d466"
+    },
+    "moduleRodata": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build/mqjs-id28-rodata-page.bin",
+      "bytes": 65536,
+      "sha256": "c0c35356dcec4b036a13bba8cab9c7d39df9f5fe4a78e7a589da5706ca1110df"
+    },
+    "moduleSlot": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build/mqjs-id28-slot-a.bin",
+      "bytes": 196608,
+      "sha256": "a8753bd2ff891d9779a04fa5aa4c249c1959883dd7559d76d1e71245fa2c7204",
+      "semantics": "sha256(text[0x210000,0x230000)+rodata[0x230000,0x240000))"
+    },
+    "loader": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build/mqjs-id28-resident-loader.bin",
+      "bytes": 2696,
+      "sha256": "ee5d2b743e1765c3dad6cbcf4350bd9a6aa3df77f4f12477b02226e502e88a6b"
+    },
+    "detailedManifest": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build/physical-link-manifest.json",
+      "bytes": 31264,
+      "sha256": "f25518f0023788eaae64ddb7c3cfcb25d0dd1fdc514b952b05c4cd3e9ad4f69b"
+    },
+    "verifierOutput": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build/verify-output.json",
+      "bytes": 7883,
+      "sha256": "4623df690aa8248caa420c7050c91ed2189d9b7d44c6b14b3e095c164a667b0e"
+    },
+    "keyTokenProof": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build/key-token-proof.json",
+      "bytes": 4817,
+      "sha256": "2ea3289702fc4608518aa40157cf1a89915ac358d44ec137526f9ae0ea228b39"
+    }
+  },
+  "binaryFreeze": {
+    "candidateModuleLoaderChangedByThisReport": false,
+    "candidateAppSha256": "d6c5ce7515b24d8a5cdd4329ba5574e65b6b6924b96a83bb3533dfae8c74ed01",
+    "moduleSlotSha256": "a8753bd2ff891d9779a04fa5aa4c249c1959883dd7559d76d1e71245fa2c7204",
+    "loaderSha256": "ee5d2b743e1765c3dad6cbcf4350bd9a6aa3df77f4f12477b02226e502e88a6b"
+  },
+  "gatesRemaining": [
+    "independent audit must issue exact framer-f1-mquickjs-physical-link-audit-v1 GO over this report and key proof",
+    "workflow approval must be generated and validated before any write",
+    "guarded physical RAM/RPC/key/fault/UI-latency/rollback/soak receipts remain mandatory"
+  ]
+}

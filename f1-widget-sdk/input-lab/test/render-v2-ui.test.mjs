@@ -5,9 +5,11 @@ import test from "node:test";
 
 import { BrowserKeyRpcBridge, isEditableKeyboardTarget,
   normalizeKeyboardRpcConfig } from "../lib/browser-key-rpc.mjs";
+import { BrowserKeyRpcDelivery } from "../lib/browser-key-rpc-delivery.mjs";
 import { appendRenderV2PreviewEvent, createRenderV2ApiSource, createRenderV2PreviewEvent,
   decodeRenderV2Frame, INPUT_LAB_RENDER_V2_MAX_EVENTS, parseRenderV2HostRpcId,
   renderV2FrameToRgba } from "../lib/render-v2-browser.mjs";
+import { RenderV2OperationGate } from "../lib/render-v2-operations.mjs";
 
 const root = path.resolve(import.meta.dirname, "..");
 
@@ -38,7 +40,11 @@ test("Render v2 browser events are canonical, int32-bounded, and replay-capped",
     createRenderV2PreviewEvent({ kind: "tick.100ms", sequence: index + 1 }));
   assert.throws(() => appendRenderV2PreviewEvent(events,
     createRenderV2PreviewEvent({ kind: "tick.1s", sequence: 65 })), /reset/u);
-  assert.equal(createRenderV2ApiSource({ html: "h", css: "c", script: "s" }, events).events.length, 64);
+  const source = createRenderV2ApiSource({ html: "h", css: "c", script: "s", mode: "raster" }, events);
+  assert.equal(source.events.length, 64);
+  assert.equal(source.renderMode, "raster");
+  assert.throws(() => createRenderV2ApiSource({ html: "h", css: "c", script: "s", mode: "dynamic" }),
+    /mode must be/u);
 });
 
 test("Render v2 RGB565 preview decodes the exact native 100x310 frame", () => {
@@ -79,7 +85,112 @@ test("focused browser key bridge serializes down/up as host RPC levels and synth
     { value: 1, reason: "keydown", synthetic: false },
     { value: 0, reason: "blur", synthetic: true },
   ]);
+  bridge.handleKeyDown(keyEvent("Space"));
+  windowTarget.dispatch("blur");
+  await bridge.tail;
+  assert.deepEqual(events.slice(-2).map(({ value, reason, synthetic }) => ({ value, reason, synthetic })), [
+    { value: 1, reason: "keydown", synthetic: false },
+    { value: 0, reason: "window-blur", synthetic: true },
+  ]);
   await bridge.destroy();
+});
+
+test("a forwarded key-down receives exactly one device zero when source invalidation precedes window blur", async () => {
+  const calls = [];
+  const client = { async sendRenderV2HostEvent(id, value) { calls.push({ id, value }); } };
+  let sourceRevision = 1;
+  const delivery = new BrowserKeyRpcDelivery({
+    getTarget: () => ({ client, capability: { committedGeneration: 4 } }),
+    async dispatchPreview(payload) {
+      if (sourceRevision !== 1) throw Object.assign(new Error("stale preview"),
+        { code: "RENDER_V2_STALE_OPERATION" });
+      return { forwarded: payload.value === 1 };
+    },
+  });
+  const pad = new FakeTarget();
+  const documentTarget = new FakeTarget();
+  documentTarget.visibilityState = "visible";
+  const windowTarget = new FakeTarget();
+  const deliveries = [];
+  const bridge = new BrowserKeyRpcBridge({ element: pad, documentTarget, windowTarget,
+    getConfig: () => ({ code: "Space", rpcId: "0xB201" }),
+    onEvent: async (payload) => { deliveries.push(await delivery.deliver(payload)); } });
+  bridge.handleKeyDown(keyEvent("Space"));
+  await bridge.tail;
+  sourceRevision += 1;
+  windowTarget.dispatch("blur");
+  await bridge.tail;
+  const released = deliveries.at(-1);
+  assert.equal(released.cleanupFallback, true);
+  assert.equal(released.previewError.code, "RENDER_V2_STALE_OPERATION");
+  assert.deepEqual(calls, [{ id: 0xb201, value: 0 }]);
+  windowTarget.dispatch("blur");
+  await bridge.tail;
+  assert.equal(calls.length, 1, "cleanup is single-shot after the active level is cleared");
+  await bridge.destroy();
+});
+
+test("a post-ACK stale key-down still records the exact device session for zero cleanup", async () => {
+  const calls = [];
+  let acknowledgeDown;
+  let signalDown;
+  const downAcknowledged = new Promise((resolve) => { acknowledgeDown = resolve; });
+  const downStarted = new Promise((resolve) => { signalDown = resolve; });
+  const capability = Object.freeze({ committedGeneration: 9,
+    renderV2Profile: "framer-f1-render-v2-structural-v1" });
+  const client = { async sendRenderV2HostEvent(id, value) {
+    calls.push({ id, value });
+    if (value === 1) { signalDown(); await downAcknowledged; }
+  } };
+  let stale = false;
+  const delivery = new BrowserKeyRpcDelivery({
+    getTarget: () => ({ client, capability }),
+    async dispatchPreview(payload) {
+      if (stale && payload.value === 0) throw Object.assign(new Error("stale before release forwarding"),
+        { code: "RENDER_V2_STALE_OPERATION" });
+      await client.sendRenderV2HostEvent(payload.id, payload.value);
+      if (stale) throw Object.assign(new Error("stale after device ACK"),
+        { code: "RENDER_V2_STALE_OPERATION" });
+      return { forwarded: true };
+    },
+  });
+  const down = delivery.deliver({ id: 0xb201, value: 1 });
+  await downStarted;
+  stale = true;
+  acknowledgeDown();
+  await assert.rejects(down, { code: "RENDER_V2_STALE_OPERATION" });
+  const released = await delivery.deliver({ id: 0xb201, value: 0 });
+  assert.equal(released.cleanupFallback, true);
+  assert.equal(released.previewError.code, "RENDER_V2_STALE_OPERATION");
+  assert.deepEqual(calls, [{ id: 0xb201, value: 1 }, { id: 0xb201, value: 0 }]);
+});
+
+test("Render v2 operation gate serializes work and rejects deferred stale results", async () => {
+  let releaseFirst;
+  const firstDeferred = new Promise((resolve) => { releaseFirst = resolve; });
+  const busy = [];
+  const invoked = [];
+  const gate = new RenderV2OperationGate({ onBusyChange: (value) => busy.push(value) });
+  const first = gate.run("compile", async () => { invoked.push("compile"); await firstDeferred; return "old"; });
+  const second = gate.run("simulate", async () => { invoked.push("simulate"); return "never"; });
+  const firstRejected = assert.rejects(first, { code: "RENDER_V2_STALE_OPERATION" });
+  const secondRejected = assert.rejects(second, { code: "RENDER_V2_STALE_OPERATION" });
+  await Promise.resolve();
+  gate.invalidate("source changed");
+  releaseFirst();
+  await Promise.all([firstRejected, secondRejected, gate.idle()]);
+  assert.deepEqual(invoked, ["compile"], "queued stale work must not call the compiler or device");
+  assert.deepEqual(busy, [true, false]);
+
+  let active = 0; let maximum = 0;
+  const order = [];
+  const run = (name) => gate.run(name, async () => {
+    active += 1; maximum = Math.max(maximum, active); order.push(`${name}:start`);
+    await Promise.resolve(); order.push(`${name}:end`); active -= 1; return name;
+  });
+  assert.deepEqual(await Promise.all([run("apply"), run("host-rpc")]), ["apply", "host-rpc"]);
+  assert.equal(maximum, 1);
+  assert.deepEqual(order, ["apply:start", "apply:end", "host-rpc:start", "host-rpc:end"]);
 });
 
 test("keyboard bridge configuration is bounded and editable event targets are ignored", () => {
@@ -108,4 +219,3 @@ test("Input Lab exposes bounded V2 authoring, preview events, active ID26 Push, 
   assert.match(app, /sendRenderV2HostEvent/u);
   assert.doesNotMatch(app, /kind:\s*"input\.key"/u);
 });
-

@@ -66,7 +66,9 @@ test("hosted Apply requires both the compiler and WebHID and has no bridge overr
     readFile(path.join(sdkRoot, "input-lab/app.mjs"), "utf8"),
   ]);
   assert.match(html, /Compiler: checking/u);
-  assert.match(app, /elements\.apply\.disabled = value \|\| !bridge \|\| !browserDevice/u);
+  assert.match(app, /elements\.apply\.disabled =[\s\S]{0,200}!bridge \|\| !browserDevice/u);
+  assert.match(app, /renderV2Busy \|\| keyPressed/u,
+    "serialized V2 work and a held browser key must also keep Apply disabled");
   assert.doesNotMatch(app, /bridgeAllowsPush|URLSearchParams|\/api\/apply/u);
   const compileBundle = app.indexOf('request("/api/bundle"');
   const browserPush = app.indexOf("browserDevice.pushBundle", compileBundle);

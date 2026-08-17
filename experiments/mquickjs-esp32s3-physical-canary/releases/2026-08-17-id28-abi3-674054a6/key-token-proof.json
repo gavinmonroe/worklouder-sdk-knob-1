@@ -1,0 +1,120 @@
+{
+  "format": "framer-f1-mquickjs-key-token-proof-v1",
+  "status": "EXACT_TOKEN_MAP_PROVEN",
+  "scope": "ACCEPTED_APP_STATIC_DISASSEMBLY_PLUS_FROZEN_CANDIDATE_HOST_HARNESS",
+  "acceptedAppSha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
+  "callbackSpanSha256": "96316a9091816bf7290c75ebe6be76e4ed184ee13fdef6c50b77e791b5ecfa2b",
+  "callbackLiteralSha256": "3d5174006fa28e9caeef531cbcdec7bd1d552b0ab7ad1d4f4a8d30c44c0e1dda",
+  "spaceInstructionSha256": "5c992029c86fe57f2685b6b68b6ef2595fe23ab0a8762dd991fbe7f42a256eb1",
+  "leftShiftInstructionSha256": "8f30bf1c859978bd464ef0b87aa50943697c88b4ecd31f11233116db2926356d",
+  "keyTokenNormalization": "raw-low24-after-stock-first-v1",
+  "keyNegativeHarness": "low24-e5-observed-never-mapped-pass-v1",
+  "mappings": [
+    {
+      "logical": 0,
+      "nativeToken": 44
+    },
+    {
+      "logical": 1,
+      "nativeToken": 225
+    }
+  ],
+  "chordHeldMask": 3,
+  "rejectedLow24Tokens": [
+    229
+  ],
+  "postFlashObservationRequired": true,
+  "postFlashObservationStatus": "REQUIRED_NOT_PERFORMED",
+  "dispatchAdmission": "keyEvents remains false until exact 44 and 225 down+up observations while ID28 is foreground; all discovery edges are observation-only",
+  "acceptedAppEvidence": {
+    "callback": {
+      "start": "0x4206eae0",
+      "end": "0x4206eb48",
+      "bytes": 104,
+      "hex": "3641009803b2040090887580a911808801c802a0a841fce8ac8b2cc890d074879a1e820c3ca79807d24c3c860d000000821c1fd24c3c1b88825c1f860900000000d24c3ca18b4a82a0e1a09910879914b24c45860300000091854a9a88cc48661a02b24c441df000",
+      "sha256": "96316a9091816bf7290c75ebe6be76e4ed184ee13fdef6c50b77e791b5ecfa2b"
+    },
+    "callbackLiteral": {
+      "start": "0x42041568",
+      "end": "0x4204156c",
+      "bytes": 4,
+      "hex": "e0ea0642",
+      "sha256": "3d5174006fa28e9caeef531cbcdec7bd1d552b0ab7ad1d4f4a8d30c44c0e1dda"
+    },
+    "shiftMaskLiteral": {
+      "start": "0x42041550",
+      "end": "0x42041554",
+      "bytes": 4,
+      "hex": "fbffff00",
+      "sha256": "6633cfb1c776a95202ce8dd8b6860a41b35686e615252e728f381fe985bd88a9"
+    },
+    "low24Extraction": {
+      "start": "0x4206eaeb",
+      "end": "0x4206eaf8",
+      "bytes": 13,
+      "hex": "80a911808801c802a0a841fce8",
+      "sha256": "c4af05e26202a7ce8c77c75feac39c027fa7a993961b22e02ae96c00606693e3"
+    },
+    "spaceCompare": {
+      "start": "0x4206eafa",
+      "end": "0x4206eb02",
+      "bytes": 8,
+      "hex": "2cc890d074879a1e",
+      "sha256": "5c992029c86fe57f2685b6b68b6ef2595fe23ab0a8762dd991fbe7f42a256eb1"
+    },
+    "leftShiftCompare": {
+      "start": "0x4206eb24",
+      "end": "0x4206eb30",
+      "bytes": 12,
+      "hex": "a18b4a82a0e1a09910879914",
+      "sha256": "8f30bf1c859978bd464ef0b87aa50943697c88b4ecd31f11233116db2926356d"
+    },
+    "disassembly": {
+      "tool": ".toolchains/xtensa-esp-elf-13.2.0_20240530/bin/xtensa-esp32s3-elf-objdump",
+      "assertions": [
+        "movi.n a8,44 then bne a10,a8",
+        "mask load then movi a8,225, and, bne"
+      ]
+    },
+    "interpretation": "Stock handles the original raw token first. Candidate ingress strips only high8 category. It does not apply stock's 0x00fffffb shift mask; exact low24 229 therefore remains unmapped and cannot alias logical LeftShift 225 in JavaScript."
+  },
+  "candidateHarnessEvidence": {
+    "keyTokenNormalization": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/key_token.h",
+      "sha256": "21a329163d9ba9bb023c2e3f708462840e4623447f18241f3a5e924d0358271f",
+      "vectors": [
+        {
+          "raw": "0xab00002c",
+          "low24": 44
+        },
+        {
+          "raw": "0xcd0000e1",
+          "low24": 225
+        },
+        {
+          "raw": "0xcd0000e5",
+          "low24": 229
+        }
+      ]
+    },
+    "stockFirstWrapper": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/key_wrapper.c",
+      "sha256": "7ed1dde267c45a1ffa91e9ebd54d6becc5238d88b60fec6c66622e716ca8831c"
+    },
+    "discoveryGate": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/key_gate.h",
+      "sha256": "2cc044cbb2cd0f63bdbc73882033bc26a1e488c33c89f078af6456ddf411e22c",
+      "result": "PASS_FOUR_DISCOVERY_EDGES_ZERO_DISPATCH_FIFTH_SPACE_DOWN_FIRST_DISPATCH"
+    },
+    "negativeHarness": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/physical_host_harness.c",
+      "sha256": "a4b742e783c26c5d84d1adabc477d65b123243cfdaf7141c9ce765eec4b078f8",
+      "contract": "low24-e5-observed-never-mapped-pass-v1",
+      "result": "PASS_E5_OBSERVATION_INCREMENTED_WITH_ZERO_MAP_OR_JS_DISPATCH"
+    }
+  },
+  "limitations": [
+    "Static proof does not assert that the physical key transport emits these tokens on this keyboard.",
+    "A guarded post-flash foreground-ID28 observation receipt is mandatory before keyEvents may advertise true."
+  ]
+}

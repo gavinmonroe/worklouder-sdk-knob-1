@@ -171,7 +171,7 @@ sudo /www/server/nginx/sbin/nginx -t
 sudo /www/server/nginx/sbin/nginx -s reload
 ```
 
-Do not create an aaPanel reverse proxy for `/`; the static app stays in the existing site root. Only the four exact API routes are proxied. `/api/apply` and every unknown `/api/*` path fail closed at Nginx. No CORS configuration is needed because the client uses its own HTTPS origin.
+Do not create an aaPanel reverse proxy for `/`; the static app stays in the existing site root. Only the six exact API routes are proxied, including Render-v2 compile and simulation. `/api/apply` and every unknown `/api/*` path fail closed at Nginx. No CORS configuration is needed because the client uses its own HTTPS origin.
 
 The site template also supplies CSP, `Permissions-Policy: hid=(self), serial=(self)`, clickjacking/referrer/MIME protections, and same-origin opener/resource policies. The existing aaPanel SSL vhost already supplies HSTS.
 

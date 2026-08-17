@@ -1,0 +1,303 @@
+{
+  "format": "framer-render-v2-mquickjs-offline-readiness-v2",
+  "status": "PASS_STATIC_ONLY_NOT_FLASHABLE",
+  "physicalVerdict": "NOT_FLASHABLE",
+  "hardwareRuntimeProven": false,
+  "deviceRunsJsdom": false,
+  "flashCommandGenerated": false,
+  "sdk": {
+    "profileId": "framer-f1-render-v2-mquickjs-v1",
+    "packageFormat": "framer-render-v2-mquickjs-package-v1",
+    "packageAbiSha256": "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
+    "engineCommit": "203d5bb79789bc47b74855d9207415dab71661a0"
+  },
+  "engine": {
+    "status": "PASS_MQUICKJS_HOST_AND_XTENSA_STATIC_CANARY",
+    "sourceSha256": "f634d62094e6c3d08f7d6cf1975edf9afa5b9f53799599014a9a2ac3d09e1c19",
+    "targetRawSha256": "74a4416f9ceced9e5f5785637dc839d010f0dde58856330ec747803c55e18c1c",
+    "fixedHeapBytes": 65536,
+    "runtimeStorageBytes": 4096,
+    "movingGcAsan": "PASS",
+    "hardwareRuntimeProven": false
+  },
+  "examples": {
+    "keyChordKnob": {
+      "manifest": {
+        "file": "f1-widget-sdk/examples/render-v2-mquickjs-canary/build/manifest.json",
+        "bytes": 665,
+        "sha256": "f7b1f026167cd18d9184bebd5d60069ac518d539047fd319e6ae9e78007b9cd2"
+      },
+      "file": "experiments/mquickjs-canary-bundle/build/key-chord-knob-canary.f2js",
+      "generation": 1,
+      "bytes": 1576,
+      "sha256": "68a53cd4300cdfe5f8c22071f0488046f6e21a11ee9054e162bfd74b0ae8fdb9",
+      "sourceSha256": "fc6b426f49579872eb6f961f141863aecd078f187809459e0c56743d02039fe9",
+      "syntheticNativeTokens": true,
+      "hardwareRuntimeProven": false
+    },
+    "weather": {
+      "manifest": {
+        "file": "f1-widget-sdk/examples/render-v2-mquickjs-weather-canary/build/manifest.json",
+        "bytes": 6749,
+        "sha256": "62a580eb3273e840764c285d6c899b60a3dbfe03a3ebdc8c0a387e906abbf2bb"
+      },
+      "file": "experiments/mquickjs-canary-bundle/build/weather-60601.f2js",
+      "generation": 18,
+      "bytes": 68856,
+      "sha256": "88537026c8b217b763c393b82d8787ca08256681265976f7bcff6077b2282d20",
+      "sourceSha256": "68db9d61fa38b0a396e46e88076d75d262a486f2ec4b41b4d398454d7d713e9b",
+      "hostRpcIds": [
+        45632,
+        45633,
+        45634,
+        45635,
+        45636,
+        45645,
+        45646,
+        45647
+      ],
+      "tickEvent": "tick.1s",
+      "targetCount": 16,
+      "normalHeapHighWaterBytes": 61496,
+      "heapHeadroomBytes": 4040,
+      "providerBoundary": "host-only ZIP lookup; deterministic no-network provider used for this proof",
+      "pushAllowed": false,
+      "hardwareRuntimeProven": false
+    }
+  },
+  "loader": {
+    "manifest": {
+      "file": "experiments/mquickjs-esp32s3-module-loader/build/module-loader-manifest.json",
+      "bytes": 10750,
+      "sha256": "a11894abc016838a975da3492935d2ddc7d953c72f44a1efda4ccf86cf155282"
+    },
+    "publicAbiSha256": "ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb",
+    "text": {
+      "paddr": "0x210000",
+      "vaddr": "0x423d0000",
+      "usedBytes": 68172,
+      "capacityBytes": 131072,
+      "prefetchGuardBytes": 62900,
+      "guardFill": "zero",
+      "paddedSha256": "7b1f55fc50f1de913a27d533aef63adb6f9fee8e12be083661ccd8f40e7f34ca",
+      "residentSha256Admission": true
+    },
+    "rodata": {
+      "paddr": "0x230000",
+      "vaddr": "0x3c3f0000",
+      "usedBytes": 10776,
+      "capacityBytes": 65536,
+      "guardBytes": 54760,
+      "guardFill": "zero",
+      "paddedSha256": "a9ece5ee4915cab62970d448d83f11ebb81d850c289ad9b76e28bc7b9fb02953",
+      "residentSha256Admission": true
+    },
+    "slotA": {
+      "file": "experiments/mquickjs-esp32s3-module-loader/build/module-slot-a.bin",
+      "bytes": 196608,
+      "sha256": "19af5c69abec631aecc2868624d629ad1230061052fda0b3d63e1d2ab1241d72"
+    },
+    "residentLoader": {
+      "vaddr": "0x4211e460",
+      "usedBytes": 1956,
+      "capacityBytes": 6840,
+      "remainingBridgeBytes": 4884,
+      "sha256": "c62464094b5a5e60905c0179c598d476d4286789323bcc88d2a1f3d9e55ced7a",
+      "relocations": 0,
+      "undefinedSymbols": 0,
+      "rodataBytes": 0,
+      "dataBytes": 0,
+      "bssBytes": 0,
+      "integrity": "resident SHA-256 of both complete padded mappings plus host SHA-256/esptool readback",
+      "integrityScope": "fail-closed byte identity relative to the pinned loader-enabled app; not publisher authenticity or resistance to an attacker who can rewrite app flash (secure boot and flash encryption are off)",
+      "sha256Kat": "resident SHA-256 KAT/pages/tamper + unmap fail-close: PASS",
+      "capabilityGate": "do not advertise mquickjs until map, descriptor, probe, VM init, and task/mailbox startup all succeed",
+      "teardown": "unmap returns failure; caller records telemetry and disables the capability"
+    },
+    "hardwareRuntimeProven": false
+  },
+  "resident": {
+    "manifest": {
+      "file": "experiments/mquickjs-esp32s3-resident-integration/build/resident-integration-manifest.json",
+      "bytes": 8246,
+      "sha256": "6fb1a0782973ceb51d0853816a173dda4b02ec2b64036a55f74a7f9558b71d28"
+    },
+    "status": "PASS_HOST_XTENSA_RESIDENT_CORE_NO_GO_PHYSICAL_STOCK_BRIDGE",
+    "xtensaCore": {
+      "file": "experiments/mquickjs-esp32s3-resident-integration/build/resident-integration-core.o",
+      "bytes": 52384,
+      "sha256": "426c21185c418b758427335a5743c96415c06d68ed3a7112b8b30a9b73fccd21"
+    },
+    "admission": {
+      "result": "PASS",
+      "cases": 1205,
+      "corpusBytes": 33283948,
+      "corpusSha256": "747012323dee6fb15f9999888efb75bd5b10cfdebfa2541182285d620a3c3f2b",
+      "sourceOwnership": "fixed framer_f2js_admission storage outside VM task stack",
+      "rasterOwnership": "validated F1WB atomically copied by platform stage callback before advertise",
+      "packageSha256": "9771d3dd82fe13b5867f578421eaa488fad51a8de989561fd0a26c7114d7f570",
+      "rasterPackageSha256": "ea67ff45d59cbc2892bf7da71a37a06a06371c8a1a70a2080f6225be2062d3d3"
+    },
+    "mailbox": {
+      "result": "PASS",
+      "bytes": 72,
+      "slots": 16,
+      "algorithm": "single-writer odd/even seqlock with atomic u32 payload accesses",
+      "threadedTornReadTest": "PASS"
+    },
+    "owner": {
+      "result": "PASS_HOST_ARCHITECTURE",
+      "stackBytes": 12288,
+      "runtimeBytes": 4096,
+      "heapBytes": 65536,
+      "heapPlacement": "PSRAM",
+      "admissionPlacement": "fixed owner storage, never automatic VM-task storage",
+      "fairness": "alternating native drain and admitted ordinary event",
+      "inputProgress": "platform timer invokes poll-due; cooperative <=20ms while held",
+      "eventIngress": "declared builtins plus typed declared host RPC only; every wrapper supplies its captured generation",
+      "ingressBarrier": "generation-tagged atomic admission plus generic/input inflight reference count",
+      "publicationGate": "serialized mailbox publish requires matching active/capability/ingress generation, ADVERTISED state, advertised bit, and non-disabled session",
+      "ownerRuntimeBarrier": "owner runtime inflight count blocks release/destroy while a bounded callback crosses shutdown",
+      "teardownOrder": "serialize publish close; advertise off; close ingress; synchronize generic tick/knob/RPC sources; synchronize stock hook; cancel generation timer; wait owner callback; owner terminal release; wait producers; bounded owner drains; destroy",
+      "platformHandoff": "generic source removal, stock hook removal, and timer cancellation prevent new callbacks and synchronize already-started wrappers before returning",
+      "secondBoot": "reject unless unbooted, heap-null, ASSEMBLING, module-only ready, zero active generation",
+      "faultTeardown": "parser, boot, and runtime faults can quiesce, unmap, then permit flash"
+    },
+    "physicalVerdict": "NO_GO",
+    "hardwareRuntimeProven": false
+  },
+  "targetFacade": {
+    "manifest": {
+      "file": "experiments/mquickjs-target-facade/build/manifest.json",
+      "bytes": 4270,
+      "sha256": "f46ae66db44bdfbf6718127b76d59d1581e11c45fe9ea5d8c712c746a47de5f1"
+    },
+    "status": "STATIC_ONLY_NOT_INTEGRATED",
+    "asset": {
+      "file": "experiments/mquickjs-canary-bundle/build/weather-gen18.f2tf",
+      "bytes": 1375,
+      "sha256": "d9e2ce701755423dc9d843eace93f51f982d1f5cb7c231c6fb9a5f1f1dc9bc94",
+      "contractSha256": "8220152a09348da34cdd70dd7d370197f2f3fc46a9f45e50d7fb7015bdb8579a",
+      "f2jsSha256": "88537026c8b217b763c393b82d8787ca08256681265976f7bcff6077b2282d20",
+      "baseSha256": "2f8263490c50631c3cdb7f992efde976ac794d8a3e599cc785a1e81bfa0e5c68"
+    },
+    "weatherCases": {
+      "file": "experiments/mquickjs-target-facade/build/weather-cases.bin",
+      "bytes": 800,
+      "sha256": "2de18b1208df8beb7d0b3e00a4081318199625296090d97d5f9618306acc1a9b",
+      "count": 11,
+      "comparison": "PIXEL_EXACT"
+    },
+    "xtensa": {
+      "compiler": "xtensa-esp-elf-gcc (crosstool-NG esp-13.2.0_20240530) 13.2.0",
+      "objectBytes": 21552,
+      "objectSha256": "99f3d9c3c8bb81a7472856e3664220d5d92520c89533d8d672bad66fdf530521",
+      "textBytes": 4364,
+      "rodataBytes": 72,
+      "writableGlobalBytes": 0,
+      "undefinedSymbols": 0,
+      "maxCompilerReportedFrameBytes": 576,
+      "conservativeAllStaticFramesBytes": 1296
+    },
+    "timingEvidence": "analytic-not-device-measured",
+    "integratedIntoStockUi": false,
+    "hardwareRuntimeProven": false
+  },
+  "stockBridge": {
+    "manifest": {
+      "file": "experiments/mquickjs-esp32s3-stock-bridge/build/stock-bridge-manifest.json",
+      "bytes": 11244,
+      "sha256": "0afdc47b8009010fb59ad1308353945a15fa7f9d4e8812354701bea747b64e28"
+    },
+    "physicalCandidate": "NO_GO",
+    "core": {
+      "file": "experiments/mquickjs-esp32s3-stock-bridge/build/stock-bridge-core.o",
+      "bytes": 16956,
+      "sha256": "0406f9e8341f79d5f6cc602460c1bf405508c5aff4a4be5fa97244beacc4c676"
+    },
+    "exactSpanCount": 18,
+    "tailPatch": {
+      "patchAddress": "0x42118cdd",
+      "patchBytes": "c6df15",
+      "trampolineProbeAddress": "0x4211e460",
+      "startupProbeAddress": "0x4211e480",
+      "semantics": "J -> entryless mov a10,a6; call8 startup; retw.n"
+    },
+    "hardwareRuntimeProven": false
+  },
+  "healthyBase": {
+    "app": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-blue-timer/framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-blue-timer-app.bin",
+      "bytes": 2062912,
+      "sha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
+      "flashOffset": "0x10000",
+      "flashEnd": "0x207a40"
+    },
+    "receipt": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/device-receipts/device-1786939039376-fast-smoke.json",
+      "sha256": "1363d31eabba2b61e068d760d966ab25f8b17d1c635a4c91ba7ecd2a0de238e9"
+    },
+    "preservedScreens": [
+      26,
+      27
+    ],
+    "loaderInsertion": {
+      "vaddr": "0x4211e460",
+      "capacityBytes": 6840,
+      "acceptedTailWasAllZero": true
+    }
+  },
+  "inputLab": {
+    "packageSdk": "available",
+    "browserKeyChordHoldSimulator": "available-host-only",
+    "nativeKeyRecorder": "capability-gated-host-library-only",
+    "visibleMQuickJsEditor": "not-integrated",
+    "devicePush": "blocked-until-exact-physical-capability-and-applied-revision-receipt",
+    "weatherZipAndProvider": "host-only-not-keyboard-networking"
+  },
+  "verifiedOfflineChain": [
+    "strict F2JS SDK construction and decode",
+    "real host MicroQuickJS execution, fixed heap, deadline recovery, moving GC, keys, chords, and key-plus-knob model",
+    "deterministic Xtensa module and fixed-MMU loader layout",
+    "resident raw-byte F2JS admission parity, owner architecture, and threaded 72-byte mailbox",
+    "weather F2TF target facade with 11 pixel-exact host-versus-C cases and a frozen freestanding Xtensa object",
+    "exact accepted-image stock startup, heap, task, UI, key, and RPC seams",
+    "generation-1 timer/key/chord package and generation-18 weather RPC/tick package",
+    "weather revision-stage-commit host simulation and pinned-engine 4,040-byte heap-headroom execution"
+  ],
+  "staticOnlyBoundary": "This report cross-checks frozen offline artifacts; it is not a linked app, a physical capability receipt, or authorization to flash.",
+  "blockingPhysicalIntegration": [
+    {
+      "id": "target-facade",
+      "detail": "Link the frozen F2TF facade into the stock UI task and prove its thread, timing, stack, capability, and pixel behavior on hardware."
+    },
+    {
+      "id": "exact-applied-revision-rpc",
+      "detail": "Return exact event/control receipts plus busy/rejected/queued and the applied generation or weather revision."
+    },
+    {
+      "id": "linked-app",
+      "detail": "Link the frozen resident owner/parser/mailbox, stock bridge, module loader, and target facade into one accepted app with final non-overlapping hashes."
+    },
+    {
+      "id": "cache-quiesce",
+      "detail": "Pause and drain every VM/event/key producer before cache-disabled flash or NVS work; logical key detach alone is insufficient."
+    },
+    {
+      "id": "capability-receipt",
+      "detail": "Advertise the exact engine/key/weather capability only after startup succeeds and retain an exact physical app/module/package receipt."
+    },
+    {
+      "id": "watchdog-lifecycle",
+      "detail": "Pin and exercise the complete task-WDT add/reset/delete lifecycle, including timeout and teardown paths."
+    },
+    {
+      "id": "physical-recovery",
+      "detail": "Prove physical OOM/timeout recovery, last-good state, hide/show, USB loss, rollback, and existing-screen regression behavior."
+    },
+    {
+      "id": "physical-soak",
+      "detail": "Record bounded stack/heap/deadline/WDT telemetry and an exact app/module/package receipt across a sustained device soak."
+    }
+  ]
+}

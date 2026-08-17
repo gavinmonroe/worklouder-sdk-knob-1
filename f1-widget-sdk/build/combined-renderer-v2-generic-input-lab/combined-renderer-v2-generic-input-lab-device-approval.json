@@ -1,0 +1,95 @@
+{
+  "format": "framer-f1-device-candidate-v1",
+  "status": "DEVICE_SMOKE_CANDIDATE",
+  "deployable": true,
+  "target": {
+    "device": "knob_f1",
+    "firmware": "0.4.1",
+    "chip": "ESP32-S3",
+    "mac": "a4:cb:8f:af:32:10"
+  },
+  "write": {
+    "offset": "0x10000",
+    "scope": "factory-app-only",
+    "hardwareWriteApproved": true
+  },
+  "app": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-generic-input-lab/framer-0.4.1-input-lab-renderer-v2-generic-id26-app.bin",
+    "bytes": 2062912,
+    "sha256": "371ee26ebb74c37fde96213ace9f4c506ac98d5293ff09ffe3f863ced9c98f06"
+  },
+  "rollback": {
+    "mode": "accepted-live-receipt-v1",
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-blue-timer/framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-blue-timer-app.bin",
+    "bytes": 2062912,
+    "sha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
+    "receipt": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/device-receipts/device-1786939039376-fast-smoke.json",
+      "bytes": 2414,
+      "sha256": "1363d31eabba2b61e068d760d966ab25f8b17d1c635a4c91ba7ecd2a0de238e9"
+    }
+  },
+  "recovery": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/recovery/backups/2026-08-15-framer-f1-a4cb8faf3210-before-custom/full-flash-16mb.bin",
+    "bytes": 16777216,
+    "sha256": "aa6042310d075c9cbd3b992044511c064bb4b84713d0740a3adafcbdb3028fdd"
+  },
+  "runtime": {
+    "allAssetBytesBelow": "0x3c1d0000",
+    "headroomBytes": 17,
+    "dromMappingProfile": "generic-render-v2-structural-v1",
+    "newDromAssets": false,
+    "dromMutationBytes": 0,
+    "dromExtensionBytes": 0,
+    "acceptedDromPrefixBytes": 725360,
+    "acceptedIromBytes": 1179384,
+    "iromEndExclusive": "0x42120000",
+    "runtimeMapPatch": null,
+    "screenIds": {
+      "music": 1,
+      "wpm": 7,
+      "inputLab": 26
+    },
+    "borrowedFramebufferBytes": 62000,
+    "extraFramebufferBytes": 0,
+    "rendererControllerAllocationBytes": 62164,
+    "sidecarAllocationBytes": 692,
+    "ownedBundleAllocationBytes": 98304,
+    "ownedProgramAllocationBytes": 29824,
+    "sceneRpcAllocationBytes": 98624,
+    "eventRpcAllocationBytes": 40,
+    "integratedIromModuleBytes": 22740,
+    "integratedIromModuleSha256": "4fd8a7b848705f22eb96463ae915caa41aedbd04147e0ece0b7b9a201cd2c1a4",
+    "integratedIromModuleAddress": "0x421187cc",
+    "integratedIromCavityBytes": 30540,
+    "integratedIromEntryAddress": "0x42118c3c",
+    "wrapperCall": {
+      "address": "0x421170c5",
+      "acceptedBytes": "25ba01",
+      "candidateBytes": "65b701"
+    },
+    "renderV2Profile": "framer-f1-render-v2-structural-v1",
+    "packageFormat": "framer-render-v2-package-v1",
+    "v1Packages": true,
+    "maxTransportBytes": 98304,
+    "maxF2epBytes": 29824,
+    "repeatPush": "ui-detach-copy-swap-owned-buffers-v1",
+    "hostRpcIds": [
+      1,
+      65535
+    ],
+    "keyboardKeyEvents": false,
+    "nativeEvents": {
+      "tick100": true,
+      "tick1": true,
+      "fnBottomKnob": true,
+      "hostRpc": true
+    },
+    "nativeRtc": false,
+    "bootProgram": false,
+    "additionalScreenIds": [],
+    "manualScreenAcceptancePending": [
+      26
+    ]
+  }
+}

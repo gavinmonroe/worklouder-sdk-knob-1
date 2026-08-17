@@ -1,0 +1,28 @@
+
+/var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/f1-render-v2-generic-BL5QJP/first/renderer-v2-generic.elf:     file format elf32-xtensa-le
+architecture: xtensa, flags 0x00000112:
+EXEC_P, HAS_SYMS, D_PAGED
+start address 0x42118c3c
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .renderer_v2  000058d4  421187cc  421187cc  000007cc  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .debug_line   00001381  00000000  00000000  000060a0  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+  2 .debug_line_str 000001fa  00000000  00000000  00007421  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+  3 .debug_info   00000d41  00000000  00000000  0000761b  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+  4 .debug_abbrev 0000039a  00000000  00000000  0000835c  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+  5 .debug_aranges 00000080  00000000  00000000  000086f8  2**3
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+  6 .debug_str    000002cc  00000000  00000000  00008778  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+  7 .debug_frame  00000050  00000000  00000000  00008a44  2**2
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+  8 .debug_loclists 00000997  00000000  00000000  00008a94  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS
+  9 .debug_rnglists 0000009b  00000000  00000000  0000942b  2**0
+                  CONTENTS, READONLY, DEBUGGING, OCTETS

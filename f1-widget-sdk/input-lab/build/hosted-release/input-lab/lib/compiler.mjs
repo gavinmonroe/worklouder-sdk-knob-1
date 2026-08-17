@@ -182,6 +182,11 @@ async function cachedProductionAtlas(glyphs) {
   return productionAtlasCache.get(key);
 }
 
+/** Shared production atlas resolver used by semantic v1 and Render-v2 compilation. */
+export async function createInputLabGlyphAtlas(glyphs) {
+  return cachedProductionAtlas(glyphs);
+}
+
 export async function compileInputLabScene(source, { atlasFactory = cachedProductionAtlas, allowTestAtlas = false } = {}) {
   const result = compileSceneSource(source);
   const atlas = await atlasFactory(result.scene.glyphs);

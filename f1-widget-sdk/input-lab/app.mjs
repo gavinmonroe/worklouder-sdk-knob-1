@@ -5,9 +5,22 @@ import { drawAtlasScene } from "./lib/browser-sampler.mjs";
 import { InputLabBridgeClient } from "./lib/bridge-client.mjs";
 import { createInputLabProject, createOfflinePreviewDocument, serializeInputLabProject } from "./lib/browser-project.mjs";
 import { browserHidAvailable, BrowserFramerSceneClient } from "./lib/browser-scene-hid.mjs";
+import { confirmInputLabMQuickJsWeatherRender, deliverInputLabMQuickJsWeatherBatch,
+  INPUT_LAB_MQUICKJS_PHYSICAL_WEATHER_TARGET } from "./lib/mquickjs-device-rpc.mjs";
 import { BrowserKeyRpcBridge, normalizeKeyboardRpcConfig } from "./lib/browser-key-rpc.mjs";
+import { BrowserKeyRpcDelivery } from "./lib/browser-key-rpc-delivery.mjs";
 import { appendRenderV2PreviewEvent, createRenderV2ApiSource, createRenderV2PreviewEvent,
   drawRenderV2Frame, normalizeRenderV2Result, parseRenderV2HostRpcId } from "./lib/render-v2-browser.mjs";
+import { RenderV2OperationGate } from "./lib/render-v2-operations.mjs";
+import { InputLabMQuickJsKeySimulator } from "./lib/mquickjs-key-events.mjs";
+import { assessInputLabMQuickJsPushGate, buildInputLabMQuickJsPackage,
+  createInputLabDeterministicWeatherSnapshot, createInputLabWeatherRpcBatch,
+  drawInputLabMQuickJsPreview, extractInputLabMQuickJsRasterBase,
+  INPUT_LAB_MQUICKJS_STATUS, InputLabMQuickJsCanarySession,
+  normalizeInputLabMQuickJsSettings } from "./lib/mquickjs-canary.mjs";
+import timerCanarySource from "../examples/render-v2-mquickjs-canary/canary-widget.js?raw";
+import weatherCanarySource from "../examples/render-v2-mquickjs-weather-canary/weather-widget.js?raw";
+import weatherCanaryPackageUrl from "../examples/render-v2-mquickjs-weather-canary/build/weather-60601.f2js?url";
 
 const elements = Object.freeze({ html: document.querySelector("#html-source"), css: document.querySelector("#css-source"),
   script: document.querySelector("#js-source"), scriptHeading: document.querySelector("#script-heading"),
@@ -22,6 +35,9 @@ const elements = Object.freeze({ html: document.querySelector("#html-source"), c
   applyProgress: document.querySelector("#apply-progress"),
   applyProgressText: document.querySelector("#apply-progress-text"),
   rendererVersion: document.querySelector("#renderer-version"), mode: document.querySelector("#mode"),
+  v2Backend: document.querySelector("#v2-backend"), mquickJsExample: document.querySelector("#mquickjs-example"),
+  loadMquickJsExample: document.querySelector("#load-mquickjs-example"),
+  mquickJsDownload: document.querySelector("#mquickjs-download"),
   fps: document.querySelector("#fps"), duration: document.querySelector("#duration"),
   maxBytes: document.querySelector("#max-bytes"), interaction: document.querySelector("#interaction"),
   stats: document.querySelector("#capture-stats"), filmstrip: document.querySelector("#filmstrip"),
@@ -33,7 +49,17 @@ const elements = Object.freeze({ html: document.querySelector("#html-source"), c
   v2State: document.querySelector("#v2-state"), v2Budget: document.querySelector("#v2-budget"),
   v2DeviceSupport: document.querySelector("#v2-device-support"), v2KeyCode: document.querySelector("#v2-key-code"),
   v2KeyRpcId: document.querySelector("#v2-key-rpc-id"), v2KeyPad: document.querySelector("#v2-key-pad"),
-  v2KeyStatus: document.querySelector("#v2-key-status") });
+  v2KeyStatus: document.querySelector("#v2-key-status"),
+  mquickJsControls: document.querySelector("#mquickjs-controls"), mqKey0Down: document.querySelector("#mq-key0-down"),
+  mqKey0Up: document.querySelector("#mq-key0-up"), mqKey1Down: document.querySelector("#mq-key1-down"),
+  mqKey1Up: document.querySelector("#mq-key1-up"), mqKeyHold: document.querySelector("#mq-key-hold"),
+  mqChord: document.querySelector("#mq-chord"), mqHostId: document.querySelector("#mq-host-id"),
+  mqHostValue: document.querySelector("#mq-host-value"), mqHostAux: document.querySelector("#mq-host-aux"),
+  mqHostSend: document.querySelector("#mq-host-send"), mqWeatherSettings: document.querySelector("#mq-weather-settings"),
+  mqZip: document.querySelector("#mq-zip"), mqUnits: document.querySelector("#mq-units"),
+  mqWeatherRefresh: document.querySelector("#mq-weather-refresh"), mqKeyPad: document.querySelector("#mq-key-pad"),
+  f2epHostRow: document.querySelector("#f2ep-host-row"), f2epKeyConfig: document.querySelector("#f2ep-key-config"),
+  f2epKeyNote: document.querySelector("#f2ep-key-note") });
 const store = new SavedPreviewStore({ storage: localStorage });
 let state = store.load();
 let lastCompilation = null;
@@ -47,7 +73,16 @@ let autosaveTimer = null;
 let renderV2Events = Object.freeze([]);
 let renderV2Busy = false;
 let renderV2DeviceCapability = null;
+let mquickJsDeviceCapability = null;
 let keyboardBridge = null;
+let keyboardRpcDelivery = null;
+let renderV2Operations = null;
+let mquickJsCompilation = null;
+let mquickJsSession = null;
+let mquickJsKeySimulator = null;
+let mquickJsClock = 0;
+let mquickJsRpcRevision = 0;
+let weatherRasterBasePromise = null;
 
 function fitPreviewStage() {
   const frameStyle = getComputedStyle(elements.deviceFrame);
@@ -94,16 +129,24 @@ function showApplyProgress(text, state = "busy") {
 function setApplyBusy(value) {
   applyBusy = value;
   const activeRenderV2 = elements.rendererVersion.value === "v2";
+  const activeMquickJs = activeRenderV2 && elements.v2Backend.value === "mquickjs";
   const mixedV1Project = !activeRenderV2 && projectContainsRenderV2();
   const renderV2Blocked = activeRenderV2 && !renderV2DeviceCapability;
-  elements.apply.disabled = value || !bridge || !browserDevice || mixedV1Project || renderV2Blocked;
+  const renderV1Blocked = !activeRenderV2 && browserDevice?.renderV2CapabilityStatus === "generic-incompatible";
+  const keyPressed = keyboardBridge?.pressed === true;
+  elements.apply.disabled = activeMquickJs || value || renderV2Busy || keyPressed || !bridge || !browserDevice ||
+    mixedV1Project || renderV2Blocked || renderV1Blocked;
   elements.apply.setAttribute("aria-busy", String(value));
-  elements.apply.textContent = value ? "Applying…"
+  elements.apply.textContent = value ? "Applying…" : activeMquickJs ? "Push unavailable"
     : activeRenderV2 && renderV2DeviceCapability ? "Apply V2 to ID26"
-      : renderV2Blocked || mixedV1Project ? "Push unavailable" : "Apply / Push";
-  elements.apply.title = !bridge ? "Wait for the Input Lab compiler service"
+      : renderV2Blocked || mixedV1Project || renderV1Blocked ? "Push unavailable" : "Apply / Push";
+  elements.apply.title = activeMquickJs
+    ? "Package Push is intentionally blocked for the boot-lifetime MicroQuickJS canary (runtimeUploader=false); connected ID28 host-event testing remains available"
+    : !bridge ? "Wait for the Input Lab compiler service"
     : !browserDevice ? "Connect the keyboard over WebHID to enable Push"
+      : keyPressed ? "Release the browser key before changing or applying the widget"
       : mixedV1Project ? "Render v1 Push requires all three saved previews to remain Render v1"
+        : renderV1Blocked ? "Generic firmware did not explicitly advertise V1 package admission"
         : renderV2Blocked
           ? "Preview works, but the connected firmware does not advertise generic Render v2 package admission"
       : activeRenderV2 ? "Compile the active preset and apply its Render v2 package to widget ID26"
@@ -164,7 +207,12 @@ function showRenderV2Result(result, eventLabel = "Compiled") {
   drawRenderV2Frame(elements.canvas, compiled.frameBase64);
   replaceKeyValues(elements.v2State, Object.entries(compiled.state));
   const budget = compiled.budget;
+  const rasterProof = compiled.manifest?.scene?.proof;
+  const renderSource = compiled.renderMode === "raster"
+    ? `Chromium raster · ${rasterProof?.freshRenders ?? "?"} fresh-render proofs`
+    : "Semantic CSS";
   replaceKeyValues(elements.v2Budget, [
+    ["render", renderSource],
     ["states", budget.states], ["handlers", budget.handlers], ["bindings", budget.bindings],
     ["variants", budget.variants], ["spans", budget.spans], ["patch bytes", budget.pixelBytes],
     ["program", `${compiled.programBytes} B`], ["package", `${compiled.packageBytes} B`],
@@ -174,22 +222,83 @@ function showRenderV2Result(result, eventLabel = "Compiled") {
   elements.v2EventStatus.value = `${eventLabel}${applied}${changed} · sequence ${renderV2Events.length}/64`;
   const pushReason = renderV2DeviceCapability ? "connected generic renderer can apply this package to ID26"
     : compiled.push?.reason ?? "custom Render v2 device Push is unavailable on this firmware";
-  elements.status.value = `Render v2 · ${compiled.packageBytes} bytes · ${compiled.sha256.slice(0, 12)} · ${pushReason}`;
+  elements.status.value = `Render v2 · ${renderSource} · ${compiled.packageBytes} bytes · ${compiled.sha256.slice(0, 12)} · ${pushReason}`;
   return compiled;
 }
 
 async function compileRenderV2(source) {
-  renderV2Events = Object.freeze([]);
-  elements.v2EventStatus.value = "Compiling bounded event program…";
-  const result = await request("/api/render-v2/compile", createRenderV2ApiSource({
-    ...source, name: state.slots[state.activeSlot].name,
-  }));
-  return showRenderV2Result(result);
+  const revision = renderV2Operations.revision;
+  const apiSource = createRenderV2ApiSource({ ...source, name: state.slots[state.activeSlot].name });
+  return renderV2Operations.run("compile", async ({ assertCurrent }) => {
+    elements.v2EventStatus.value = "Compiling bounded event program…";
+    const result = await request("/api/render-v2/compile", apiSource);
+    assertCurrent();
+    renderV2Events = Object.freeze([]);
+    return showRenderV2Result(result);
+  }, { revision });
+}
+
+async function weatherRasterBase() {
+  if (!weatherRasterBasePromise) weatherRasterBasePromise = fetch(weatherCanaryPackageUrl)
+    .then((response) => {
+      if (!response.ok) throw new Error("Bundled weather F2JS fixture is unavailable.");
+      return response.arrayBuffer();
+    }).then((value) => extractInputLabMQuickJsRasterBase(new Uint8Array(value)));
+  return weatherRasterBasePromise;
+}
+
+function mquickJsSettings() {
+  return normalizeInputLabMQuickJsSettings({ example: elements.mquickJsExample.value,
+    postalCode: elements.mqZip.value, units: elements.mqUnits.value, countryCode: "US" });
+}
+
+function showMquickJsSnapshot(label = "Compiled") {
+  const snapshot = mquickJsSession.snapshot();
+  drawInputLabMQuickJsPreview(elements.canvas, snapshot);
+  replaceKeyValues(elements.v2State, Object.entries(snapshot)
+    .filter(([, value]) => typeof value !== "object").slice(0, 12));
+  elements.v2EventStatus.value = `${label} · ${snapshot.lastEvent} · ${snapshot.eventCount} fixture events`;
+}
+
+async function compileMquickJs(source) {
+  elements.v2EventStatus.value = "Building strict F2JS locally…";
+  const settings = mquickJsSettings();
+  const rasterBase = settings.example === "weather" ? await weatherRasterBase() : null;
+  const compiled = await buildInputLabMQuickJsPackage({ source: source.script,
+    example: settings.example, rasterBase });
+  mquickJsCompilation = compiled;
+  lastCompilation = Object.freeze({ mode: "mquickjs", ...compiled });
+  elements.script.value = compiled.source;
+  mquickJsSession = new InputLabMQuickJsCanarySession(settings);
+  mquickJsKeySimulator = new InputLabMQuickJsKeySimulator({
+    keys: [{ id: 0, browserCode: "KeyF" }, { id: 1, browserCode: "KeyT" }],
+    chords: [{ id: 0, heldMask: 3 }], debounceMs: 10, holdDelayMs: 500, holdCadenceMs: 100,
+  });
+  mquickJsClock = 0;
+  if (settings.example === "weather") mquickJsSession.refreshWeather();
+  elements.browserPreview.hidden = true;
+  elements.canvas.hidden = false;
+  elements.filmstrip.replaceChildren();
+  elements.stats.replaceChildren();
+  replaceKeyValues(elements.v2Budget, [
+    ["status", INPUT_LAB_MQUICKJS_STATUS],
+    ["package", `${compiled.budget.packageBytes}/${98_304} B`],
+    ["source", `${compiled.budget.sourceBytes}/${8_192} B`],
+    ["heap", `${compiled.budget.heapBytes}/${65_536} B`],
+    ["handlers", `${compiled.budget.handlers}/16`], ["targets", `${compiled.budget.targets}/16`],
+    ["keys", `${compiled.budget.keys}/16`], ["chords", `${compiled.budget.chords}/8`],
+  ]);
+  elements.mquickJsDownload.disabled = false;
+  const gate = assessInputLabMQuickJsPushGate({ capability: mquickJsDeviceCapability, uploader: null });
+  elements.status.value = `${INPUT_LAB_MQUICKJS_STATUS} · F2JS ${compiled.bytes} B · ${compiled.sha256.slice(0, 12)} · Push blocked: ${gate.reason}`;
+  showMquickJsSnapshot("Compiled");
+  return compiled;
 }
 
 async function compile() {
   elements.status.value = "Compiling…";
   const source = currentSource();
+  if (source.renderer === "v2" && source.backend === "mquickjs") return compileMquickJs(source);
   if (!bridge) return showOfflinePreview(source);
   if (source.renderer === "v2") return compileRenderV2(source);
   let autoFallback = false;
@@ -242,10 +351,10 @@ function settingsFromInputs() {
 }
 
 function currentSource() {
-  return { renderer: elements.rendererVersion.value, mode: elements.mode.value,
+  return { renderer: elements.rendererVersion.value, backend: elements.v2Backend.value, mode: elements.mode.value,
     html: elements.html.value, css: elements.css.value, script: elements.script.value,
     settings: settingsFromInputs(), eventConfig: { keyboardCode: elements.v2KeyCode.value,
-      keyboardRpcId: elements.v2KeyRpcId.value } };
+      keyboardRpcId: elements.v2KeyRpcId.value }, mquickjs: mquickJsSettings() };
 }
 
 function persistCurrentSlot({ compiled = null } = {}) {
@@ -274,7 +383,9 @@ function compactCompilation(result) {
   if (!result || result.mode === "browser") return null;
   if (result.mode === "render-v2") return { mode: "render-v2", sha256: result.sha256,
     packageBytes: result.packageBytes, programBytes: result.programBytes,
-    programSha256: result.programSha256, budget: result.budget, push: result.push };
+    programSha256: result.programSha256, renderMode: result.renderMode,
+    renderSource: result.renderSource, rasterProof: result.rasterProof,
+    budget: result.budget, push: result.push };
   if (result.mode === "raster") return { mode: "raster", sha256: result.sha256, bytes: result.bytes,
     animationBase64: result.animationBase64, stats: result.stats, settings: result.settings };
   return { mode: "semantic", sha256: result.sha256, binaryBytes: result.binaryBytes,
@@ -283,11 +394,30 @@ function compactCompilation(result) {
 
 function syncRendererUi() {
   const renderV2 = elements.rendererVersion.value === "v2";
+  const mquickjs = renderV2 && elements.v2Backend.value === "mquickjs";
   for (const setting of document.querySelectorAll(".v1-setting")) setting.hidden = renderV2;
+  for (const setting of document.querySelectorAll(".v2-setting")) setting.hidden = !renderV2;
+  for (const setting of document.querySelectorAll(".f2ep-setting")) setting.hidden = mquickjs;
   elements.scriptHeading.hidden = !renderV2;
   elements.script.hidden = !renderV2;
   elements.rendererNotice.hidden = !renderV2;
   elements.v2Controls.hidden = !renderV2;
+  elements.loadV2Example.hidden = mquickjs;
+  elements.mquickJsExample.hidden = !mquickjs;
+  elements.loadMquickJsExample.hidden = !mquickjs;
+  elements.mquickJsDownload.hidden = !mquickjs;
+  elements.mquickJsControls.hidden = !mquickjs;
+  elements.mqWeatherSettings.hidden = !mquickjs || elements.mquickJsExample.value !== "weather";
+  elements.f2epHostRow.hidden = mquickjs;
+  elements.f2epKeyConfig.hidden = mquickjs;
+  elements.v2KeyPad.hidden = mquickjs;
+  elements.v2KeyStatus.hidden = mquickjs;
+  elements.f2epKeyNote.hidden = mquickjs;
+  elements.rendererNotice.textContent = mquickjs
+    ? mquickJsDeviceCapability
+      ? "Strict F2JS source is packaged locally and never run as jsdom. Physical ID28 executes JavaScript and accepts serialized fixture weather RPC; Package Push remains blocked (uploader=false)."
+      : "Strict F2JS source is packaged locally and never run as jsdom. Fixture controls model events; connect the physical ID28 canary to probe its device runtime."
+    : "Safe SDK subset: integer state and bounded DOM updates are compiled to F2EP bytecode. Source is parsed, never executed as arbitrary JavaScript or jsdom.";
   if (renderV2 && renderV2Events.length === 0 && lastCompilation?.mode !== "render-v2") {
     elements.v2EventStatus.value = "Compile to begin deterministic event simulation.";
     elements.v2State.replaceChildren();
@@ -297,9 +427,23 @@ function syncRendererUi() {
 }
 
 function updateRenderV2DeviceSupport() {
+  if (elements.rendererVersion.value === "v2" && elements.v2Backend.value === "mquickjs") {
+    const gate = assessInputLabMQuickJsPushGate({ capability: mquickJsDeviceCapability, uploader: null });
+    const ready = Boolean(mquickJsDeviceCapability && browserDevice);
+    elements.v2DeviceSupport.dataset.state = ready ? "ready" : "blocked";
+    elements.v2DeviceSupport.textContent = ready
+      ? `Physical canary ID28 · JS on device · keys ${mquickJsDeviceCapability.keyEvents ? "ready" : "gated"} · proven=false · uploader=false · host RPC ready · Package Push blocked`
+      : `STATIC/OFFLINE · Push blocked · ${gate.reason}`;
+    setApplyBusy(applyBusy);
+    return;
+  }
   const ready = Boolean(renderV2DeviceCapability && browserDevice);
   elements.v2DeviceSupport.dataset.state = ready ? "ready" : "blocked";
-  elements.v2DeviceSupport.textContent = ready ? "Device ID26 ready" : "Preview only";
+  const incompatible = browserDevice?.renderV2CapabilityStatus === "generic-incompatible";
+  elements.v2DeviceSupport.textContent = ready
+    ? `Device ID26 ready · gen ${renderV2DeviceCapability.committedGeneration} · ${renderV2DeviceCapability.maxBundleBytes / 1024} KiB`
+    : incompatible ? "Push blocked · incompatible generic capability"
+      : "Preview only · generic V2 capability not detected";
   const forwarding = ready ? "device forwarding ready" : "device forwarding unavailable";
   if (!keyboardBridge?.pressed) {
     elements.v2KeyStatus.value = `Browser key → host RPC · down 1 / up 0 · ${forwarding}`;
@@ -308,10 +452,12 @@ function updateRenderV2DeviceSupport() {
 }
 
 function loadSlot(slot) {
+  renderV2Operations?.invalidate("saved preview loaded");
   elements.html.value = slot.html;
   elements.css.value = slot.css;
   elements.script.value = slot.script ?? "";
   elements.rendererVersion.value = slot.renderer === "v2" ? "v2" : "v1";
+  elements.v2Backend.value = slot.backend === "mquickjs" ? "mquickjs" : "f2ep";
   elements.mode.value = slot.mode ?? "auto";
   const settings = { ...DEFAULT_RASTER_SETTINGS, ...(slot.settings ?? {}) };
   elements.fps.value = settings.fps;
@@ -320,6 +466,10 @@ function loadSlot(slot) {
   elements.interaction.value = settings.interaction;
   elements.v2KeyCode.value = slot.eventConfig?.keyboardCode ?? "Space";
   elements.v2KeyRpcId.value = slot.eventConfig?.keyboardRpcId ?? "0xB201";
+  const mquickjs = normalizeInputLabMQuickJsSettings(slot.mquickjs);
+  elements.mquickJsExample.value = mquickjs.example;
+  elements.mqZip.value = mquickjs.postalCode;
+  elements.mqUnits.value = mquickjs.units;
   renderV2Events = Object.freeze([]);
   syncRendererUi();
 }
@@ -335,6 +485,9 @@ function renderSlots() {
     name.setAttribute("aria-label", `Preview ${index + 1} name`);
     name.addEventListener("input", () => {
       state = store.renameSlot(index, name.value);
+      if (state.activeSlot === index && elements.rendererVersion.value === "v2") {
+        renderV2Operations.invalidate("active preview name changed");
+      }
       if (state.activeSlot === index) elements.active.textContent = `Active slot: ${index + 1} · ${state.slots[index].name}`;
     });
     const renderer = document.createElement("span");
@@ -371,7 +524,10 @@ function renderSlots() {
   setApplyBusy(applyBusy);
 }
 
-function showError(error) { elements.status.value = error.message; }
+function showError(error) {
+  if (error?.code === "RENDER_V2_STALE_OPERATION") return;
+  elements.status.value = error.message;
+}
 
 function currentProjectSlots() {
   return state.slots.map((slot, index) => index === state.activeSlot ? { ...slot, ...currentSource() } : slot);
@@ -419,15 +575,32 @@ async function connectKeyboard() {
   browserDevice = client;
   try { renderV2DeviceCapability = await client.probeRenderV2Capabilities({ force: true }); }
   catch { renderV2DeviceCapability = null; }
+  try { mquickJsDeviceCapability = await client.probeMQuickJsCapabilities({ force: true }); }
+  catch { mquickJsDeviceCapability = null; }
+  mquickJsRpcRevision = 0;
   elements.connectKeyboard.disabled = true;
-  elements.flashRenderer.disabled = !("serial" in navigator);
-  const v2Status = renderV2DeviceCapability ? "generic V2 ID26 ready" : "V2 preview only";
-  elements.usbStatus.textContent = `Connected · firmware 0.4.1 · ${v2Status} · serial ${client.device.serialNumber}`;
+  elements.flashRenderer.disabled = !("serial" in navigator) || Boolean(mquickJsDeviceCapability);
+  elements.flashRenderer.title = mquickJsDeviceCapability
+    ? "Disabled for the MicroQuickJS canary: use the approval-bound external multi-region workflow"
+    : "Flash the catalog renderer app";
+  const v2Status = renderV2DeviceCapability
+    ? `generic V2 ID26 ready · gen ${renderV2DeviceCapability.committedGeneration} · chunks ${renderV2DeviceCapability.chunkRawBytes} × ${renderV2DeviceCapability.maxChunks}`
+    : client.renderV2CapabilityStatus === "generic-incompatible"
+      ? "Push blocked · generic capability contract mismatch"
+      : "V2 preview only · generic capability not detected";
+  const mqStatus = mquickJsDeviceCapability
+    ? `MicroQuickJS physical ID28 ready · JS=${Number(mquickJsDeviceCapability.deviceEvaluatesJavaScript)} · keys=${Number(mquickJsDeviceCapability.keyEvents)} · proven=0 · uploader=0`
+    : "MicroQuickJS canary not detected";
+  elements.usbStatus.textContent = `Connected · firmware 0.4.1 · ${v2Status} · ${mqStatus} · serial ${client.device.serialNumber}`;
   updateRenderV2DeviceSupport();
+  syncRendererUi();
 }
 
 async function flashRenderer() {
   if (!browserDevice) throw new Error("Connect the keyboard before flashing.");
+  if (mquickJsDeviceCapability) {
+    throw new Error("Input Lab will not replace the MicroQuickJS canary with the unrelated catalog renderer. Use the guarded external multi-region workflow.");
+  }
   if (!window.confirm("Flash the smoke-approved renderer app at 0x10000? This does not erase NVS or the filesystem.")) return;
   const { flashInputLabRenderer, resolveInputLabFlashIdentity } = await import("./lib/browser-flash.mjs");
   const device = browserDevice.device;
@@ -443,7 +616,9 @@ async function flashRenderer() {
   await browserDevice.close();
   browserDevice = null;
   renderV2DeviceCapability = null;
+  mquickJsDeviceCapability = null;
   updateRenderV2DeviceSupport();
+  syncRendererUi();
   setApplyBusy(false);
   elements.usbStatus.textContent = "Preparing bootloader…";
   const receipt = await flashInputLabRenderer({ device, normalIdentity, singleDeviceConfirmed,
@@ -455,31 +630,50 @@ async function flashRenderer() {
 
 function setRenderV2Busy(value) {
   renderV2Busy = value;
+  const locked = value || keyboardBridge?.pressed === true;
   for (const control of [elements.v2Reset, elements.v2Tick100, elements.v2Tick1s,
-    elements.v2KnobDown, elements.v2KnobUp, elements.v2HostSend]) control.disabled = value;
+    elements.v2KnobDown, elements.v2KnobUp, elements.v2HostSend, elements.v2HostId,
+    elements.v2HostValue, elements.v2KeyCode, elements.v2KeyRpcId, elements.loadV2Example]) control.disabled = locked;
+  for (const control of [elements.html, elements.css, elements.script, elements.rendererVersion,
+    elements.mode, document.querySelector("#compile")]) control.disabled = locked;
+  for (const control of elements.slots.querySelectorAll("button, input")) control.disabled = locked;
+  elements.v2KeyPad.setAttribute("aria-disabled", String(locked));
   elements.v2Controls.setAttribute("aria-busy", String(value));
+  setApplyBusy(applyBusy);
 }
 
-async function dispatchRenderV2Event(event, label) {
-  if (renderV2Busy) return;
+renderV2Operations = new RenderV2OperationGate({ onBusyChange: (busy) => setRenderV2Busy(busy) });
+
+async function dispatchRenderV2Event(event, label, { forwardHost = false,
+  statusTarget = elements.v2EventStatus } = {}) {
   if (elements.rendererVersion.value !== "v2") throw new Error("Select Render v2 before simulating events.");
   if (!bridge) throw new Error("Render v2 event simulation requires the Input Lab compiler service.");
-  const previous = renderV2Events;
-  const next = appendRenderV2PreviewEvent(previous, event);
-  setRenderV2Busy(true);
-  elements.v2EventStatus.value = `Applying ${label}…`;
-  try {
-    const source = createRenderV2ApiSource({ ...currentSource(), name: state.slots[state.activeSlot].name }, next);
+  const revision = renderV2Operations.revision;
+  const sourceSnapshot = { ...currentSource(), name: state.slots[state.activeSlot].name };
+  return renderV2Operations.run("simulate", async ({ assertCurrent }) => {
+    const previous = renderV2Events;
+    const canonicalEvent = createRenderV2PreviewEvent({ kind: event.kind, id: event.id,
+      value: event.value, sequence: previous.length + 1 });
+    const next = appendRenderV2PreviewEvent(previous, canonicalEvent);
+    statusTarget.value = `Applying ${label}…`;
+    const source = createRenderV2ApiSource(sourceSnapshot, next);
     const result = await request("/api/render-v2/simulate", source);
+    assertCurrent();
     renderV2Events = next;
     showRenderV2Result(result, label);
-  } catch (error) {
-    renderV2Events = previous;
-    elements.v2EventStatus.value = error.message;
+    if (forwardHost && browserDevice && renderV2DeviceCapability) {
+      assertCurrent();
+      await browserDevice.sendRenderV2HostEvent(canonicalEvent.id, canonicalEvent.value);
+      assertCurrent();
+      statusTarget.value = `${label} · preview accepted · forwarded to device ID26`;
+      return Object.freeze({ result, event: canonicalEvent, forwarded: true });
+    }
+    if (forwardHost) statusTarget.value = `${label} · preview accepted · device forwarding unavailable`;
+    return Object.freeze({ result, event: canonicalEvent, forwarded: false });
+  }, { revision }).catch((error) => {
+    if (error?.code !== "RENDER_V2_STALE_OPERATION") statusTarget.value = error.message;
     throw error;
-  } finally {
-    setRenderV2Busy(false);
-  }
+  });
 }
 
 function nextRenderV2Event(options) {
@@ -488,6 +682,7 @@ function nextRenderV2Event(options) {
 
 function loadRenderV2Example() {
   if (!window.confirm("Replace this preview's HTML, CSS, and widget JS with the bounded Render v2 event example?")) return;
+  renderV2Operations.invalidate("Render v2 example loaded");
   elements.rendererVersion.value = "v2";
   elements.html.value = DEFAULT_RENDER_V2_HTML;
   elements.css.value = DEFAULT_RENDER_V2_CSS;
@@ -501,9 +696,69 @@ function loadRenderV2Example() {
   compile().catch(showError);
 }
 
+function loadMquickJsExample() {
+  const example = elements.mquickJsExample.value;
+  elements.rendererVersion.value = "v2";
+  elements.v2Backend.value = "mquickjs";
+  elements.script.value = example === "weather" ? weatherCanarySource :
+    `"use strict";\n${timerCanarySource}`;
+  elements.mqHostId.value = example === "weather" ? "0xB240" : "0x7001";
+  mquickJsCompilation = null;
+  lastCompilation = null;
+  syncRendererUi();
+  scheduleAutosave();
+  compile().catch(showError);
+}
+
+function dispatchMquickJsEvent(event, label) {
+  if (!mquickJsSession) throw new Error("Compile the MicroQuickJS canary before simulating events.");
+  mquickJsSession.dispatch(event);
+  showMquickJsSnapshot(label);
+}
+
+function drainMquickJsKeys(timestamp) {
+  let result = mquickJsKeySimulator.drain(timestamp);
+  for (const event of result.events) mquickJsSession.dispatch(event);
+  while (result.morePending) {
+    result = mquickJsKeySimulator.drain(timestamp);
+    for (const event of result.events) mquickJsSession.dispatch(event);
+  }
+  showMquickJsSnapshot("Native input");
+}
+
+function mquickJsKeyLevel(key, pressed) {
+  if (!mquickJsKeySimulator) throw new Error("Compile the MicroQuickJS canary before simulating keys.");
+  mquickJsClock += 1;
+  mquickJsKeySimulator.enqueueKey(key, pressed, mquickJsClock);
+  drainMquickJsKeys(mquickJsClock);
+  mquickJsClock += 10;
+  drainMquickJsKeys(mquickJsClock);
+}
+
+function mquickJsChord() {
+  mquickJsClock += 1;
+  mquickJsKeySimulator.enqueueKey(0, true, mquickJsClock);
+  mquickJsKeySimulator.enqueueKey(1, true, mquickJsClock);
+  drainMquickJsKeys(mquickJsClock + 10);
+  mquickJsClock += 11;
+}
+
+function downloadMquickJs() {
+  if (!mquickJsCompilation) return;
+  const blob = new Blob([mquickJsCompilation.binary], { type: "application/octet-stream" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `${elements.mquickJsExample.value}-canary.f2js`;
+  anchor.click();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+  elements.status.value = `Downloaded exact F2JS · ${mquickJsCompilation.sha256}`;
+}
+
 function markSourceEdited() {
   scheduleAutosave();
   if (elements.rendererVersion.value !== "v2") return;
+  renderV2Operations.invalidate("Render v2 source changed");
   renderV2Events = Object.freeze([]);
   lastCompilation = null;
   elements.v2EventStatus.value = "Source changed · compile before simulating events.";
@@ -514,26 +769,36 @@ function markSourceEdited() {
 
 async function dispatchKeyboardRpcLevel({ id, value, code, phase, reason, synthetic }) {
   const label = `${code} ${phase}${synthetic ? ` (${reason})` : ""}`;
-  await dispatchRenderV2Event(nextRenderV2Event({ kind: "host.rpc", id, value }), label);
-  if (browserDevice && renderV2DeviceCapability) {
-    await browserDevice.sendRenderV2HostEvent(id, value);
-    elements.v2KeyStatus.value = `${label} · preview updated · forwarded to device ID26`;
-  } else {
-    elements.v2KeyStatus.value = `${label} · preview updated · device forwarding unavailable`;
+  const delivered = await keyboardRpcDelivery.deliver({ id, value, code, phase, reason, synthetic, label });
+  if (delivered.cleanupFallback) {
+    elements.v2KeyStatus.value = `${label} · preview became stale · zero-level cleanup forwarded to device ID26`;
   }
 }
+
+keyboardRpcDelivery = new BrowserKeyRpcDelivery({
+  getTarget: () => browserDevice && renderV2DeviceCapability
+    ? Object.freeze({ client: browserDevice, capability: renderV2DeviceCapability }) : null,
+  dispatchPreview: (payload) => dispatchRenderV2Event(
+    nextRenderV2Event({ kind: "host.rpc", id: payload.id, value: payload.value }), payload.label,
+    { forwardHost: true, statusTarget: elements.v2KeyStatus }),
+});
 
 keyboardBridge = new BrowserKeyRpcBridge({
   element: elements.v2KeyPad,
   getConfig: () => {
+    if (renderV2Operations.busy) throw new Error("Wait for the active Render v2 operation to finish.");
     if (renderV2Events.length > 62) throw new Error("Reset the simulation before another keyboard down/up pair.");
     return normalizeKeyboardRpcConfig({ code: elements.v2KeyCode.value, rpcId: elements.v2KeyRpcId.value });
   },
   onEvent: async (payload) => {
     try { await dispatchKeyboardRpcLevel(payload); }
-    catch (error) { elements.v2KeyStatus.value = error.message; throw error; }
+    catch (error) {
+      if (error?.code !== "RENDER_V2_STALE_OPERATION") elements.v2KeyStatus.value = error.message;
+      throw error;
+    }
   },
   onStatus: (payload) => {
+    setRenderV2Busy(renderV2Busy);
     if (payload.error) elements.v2KeyStatus.value = payload.error.message;
     else elements.v2KeyStatus.value = `${payload.code} ${payload.phase} · updating preview…`;
   },
@@ -545,36 +810,126 @@ async function handleBrowserKeyboardDisconnect(event) {
   catch { /* The device is already gone; preview release was still attempted first. */ }
   browserDevice = null;
   renderV2DeviceCapability = null;
+  mquickJsDeviceCapability = null;
   elements.connectKeyboard.disabled = false;
   elements.flashRenderer.disabled = true;
   elements.usbStatus.textContent = "Keyboard disconnected · reconnect to enable device Push";
   updateRenderV2DeviceSupport();
+  syncRendererUi();
 }
 
 document.querySelector("#compile").addEventListener("click", () => compile().catch(showError));
 elements.rendererVersion.addEventListener("change", () => {
+  renderV2Operations.invalidate("renderer changed");
   renderV2Events = Object.freeze([]);
   lastCompilation = null;
   syncRendererUi();
   scheduleAutosave();
 });
+elements.v2Backend.addEventListener("change", () => {
+  renderV2Operations.invalidate("Render v2 backend changed");
+  lastCompilation = null;
+  mquickJsCompilation = null;
+  syncRendererUi();
+  scheduleAutosave();
+  compile().catch(showError);
+});
 elements.loadV2Example.addEventListener("click", loadRenderV2Example);
+elements.loadMquickJsExample.addEventListener("click", loadMquickJsExample);
+elements.mquickJsDownload.addEventListener("click", downloadMquickJs);
+elements.mquickJsExample.addEventListener("change", () => { syncRendererUi(); scheduleAutosave(); });
 elements.v2Reset.addEventListener("click", () => compile().catch(showError));
-elements.v2Tick100.addEventListener("click", () => dispatchRenderV2Event(
-  nextRenderV2Event({ kind: "tick.100ms", value: 1 }), "tick.100ms").catch(showError));
-elements.v2Tick1s.addEventListener("click", () => dispatchRenderV2Event(
-  nextRenderV2Event({ kind: "tick.1s", value: 1 }), "tick.1s").catch(showError));
-elements.v2KnobDown.addEventListener("click", () => dispatchRenderV2Event(
-  nextRenderV2Event({ kind: "input.fn-bottom-knob", value: -1 }), "Fn + bottom dial −1").catch(showError));
-elements.v2KnobUp.addEventListener("click", () => dispatchRenderV2Event(
-  nextRenderV2Event({ kind: "input.fn-bottom-knob", value: 1 }), "Fn + bottom dial +1").catch(showError));
+elements.v2Tick100.addEventListener("click", () => elements.v2Backend.value === "mquickjs"
+  ? dispatchMquickJsEvent({ type: "tick.100ms", value: 1 }, "tick.100ms")
+  : dispatchRenderV2Event(nextRenderV2Event({ kind: "tick.100ms", value: 1 }), "tick.100ms").catch(showError));
+elements.v2Tick1s.addEventListener("click", () => elements.v2Backend.value === "mquickjs"
+  ? dispatchMquickJsEvent({ type: "tick.1s", value: 1 }, "tick.1s")
+  : dispatchRenderV2Event(nextRenderV2Event({ kind: "tick.1s", value: 1 }), "tick.1s").catch(showError));
+elements.v2KnobDown.addEventListener("click", () => elements.v2Backend.value === "mquickjs"
+  ? dispatchMquickJsEvent({ type: "input.fn-bottom-knob", delta: -1,
+    heldMask: mquickJsKeySimulator?.snapshot().heldMask ?? 0 }, "Fn + bottom dial −1")
+  : dispatchRenderV2Event(nextRenderV2Event({ kind: "input.fn-bottom-knob", value: -1 }), "Fn + bottom dial −1").catch(showError));
+elements.v2KnobUp.addEventListener("click", () => elements.v2Backend.value === "mquickjs"
+  ? dispatchMquickJsEvent({ type: "input.fn-bottom-knob", delta: 1,
+    heldMask: mquickJsKeySimulator?.snapshot().heldMask ?? 0 }, "Fn + bottom dial +1")
+  : dispatchRenderV2Event(nextRenderV2Event({ kind: "input.fn-bottom-knob", value: 1 }), "Fn + bottom dial +1").catch(showError));
 elements.v2HostSend.addEventListener("click", () => {
   try {
     const id = parseRenderV2HostRpcId(elements.v2HostId.value);
     const value = Number(elements.v2HostValue.value);
     dispatchRenderV2Event(nextRenderV2Event({ kind: "host.rpc", id, value }),
-      `host.rpc:0x${id.toString(16).toUpperCase()}`).catch(showError);
+      `host.rpc:0x${id.toString(16).toUpperCase()}`,
+      { forwardHost: true, statusTarget: elements.v2EventStatus }).catch(showError);
   } catch (error) { showError(error); elements.v2EventStatus.value = error.message; }
+});
+elements.mqKey0Down.addEventListener("click", () => mquickJsKeyLevel(0, true));
+elements.mqKey0Up.addEventListener("click", () => mquickJsKeyLevel(0, false));
+elements.mqKey1Down.addEventListener("click", () => mquickJsKeyLevel(1, true));
+elements.mqKey1Up.addEventListener("click", () => mquickJsKeyLevel(1, false));
+elements.mqKeyHold.addEventListener("click", () => {
+  mquickJsClock += 500;
+  drainMquickJsKeys(mquickJsClock);
+});
+elements.mqChord.addEventListener("click", mquickJsChord);
+elements.mqHostSend.addEventListener("click", async () => {
+  try {
+    const id = parseRenderV2HostRpcId(elements.mqHostId.value);
+    const value = Number(elements.mqHostValue.value);
+    const auxiliary = Number(elements.mqHostAux.value);
+    const label = `host.rpc:0x${id.toString(16).toUpperCase()}`;
+    dispatchMquickJsEvent({ type: "host.rpc", id, value, auxiliary }, label);
+    if (browserDevice && mquickJsDeviceCapability) {
+      const result = await browserDevice.sendMQuickJsHostEvent({ id, value, auxiliary,
+        generation: mquickJsDeviceCapability.generation, revision: ++mquickJsRpcRevision });
+      elements.v2EventStatus.value = `${label} · preview accepted · device ${result.status} · seq ${result.receipt.sequence}`;
+    } else {
+      elements.v2EventStatus.value = `${label} · preview accepted · physical canary forwarding unavailable`;
+    }
+  } catch (error) { showError(error); }
+});
+elements.mqWeatherRefresh.addEventListener("click", async () => {
+  try {
+    const settings = mquickJsSettings();
+    mquickJsSession.settings = settings;
+    const physicalTarget = settings.postalCode === INPUT_LAB_MQUICKJS_PHYSICAL_WEATHER_TARGET.postalCode &&
+      settings.countryCode === INPUT_LAB_MQUICKJS_PHYSICAL_WEATHER_TARGET.countryCode;
+    const deviceTelemetry = browserDevice && mquickJsDeviceCapability && physicalTarget
+      ? await browserDevice.probeMQuickJsTelemetry() : null;
+    const currentRevision = deviceTelemetry?.weatherAppliedRevision ?? mquickJsSession.snapshot().revision;
+    if (!Number.isInteger(currentRevision) || currentRevision < 0 || currentRevision >= 0x7fffffff) {
+      throw new Error("Weather revision is exhausted or invalid; reconnect before another fixture update.");
+    }
+    const weatherRevision = currentRevision + 1;
+    const snapshot = createInputLabDeterministicWeatherSnapshot(settings);
+    const batch = createInputLabWeatherRpcBatch(snapshot, weatherRevision);
+    for (const event of batch) mquickJsSession.dispatch(event);
+    showMquickJsSnapshot(deviceTelemetry ? "Applying fixture weather to physical ID28…" :
+      "Offline fixture weather revision");
+    if (deviceTelemetry) {
+      const { delivery, confirmation } = await browserDevice.runMQuickJsTransaction(
+        async ({ sendHostEvents, probeTelemetry }) => {
+          const delivered = await deliverInputLabMQuickJsWeatherBatch({ events: batch,
+            generation: mquickJsDeviceCapability.generation, revision: weatherRevision,
+            postalCode: settings.postalCode, countryCode: settings.countryCode, sendHostEvents });
+          const confirmed = await confirmInputLabMQuickJsWeatherRender({ revision: weatherRevision,
+            probeTelemetry });
+          return Object.freeze({ delivery: delivered, confirmation: confirmed });
+        });
+      mquickJsRpcRevision = Math.max(mquickJsRpcRevision, weatherRevision);
+      elements.v2EventStatus.value = confirmation.status === "rendered"
+        ? `Offline CHICAGO fixture revision ${weatherRevision} committed and rendered on physical ID28 · seq ${delivery.finalReceipt.sequence} · UI max ${confirmation.telemetry.uiMaximumUs} µs`
+        : `Offline CHICAGO fixture revision ${weatherRevision} committed in the device runtime; it renders on the next ID28 entry · seq ${delivery.finalReceipt.sequence}`;
+    } else if (browserDevice && mquickJsDeviceCapability && !physicalTarget) {
+      elements.v2EventStatus.value = `Offline ${settings.postalCode} preview updated. Physical canary delivery is restricted to US ZIP 60601 because its location label is fixed to CHICAGO.`;
+    }
+    scheduleAutosave();
+  } catch (error) { showError(error); }
+});
+for (const [name, pressed] of [["keydown", true], ["keyup", false]]) elements.mqKeyPad.addEventListener(name, (event) => {
+  const key = event.code === "KeyF" ? 0 : event.code === "KeyT" ? 1 : -1;
+  if (key < 0 || event.repeat) return;
+  event.preventDefault();
+  mquickJsKeyLevel(key, pressed);
 });
 elements.export.addEventListener("click", exportProject);
 elements.connectKeyboard.addEventListener("click", () => connectKeyboard().catch(showError));
@@ -585,20 +940,34 @@ elements.flashRenderer.addEventListener("click", () => flashRenderer().catch((er
 }));
 elements.apply.addEventListener("click", async () => {
   if (elements.apply.disabled || !bridge || !browserDevice) return;
+  if (elements.rendererVersion.value === "v2" && elements.v2Backend.value === "mquickjs") {
+    elements.status.value = "MicroQuickJS Package Push refused: the physical boot-lifetime canary advertises runtimeUploader=false.";
+    return;
+  }
   flushAutosave();
   setApplyBusy(true);
   const activeRenderV2 = elements.rendererVersion.value === "v2";
   showApplyProgress(activeRenderV2 ? "Compiling active V2 widget" : "Compiling slots");
   try {
     if (activeRenderV2) {
-      const compiled = await compileRenderV2(currentSource());
-      const onProgress = (event) => showApplyProgress(progressLabel(event),
-        event.stage === "done" ? "done" : "busy");
-      const result = await browserDevice.pushRenderV2Package(decodeBase64(compiled.packageBase64), { onProgress });
-      renderV2DeviceCapability = browserDevice.renderV2Capabilities;
-      updateRenderV2DeviceSupport();
-      elements.status.value = `${result.status} · active widget → ID26 · ${result.bytes} bytes · generation ${result.generation}`;
-      showApplyProgress("Done", "done");
+      const revision = renderV2Operations.revision;
+      const device = browserDevice;
+      const apiSource = createRenderV2ApiSource({ ...currentSource(), name: state.slots[state.activeSlot].name });
+      await renderV2Operations.run("apply", async ({ assertCurrent }) => {
+        const compiled = await request("/api/render-v2/compile", apiSource);
+        assertCurrent();
+        renderV2Events = Object.freeze([]);
+        const normalized = showRenderV2Result(compiled);
+        const onProgress = (event) => showApplyProgress(progressLabel(event),
+          event.stage === "done" ? "done" : "busy");
+        assertCurrent();
+        const result = await device.pushRenderV2Package(decodeBase64(normalized.packageBase64), { onProgress });
+        assertCurrent();
+        renderV2DeviceCapability = device.renderV2Capabilities;
+        updateRenderV2DeviceSupport();
+        elements.status.value = `${result.status} · active widget → ID26 · ${result.bytes} bytes · generation ${result.generation}`;
+        showApplyProgress("Done", "done");
+      }, { revision });
       return;
     }
     if (!lastCompilation) await compile();
@@ -618,10 +987,9 @@ elements.apply.addEventListener("click", async () => {
   }
 });
 
-for (const control of [elements.html, elements.css, elements.script]) control.addEventListener("input", markSourceEdited);
-for (const control of [elements.mode, elements.fps, elements.duration,
-  elements.maxBytes, elements.interaction, elements.v2KeyCode,
-  elements.v2KeyRpcId]) control.addEventListener("input", scheduleAutosave);
+for (const control of [elements.html, elements.css, elements.script, elements.mode]) control.addEventListener("input", markSourceEdited);
+for (const control of [elements.fps, elements.duration, elements.maxBytes, elements.interaction,
+  elements.v2KeyCode, elements.v2KeyRpcId, elements.mqZip, elements.mqUnits]) control.addEventListener("input", scheduleAutosave);
 window.addEventListener("pagehide", flushAutosave);
 globalThis.navigator?.hid?.addEventListener?.("disconnect", handleBrowserKeyboardDisconnect);
 document.addEventListener("visibilitychange", () => {

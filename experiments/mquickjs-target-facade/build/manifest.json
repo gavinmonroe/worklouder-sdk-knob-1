@@ -1,0 +1,124 @@
+{
+  "format": "framer-mquickjs-target-facade-static-canary-v1",
+  "status": "STATIC_ONLY_NOT_INTEGRATED",
+  "hardwareTouched": false,
+  "flashable": false,
+  "generation": 18,
+  "asset": {
+    "format": "F2TF-v1-companion",
+    "bytes": 1375,
+    "sha256": "d9e2ce701755423dc9d843eace93f51f982d1f5cb7c231c6fb9a5f1f1dc9bc94",
+    "contractSha256": "8220152a09348da34cdd70dd7d370197f2f3fc46a9f45e50d7fb7015bdb8579a",
+    "f2jsSha256": "88537026c8b217b763c393b82d8787ca08256681265976f7bcff6077b2282d20",
+    "baseSha256": "2f8263490c50631c3cdb7f992efde976ac794d8a3e599cc785a1e81bfa0e5c68",
+    "targetCount": 16,
+    "paletteEntries": 8,
+    "glyphRecords": 39,
+    "maxOverlayPixelWrites": 4096
+  },
+  "proof": {
+    "hostVsCFrames": "PIXEL_EXACT",
+    "cases": [
+      {
+        "name": "offline-no-snapshot",
+        "result": 0,
+        "frameSha256": "edab16de67bd918fba0c40c995275509d4a72c137bf59df9e416d42924e26add",
+        "overlayWrites": 1036
+      },
+      {
+        "name": "negative-temperatures",
+        "result": 0,
+        "frameSha256": "6d1339d86e74f4e2855f3db12fa38143de22b10c7b563b665790bee6ab114a70",
+        "overlayWrites": 1059
+      },
+      {
+        "name": "stale-tick-same-revision",
+        "result": 0,
+        "frameSha256": "ef1c8fbedf6cf9147b656f30aa4185d52a83dd94ad44172cc2e8631a88090aa1",
+        "overlayWrites": 1096
+      },
+      {
+        "name": "error-last-good",
+        "result": 0,
+        "frameSha256": "6b7cd9e6071c2c5a60fff3f65f3e67c95221a3e7c2836a00198490dcbc612d5f",
+        "overlayWrites": 1203
+      },
+      {
+        "name": "hidden",
+        "result": 1,
+        "frameSha256": "2f8263490c50631c3cdb7f992efde976ac794d8a3e599cc785a1e81bfa0e5c68",
+        "overlayWrites": 0
+      },
+      {
+        "name": "newer-revision",
+        "result": 0,
+        "frameSha256": "b64ae7a5a1bdb92ce1332e800d7dfa4b403fd9613b43cea402c611423544cce7",
+        "overlayWrites": 1100
+      },
+      {
+        "name": "revision-rollback",
+        "result": 9,
+        "frameSha256": "2f8263490c50631c3cdb7f992efde976ac794d8a3e599cc785a1e81bfa0e5c68",
+        "overlayWrites": 0
+      },
+      {
+        "name": "wrong-generation",
+        "result": 8,
+        "frameSha256": "2f8263490c50631c3cdb7f992efde976ac794d8a3e599cc785a1e81bfa0e5c68",
+        "overlayWrites": 0
+      },
+      {
+        "name": "malformed-packed-ascii",
+        "result": 10,
+        "frameSha256": "2f8263490c50631c3cdb7f992efde976ac794d8a3e599cc785a1e81bfa0e5c68",
+        "overlayWrites": 0
+      },
+      {
+        "name": "malformed-condition",
+        "result": 10,
+        "frameSha256": "2f8263490c50631c3cdb7f992efde976ac794d8a3e599cc785a1e81bfa0e5c68",
+        "overlayWrites": 0
+      },
+      {
+        "name": "odd-torn-mailbox",
+        "result": 7,
+        "frameSha256": "2f8263490c50631c3cdb7f992efde976ac794d8a3e599cc785a1e81bfa0e5c68",
+        "overlayWrites": 0
+      }
+    ],
+    "tornMidCopy": "PASS",
+    "malformedAssets": "PASS",
+    "overlayOverflowBeforeDraw": "PASS"
+  },
+  "xtensa": {
+    "compiler": "xtensa-esp-elf-gcc (crosstool-NG esp-13.2.0_20240530) 13.2.0",
+    "objectBytes": 21552,
+    "objectSha256": "99f3d9c3c8bb81a7472856e3664220d5d92520c89533d8d672bad66fdf530521",
+    "textBytes": 4364,
+    "rodataBytes": 72,
+    "writableGlobalBytes": 0,
+    "undefinedSymbols": 0,
+    "maxCompilerReportedFrameBytes": 576,
+    "conservativeAllStaticFramesBytes": 1296
+  },
+  "timingEstimate": {
+    "kind": "analytic-not-device-measured",
+    "cpuMhz": 240,
+    "maxObservedOverlayWrites": 1203,
+    "conservativeCycles": 142948,
+    "microsecondsAt240Mhz": 595.6
+  },
+  "requiredProfileExtension": {
+    "basePackageAbiUnchanged": true,
+    "companionAsset": "framer-mquickjs-target-facade-v1",
+    "capability": "targetFacade=weather-slot-target-facade-v1",
+    "packageAssociation": "generation + exact F2JS SHA-256 + exact raster-base SHA-256 + contract SHA-256",
+    "uiHook": "stock UI task restores admitted base, snapshots resident mailbox, invokes bounded facade"
+  },
+  "gaps": [
+    "not linked into the resident module or stock UI tick",
+    "no physical capability advertisement",
+    "no host-RPC device receipt/transport integration",
+    "no hardware timing, stack high-water, SHA receipt, or soak proof"
+  ]
+}

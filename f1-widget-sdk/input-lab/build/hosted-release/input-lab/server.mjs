@@ -1,5 +1,5 @@
 import { createServer } from "node:http";
-import { randomBytes, timingSafeEqual } from "node:crypto";
+import { createHash, randomBytes, timingSafeEqual } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -7,6 +7,8 @@ import { fileURLToPath } from "node:url";
 import { compileInputLabScene, compileInputLabWidgetBundle, serializeInputLabCompilation } from "./lib/compiler.mjs";
 import { ChromiumRasterCaptureProvider, requireRasterCaptureProvider } from "./lib/chromium-raster-capture.mjs";
 import { INPUT_LAB_BRIDGE_PROTOCOL } from "./lib/bridge-client.mjs";
+import { compileInputLabRenderV2, INPUT_LAB_RENDER_V2_CAPABILITIES,
+  replayInputLabRenderV2, serializeInputLabRenderV2 } from "./lib/render-v2.mjs";
 import { MockSceneTransport, requireSceneTransport, StatusOnlyCanarySceneTransport } from "./lib/scene-transport.mjs";
 
 const root = fileURLToPath(new URL("./", import.meta.url));
@@ -125,6 +127,14 @@ function requireSession(request, sessionToken) {
   }
 }
 
+function renderV2SourceKey(value = {}) {
+  const source = { html: String(value.html ?? ""), css: String(value.css ?? ""),
+    script: String(value.script ?? ""), rootClass: String(value.rootClass ?? "render-v2"),
+    name: String(value.name ?? "render-v2"), generation: value.generation ?? 1,
+    renderMode: String(value.renderMode ?? "auto") };
+  return createHash("sha256").update(JSON.stringify(source)).digest("hex");
+}
+
 export function createInputLabServer({ transport = new MockSceneTransport(),
   captureProvider = new ChromiumRasterCaptureProvider(), allowedOrigins = DEFAULT_WEB_ORIGINS,
   hostedOrigin: rawHostedOrigin = null, maxConcurrentJobs = 1 } = {}) {
@@ -139,6 +149,17 @@ export function createInputLabServer({ transport = new MockSceneTransport(),
     catch { return true; }
   })) throw new Error("Input Lab bridge origins must be exact HTTP(S) origins.");
   const sessionToken = randomBytes(32).toString("base64url");
+  const renderV2CompilationCache = new Map();
+  const rememberRenderV2 = (key, compiled) => {
+    renderV2CompilationCache.delete(key);
+    renderV2CompilationCache.set(key, compiled);
+    while (renderV2CompilationCache.size > 4) renderV2CompilationCache.delete(renderV2CompilationCache.keys().next().value);
+  };
+  const cachedRenderV2 = (key) => {
+    const compiled = renderV2CompilationCache.get(key);
+    if (compiled) rememberRenderV2(key, compiled);
+    return compiled;
+  };
   let activeJobs = 0;
   const runJob = async (operation) => {
     if (activeJobs >= maxConcurrentJobs) {
@@ -171,7 +192,8 @@ export function createInputLabServer({ transport = new MockSceneTransport(),
         send(response, 200, { status: "ok", protocol: INPUT_LAB_BRIDGE_PROTOCOL, sessionToken,
           compiler: true, rasterCapture: true, devicePush, transport: devicePush ? "status-only-canary" : "mock",
           localOnly: !hostedOrigin, hosted: Boolean(hostedOrigin), deviceTransport: hostedOrigin ? "browser-webhid" : null,
-          viewport: { width: 100, height: 310 }, slots: 3 }, corsHeaders);
+          viewport: { width: 100, height: 310 }, slots: 3,
+          renderV2: { ...INPUT_LAB_RENDER_V2_CAPABILITIES, genericDevicePush: false } }, corsHeaders);
         return;
       }
       if (request.method === "POST" && url.pathname === "/api/compile") {
@@ -180,6 +202,36 @@ export function createInputLabServer({ transport = new MockSceneTransport(),
         const body = await readJson(request);
         const compiled = await runJob(() => compileInputLabScene(body));
         send(response, 200, serializeInputLabCompilation(compiled), corsHeaders);
+        return;
+      }
+      if (request.method === "POST" && url.pathname === "/api/render-v2/compile") {
+        requireJson(request);
+        if (hostedOrigin || origin != null) requireSession(request, sessionToken);
+        const body = await readJson(request);
+        const key = renderV2SourceKey(body);
+        let compiled = cachedRenderV2(key);
+        if (!compiled) {
+          compiled = await runJob(() => compileInputLabRenderV2(body, { captureProvider }));
+          rememberRenderV2(key, compiled);
+        }
+        send(response, 200, serializeInputLabRenderV2(compiled), corsHeaders);
+        return;
+      }
+      if (request.method === "POST" && url.pathname === "/api/render-v2/simulate") {
+        requireJson(request);
+        if (hostedOrigin || origin != null) requireSession(request, sessionToken);
+        const body = await readJson(request);
+        const { events = [], ...source } = body;
+        const key = renderV2SourceKey(source);
+        const simulated = await runJob(async () => {
+          let compiled = cachedRenderV2(key);
+          if (!compiled) {
+            compiled = await compileInputLabRenderV2(source, { captureProvider });
+            rememberRenderV2(key, compiled);
+          }
+          return replayInputLabRenderV2(compiled, events);
+        });
+        send(response, 200, serializeInputLabRenderV2(simulated), corsHeaders);
         return;
       }
       if (request.method === "POST" && url.pathname === "/api/capture") {

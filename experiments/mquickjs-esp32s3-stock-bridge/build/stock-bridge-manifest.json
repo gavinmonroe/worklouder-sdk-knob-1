@@ -1,0 +1,279 @@
+{
+  "format": "framer-mquickjs-stock-bridge-static-v1",
+  "physicalCandidate": "NO_GO",
+  "reason": "Exact static seams exist, but resident binding, general visual application, WDT lifecycle, key-source pause, cache/flash interception, physical receipt, and soak proof remain open.",
+  "healthyBase": {
+    "app": "f1-widget-sdk/build/combined-renderer-v2-clock-blue-timer/framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-blue-timer-app.bin",
+    "bytes": 2062912,
+    "sha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
+    "receipt": "f1-widget-sdk/build/device-receipts/device-1786939039376-fast-smoke.json",
+    "receiptSha256": "1363d31eabba2b61e068d760d966ab25f8b17d1c635a4c91ba7ecd2a0de238e9",
+    "receiptVersion": "0.4.1"
+  },
+  "failClosed": "PASS_FAIL_CLOSED",
+  "compiler": "xtensa-esp-elf-gcc (crosstool-NG esp-13.2.0_20240530) 13.2.0",
+  "spans": [
+    {
+      "name": "setup_registration_chain",
+      "start": "0x42118c68",
+      "end": "0x42118ce0",
+      "sha256": "62bfdea18af749b67242eb1be51da762200f4cee270e97813d29e77ca10ba643",
+      "proof": "entry; successful controller retained in a6; exact retw.n+pad tail",
+      "bytes": 120
+    },
+    {
+      "name": "setup_three_byte_tail",
+      "start": "0x42118cdd",
+      "end": "0x42118ce0",
+      "sha256": "c0c1754d826e9af9771d981f3f524a1de1fbc76f24fefeeb689abb7cf7b356f9",
+      "proof": "exact bytes 1d f0 00 replaced only by a three-byte J",
+      "bytes": 3
+    },
+    {
+      "name": "stock_key_callback",
+      "start": "0x4206eae0",
+      "end": "0x4206eb48",
+      "sha256": "96316a9091816bf7290c75ebe6be76e4ed184ee13fdef6c50b77e791b5ecfa2b",
+      "proof": "a3 points to opaque u32 token; a4 points to u8 level; return preserved",
+      "bytes": 104
+    },
+    {
+      "name": "stock_key_callback_literal",
+      "start": "0x42041568",
+      "end": "0x4204156c",
+      "sha256": "3d5174006fa28e9caeef531cbcdec7bd1d552b0ab7ad1d4f4a8d30c44c0e1dda",
+      "proof": "little-endian word 0x4206eae0 at raw app offset 0x101568",
+      "bytes": 4
+    },
+    {
+      "name": "heap_caps_free",
+      "start": "0x4037e250",
+      "end": "0x4037e2a0",
+      "sha256": "c830d66ccc4cd8d93e006c0ad0623cc880ecb9a96fa21e7e0e5b1583f49bee61",
+      "proof": "void heap_caps_free(void *); null accepted",
+      "bytes": 80
+    },
+    {
+      "name": "heap_caps_malloc",
+      "start": "0x4037e55c",
+      "end": "0x4037e588",
+      "sha256": "c7ed18e365bd48ebbc416104c4a3cdca5408b938a2ea181657c5bc7bc9405a19",
+      "proof": "void *heap_caps_malloc(size_t,uint32_t)",
+      "bytes": 44
+    },
+    {
+      "name": "heap_caps_get_free_size",
+      "start": "0x420c8200",
+      "end": "0x420c822c",
+      "sha256": "82ec92f10a1d4332fd9a64effc86e97612d429b057db9e6bc32d0de9eee3c972",
+      "proof": "size_t heap_caps_get_free_size(uint32_t)",
+      "bytes": 44
+    },
+    {
+      "name": "heap_caps_get_largest_free_block",
+      "start": "0x420c82c4",
+      "end": "0x420c82d8",
+      "sha256": "bac5ed463bc051c397be0412653efa3d42050a6b499c1f7a77bae8ec367709ea",
+      "proof": "size_t heap_caps_get_largest_free_block(uint32_t)",
+      "bytes": 20
+    },
+    {
+      "name": "xTaskCreatePinnedToCore",
+      "start": "0x4038e8b8",
+      "end": "0x4038e950",
+      "sha256": "8b1c9ef18f2fcc1415bf83686467c5069d144fffb89e305f53ef5876d0638630",
+      "proof": "dynamic form located but deliberately unused by bridge",
+      "bytes": 152
+    },
+    {
+      "name": "xTaskCreateStaticPinnedToCore",
+      "start": "0x4038e950",
+      "end": "0x4038ea40",
+      "sha256": "2db652699cc573d2efce67c8f311670395fb82660e45b289a050e164809f1ed1",
+      "proof": "8-argument windowed ABI; stack depth is bytes; StaticTask_t is 0x160",
+      "bytes": 240
+    },
+    {
+      "name": "vTaskDelete",
+      "start": "0x4038db48",
+      "end": "0x4038dc3c",
+      "sha256": "37fe89be6786c94a174bb1a154699126037743ed57faa7e23bb6d918966e64ec",
+      "proof": "void vTaskDelete(TaskHandle_t); owner exits with NULL",
+      "bytes": 244
+    },
+    {
+      "name": "xTaskGetCurrentTaskHandleForCore",
+      "start": "0x4038eb7c",
+      "end": "0x4038eba8",
+      "sha256": "5e770160138c6036ad010a0caf05503623a529b571f4081568054138039ee4eb",
+      "proof": "TaskHandle_t xTaskGetCurrentTaskHandleForCore(BaseType_t)",
+      "bytes": 44
+    },
+    {
+      "name": "renderer_v1_tick",
+      "start": "0x4211960c",
+      "end": "0x42119e34",
+      "sha256": "1a8ab157e36f64cb3b09be5b4ee43172bf86bcdb6486a2139fa8a59ff4c74b2a",
+      "proof": "saved delegate wrapped by sidecar+4 hook",
+      "bytes": 2088
+    },
+    {
+      "name": "renderer_v2_live_tick_prefix",
+      "start": "0x4211dc40",
+      "end": "0x4211dc80",
+      "sha256": "2e02b8a56c1554450697c02598eb34ae4ad1b3dca7157470be65cdfcad8b166a",
+      "proof": "vtable[11] sidecar, magic check, load old_tick at sidecar+4, callx8",
+      "bytes": 64
+    },
+    {
+      "name": "renderer_v2_attach",
+      "start": "0x4211da68",
+      "end": "0x4211dbe8",
+      "sha256": "20989516af42b29903ecd1db7a82f85bdd3e1e09985ad3195ba40bec2729dd0e",
+      "proof": "slot6 remains 0x4211dc40; sidecar placed in slot11",
+      "bytes": 384
+    },
+    {
+      "name": "stock_rpc_registry_getter",
+      "start": "0x42004afc",
+      "end": "0x42004b28",
+      "sha256": "5f5af85220d6da8255e7f679343e6866b991a6baa521c20e2df97dd9355085db",
+      "proof": "boot-lifetime RPC registry singleton getter",
+      "bytes": 44
+    },
+    {
+      "name": "renderer_scene_rpc_register_one",
+      "start": "0x4211b7c8",
+      "end": "0x4211b7f4",
+      "sha256": "ad44433930c1e66f7b42e74acdc08f15b5465bec8e7a61d05cf71c4fca344c4a",
+      "proof": "copies context/closure, registers persistent method, destroys temporary callback",
+      "bytes": 44
+    },
+    {
+      "name": "renderer_scene_rpc_reply_status",
+      "start": "0x4211ba58",
+      "end": "0x4211bac8",
+      "sha256": "b32c2c68bfdac4bf3dc7e6e192b2276b2271655daf477eeb24a2f084762a14fc",
+      "proof": "owned state+313 key and state+192/+200 status strings",
+      "bytes": 112
+    }
+  ],
+  "sourcePins": [
+    {
+      "file": "f1-widget-sdk/build/combined-renderer-v2-clock-blue-timer/renderer-v2-chain.S",
+      "sha256": "49fed894cf09bbe215dee5e74ccc64262ef0480b8e938940162ce7ce2a18f717"
+    },
+    {
+      "file": "f1-widget-sdk/build/combined-renderer-v2-clock-blue-timer/renderer-v2-native-source.c",
+      "sha256": "7183c79aabdb2c60a2992608a2ac187a721a2ec2e587123ff64b498be8cceafe"
+    },
+    {
+      "file": "f1-widget-sdk/examples/renderer-id26/on-device/renderer-v1-scene-rpc.S",
+      "sha256": "9267dfe3819574bfcd407db851d9810739af8f7868bde68bbf037f1bcc91f728"
+    },
+    {
+      "file": "custom-firmware/experimental/stage3d-wpm-pet.S",
+      "sha256": "c6cce0980db2c77ba420d19b0c3e63409ce601a60a983876d3f71c01ac71b895"
+    }
+  ],
+  "staticBridge": {
+    "core": "build/stock-bridge-core.o",
+    "bytes": 16956,
+    "sha256": "0406f9e8341f79d5f6cc602460c1bf405508c5aff4a4be5fa97244beacc4c676",
+    "unresolved": [
+      "framer_stock_bridge_resident_abort",
+      "framer_stock_bridge_resident_boot",
+      "framer_stock_bridge_resident_state"
+    ],
+    "textBytes": 1836,
+    "absolute": {
+      "framer_stock_heap_caps_free": "0x4037e250",
+      "framer_stock_heap_caps_malloc": "0x4037e55c",
+      "framer_stock_task_delete": "0x4038db48",
+      "framer_stock_task_create_static_pinned": "0x4038e950",
+      "framer_stock_task_current_for_core": "0x4038eb7c",
+      "framer_stock_rpc_registry": "0x42004afc",
+      "framer_stock_key_callback_original": "0x4206eae0",
+      "framer_stock_heap_caps_get_free_size": "0x420c8200",
+      "framer_stock_heap_caps_get_largest_free_block": "0x420c82c4",
+      "framer_stock_rpc_register_one": "0x4211b7c8",
+      "framer_stock_rpc_reply_status": "0x4211ba58"
+    }
+  },
+  "tailPatch": {
+    "patchAddress": "0x42118cdd",
+    "patchBytes": "c6df15",
+    "trampolineProbeAddress": "0x4211e460",
+    "startupProbeAddress": "0x4211e480",
+    "semantics": "J -> entryless mov a10,a6; call8 startup; retw.n"
+  },
+  "matrix": [
+    {
+      "seam": "setup tail/startup return",
+      "status": "PROVEN_STATIC",
+      "detail": "3-byte J reaches entry-less trampoline; call8 startup returns through original retw window; controller valid only on successful chain path and is runtime-validated"
+    },
+    {
+      "seam": "heap allocation/free/preflight",
+      "status": "PROVEN_STATIC",
+      "detail": "exact full spans; PSRAM allocation is range-checked; internal/PSRAM free+largest are sampled"
+    },
+    {
+      "seam": "static pinned task/create/delete/current token",
+      "status": "PROVEN_STATIC",
+      "detail": "exact full spans; 0x160 TCB; caller-owned internal stack; owner acknowledges then vTaskDelete(NULL)"
+    },
+    {
+      "seam": "task stack high-water",
+      "status": "UNPROVEN_NO_GO",
+      "detail": "uxTaskGetStackHighWaterMark symbols were linker-GC'd; no address is invented"
+    },
+    {
+      "seam": "task WDT lifecycle",
+      "status": "UNPROVEN_NO_GO",
+      "detail": "complete add/reset/delete tuple and recovery behavior are not pinned; bridge deliberately does not register"
+    },
+    {
+      "seam": "UI-thread mailbox callback",
+      "status": "PROVEN_STATIC",
+      "detail": "wrap sidecar old_tick at +4, call renderer-v1 first, then bounded sink; slot6 remains 0x4211dc40 so ID26/27 and native APIs retain identity"
+    },
+    {
+      "seam": "general mailbox-to-DOM rendering",
+      "status": "UNPROVEN_NO_GO",
+      "detail": "bridge exposes the UI sink but does not implement arbitrary 16-slot renderer semantics"
+    },
+    {
+      "seam": "stock-first key ingress",
+      "status": "PROVEN_STATIC",
+      "detail": "image-time literal patch target; original callback runs first; opaque u32+u8 copied only into a nonblocking sink"
+    },
+    {
+      "seam": "key hook removal",
+      "status": "CONDITIONAL_NO_GO",
+      "detail": "immutable IROM literal cannot be restored at runtime; logical detach/quiesce preserves stock fallback but requires input delivery paused before cache-off flash work"
+    },
+    {
+      "seam": "owned capability/status RPC",
+      "status": "PROVEN_STATIC_NO_RECEIPT",
+      "detail": "boot-lifetime RAM method/key/value/context; exact existing register/reply helpers; registration API has no applied receipt"
+    },
+    {
+      "seam": "automatic cache/flash-operation interception",
+      "status": "UNPROVEN_NO_GO",
+      "detail": "no exact notification seam recovered; all module writes must be routed through explicit stop/destroy/unmap quiescence"
+    },
+    {
+      "seam": "resident integration",
+      "status": "FAIL_CLOSED_NO_GO",
+      "detail": "production object intentionally retains only framer_stock_bridge_resident_abort, framer_stock_bridge_resident_boot, framer_stock_bridge_resident_state"
+    }
+  ],
+  "explicitNonClaims": [
+    "No firmware image was produced or patched.",
+    "No keyboard was connected, flashed, or exercised.",
+    "The illustrative trampoline addresses prove instruction feasibility, not final resident placement.",
+    "The status RPC registration attempt is not an applied-revision or delivery receipt.",
+    "Logical key detach does not intercept or serialize arbitrary stock flash operations."
+  ]
+}

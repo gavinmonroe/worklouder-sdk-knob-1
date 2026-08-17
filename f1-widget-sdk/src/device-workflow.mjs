@@ -65,6 +65,20 @@ export const ACCEPTED_LIVE_ROLLBACKS = Object.freeze({
     recoveryBytes: 16_777_216,
     recoverySha256: "aa6042310d075c9cbd3b992044511c064bb4b84713d0740a3adafcbdb3028fdd",
   }),
+  "1363d31eabba2b61e068d760d966ab25f8b17d1c635a4c91ba7ecd2a0de238e9": Object.freeze({
+    proofId: "framer-f1-0.4.1-renderer-v2-blue-clock-timer-36317013",
+    receiptFile: path.join(SDK_ROOT,
+      "build/device-receipts/device-1786939039376-fast-smoke.json"),
+    receiptBytes: 2_414,
+    receiptSha256: "1363d31eabba2b61e068d760d966ab25f8b17d1c635a4c91ba7ecd2a0de238e9",
+    device: "knob_f1",
+    firmware: "0.4.1",
+    mac: EXPECTED_MAC,
+    appBytes: 2_062_912,
+    appSha256: "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
+    recoveryBytes: 16_777_216,
+    recoverySha256: "aa6042310d075c9cbd3b992044511c064bb4b84713d0740a3adafcbdb3028fdd",
+  }),
 });
 export const DEVICE_WORKFLOW = Object.freeze({
   deviceType: "knob_f1", firmware: "0.4.1", chip: "ESP32-S3", mac: EXPECTED_MAC,
@@ -658,6 +672,180 @@ function validateRendererV2Accepted7838BlueTimerAnimationReuse(approval, appByte
     "Blue-timer candidate aliases an ESP32-S3 DROM/IROM MMU index.");
 }
 
+function exactObjectKeys(value, expected) {
+  if (!value || typeof value !== "object" || Array.isArray(value) ||
+      Object.getPrototypeOf(value) !== Object.prototype) return false;
+  const actual = Object.keys(value);
+  const allowed = new Set(expected);
+  return actual.length === allowed.size && expected.length === allowed.size &&
+    actual.every((key) => allowed.has(key));
+}
+
+function validateRendererV2GenericStructuralReuse(approval, appBytes, rollbackBytes) {
+  const runtime = approval.runtime;
+  const wrapper = runtime?.wrapperCall;
+  const expectedAppFile = path.join(SDK_ROOT,
+    "build/combined-renderer-v2-generic-input-lab/" +
+    "framer-0.4.1-input-lab-renderer-v2-generic-id26-app.bin");
+  const expectedRollbackFile = path.join(SDK_ROOT,
+    "build/combined-renderer-v2-clock-blue-timer/" +
+    "framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-blue-timer-app.bin");
+  const expectedRecoveryFile = path.join(WORKSPACE_ROOT,
+    "recovery/backups/2026-08-15-framer-f1-a4cb8faf3210-before-custom/" +
+    "full-flash-16mb.bin");
+  const runtimeKeys = [
+    "acceptedDromPrefixBytes", "acceptedIromBytes", "additionalScreenIds",
+    "allAssetBytesBelow", "bootProgram", "borrowedFramebufferBytes",
+    "dromExtensionBytes", "dromMappingProfile", "dromMutationBytes",
+    "eventRpcAllocationBytes", "extraFramebufferBytes", "headroomBytes",
+    "hostRpcIds", "integratedIromCavityBytes", "integratedIromEntryAddress",
+    "integratedIromModuleAddress", "integratedIromModuleBytes",
+    "integratedIromModuleSha256", "iromEndExclusive", "keyboardKeyEvents",
+    "manualScreenAcceptancePending", "maxF2epBytes", "maxTransportBytes",
+    "nativeEvents", "nativeRtc", "newDromAssets", "ownedBundleAllocationBytes",
+    "ownedProgramAllocationBytes", "packageFormat", "renderV2Profile",
+    "rendererControllerAllocationBytes", "repeatPush", "runtimeMapPatch",
+    "sceneRpcAllocationBytes", "screenIds", "sidecarAllocationBytes",
+    "v1Packages", "wrapperCall",
+  ];
+  assert(exactObjectKeys(approval, ["format", "status", "deployable", "target", "write",
+    "app", "rollback", "recovery", "runtime"]) &&
+    exactObjectKeys(approval.target, ["device", "firmware", "chip", "mac"]) &&
+    exactObjectKeys(approval.write, ["offset", "scope", "hardwareWriteApproved"]) &&
+    exactObjectKeys(approval.app, ["file", "bytes", "sha256"]) &&
+    exactObjectKeys(approval.rollback, ["mode", "file", "bytes", "sha256", "receipt"]) &&
+    exactObjectKeys(approval.rollback.receipt, ["file", "bytes", "sha256"]) &&
+    exactObjectKeys(approval.recovery, ["file", "bytes", "sha256"]) &&
+    path.resolve(approval.app.file) === expectedAppFile &&
+    path.resolve(approval.rollback.file) === expectedRollbackFile &&
+    path.resolve(approval.recovery.file) === expectedRecoveryFile &&
+    approval.recovery.bytes === 16_777_216 && approval.recovery.sha256 ===
+      "aa6042310d075c9cbd3b992044511c064bb4b84713d0740a3adafcbdb3028fdd",
+  "Generic Render-v2 approval changed its exact document shape or artifact paths.");
+  assert(approval.deployable === true && approval.app?.bytes === 2_062_912 &&
+    approval.app.sha256 ===
+      "371ee26ebb74c37fde96213ace9f4c506ac98d5293ff09ffe3f863ced9c98f06" &&
+    approval.rollback?.bytes === 2_062_912 && approval.rollback.sha256 ===
+      "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
+  "Generic Render-v2 approval is not pinned to the frozen candidate and accepted 363 rollback.");
+  assert(exactObjectKeys(runtime, runtimeKeys) &&
+    runtime.dromMappingProfile === "generic-render-v2-structural-v1" &&
+    runtime.allAssetBytesBelow === "0x3c1d0000" && runtime.headroomBytes === 17 &&
+    runtime.newDromAssets === false && runtime.dromMutationBytes === 0 &&
+    runtime.dromExtensionBytes === 0 && runtime.acceptedDromPrefixBytes === 725_360 &&
+    runtime.acceptedIromBytes === 1_179_384 &&
+    runtime.iromEndExclusive === "0x42120000" && runtime.runtimeMapPatch === null &&
+    runtime.borrowedFramebufferBytes === 62_000 && runtime.extraFramebufferBytes === 0 &&
+    runtime.rendererControllerAllocationBytes === 62_164 &&
+    runtime.sidecarAllocationBytes === 692 && runtime.ownedBundleAllocationBytes === 98_304 &&
+    runtime.ownedProgramAllocationBytes === 29_824 &&
+    runtime.sceneRpcAllocationBytes === 98_624 && runtime.eventRpcAllocationBytes === 40 &&
+    runtime.renderV2Profile === "framer-f1-render-v2-structural-v1" &&
+    runtime.packageFormat === "framer-render-v2-package-v1" &&
+    runtime.v1Packages === true && runtime.maxTransportBytes === 98_304 &&
+    runtime.maxF2epBytes === 29_824 &&
+    runtime.repeatPush === "ui-detach-copy-swap-owned-buffers-v1" &&
+    Array.isArray(runtime.hostRpcIds) && runtime.hostRpcIds.length === 2 &&
+    runtime.hostRpcIds[0] === 1 && runtime.hostRpcIds[1] === 65_535 &&
+    runtime.keyboardKeyEvents === false && runtime.nativeRtc === false &&
+    runtime.bootProgram === false,
+  "Generic Render-v2 approval lost its exact memory, capability, or ownership contract.");
+  assert(exactObjectKeys(runtime.screenIds, ["music", "wpm", "inputLab"]) &&
+    runtime.screenIds.music === 1 && runtime.screenIds.wpm === 7 &&
+    runtime.screenIds.inputLab === 26 &&
+    exactObjectKeys(runtime.nativeEvents, ["tick100", "tick1", "fnBottomKnob", "hostRpc"]) &&
+    runtime.nativeEvents.tick100 === true && runtime.nativeEvents.tick1 === true &&
+    runtime.nativeEvents.fnBottomKnob === true && runtime.nativeEvents.hostRpc === true &&
+    Array.isArray(runtime.additionalScreenIds) && runtime.additionalScreenIds.length === 0 &&
+    Array.isArray(runtime.manualScreenAcceptancePending) &&
+    runtime.manualScreenAcceptancePending.length === 1 &&
+    runtime.manualScreenAcceptancePending[0] === 26,
+  "Generic Render-v2 approval lost its exact event or ID26 screen contract.");
+  assert(runtime.integratedIromModuleAddress === "0x421187cc" &&
+    runtime.integratedIromEntryAddress === "0x42118c3c" &&
+    runtime.integratedIromModuleBytes === 22_740 &&
+    runtime.integratedIromCavityBytes === 30_540 &&
+    runtime.integratedIromModuleSha256 ===
+      "4fd8a7b848705f22eb96463ae915caa41aedbd04147e0ece0b7b9a201cd2c1a4" &&
+    exactObjectKeys(wrapper, ["address", "acceptedBytes", "candidateBytes"]) &&
+    wrapper.address === "0x421170c5" && wrapper.acceptedBytes === "25ba01" &&
+    wrapper.candidateBytes === "65b701",
+  "Generic Render-v2 approval lost its exact audited module, entry, cavity, or wrapper pin.");
+
+  const candidate = inspectEsp32AppImage(appBytes);
+  const live = inspectEsp32AppImage(rollbackBytes);
+  const expectedSegments = [
+    [0x3c120020, 725_360, 32,
+      "e108e7e3aefc9cccaa1abc22eb9de77026e8a1d9e145e1a8219edb96917c47f1"],
+    [0x3fca4f00, 23_136, 725_400,
+      "04b0bae3b9d09209cd7d152e5d7cdb3ff6b5ad24560f6386f98effc30f8c62d7"],
+    [0x40374000, 37_912, 748_544,
+      "0910ab78b191cc60879c62d565c1bc2d1b792dd6d4ba2b4bf1dd93fa541e2d8c"],
+    [0x42000020, 1_179_384, 786_464,
+      "ef1e041021d2f2076e63d2677215f875716ebf526a7871be499f80627a98bf19"],
+    [0x4037d418, 96_740, 1_965_856,
+      "247858cbc0937d3a22b0f596cedf97b125334b0ec1e5f4c75848acd69b22e696"],
+    [0x600fe000, 264, 2_062_604,
+      "9f83770ff14f9c88f49ebcef1e9294f136fe9112e2f2aec69fd24c137c1dc581"],
+  ];
+  assert(candidate.segmentCount === expectedSegments.length &&
+    live.segmentCount === expectedSegments.length && appBytes.length === rollbackBytes.length,
+  "Generic Render-v2 profile requires the exact accepted six-segment app shape.");
+  for (let index = 0; index < expectedSegments.length; index += 1) {
+    const [address, bytes, dataOffset, liveSha] = expectedSegments[index];
+    const candidateSegment = candidate.segments[index];
+    const liveSegment = live.segments[index];
+    assert(liveSegment.loadAddress === address && liveSegment.length === bytes &&
+      liveSegment.dataOffset === dataOffset && sha256(liveSegment.data) === liveSha &&
+      candidateSegment.loadAddress === address && candidateSegment.length === bytes &&
+      candidateSegment.dataOffset === dataOffset,
+    `Generic Render-v2 candidate or rollback changed exact segment ${index} layout/hash.`);
+    if (index !== PINNED.iromSegmentIndex) {
+      assert(candidateSegment.data.equals(liveSegment.data),
+        `Generic Render-v2 candidate changed preserved segment ${index}.`);
+    }
+  }
+  const candidateIrom = candidate.segments[PINNED.iromSegmentIndex];
+  const liveIrom = live.segments[PINNED.iromSegmentIndex];
+  assert(sha256(candidateIrom.data) ===
+    "e2e19f389acfd642269ed605bdde00e16fc715fd5bf5649d364743c370fd68b9",
+  "Generic Render-v2 candidate IROM differs from the frozen audited segment.");
+  const wrapperOffset = Number.parseInt(wrapper.address, 16) - liveIrom.loadAddress;
+  const moduleAddress = Number.parseInt(runtime.integratedIromModuleAddress, 16);
+  const moduleOffset = moduleAddress - liveIrom.loadAddress;
+  const moduleEnd = moduleOffset + runtime.integratedIromModuleBytes;
+  const cavityEnd = moduleOffset + runtime.integratedIromCavityBytes;
+  const entryAddress = Number.parseInt(runtime.integratedIromEntryAddress, 16);
+  assert(wrapperOffset >= 0 && moduleOffset > wrapperOffset + 3 &&
+    entryAddress >= moduleAddress && entryAddress < moduleAddress + runtime.integratedIromModuleBytes &&
+    candidateIrom.data.subarray(0, wrapperOffset).equals(liveIrom.data.subarray(0, wrapperOffset)) &&
+    liveIrom.data.subarray(wrapperOffset, wrapperOffset + 3).toString("hex") ===
+      wrapper.acceptedBytes &&
+    candidateIrom.data.subarray(wrapperOffset, wrapperOffset + 3).toString("hex") ===
+      wrapper.candidateBytes &&
+    candidateIrom.data.subarray(wrapperOffset + 3, moduleOffset)
+      .equals(liveIrom.data.subarray(wrapperOffset + 3, moduleOffset)),
+  "Generic Render-v2 candidate escaped the exact three-byte wrapper mutation.");
+  assert(cavityEnd === candidateIrom.length && moduleEnd <= cavityEnd &&
+    sha256(candidateIrom.data.subarray(moduleOffset, moduleEnd)) ===
+      runtime.integratedIromModuleSha256 &&
+    candidateIrom.data.subarray(moduleEnd, cavityEnd).every((value) => value === 0),
+  "Generic Render-v2 candidate escaped the exact audited module plus zero-tail IROM cavity.");
+  const candidateDrom = candidate.segments[PINNED.dromSegmentIndex];
+  const dromPages = mmuPageIndices(candidateDrom);
+  const iromPages = mmuPageIndices(candidateIrom);
+  assert(candidateDrom.data.equals(live.segments[PINNED.dromSegmentIndex].data) &&
+    candidateIrom.loadAddress + candidateIrom.length <= 0x42120000 &&
+    [...dromPages].every((page) => !iromPages.has(page)),
+  "Generic Render-v2 candidate changed DROM or aliases an ESP32-S3 DROM/IROM MMU index.");
+  /* Deliberately keep this exact frozen hash non-deployable until a rebuilt module
+   * gives protocol and v1Packages independent JSON storage and receives a new audit. */
+  assert(approval.app.sha256 !==
+    "371ee26ebb74c37fde96213ace9f4c506ac98d5293ff09ffe3f863ced9c98f06",
+  "Generic Render-v2 frozen candidate fails the exact capability ABI: the protocol and " +
+  "v1Packages fields reuse borrowed stack-backed JSON key/value storage.");
+}
+
 export function validateDeviceApproval(approval, { appBytes, rollbackBytes,
   rollbackReceiptBytes = null, fullReadback = false }) {
   assert(approval?.format === DEVICE_APPROVAL_FORMAT, `Approval format must be ${DEVICE_APPROVAL_FORMAT}.`);
@@ -690,6 +878,8 @@ export function validateDeviceApproval(approval, { appBytes, rollbackBytes,
   } else if (approval.runtime?.dromMappingProfile ===
       "accepted-7838-blue-timer-animation-reuse-v1") {
     validateRendererV2Accepted7838BlueTimerAnimationReuse(approval, appBytes, rollbackBytes);
+  } else if (approval.runtime?.dromMappingProfile === "generic-render-v2-structural-v1") {
+    validateRendererV2GenericStructuralReuse(approval, appBytes, rollbackBytes);
   } else {
     assert(approval.runtime?.allAssetBytesBelow === "0x3c1d0000" &&
       Number.isInteger(approval.runtime?.headroomBytes) && approval.runtime.headroomBytes > 0,

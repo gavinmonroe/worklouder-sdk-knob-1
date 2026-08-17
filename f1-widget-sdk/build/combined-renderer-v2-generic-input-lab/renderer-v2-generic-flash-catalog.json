@@ -1,0 +1,31 @@
+{
+  "format": "framer-input-lab-public-flash-catalog-v1",
+  "status": "DEVICE_SMOKE_CANDIDATE",
+  "deployable": true,
+  "id": "input-lab-render-v2-generic",
+  "name": "Input Lab Render-v2 (Structural)",
+  "rendererProfile": "framer-f1-render-v2-structural-v1",
+  "packageFormat": "framer-render-v2-package-v1",
+  "screenId": 26,
+  "capabilities": {
+    "maxBundleBytes": "98304",
+    "chunkRawBytes": "3072",
+    "maxChunks": "32",
+    "v1Packages": "true",
+    "keyboardKeyEvents": false
+  },
+  "app": {
+    "file": "framer-0.4.1-input-lab-renderer-v2-generic-id26-app.bin",
+    "bytes": 2062912,
+    "sha256": "371ee26ebb74c37fde96213ace9f4c506ac98d5293ff09ffe3f863ced9c98f06"
+  },
+  "approval": {
+    "file": "combined-renderer-v2-generic-input-lab-device-approval.json",
+    "sha256": "8e8b795f3fb45bcee2456ff0a9291b16ff2f2128eba8d37f1aa2a668cf17a6fa"
+  },
+  "rollback": {
+    "bytes": 2062912,
+    "sha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
+    "receiptSha256": "1363d31eabba2b61e068d760d966ab25f8b17d1c635a4c91ba7ecd2a0de238e9"
+  }
+}
