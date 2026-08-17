@@ -350,16 +350,23 @@ export function validateApproval(approval, { requireIndependentAudit = true } = 
 
   exactKeys(approval.recovery, ["physicalBoot", "failurePolicy"], "approval.recovery");
   exactKeys(approval.recovery.physicalBoot,
-    ["gpio0Located", "enLocated", "procedureRehearsed", "operator", "evidence"],
+    ["gpio0Located", "enLocated", "procedureRehearsed", "unrehearsedRiskAccepted", "operator", "evidence"],
     "approval.recovery.physicalBoot");
-  invariant(approval.recovery.physicalBoot.gpio0Located === true &&
-    approval.recovery.physicalBoot.enLocated === true &&
-    approval.recovery.physicalBoot.procedureRehearsed === true &&
-    typeof approval.recovery.physicalBoot.operator === "string" &&
-    approval.recovery.physicalBoot.operator.length > 0 &&
-    typeof approval.recovery.physicalBoot.evidence === "string" &&
-    approval.recovery.physicalBoot.evidence.length > 0,
-  "Physical GPIO0/BOOT + EN recovery must be located and rehearsed before the canary write.");
+  const boot = approval.recovery.physicalBoot;
+  invariant(typeof boot.operator === "string" && boot.operator.length > 0 &&
+    typeof boot.evidence === "string" && boot.evidence.length > 0,
+  "Physical recovery attestation requires a named operator and evidence text.");
+  const rehearsed = boot.gpio0Located === true && boot.enLocated === true &&
+    boot.procedureRehearsed === true && boot.unrehearsedRiskAccepted === false;
+  // Honest alternative: the operator explicitly records that GPIO0/EN was NOT
+  // located or rehearsed and accepts that recovery relies on the app-RPC
+  // bootloader route, exactly as for every prior app-only write to this unit.
+  const acceptedUnrehearsed = boot.gpio0Located === false && boot.enLocated === false &&
+    boot.procedureRehearsed === false && boot.unrehearsedRiskAccepted === true &&
+    /app-rpc|sendIntoBootloader|enter-bootloader/iu.test(boot.evidence);
+  invariant(rehearsed || acceptedUnrehearsed,
+    "Physical GPIO0/BOOT + EN recovery must be located and rehearsed before the canary write, " +
+    "or the operator must explicitly accept the unrehearsed app-RPC-only recovery posture.");
   invariant(approval.recovery.failurePolicy ===
     "no-map-retry; disable-capability; physical-boot; restore-healthy-app-first",
   "Failure policy changed.");

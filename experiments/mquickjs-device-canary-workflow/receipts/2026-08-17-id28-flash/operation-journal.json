@@ -1,0 +1,114 @@
+{
+  "format": "framer-f1-mquickjs-multi-region-flash-receipt-v1",
+  "mode": "flash",
+  "status": "PASS_FLASH_REBOOTED_CAPABILITY_SMOKE_PENDING",
+  "startedAt": "2026-08-17T19:01:03.966Z",
+  "approvalSha256": "057f0f3ae51abb0497682d26d67b8c86f8755d989f4dfd726afc614b805ccdc7",
+  "target": {
+    "device": "knob_f1",
+    "firmware": "0.4.1",
+    "chip": "ESP32-S3",
+    "mac": "a4:cb:8f:af:32:10",
+    "flashBytes": 16777216
+  },
+  "order": [
+    "module.text",
+    "module.rodata",
+    "candidate.app"
+  ],
+  "partitionTableSha256": "0fd9d822df95bc3ad22aa3c56a68ab999e0b34f0fe38c6896add5314ded40902",
+  "phases": [
+    {
+      "phase": "identity",
+      "status": "PASS_READ_ONLY"
+    },
+    {
+      "phase": "baseline",
+      "status": "PASS_READ_ONLY",
+      "appSha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32"
+    },
+    {
+      "phase": "module.text",
+      "status": "PASS_BYTE_EXACT",
+      "write": {
+        "offset": 2162688,
+        "bytes": 131072,
+        "sha256": "bd46e3473b8493291aadebcf1d093e812a0788866e787663920637a3d76c8c43",
+        "baud": 921600,
+        "hashVerifiedByEsptool": true
+      },
+      "readback": {
+        "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-device-canary-workflow/receipts/2026-08-17-id28-flash/module.text-readback.bin",
+        "offset": 2162688,
+        "bytes": 131072,
+        "sha256": "bd46e3473b8493291aadebcf1d093e812a0788866e787663920637a3d76c8c43"
+      }
+    },
+    {
+      "phase": "module.rodata",
+      "status": "PASS_BYTE_EXACT",
+      "write": {
+        "offset": 2293760,
+        "bytes": 65536,
+        "sha256": "72a2a26cb9cb0c0c52ab0ee897ad5d59b0a3c9765d3f495bfe96565b305a8c43",
+        "baud": 921600,
+        "hashVerifiedByEsptool": true
+      },
+      "readback": {
+        "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-device-canary-workflow/receipts/2026-08-17-id28-flash/module.rodata-readback.bin",
+        "offset": 2293760,
+        "bytes": 65536,
+        "sha256": "72a2a26cb9cb0c0c52ab0ee897ad5d59b0a3c9765d3f495bfe96565b305a8c43"
+      }
+    },
+    {
+      "phase": "candidate.app",
+      "status": "PASS_BYTE_EXACT_APP_LAST",
+      "write": {
+        "offset": 65536,
+        "bytes": 2062912,
+        "sha256": "674054a6e9d6536ad2414096cd89c1025e78904dff6b4a1aee0ef8cab434e808",
+        "baud": 921600,
+        "hashVerifiedByEsptool": true
+      },
+      "readback": {
+        "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-device-canary-workflow/receipts/2026-08-17-id28-flash/candidate-app-readback.bin",
+        "offset": 65536,
+        "bytes": 2062912,
+        "sha256": "674054a6e9d6536ad2414096cd89c1025e78904dff6b4a1aee0ef8cab434e808"
+      }
+    }
+  ],
+  "identity": {
+    "chip": "ESP32-S3",
+    "mac": "a4:cb:8f:af:32:10",
+    "secureBoot": false,
+    "flashEncryption": false,
+    "flashBytes": 16777216
+  },
+  "partitionTable": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-device-canary-workflow/receipts/2026-08-17-id28-flash/partition-table-before.bin",
+    "offset": 32768,
+    "bytes": 4096,
+    "sha256": "0fd9d822df95bc3ad22aa3c56a68ab999e0b34f0fe38c6896add5314ded40902"
+  },
+  "preWrite": {
+    "app": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-device-canary-workflow/receipts/2026-08-17-id28-flash/app-before.bin",
+      "offset": 65536,
+      "bytes": 2062912,
+      "sha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32"
+    }
+  },
+  "moduleDeviceIdentity": {
+    "semantics": "sha256(text[0x210000,0x230000)+rodata[0x230000,0x240000))",
+    "bytes": 196608,
+    "sha256": "b1104134b37c9b6726e96f852b28e1eb971ba3aa4870d44543cfd1c5e8c6a6c1",
+    "exact": true
+  },
+  "finishedAt": "2026-08-17T19:07:48.200Z",
+  "hardwareAccess": true,
+  "runtimeModuleUpdates": false,
+  "runtimeUploader": false,
+  "next": "Require exact capability + RPC smoke; on absence/fault, physical-boot and run rollback."
+}

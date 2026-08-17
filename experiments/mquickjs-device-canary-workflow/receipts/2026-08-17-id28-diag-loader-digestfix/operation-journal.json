@@ -1,0 +1,37 @@
+{
+  "format": "framer-f1-mquickjs-app-only-receipt-v1",
+  "status": "PASS_APP_ONLY_REBOOTED_HEALTH_PENDING",
+  "startedAt": "2026-08-17T19:38:17.558Z",
+  "app": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag/framer-0.4.1-mqjs-id28-DIAG-loader-app.bin",
+    "bytes": 2062912,
+    "sha256": "dcae9948dcc33dbd8f057bfdeb5edc78d00bd2dd4f1ff84ebc9b107153f9df2b",
+    "offset": 65536
+  },
+  "expectLiveSha256": "6fd1383ccccf8d7be057b701f76f07056f9346b179be4cb74ec32674e200aaeb",
+  "phases": [
+    {
+      "phase": "identity",
+      "status": "PASS_READ_ONLY",
+      "mac": "a4:cb:8f:af:32:10"
+    },
+    {
+      "phase": "baseline",
+      "status": "PASS_READ_ONLY",
+      "appSha256": "6fd1383ccccf8d7be057b701f76f07056f9346b179be4cb74ec32674e200aaeb"
+    },
+    {
+      "phase": "app",
+      "status": "PASS_BYTE_EXACT",
+      "write": {
+        "baud": 921600,
+        "hashVerifiedByEsptool": true
+      },
+      "readback": {
+        "bytes": 2062912,
+        "sha256": "dcae9948dcc33dbd8f057bfdeb5edc78d00bd2dd4f1ff84ebc9b107153f9df2b"
+      }
+    }
+  ],
+  "finishedAt": "2026-08-17T19:44:41.154Z"
+}

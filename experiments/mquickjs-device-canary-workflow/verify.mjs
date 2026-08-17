@@ -91,6 +91,7 @@ function approvalFixture() {
     audit: { verdict: "GO", reviewer: "independent-fixture", reportFile: absolute("audit.json"),
       reportSha256: digest("c") },
     recovery: { physicalBoot: { gpio0Located: true, enLocated: true, procedureRehearsed: true,
+      unrehearsedRiskAccepted: false,
       operator: "fixture", evidence: "fixture-only; no hardware action" },
       failurePolicy: "no-map-retry; disable-capability; physical-boot; restore-healthy-app-first" },
   };
@@ -116,6 +117,22 @@ expectReject((value) => { value.keyEvents.tokenProof.keyTokenNormalization = "ra
 expectReject((value) => { value.keyEvents.tokenProof.rejectedLow24Tokens = []; }, /Right Shift/iu);
 expectReject((value) => { value.runtime.keyNegativeHarness = "unproven"; }, /identity/iu);
 expectReject((value) => { value.recovery.physicalBoot.procedureRehearsed = false; }, /recovery/iu);
+// Silent downgrade is rejected; explicit accepted-unrehearsed attestation is accepted only when
+// all three located/rehearsed flags are false AND the evidence names the app-RPC route.
+expectReject((value) => { value.recovery.physicalBoot.unrehearsedRiskAccepted = true; }, /recovery/iu);
+expectReject((value) => { Object.assign(value.recovery.physicalBoot, { gpio0Located: false,
+  enLocated: false, procedureRehearsed: false, unrehearsedRiskAccepted: true,
+  evidence: "no explanation" }); }, /recovery/iu);
+{
+  const accepted = structuredClone(approvalFixture());
+  Object.assign(accepted.recovery.physicalBoot, { gpio0Located: false, enLocated: false,
+    procedureRehearsed: false, unrehearsedRiskAccepted: true,
+    evidence: "GPIO0/EN pads not located; recovery relies on app-RPC sendIntoBootloader route" });
+  validateApproval(accepted);
+  if (confirmationToken(accepted) === confirmationToken(approval)) {
+    throw new Error("Accepted-unrehearsed approval must produce a distinct confirmation token.");
+  }
+}
 
 const exactReleaseAbi = {
   packageAbiSha256: PINNED.packageAbiSha256,
@@ -374,5 +391,5 @@ process.stdout.write(JSON.stringify({
   rollbackOrder: ["healthy.app"],
   staticMutationRejects: 12,
   syntheticSoakValidator: "PASS_WITH_4_HOSTILE_MUTATIONS_REJECTED",
-  physicalCandidate: "WAITING_FOR_LINK_HASHES_KEY_TOKEN_PROOF_INDEPENDENT_AUDIT_GPIO0_REHEARSAL",
+  physicalCandidate: "WAITING_FOR_LINK_HASHES_KEY_TOKEN_PROOF_INDEPENDENT_AUDIT_GPIO0_REHEARSAL_OR_ACCEPTED_UNREHEARSED",
 }, null, 2) + "\n");

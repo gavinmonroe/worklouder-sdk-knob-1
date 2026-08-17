@@ -1,0 +1,249 @@
+{
+  "format": "framer-f1-mquickjs-multi-region-candidate-v1",
+  "status": "LINKED_STATIC_GO_PENDING_PHYSICAL",
+  "deployable": true,
+  "target": {
+    "device": "knob_f1",
+    "firmware": "0.4.1",
+    "chip": "ESP32-S3",
+    "mac": "a4:cb:8f:af:32:10",
+    "flashBytes": 16777216
+  },
+  "factory": {
+    "offset": 65536,
+    "bytes": 8388608,
+    "end": 8454144
+  },
+  "baseline": {
+    "app": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-blue-timer/framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-blue-timer-app.bin",
+      "bytes": 2062912,
+      "sha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
+      "offset": 65536,
+      "end": 2128448
+    },
+    "receipt": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/device-receipts/device-1786939039376-fast-smoke.json",
+      "bytes": 2414,
+      "sha256": "1363d31eabba2b61e068d760d966ab25f8b17d1c635a4c91ba7ecd2a0de238e9"
+    },
+    "recovery": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/recovery/backups/2026-08-15-framer-f1-a4cb8faf3210-before-custom/full-flash-16mb.bin",
+      "bytes": 16777216,
+      "sha256": "aa6042310d075c9cbd3b992044511c064bb4b84713d0740a3adafcbdb3028fdd"
+    }
+  },
+  "candidate": {
+    "app": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-17-id28-abi3-674054a6/framer-0.4.1-mqjs-id28-canary-NO-GO-app.bin",
+      "bytes": 2062912,
+      "sha256": "674054a6e9d6536ad2414096cd89c1025e78904dff6b4a1aee0ef8cab434e808",
+      "offset": 65536,
+      "end": 2128448
+    },
+    "patchProof": {
+      "reportFile": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-17-id28-abi3-674054a6/physical-static-link-report.json",
+      "reportSha256": "ff64f7a5ce4479e24b854bf8829198d4ab97ac6637f2fc5d8803273c7927106b",
+      "ranges": [
+        {
+          "offset": 1054056,
+          "bytes": 3,
+          "end": 1054059,
+          "beforeSha256": "d8dc10b1a149a7a0b1a5388fbf051d3f1aba351bb1b1d5e7cdd15235fed25031",
+          "afterSha256": "f43f06b3a3d9c567253314060634847f72ee981fd23e1974a6371a0a46207840"
+        },
+        {
+          "offset": 1936605,
+          "bytes": 3,
+          "end": 1936608,
+          "beforeSha256": "c0c1754d826e9af9771d981f3f524a1de1fbc76f24fefeeb689abb7cf7b356f9",
+          "afterSha256": "a1ef101fd3550b0a48b3d57b7e76336592067edd9282c0670122db03da7d1b1d"
+        },
+        {
+          "offset": 1959008,
+          "bytes": 2704,
+          "end": 1961712,
+          "beforeSha256": "9dd75789e0f371d50efb6aaf2878d08ccf1374a4189a0941ae6057b11e487c02",
+          "afterSha256": "cd0e352b46d23193d07c696355442ee2a68311c44ad3a901692627560fbde97c"
+        },
+        {
+          "offset": 2062879,
+          "bytes": 33,
+          "end": 2062912,
+          "beforeSha256": "5abb78b1ce2fbc155e0134112bd0d78df9be3a10a66ee3f80a3775af5fafbd4e",
+          "afterSha256": "27a039e0937da42e2edf419a6bbd73ea225c6bb9cfd4b64442497e68430589cc"
+        }
+      ]
+    }
+  },
+  "module": {
+    "slot": "A",
+    "text": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-17-id28-abi3-674054a6/mqjs-id28-text-page.bin",
+      "bytes": 131072,
+      "sha256": "bd46e3473b8493291aadebcf1d093e812a0788866e787663920637a3d76c8c43",
+      "offset": 2162688,
+      "end": 2293760
+    },
+    "rodata": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-17-id28-abi3-674054a6/mqjs-id28-rodata-page.bin",
+      "bytes": 65536,
+      "sha256": "72a2a26cb9cb0c0c52ab0ee897ad5d59b0a3c9765d3f495bfe96565b305a8c43",
+      "offset": 2293760,
+      "end": 2359296
+    },
+    "deviceIdentity": {
+      "semantics": "sha256(text[0x210000,0x230000)+rodata[0x230000,0x240000))",
+      "bytes": 196608,
+      "sha256": "b1104134b37c9b6726e96f852b28e1eb971ba3aa4870d44543cfd1c5e8c6a6c1"
+    },
+    "slotB": {
+      "offset": 2359296,
+      "bytes": 196608,
+      "end": 2555904,
+      "policy": "untouched"
+    }
+  },
+  "write": {
+    "order": [
+      "module.text",
+      "module.rodata",
+      "candidate.app"
+    ],
+    "readback": "each-region-byte-exact-before-next-write",
+    "appLast": true,
+    "partitionTableUnchanged": true,
+    "scope": "factory-app-plus-slot-a-only"
+  },
+  "rollback": {
+    "order": [
+      "healthy.app"
+    ],
+    "app": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-blue-timer/framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-blue-timer-app.bin",
+      "bytes": 2062912,
+      "sha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
+      "offset": 65536,
+      "end": 2128448
+    },
+    "residualModulePolicy": "inert-after-healthy-app-first; no erase required",
+    "receipt": {
+      "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/device-receipts/device-1786939039376-fast-smoke.json",
+      "bytes": 2414,
+      "sha256": "1363d31eabba2b61e068d760d966ab25f8b17d1c635a4c91ba7ecd2a0de238e9"
+    }
+  },
+  "runtime": {
+    "profile": "framer-f1-render-v2-mquickjs-v1",
+    "packageFormat": "framer-render-v2-mquickjs-package-v1",
+    "packageAbiSha256": "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
+    "moduleAbiSha256": "ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb",
+    "engineCommit": "203d5bb79789bc47b74855d9207415dab71661a0",
+    "generation": 19,
+    "rpcProtocol": "framer-f1-mquickjs-canary-rpc-v1",
+    "capabilityMethod": "widget.mquickjs.cap",
+    "telemetryMethod": "widget.mquickjs.telemetry",
+    "eventMethod": "widget.mquickjs.event",
+    "receiptMethod": "widget.mquickjs.receipt",
+    "telemetrySnapshotProtocol": "p0-locks-snapshot-ordered-p1-p5-expiry-clear-v1",
+    "uiLatencyMetric": "id28-full-proxy-tick-oldtick-base-lzss-f2tf-publish-us-v1",
+    "allocationMapOrdering": "internal-block-before-first-mmu-map-adopt-or-rollback-v1",
+    "keyNegativeHarness": "low24-e5-observed-never-mapped-pass-v1",
+    "screens": [
+      1,
+      7,
+      26,
+      27,
+      28
+    ],
+    "rpcIds": [
+      45632,
+      45633,
+      45634,
+      45635,
+      45636,
+      45645,
+      45646,
+      45647
+    ],
+    "embedded": {
+      "policy": "boot-lifetime-read-only-no-uploader-no-runtime-unmap",
+      "canary": {
+        "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-17-id28-abi3-674054a6/weather-id28-gen19.f2js",
+        "bytes": 7416,
+        "sha256": "7aeeecde59bd686b3455feadc74b4b7705ca0c8ea933f9b0669cb8dc656c284e"
+      },
+      "weatherFacade": {
+        "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-17-id28-abi3-674054a6/weather-id28-gen19.f2tf",
+        "bytes": 1375,
+        "sha256": "c436eea7ec9bfc85bbb9514923ea5bf4084ecbcb712ab5c183b9dd2adfd75743"
+      },
+      "weatherBase": {
+        "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-17-id28-abi3-674054a6/weather-id28-base.lzss",
+        "bytes": 2086,
+        "sha256": "dbf16d41750555b7a3403b4b568530a0b5cab1d6b3bf0558c836823749293a12"
+      }
+    }
+  },
+  "keyEvents": {
+    "enabled": true,
+    "mode": "fixed-token-map-v1",
+    "stockFirst": true,
+    "carrier": {
+      "address": "0x4206eae0",
+      "bytes": 104,
+      "sha256": "96316a9091816bf7290c75ebe6be76e4ed184ee13fdef6c50b77e791b5ecfa2b"
+    },
+    "literal": {
+      "address": "0x42041568",
+      "bytes": 4,
+      "sha256": "3d5174006fa28e9caeef531cbcdec7bd1d552b0ab7ad1d4f4a8d30c44c0e1dda"
+    },
+    "tokenProof": {
+      "status": "EXACT_TOKEN_MAP_PROVEN",
+      "reportFile": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-17-id28-abi3-674054a6/key-token-proof.json",
+      "reportSha256": "2ea3289702fc4608518aa40157cf1a89915ac358d44ec137526f9ae0ea228b39",
+      "acceptedAppSha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
+      "evidence": {
+        "callbackSpanSha256": "96316a9091816bf7290c75ebe6be76e4ed184ee13fdef6c50b77e791b5ecfa2b",
+        "callbackLiteralSha256": "3d5174006fa28e9caeef531cbcdec7bd1d552b0ab7ad1d4f4a8d30c44c0e1dda",
+        "spaceInstructionSha256": "5c992029c86fe57f2685b6b68b6ef2595fe23ab0a8762dd991fbe7f42a256eb1",
+        "leftShiftInstructionSha256": "8f30bf1c859978bd464ef0b87aa50943697c88b4ecd31f11233116db2926356d"
+      },
+      "mappings": [
+        {
+          "logical": 0,
+          "nativeToken": 44
+        },
+        {
+          "logical": 1,
+          "nativeToken": 225
+        }
+      ],
+      "chordHeldMask": 3,
+      "keyTokenNormalization": "raw-low24-after-stock-first-v1",
+      "rejectedLow24Tokens": [
+        229
+      ],
+      "postFlashObservationRequired": true,
+      "learning": null
+    }
+  },
+  "audit": {
+    "verdict": "GO",
+    "reviewer": "codex-runtime-proof-independent-auditor",
+    "reportFile": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-runtime-proof/build/physical-link-audit.json",
+    "reportSha256": "00b4da207ce7b19077fb1fd0261a9c517626ed799b159d2c420445b7963027fd"
+  },
+  "recovery": {
+    "physicalBoot": {
+      "gpio0Located": false,
+      "enLocated": false,
+      "procedureRehearsed": false,
+      "unrehearsedRiskAccepted": true,
+      "operator": "Gavin Monroe",
+      "evidence": "2026-08-17: GPIO0/EN pads NOT located or rehearsed on this F1 PCB. Operator accepts app-RPC-only recovery (recovery/enter-bootloader.mjs sendIntoBootloader -> ROM USB-Serial/JTAG), the same posture used for all ~37 prior app-only writes to MAC a4:cb:8f:af:32:10. Rollback = healthy 36317013 app at 0x10000."
+    },
+    "failurePolicy": "no-map-retry; disable-capability; physical-boot; restore-healthy-app-first"
+  }
+}

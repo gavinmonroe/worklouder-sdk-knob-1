@@ -1,0 +1,89 @@
+{
+  "format": "framer-f1-mquickjs-diag-loader-build-v1",
+  "purpose": "Report which loader admission gate stops the mqjs canary on the physical F1",
+  "baseCandidateAppSha256": "674054a6e9d6536ad2414096cd89c1025e78904dff6b4a1aee0ef8cab434e808",
+  "healthyAppSha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
+  "slotAUnchanged": {
+    "textSha256": "bd46e3473b8493291aadebcf1d093e812a0788866e787663920637a3d76c8c43",
+    "rodataSha256": "72a2a26cb9cb0c0c52ab0ee897ad5d59b0a3c9765d3f495bfe96565b305a8c43",
+    "slotSha256": "b1104134b37c9b6726e96f852b28e1eb971ba3aa4870d44543cfd1c5e8c6a6c1",
+    "note": "pages already on flash at 0x210000/0x230000; app-only write suffices"
+  },
+  "loader": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag/mqjs-id28-resident-loader-diag.bin",
+    "bytes": 4520,
+    "sha256": "bbaa30cfcabc9a8f25b2888f86c23d695c9e4433906e75bbe6f61c1ce6f1bd4e",
+    "cavityBytes": 6840,
+    "tailAddress": "0x4211e460",
+    "keyWrapper": "0x4211e650"
+  },
+  "app": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag/framer-0.4.1-mqjs-id28-DIAG-loader-app.bin",
+    "bytes": 2062912,
+    "sha256": "df9a018dd5cca74cc0cb7313a922c055a4fc50a0b7bb6481384f7af1908137da",
+    "offset": "0x10000"
+  },
+  "rpc": {
+    "responseKey": "status",
+    "reader": "experiments/mquickjs-esp32s3-physical-canary/diag-read.mjs",
+    "note": "every value is re-rendered from live memory inside the RPC callback",
+    "methods": {
+      "widget.mquickjs.diag": {
+        "format": "v1;g=<gate>;f0=<free>;l0=<largest>;b=<block>;f1=<free>;l1=<largest>;m=<maprc>;s=<startup>;r=<regticks> (hex)",
+        "gates": {
+          "0": "entered",
+          "1": "backend identity reject",
+          "2": "pre-alloc admission reject",
+          "3": "alloc null/misaligned/out-of-range",
+          "4": "post-alloc reserve reject",
+          "5": "map failed (m)",
+          "6": "startup returned 0",
+          "7": "startup returned 1"
+        }
+      },
+      "widget.mquickjs.diag2": {
+        "format": "v2;b=<boot_state>;y=<rpc_ready>;s=<sources_enabled>;t=<boot_started_ms>;f=<boot_finished_ms>;k=<task_handle>;w=<stack_high_water>;u=<startup_us>;h=<free_internal>;g=<largest_internal> (hex)",
+        "bootStates": {
+          "1": "owner task started",
+          "2": "owner admitted (VM+assets ok)",
+          "3": "f2js/owner boot admit failed",
+          "4": "publish_proxy returned null",
+          "5": "LZSS base decode failed",
+          "6": "F2TF preflight failed",
+          "7": "published ok (rpc_ready)",
+          "8": "register_rpc failed",
+          "9": "startup timed out waiting for owner",
+          "10": "registry registration mismatch"
+        }
+      },
+      "widget.mquickjs.diag3": {
+        "format": "v3;m=<block magic>;c=<owner.capability.state>;r=<capability.ready_mask>;a=<admission.generation>;n=<key_count|chord_count<<8|source_bytes<<16>;e=<admission.events[0].kind|id<<16>;p=<owner.heap>;l=<owner.telemetry.last_result>;d=<telemetry.booted|permanently_disabled<<8>;v=<owner.source_quiesce_state> (hex)"
+      }
+    },
+    "unknownField": "ffffffff means the resident block pointer is unknown/out of range"
+  },
+  "blockOffsets": {
+    "magic": 0,
+    "sources_enabled": 12,
+    "boot_state": 48,
+    "rpc_ready": 56,
+    "boot_started_ms": 112,
+    "boot_finished_ms": 116,
+    "task_handle": 148,
+    "owner_admission_generation": 7152,
+    "owner_admission_counts": 7176,
+    "owner_admission_events0": 7244,
+    "owner_capability_ready_mask": 16352,
+    "owner_capability_state": 16356,
+    "owner_heap": 29880,
+    "owner_source_quiesce_state": 29936,
+    "owner_telemetry_last_result": 30024,
+    "owner_telemetry_booted": 30028,
+    "sizeofBlock": 95568
+  },
+  "rollback": {
+    "app": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-clock-blue-timer/framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-blue-timer-app.bin",
+    "sha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
+    "offset": "0x10000"
+  }
+}

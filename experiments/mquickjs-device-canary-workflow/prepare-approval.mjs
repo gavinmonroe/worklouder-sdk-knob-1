@@ -31,7 +31,7 @@ const healthyReceiptFile = path.join(root,
 const recoveryFile = path.join(root,
   "recovery/backups/2026-08-15-framer-f1-a4cb8faf3210-before-custom/full-flash-16mb.bin");
 function parse(argv) {
-  const options = {};
+  const options = { accept_unrehearsed_recovery: false };
   const names = new Set([
     "--candidate-app", "--module-text", "--module-rodata", "--link-report", "--audit-report", "--key-proof",
     "--canary-package", "--weather-facade", "--weather-base", "--operator",
@@ -39,6 +39,7 @@ function parse(argv) {
   ]);
   for (let index = 0; index < argv.length; index += 1) {
     const arg = argv[index];
+    if (arg === "--accept-unrehearsed-recovery") { options.accept_unrehearsed_recovery = true; continue; }
     if (!names.has(arg)) throw new Error(`Unknown argument ${arg}.`);
     const value = argv[++index];
     if (!value || value.startsWith("--")) throw new Error(`${arg} requires a value.`);
@@ -209,8 +210,13 @@ export async function prepareApproval(options) {
         learning: null } },
     audit: { verdict: audit.verdict, reviewer: audit.reviewer, reportFile: auditReport.file,
       reportSha256: auditReport.sha256 },
-    recovery: { physicalBoot: { gpio0Located: true, enLocated: true, procedureRehearsed: true,
-      operator: options.operator, evidence: options.physical_recovery_evidence },
+    recovery: { physicalBoot: options.accept_unrehearsed_recovery === true
+      ? { gpio0Located: false, enLocated: false, procedureRehearsed: false,
+        unrehearsedRiskAccepted: true,
+        operator: options.operator, evidence: options.physical_recovery_evidence }
+      : { gpio0Located: true, enLocated: true, procedureRehearsed: true,
+        unrehearsedRiskAccepted: false,
+        operator: options.operator, evidence: options.physical_recovery_evidence },
       failurePolicy: "no-map-retry; disable-capability; physical-boot; restore-healthy-app-first" },
   };
   validateApproval(approval);

@@ -1,0 +1,150 @@
+{
+  "format": "framer-f1-mquickjs-diag-module-build-v1",
+  "purpose": "Capture the JS exception text behind framer_mqjs_load = -5 and expose it over widget.mquickjs.diag4",
+  "hardwareTouched": false,
+  "instrumentation": {
+    "source": "experiments/mquickjs-esp32s3-physical-canary/diag-module-src/framer_mquickjs_canary.c",
+    "sha256": "fc7c2d5f5d5cba8b1543150e7a9120a0959331bf4d86e02046832af01bf932ee",
+    "releaseEngineUntouched": "experiments/mquickjs-esp32s3-canary/framer_mquickjs_canary.c",
+    "change": "runtime_state gains char last_error[108]; classify_exception writes \"<Error name>: <message> @<stack>\" (printable ASCII, bounded, NUL-terminated, no libc); framer_mqjs_destroy preserves it across its teardown memset because the resident owner destroys the runtime immediately after a failed load",
+    "residentBlockLayout": "unchanged - the buffer fits inside the fixed 4096 B framer_mqjs_runtime storage (runtime_state 3352/4096 B)"
+  },
+  "module": {
+    "abiVersion": 3,
+    "moduleAbiSha256": "ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb",
+    "text": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module/mqjs-id28-text-page-diag.bin",
+      "paddr": "0x210000",
+      "vaddr": "0x423d0000",
+      "usedBytes": 92368,
+      "capacityBytes": 131072,
+      "sha256": "462bc1b70210ff0efbb63d358e96e65ff4918a113747a6803cf43f27b460aaa9"
+    },
+    "rodata": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module/mqjs-id28-rodata-page-diag.bin",
+      "paddr": "0x230000",
+      "vaddr": "0x3c3f0000",
+      "usedBytes": 23600,
+      "capacityBytes": 65536,
+      "sha256": "a675199c09716aebd34d1e8bddb3418e3d140ff9ee313c92c1e4c9073ad52d44"
+    },
+    "slot": {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module/mqjs-id28-slot-a-diag.bin",
+      "bytes": 196608,
+      "sha256": "d7c922c889d77a5e83b01f44a5f6caf3d080143ab20c2f6b49ca815385cdba13",
+      "identitySemantics": "SHA-256 of padded text[0x20000] || padded rodata[0x10000]"
+    },
+    "relocations": 0,
+    "undefinedSymbols": 0,
+    "writableStaticBytes": 0,
+    "residentBlockBytes": 95568,
+    "startupVaddr": "0x423e36f4",
+    "id28IdentityVaddr": "0x423e5f88",
+    "keySinkVaddr": "0x423e3574",
+    "stackUsageRecords": 598,
+    "releaseComparison": {
+      "textSha256": "bd46e3473b8493291aadebcf1d093e812a0788866e787663920637a3d76c8c43",
+      "rodataSha256": "72a2a26cb9cb0c0c52ab0ee897ad5d59b0a3c9765d3f495bfe96565b305a8c43",
+      "slotSha256": "b1104134b37c9b6726e96f852b28e1eb971ba3aa4870d44543cfd1c5e8c6a6c1",
+      "releaseStartupVaddr": "0x423e3510",
+      "blockBytesUnchanged": true
+    }
+  },
+  "loader": {
+    "file": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module/mqjs-id28-resident-loader-diag.bin",
+    "bytes": 4732,
+    "sha256": "5e9c1531ced88176582be37f684f20b830a28dd597fbf7cca4e17515c46f75d0",
+    "cavityBytes": 6840,
+    "tailAddress": "0x4211e460",
+    "keyWrapper": "0x4211e650"
+  },
+  "app": {
+    "file": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module/framer-0.4.1-mqjs-id28-DIAG-module-app.bin",
+    "bytes": 2062912,
+    "sha256": "98369c3e360612bab0fe94155f2ca7cbe11cccbdbc32af82b857cf79e357c029",
+    "offset": "0x10000",
+    "baseCandidateAppSha256": "674054a6e9d6536ad2414096cd89c1025e78904dff6b4a1aee0ef8cab434e808",
+    "healthyAppSha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
+    "segmentCount": 6,
+    "diffVsHealthy": [
+      "setup tail (3 B @0x42118cdd)",
+      "key literal (4 B @0x42041568)",
+      "loader cavity (6840 B @0x4211e460)",
+      "image footer (33 B)"
+    ]
+  },
+  "flashPlan": [
+    {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module/mqjs-id28-text-page-diag.bin",
+      "offset": "0x210000",
+      "bytes": 131072
+    },
+    {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module/mqjs-id28-rodata-page-diag.bin",
+      "offset": "0x230000",
+      "bytes": 65536
+    },
+    {
+      "file": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module/framer-0.4.1-mqjs-id28-DIAG-module-app.bin",
+      "offset": "0x10000",
+      "bytes": 2062912
+    }
+  ],
+  "rollback": {
+    "app": "f1-widget-sdk/build/combined-renderer-v2-clock-blue-timer/framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-blue-timer-app.bin",
+    "sha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
+    "offset": "0x10000",
+    "note": "slot-A pages may be left in place; the healthy app never maps them"
+  },
+  "rpc": {
+    "responseKey": "status",
+    "reader": "experiments/mquickjs-esp32s3-physical-canary/diag-read.mjs",
+    "note": "every value is re-rendered from live memory inside the RPC callback",
+    "methods": {
+      "widget.mquickjs.diag": {
+        "format": "v1;g=;f0=;l0=;b=;f1=;l1=;m=;s=;r= (hex)"
+      },
+      "widget.mquickjs.diag2": {
+        "format": "v2;b=;y=;s=;t=;f=;k=;w=;u=;h=;g= (hex)"
+      },
+      "widget.mquickjs.diag3": {
+        "format": "v3;m=;c=;r=;a=;n=;e=;p=;l=;d=;v= (hex)"
+      },
+      "widget.mquickjs.diag4": {
+        "format": "v4;<runtime_state::last_error as printable ASCII, <=108 chars>",
+        "empty": "v4;empty means nothing recorded (no exception, or a release module)",
+        "noBlock": "v4;no-block means the resident block pointer was never published"
+      }
+    }
+  },
+  "blockOffsets": {
+    "BLK_MAGIC": 0,
+    "BLK_SOURCES_ENABLED": 12,
+    "BLK_BOOT_STATE": 48,
+    "BLK_RPC_READY": 56,
+    "BLK_BOOT_STARTED_MS": 112,
+    "BLK_BOOT_FINISHED_MS": 116,
+    "BLK_TASK_HANDLE": 148,
+    "BLK_OWNER_CAP_READY_MASK": 16352,
+    "BLK_OWNER_CAP_STATE": 16356,
+    "BLK_OWNER_ADM_GENERATION": 7152,
+    "BLK_OWNER_ADM_COUNTS": 7176,
+    "BLK_OWNER_ADM_EVENT0": 7244,
+    "BLK_OWNER_HEAP": 29880,
+    "BLK_OWNER_SOURCE_QUIESCE": 29936,
+    "BLK_OWNER_TEL_LAST_RESULT": 30024,
+    "BLK_OWNER_TEL_BOOTED": 30028,
+    "BLK_LAST_ERROR": 6296,
+    "BLK_LAST_ERROR_BYTES": 108,
+    "sizeofBlock": 95568,
+    "derivation": "xtensa offsetof probe compiled against the exact sources in this build"
+  },
+  "assets": {
+    "embeddedVerbatimFrom": "experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-17-id28-abi3-674054a6",
+    "f2jsSha256": "7aeeecde59bd686b3455feadc74b4b7705ca0c8ea933f9b0669cb8dc656c284e",
+    "f2tfSha256": "c436eea7ec9bfc85bbb9514923ea5bf4084ecbcb712ab5c183b9dd2adfd75743",
+    "lzssSha256": "dbf16d41750555b7a3403b4b568530a0b5cab1d6b3bf0558c836823749293a12",
+    "sourceSha256": "a9b1a833a75f8a296ae5e2575f31ec1030af0c8a944031858e0506456f8864ab",
+    "targetContractSha256": "8220152a09348da34cdd70dd7d370197f2f3fc46a9f45e50d7fb7015bdb8579a"
+  }
+}
