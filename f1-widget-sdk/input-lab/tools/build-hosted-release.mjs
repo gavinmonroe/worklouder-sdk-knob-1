@@ -1,7 +1,8 @@
-import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, rm, symlink, unlink, writeFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { execFile } from "node:child_process";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import { promisify } from "node:util";
 
 const sdk = path.resolve(import.meta.dirname, "../..");
@@ -29,8 +30,12 @@ await Promise.all([
   copy("input-lab/lib/chromium-raster-capture.mjs", "input-lab/lib/chromium-raster-capture.mjs"),
   copy("input-lab/lib/bridge-client.mjs", "input-lab/lib/bridge-client.mjs"),
   copy("input-lab/lib/scene-transport.mjs", "input-lab/lib/scene-transport.mjs"),
+  // server.mjs imports the zip-sync config module (node built-ins only); ship it at the same relative path.
+  copy("examples/render-v2-mquickjs-weather-canary/tools/zip-sync-config.mjs",
+    "examples/render-v2-mquickjs-weather-canary/tools/zip-sync-config.mjs"),
   copy("input-lab/assets/hosted-glyph-cache.json", "input-lab/assets/hosted-glyph-cache.json"),
   copy("input-lab/hosted/deploy.md", "input-lab/hosted/deploy.md"),
+  copy("input-lab/hosted/UPGRADING-v1-to-v2.md", "input-lab/hosted/UPGRADING-v1-to-v2.md"),
   copy("input-lab/hosted/input-lab-api.env.example", "input-lab/hosted/input-lab-api.env.example"),
   copy("input-lab/hosted/input-lab-api.service", "input-lab/hosted/input-lab-api.service"),
   copy("input-lab/hosted/input-lab-chrome.apparmor", "input-lab/hosted/input-lab-chrome.apparmor"),
@@ -40,6 +45,19 @@ await Promise.all([
   copy("src/render-v2", "src/render-v2"),
   copy("input-lab/build/web", "public"),
 ]);
+// Import-resolution smoke test: the extracted release must load server.mjs (and every
+// module it imports) with node_modules absent except for what the release ships. A missing
+// file here would otherwise surface only as ERR_MODULE_NOT_FOUND on the production host.
+{
+  const testModules = path.join(output, "node_modules");
+  await symlink(path.join(sdk, "node_modules"), testModules, "dir");
+  try {
+    await run(process.execPath, ["--input-type=module", "-e",
+      `await import(${JSON.stringify(pathToFileURL(path.join(output, "input-lab/server.mjs")).href)});`]);
+  } finally {
+    await unlink(testModules);
+  }
+}
 const release = {
   format: "framer-input-lab-aa-panel-release-v1",
   publicOrigin: "https://htmlcss-to-framerf1-widget.g-m.dev",

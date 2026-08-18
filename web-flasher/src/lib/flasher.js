@@ -7,8 +7,13 @@ import {
   assertBootloaderPortInfo,
   assertBootloaderRecoveryTarget,
 } from "./device-identity.js";
+import {
+  ALLOWED_REGION_ADDRESSES,
+  APP_REGION_ADDRESS,
+  formatRegionAddress,
+} from "./firmware.js";
 
-export const APP_FLASH_OFFSET = 0x10000;
+export const APP_FLASH_OFFSET = APP_REGION_ADDRESS;
 export const WRITE_BAUD = 921600;
 export const RECOVERY_BAUD = 115200;
 const ESP32_S3_EFUSE_BASE = 0x60007000;
@@ -108,8 +113,49 @@ export async function exitBootloaderWithoutWrite({ port, normalIdentity, onLog }
   }
 }
 
-export async function flashAppOnly({ port, bytes, normalIdentity, onProgress, onLog, onWriteStart }) {
+/**
+ * Last-line write-scope check, independent of catalog validation: an ordered
+ * plan of approved addresses holding exactly one app image, written last.
+ */
+export function assertWritableRegions(regions) {
+  if (!Array.isArray(regions) || regions.length === 0) {
+    throw new Error("No verified flash region was prepared.");
+  }
+  if (regions.filter((region) => region.kind === "app").length !== 1) {
+    throw new Error("Exactly one verified app region may be written.");
+  }
+  if (regions[regions.length - 1].kind !== "app") {
+    throw new Error("The app region must be written last, after every module page.");
+  }
+  const seen = new Set();
+  for (const region of regions) {
+    if (!ALLOWED_REGION_ADDRESSES.includes(region.address)) {
+      throw new Error(
+        `Refusing to write ${formatRegionAddress(region.address)}; it is outside the approved write scope.`,
+      );
+    }
+    if (region.kind === "app" && region.address !== APP_REGION_ADDRESS) {
+      throw new Error("The app region must be written at 0x10000.");
+    }
+    if (seen.has(region.address)) {
+      throw new Error(`Region ${formatRegionAddress(region.address)} is queued twice.`);
+    }
+    seen.add(region.address);
+    if (!(region.bytes instanceof Uint8Array) || region.bytes.length === 0) {
+      throw new Error(`Region ${formatRegionAddress(region.address)} is missing its verified bytes.`);
+    }
+  }
+  return regions;
+}
+
+/**
+ * Write an ordered plan of already-verified regions in one esptool-js call.
+ * esptool-js walks `fileArray` in order and MD5-verifies each entry against the
+ * device before moving on, so module pages land before the app that uses them.
+ */
+export async function flashRegions({ port, regions, normalIdentity, onProgress, onLog, onWriteStart }) {
   assertBootloaderPortInfo(port.getInfo());
+  const plan = assertWritableRegions(regions);
   const transport = new Transport(port, false);
   const loader = new ESPLoader({
     transport,
@@ -118,31 +164,60 @@ export async function flashAppOnly({ port, bytes, normalIdentity, onProgress, on
     debugLogging: false,
   });
 
+  const sizes = plan.map((region) => region.bytes.length);
+  const totalBytes = sizes.reduce((sum, size) => sum + size, 0);
+  const startedBytes = sizes.map((_, index) => sizes.slice(0, index).reduce((sum, size) => sum + size, 0));
+
   try {
     await loader.main();
     const state = await readBootloaderState(loader);
     assertBootloaderIdentity({ ...state, normalIdentity });
 
-    onWriteStart?.();
+    onWriteStart?.(plan);
     await loader.writeFlash({
-      fileArray: [{ data: bytes, address: APP_FLASH_OFFSET }],
+      fileArray: plan.map((region) => ({ data: region.bytes, address: region.address })),
       flashMode: "keep",
       flashFreq: "keep",
       flashSize: "keep",
       eraseAll: false,
       compress: true,
-      reportProgress: (_fileIndex, written, total) => onProgress?.(written, total),
+      reportProgress: (fileIndex, written, total) => {
+        const fraction = total ? Math.min(written / total, 1) : 0;
+        const done = startedBytes[fileIndex] + fraction * sizes[fileIndex];
+        onProgress?.(Math.round(done), totalBytes, plan[fileIndex]);
+      },
       calculateMD5Hash: md5,
     });
     await resetFramerAfterFlash(loader, transport);
 
     return Object.freeze({
       ...state,
-      offset: APP_FLASH_OFFSET,
       baud: WRITE_BAUD,
       hashVerifiedByDevice: true,
+      regions: Object.freeze(
+        plan.map((region) =>
+          Object.freeze({
+            address: region.address,
+            kind: region.kind,
+            bytes: region.bytes.length,
+            sha256: region.sha256 ?? null,
+          }),
+        ),
+      ),
     });
   } finally {
     await transport.disconnect().catch(() => {});
   }
+}
+
+export async function flashAppOnly({ port, bytes, sha256, normalIdentity, onProgress, onLog, onWriteStart }) {
+  const result = await flashRegions({
+    port,
+    normalIdentity,
+    onLog,
+    regions: [{ address: APP_FLASH_OFFSET, kind: "app", bytes, sha256 }],
+    onWriteStart: () => onWriteStart?.(),
+    onProgress: (written, total) => onProgress?.(written, total),
+  });
+  return Object.freeze({ ...result, offset: APP_FLASH_OFFSET });
 }

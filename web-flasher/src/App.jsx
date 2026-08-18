@@ -150,11 +150,17 @@ function PreviewOnly({ firmware }) {
   );
 }
 
+const NOTICE_TITLES = {
+  "Smoke candidate": "Device smoke candidate",
+  "Live tested canary": "Live-tested canary, outside the audited release pipeline",
+  "Live accepted": "Before you flash",
+};
+
 function CandidateNotice({ firmware }) {
   if (!firmware.notice) return null;
   return (
     <div className="candidate-notice" role="note">
-      <strong>Device smoke candidate</strong>
+      <strong>{NOTICE_TITLES[firmware.evidence] ?? "Before you flash"}</strong>
       <p>{firmware.notice}</p>
     </div>
   );
@@ -165,13 +171,64 @@ function HostCompanionNotice({ companion }) {
   return (
     <div className="host-companion-notice" role="note">
       <div>
-        <strong>Music needs the Mac host companion</strong>
-        <p>Run it alongside Work Louder Input to send Apple Music or Chrome media to the keyboard.</p>
+        <strong>{companion.title}</strong>
+        <p>{companion.description}</p>
       </div>
       <a className="button button--secondary" href={companion.url} download={companion.filename}>
-        Download Mac host companion
+        Download {companion.platform} host companion
       </a>
     </div>
+  );
+}
+
+export function ScenePackageNotice({ firmware, scene, supported, onEnable }) {
+  const scenePackage = firmware.scenePackage;
+  if (!scenePackage) return null;
+  const label =
+    scene.phase === "pushing" ? `Pushing ${scene.progress}%` :
+      scene.phase === "committing" ? "Applying…" :
+        scene.phase === "enabled" ? "Push again" : scenePackage.actionLabel;
+  return (
+    <div className="scene-notice" role="note">
+      <div className="scene-copy">
+        <strong>{scenePackage.title}</strong>
+        <p>{scenePackage.description}</p>
+        <p className="scene-meta">
+          {formatBytes(scenePackage.bytes)} · {scenePackage.chunks} chunks · generation{" "}
+          {scenePackage.expectedGeneration} → {scenePackage.generation} · {shortHash(scenePackage.sha256)}
+        </p>
+        {scene.result && (
+          <p className="scene-status" role="status">
+            {scene.result.status} · generation {scene.result.generation} · {scene.result.chunks} chunks
+            accepted. It stays live until the keyboard is power-cycled.
+          </p>
+        )}
+        {scene.error && <p className="scene-error" role="alert">{scene.error}</p>}
+      </div>
+      <button
+        className="button button--secondary"
+        disabled={!supported || scene.busy}
+        onClick={onEnable}
+      >
+        {label}
+      </button>
+    </div>
+  );
+}
+
+export function WriteScopeAddresses({ firmware }) {
+  if (!firmware.flashable) return <dd>—</dd>;
+  if (!firmware.regions) return <dd>0x10000</dd>;
+  return (
+    <dd>
+      <ul className="region-list">
+        {firmware.regions.map((region) => (
+          <li key={region.address}>
+            <code>0x{region.address.toString(16)}</code> {region.label} ({region.bytes.toLocaleString()} B)
+          </li>
+        ))}
+      </ul>
+    </dd>
   );
 }
 
@@ -221,9 +278,26 @@ export default function App() {
             <strong>Write scope</strong>
             <dl>
               <div><dt>Target</dt><dd>Framer F1 / Knob F1</dd></div>
-              <div><dt>Address</dt><dd>{flasher.selected.flashable ? "0x10000" : "—"}</dd></div>
-              <div><dt>Mode</dt><dd>{flasher.selected.flashable ? "Factory app only" : "Preview only"}</dd></div>
+              <div>
+                <dt>{flasher.selected.regions ? "Addresses" : "Address"}</dt>
+                <WriteScopeAddresses firmware={flasher.selected} />
+              </div>
+              <div>
+                <dt>Mode</dt>
+                <dd>
+                  {!flasher.selected.flashable ? "Preview only" :
+                    flasher.selected.regions
+                      ? "Module pages, then factory app"
+                      : "Factory app only"}
+                </dd>
+              </div>
               <div><dt>Includes</dt><dd>{flasher.selected.includes.join(" + ")}</dd></div>
+              {flasher.selected.scenePackage && (
+                <div>
+                  <dt>After boot</dt>
+                  <dd>{flasher.selected.scenePackage.actionLabel} (RAM only)</dd>
+                </div>
+              )}
               {flasher.selected.compilerUrl && (
                 <div>
                   <dt>Compiler</dt>
@@ -232,7 +306,7 @@ export default function App() {
               )}
               {flasher.selected.hostCompanion && (
                 <div>
-                  <dt>Music host</dt>
+                  <dt>Host companion</dt>
                   <dd><a href={flasher.selected.hostCompanion.url}
                     download={flasher.selected.hostCompanion.filename}>Download {flasher.selected.hostCompanion.platform} ZIP</a></dd>
                 </div>
@@ -245,6 +319,12 @@ export default function App() {
         {flasher.selected.flashable ? <section className="workflow-panel" aria-label="Flash workflow">
           <HostCompanionNotice companion={flasher.selected.hostCompanion} />
           <CandidateNotice firmware={flasher.selected} />
+          <ScenePackageNotice
+            firmware={flasher.selected}
+            scene={flasher.scene}
+            supported={flasher.capabilities.webHid && flasher.capabilities.secureContext}
+            onEnable={flasher.enableScenePackage}
+          />
           <Step number="01" title="Identify keyboard" state={identified ? "done" : flasher.phase === "identifying" ? "active" : "idle"}>
             {identified ? (
               <>
@@ -308,7 +388,12 @@ export default function App() {
           >
             {!completed && (
               <>
-                <p>Choose the new bootloader port. The app checks chip, MAC, flash size, and security state before writing.</p>
+                <p>
+                  Choose the new bootloader port. The app checks chip, MAC, flash size, and security state before writing.
+                  {flasher.selected.regions
+                    ? " Every module page is verified and written before the app image at 0x10000."
+                    : ""}
+                </p>
                 <button
                   className="button button--flash"
                   disabled={!bootloaderReady || busy}
@@ -326,7 +411,7 @@ export default function App() {
             {(["flashing", "verifying-boot", "complete"].includes(flasher.phase)) && (
               <div className="progress-block" aria-live="polite">
                 <div className="progress-label">
-                  <span>{flasher.phase === "complete" ? "Verified" : flasher.phase === "verifying-boot" ? "Rebooting" : "Writing app"}</span>
+                  <span>{flasher.phase === "complete" ? "Verified" : flasher.phase === "verifying-boot" ? "Rebooting" : flasher.selected.regions ? "Writing regions" : "Writing app"}</span>
                   <span>{flasher.progress}%</span>
                 </div>
                 <div className="progress-track"><span style={{ width: `${flasher.progress}%` }} /></div>
@@ -336,11 +421,16 @@ export default function App() {
             {completed && (
               <div className="success-block">
                 <strong>{flasher.selected.name} is installed.</strong>
-                <p>The write hash matched and the Framer returned as a healthy USB device on firmware 0.4.1.</p>
+                <p>
+                  Every written region matched its device MD5 and the Framer returned as a healthy USB device on firmware 0.4.1.
+                  {flasher.selected.scenePackage
+                    ? ` ${flasher.selected.scenePackage.actionLabel} is still required after every power cycle.`
+                    : ""}
+                </p>
                 <div className="button-row">
                   {flasher.selected.hostCompanion && (
                     <a className="button button--secondary" href={flasher.selected.hostCompanion.url}
-                      download={flasher.selected.hostCompanion.filename}>Download music host</a>
+                      download={flasher.selected.hostCompanion.filename}>Download host companion</a>
                   )}
                   <DownloadReceipt receipt={flasher.receipt} />
                   <button className="button button--quiet" onClick={flasher.startOver}>Flash another build</button>

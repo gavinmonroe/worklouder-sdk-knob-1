@@ -1,0 +1,4 @@
+4736206f7bd3aa0e16ecda7f97412a24838d7060b8e25ea7aa54c2516a855ee1  framer-0.4.1-mqjs-id28-weather-zip-psram-app.bin
+10257634ed32263f42dbdc60b545e66d82a3977dcdedea1b1f22439b623009cd  mqjs-id28-resident-loader-psram.bin
+818d4620a388f24d6c14f23de40f41fb33af55f0f4ebbe608306959b6c52df64  mqjs-id28-rodata-page.bin
+bc1e3b57fb82cc067fc57b30671d4381cd45730e376a5d42298536e0dbc1726f  mqjs-id28-text-page.bin

@@ -5,7 +5,7 @@ import { readFile } from "node:fs/promises";
 
 export const INPUT_LAB_LIMITS = Object.freeze({ htmlBytes: 48 * 1024, cssBytes: 32 * 1024 });
 export const INPUT_LAB_SEMANTIC_UNSUPPORTED = "INPUT_LAB_SEMANTIC_UNSUPPORTED";
-export const HOSTED_GLYPH_CACHE_SHA256 = "2cd872bdd4f036034d46f711b422f469af8df547e4c7d7de4b2ecb3771d7aa73";
+export const HOSTED_GLYPH_CACHE_SHA256 = "26fae6f11e488fb6cca0be21dc8ed9970341e79af90aaf1a4f25bc20a784354c";
 const ALLOWED_CSS_PROPERTIES = new Set(["animation", "background-color", "color", "text-shadow"]);
 const FALLBACK_DIAGNOSTIC_CODES = new Set(["CSS_PROPERTY_UNSUPPORTED", "CSS_SELECTOR_UNSUPPORTED",
   "GLYPH_ATLAS_UNSUPPORTED"]);

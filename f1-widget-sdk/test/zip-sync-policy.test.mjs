@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  adoptsDeviceZipOnStart,
   buildSettingsAckRequest,
   decideZipSyncAction,
   nextPollIntervalMs,
@@ -64,7 +65,8 @@ test("targetPostalCodeFor uses the device's just-saved ZIP for settings-save, el
   assert.equal(targetPostalCodeFor({ decision: { kind: "settings-save" }, settings: pendingSettings, config }), "10001");
   assert.equal(targetPostalCodeFor({ decision: { kind: "start" }, settings: idleSettings, config }), "60601");
   assert.equal(targetPostalCodeFor({ decision: { kind: "weather-refresh" }, settings: idleSettings, config }), "60601");
-  const zeroPadded = { ...config, postalCode: "00501" };
+  // Once the host config has been persisted it wins on start (a never-persisted host adopts the device ZIP).
+  const zeroPadded = { ...config, postalCode: "00501", updatedAt: "2026-08-18T00:00:00.000Z" };
   assert.equal(targetPostalCodeFor({ decision: { kind: "start" }, settings: idleSettings, config: zeroPadded }), "00501");
 });
 
@@ -83,4 +85,17 @@ test("buildSettingsAckRequest requires a nonnegative revision and a positive gen
     revision: -1, generation: 19 }), /revision/u);
   assert.throws(() => buildSettingsAckRequest({ decision: { kind: "start" }, settings: idleSettings, config,
     revision: 0, generation: 0 }), /generation/u);
+});
+
+test("first run adopts the keyboard's saved ZIP instead of overriding it with the host default", () => {
+  const decision = { kind: "start" };
+  const settings = { zip: 63304, saveSeq: 2, settingsActive: false, pendingSave: false };
+  const fresh = { postalCode: "60601", updatedAt: null };
+  const persisted = { postalCode: "60601", updatedAt: "2026-08-18T00:00:00.000Z" };
+  assert.equal(adoptsDeviceZipOnStart({ decision, settings, config: fresh }), true);
+  assert.equal(targetPostalCodeFor({ decision, settings, config: fresh }), "63304");
+  assert.equal(buildSettingsAckRequest({ decision, settings, config: fresh, revision: 0, generation: 19 }).value, 63304);
+  assert.equal(adoptsDeviceZipOnStart({ decision, settings, config: persisted }), false);
+  assert.equal(targetPostalCodeFor({ decision, settings, config: persisted }), "60601");
+  assert.equal(adoptsDeviceZipOnStart({ decision, settings: { zip: 0 }, config: fresh }), false);
 });

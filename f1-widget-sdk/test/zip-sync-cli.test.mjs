@@ -71,12 +71,14 @@ test("parseZipSyncArgs rejects an unknown option, bad provider, and out-of-range
 });
 
 test("runPollCycle: first cycle always pushes the persisted ZIP (start), regardless of device telemetry", async () => {
-  const telemetry = telemetryFor(encodeSettingsWord({ zip: 60_601 }));
+  const telemetry = telemetryFor(encodeSettingsWord({ zip: 63_304 }));
+  // Persisted host config wins on start; the keyboard reports a different saved ZIP.
+  const persistedConfig = { ...baseConfig, updatedAt: "2026-08-18T00:00:00.000Z" };
   const { calls, evaluate } = fakeEvaluate(telemetry);
   const { lines, log } = collectLog();
   const session = { started: false, revision: 0, lastWeatherFetchAt: null };
   const provider = createZipSyncProvider("deterministic");
-  const result = await runPollCycle({ options, provider, config: baseConfig, session, evaluate, log, now: () => 1_000 });
+  const result = await runPollCycle({ options, provider, config: persistedConfig, session, evaluate, log, now: () => 1_000 });
 
   assert.equal(calls.length, 2, "one telemetry batch + one event batch");
   const eventRequests = JSON.parse(/const requests = (\[[\s\S]*?\]);/u.exec(calls[1])[1]);
@@ -89,7 +91,7 @@ test("runPollCycle: first cycle always pushes the persisted ZIP (start), regardl
   assert.equal(session.started, true);
   assert.equal(session.revision, 1);
   assert.equal(session.lastWeatherFetchAt, 1_000);
-  assert.equal(result.config, baseConfig, "a start push does not rewrite the config file");
+  assert.equal(result.config, persistedConfig, "a start push does not rewrite the config file");
   assert.equal(result.intervalMs, 5_000, "settingsActive is false in this fixture");
   assert.deepEqual(lines.map(({ action }) => action), ["telemetry", "decision", "event-batch"]);
 });

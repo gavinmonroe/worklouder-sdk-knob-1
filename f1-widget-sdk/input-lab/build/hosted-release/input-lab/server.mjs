@@ -10,6 +10,8 @@ import { INPUT_LAB_BRIDGE_PROTOCOL } from "./lib/bridge-client.mjs";
 import { compileInputLabRenderV2, INPUT_LAB_RENDER_V2_CAPABILITIES,
   replayInputLabRenderV2, serializeInputLabRenderV2 } from "./lib/render-v2.mjs";
 import { MockSceneTransport, requireSceneTransport, StatusOnlyCanarySceneTransport } from "./lib/scene-transport.mjs";
+import { readZipSyncConfig, writeZipSyncConfig } from
+  "../examples/render-v2-mquickjs-weather-canary/tools/zip-sync-config.mjs";
 
 const root = fileURLToPath(new URL("./", import.meta.url));
 const SESSION_HEADER = "x-input-lab-session";
@@ -192,8 +194,31 @@ export function createInputLabServer({ transport = new MockSceneTransport(),
         send(response, 200, { status: "ok", protocol: INPUT_LAB_BRIDGE_PROTOCOL, sessionToken,
           compiler: true, rasterCapture: true, devicePush, transport: devicePush ? "status-only-canary" : "mock",
           localOnly: !hostedOrigin, hosted: Boolean(hostedOrigin), deviceTransport: hostedOrigin ? "browser-webhid" : null,
-          viewport: { width: 100, height: 310 }, slots: 3,
+          viewport: { width: 100, height: 310 }, slots: 3, zipSyncConfig: !hostedOrigin,
           renderV2: { ...INPUT_LAB_RENDER_V2_CAPABILITIES, genericDevicePush: false } }, corsHeaders);
+        return;
+      }
+      if (request.method === "GET" && url.pathname === "/api/zip-sync/config") {
+        // Reads the same host-filesystem JSON file tools/zip-sync.mjs persists to, so
+        // Input Lab's ZIP field can reflect a save made from the physical knob. Hosted
+        // Input Lab has no local device filesystem to read, so this is loopback-only.
+        if (hostedOrigin) return send(response, 404, { error: "NOT_FOUND" }, corsHeaders);
+        send(response, 200, await readZipSyncConfig(), corsHeaders);
+        return;
+      }
+      if (request.method === "POST" && url.pathname === "/api/zip-sync/config") {
+        if (hostedOrigin) {
+          throw Object.assign(new Error("Hosted Input Lab has no local zip-sync config file to write."),
+            { statusCode: 405, code: "INPUT_LAB_ZIP_SYNC_CONFIG_HOSTED_UNAVAILABLE" });
+        }
+        requireJson(request);
+        requireSession(request, sessionToken);
+        const body = await readJson(request);
+        // writeZipSyncConfig() ignores undefined patch fields, so a partial
+        // body (e.g. `{ postalCode }` alone) only updates that one field.
+        const written = await writeZipSyncConfig({ postalCode: body.postalCode, countryCode: body.countryCode,
+          units: body.units, updatedAt: new Date().toISOString() });
+        send(response, 200, written, corsHeaders);
         return;
       }
       if (request.method === "POST" && url.pathname === "/api/compile") {

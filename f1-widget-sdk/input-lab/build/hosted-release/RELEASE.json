@@ -7,7 +7,7 @@
     "INPUT_LAB_CHROME_PATH": "required",
     "INPUT_LAB_CHROME_PRODUCT": "required"
   },
-  "publicIndexSha256": "d6e35d781872bdd1b5414e42bdbc9e23eddcfdcc285aca7d6434c2ecedd9345f",
-  "glyphCacheSha256": "2cd872bdd4f036034d46f711b422f469af8df547e4c7d7de4b2ecb3771d7aa73",
+  "publicIndexSha256": "9fae427786ab4dba1afadef79442955d25f50dc5318d91adaba3afd1fd41cc09",
+  "glyphCacheSha256": "26fae6f11e488fb6cca0be21dc8ed9970341e79af90aaf1a4f25bc20a784354c",
   "apparmorProfileSha256": "35f9900b164792a6bbd335622b7ed8b20312c552e4b0d1cba2b0e3ea351e5e47"
 }

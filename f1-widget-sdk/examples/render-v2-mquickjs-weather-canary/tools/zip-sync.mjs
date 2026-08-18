@@ -7,7 +7,7 @@ import { assertLiveMediaRunnerNotRunning, buildEventBatchScript, buildTelemetryP
   "./zip-sync-device-rpc.mjs";
 import { DEFAULT_ZIP_SYNC_CONFIG_PATH, readZipSyncConfig, writeZipSyncConfig } from "./zip-sync-config.mjs";
 import { buildSettingsAckRequest, decideZipSyncAction, nextPollIntervalMs,
-  targetPostalCodeFor, ZIP_SYNC_DEFAULT_REFRESH_INTERVAL_MS } from "./zip-sync-policy.mjs";
+  targetPostalCodeFor, adoptsDeviceZipOnStart, ZIP_SYNC_DEFAULT_REFRESH_INTERVAL_MS } from "./zip-sync-policy.mjs";
 import { createZipSyncProvider, ZIP_SYNC_PROVIDERS } from "./zip-sync-providers.mjs";
 import { decodeMquickjsMailboxSlots, readMquickjsSettings } from "./zip-sync-telemetry.mjs";
 
@@ -104,7 +104,9 @@ export async function runPollCycle({ options, provider, config, session, evaluat
   const events = ackRequest ? [ackRequest] : [];
 
   const persistAck = async () => {
-    if (decision.kind !== "settings-save") return config;
+    const adopted = adoptsDeviceZipOnStart({ decision, settings, config });
+    if (adopted) log("device-zip-adopted", { postalCode: targetPostalCode, saveSeq: settings.saveSeq });
+    if (decision.kind !== "settings-save" && !adopted) return config;
     const nextConfig = await writeZipSyncConfig({ postalCode: targetPostalCode, lastSaveSeq: settings.saveSeq,
       updatedAt: new Date(now()).toISOString() }, options.configPath);
     log("config-persisted", nextConfig);

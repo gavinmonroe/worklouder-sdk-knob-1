@@ -1,8 +1,8 @@
 {
   "format": "framer-render-v2-mquickjs-weather-zip-sync-config-v1",
-  "postalCode": "63304",
+  "postalCode": "60601",
   "countryCode": "US",
   "units": "fahrenheit",
-  "lastSaveSeq": 2,
-  "updatedAt": "2026-08-17T23:46:41.054Z"
+  "lastSaveSeq": 0,
+  "updatedAt": "1970-01-01T00:00:01.000Z"
 }

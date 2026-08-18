@@ -232,7 +232,17 @@ async function compileRenderV2(source) {
   const apiSource = createRenderV2ApiSource({ ...source, name: state.slots[state.activeSlot].name });
   return renderV2Operations.run("compile", async ({ assertCurrent }) => {
     elements.v2EventStatus.value = "Compiling bounded event program…";
-    const result = await request("/api/render-v2/compile", apiSource);
+    let result;
+    try {
+      result = await request("/api/render-v2/compile", apiSource);
+    } catch (error) {
+      // Do not leave "Compiling…" on screen after a compiler rejection (e.g. 422 with a
+      // RENDER_V2_* code); the banner shows the message via showError, mirror it here.
+      if (error?.code !== "RENDER_V2_STALE_OPERATION") {
+        elements.v2EventStatus.value = `Compile failed · ${error?.message ?? error}`;
+      }
+      throw error;
+    }
     assertCurrent();
     renderV2Events = Object.freeze([]);
     return showRenderV2Result(result);

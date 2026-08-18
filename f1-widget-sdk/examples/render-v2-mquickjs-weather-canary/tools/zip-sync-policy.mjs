@@ -47,8 +47,19 @@ export function nextPollIntervalMs(settings) {
 
 /** Which ZIP a decision pushes: the device's freshly-saved ZIP, or the host's persisted one. */
 export function targetPostalCodeFor({ decision, settings, config }) {
-  const zipValue = decision.kind === "settings-save" ? settings.zip : Number(config.postalCode);
+  const zipValue = decision.kind === "settings-save" || adoptsDeviceZipOnStart({ decision, settings, config })
+    ? settings.zip : Number(config.postalCode);
   return String(zipValue).padStart(5, "0");
+}
+
+/**
+ * First run of a host whose config was never persisted (updatedAt null): if the keyboard
+ * already reports a saved ZIP, adopt it instead of overriding it with the host default.
+ * (Live 2026-08-18: a fresh companion pushed 60601 over a keyboard-saved 63304.)
+ */
+export function adoptsDeviceZipOnStart({ decision, settings, config }) {
+  return decision?.kind === "start" && !config?.updatedAt &&
+    Number.isInteger(settings?.zip) && settings.zip >= 1 && settings.zip <= 99999;
 }
 
 /**
@@ -62,7 +73,8 @@ export function buildSettingsAckRequest({ decision, settings, config, revision, 
   invariant(Number.isInteger(revision) && revision >= 0, "buildSettingsAckRequest revision must be a nonnegative integer.");
   invariant(Number.isInteger(generation) && generation >= 1, "buildSettingsAckRequest generation must be a positive integer.");
   if (decision.kind === "weather-refresh") return null;
-  const zipValue = decision.kind === "settings-save" ? settings.zip : Number(config.postalCode);
+  const adopt = adoptsDeviceZipOnStart({ decision, settings, config });
+  const zipValue = decision.kind === "settings-save" || adopt ? settings.zip : Number(config.postalCode);
   const auxiliary = decision.kind === "settings-save" ? settings.saveSeq : 0;
   return Object.freeze({ id: 0xb245, value: zipValue, auxiliary, generation, revision });
 }

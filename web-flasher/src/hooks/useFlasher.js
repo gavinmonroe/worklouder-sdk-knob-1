@@ -2,7 +2,7 @@ import { useCallback, useMemo, useRef, useState } from "react";
 
 import { defaultFirmwareId, firmwareCatalog } from "../data/firmware.js";
 import { framerLayout } from "../lib/device-identity.js";
-import { loadFirmware } from "../lib/firmware.js";
+import { formatRegionAddress, loadFlashPlan } from "../lib/firmware.js";
 import {
   FramerHidClient,
   requestFramerHid,
@@ -14,8 +14,10 @@ import {
   browserIsSupported,
   exitBootloaderWithoutWrite,
   flashAppOnly,
+  flashRegions,
   requestBootloaderPort,
 } from "../lib/flasher.js";
+import { loadScenePackage, pushScenePackageOverHid } from "../lib/scene-push.js";
 
 const MAX_LOG_LINES = 240;
 
@@ -29,8 +31,19 @@ function errorMessage(error, { writeStarted = false } = {}) {
   }
   if (/WritableStream.*locked|Cannot create writer|already locked/iu.test(error?.message ?? "")) {
     return writeStarted
-      ? "The bootloader serial stream became locked after the app write began. Keep the keyboard connected and retry the same binary to complete recovery."
-      : "The bootloader serial stream was locked before the app write began. The existing firmware was not changed; use Exit bootloader without writing or power-cycle the keyboard.";
+      ? "The bootloader serial stream became locked after the flash write began. Keep the keyboard connected and retry the same build to complete recovery."
+      : "The bootloader serial stream was locked before the flash write began. The existing firmware was not changed; use Exit bootloader without writing or power-cycle the keyboard.";
+  }
+  return error instanceof Error ? error.message : String(error);
+}
+
+function sceneErrorMessage(error) {
+  if (error?.name === "NotFoundError") return "Device selection was cancelled.";
+  if (
+    ["NetworkError", "NotAllowedError"].includes(error?.name) ||
+    /failed to open the device/iu.test(error?.message ?? "")
+  ) {
+    return "Chrome found the keyboard, but the operating system would not release its USB interface. Fully quit Work Louder Input and other flasher tabs, then try again.";
   }
   return error instanceof Error ? error.message : String(error);
 }
@@ -50,6 +63,10 @@ export function useFlasher() {
   const [error, setError] = useState("");
   const [logs, setLogs] = useState([]);
   const [receipt, setReceipt] = useState(null);
+  const [scenePhase, setScenePhase] = useState("idle");
+  const [sceneProgress, setSceneProgress] = useState(0);
+  const [sceneError, setSceneError] = useState("");
+  const [sceneResult, setSceneResult] = useState(null);
   const preparedRef = useRef(null);
   const selected = firmwareCatalog.find((firmware) => firmware.id === selectedId) ?? firmwareCatalog[0];
 
@@ -108,9 +125,18 @@ export function useFlasher() {
     setPhase("preparing");
     try {
       appendLog(`Loading and validating ${selected.name}…`);
-      const prepared = await loadFirmware(selected);
+      const prepared = await loadFlashPlan(selected);
       preparedRef.current = { firmware: selected, ...prepared };
-      appendLog(`Firmware SHA-256 verified: ${prepared.validation.digest}.`);
+      if (prepared.multiRegion) {
+        appendLog(`Verified ${prepared.regions.length} regions before any device access.`);
+        for (const region of prepared.regions) {
+          appendLog(
+            `${region.label ?? region.kind} ${formatRegionAddress(region.address)} · ${region.bytes.length} bytes · SHA-256 ${region.sha256}.`,
+          );
+        }
+      } else {
+        appendLog(`Firmware SHA-256 verified: ${prepared.validation.digest}.`);
+      }
 
       const client = new FramerHidClient(device);
       await client.open();
@@ -148,19 +174,48 @@ export function useFlasher() {
       const port = await requestBootloaderPort();
       setPhase("checking-bootloader");
       appendLog("Serial bootloader selected. Checking chip, MAC, security state, and flash size…");
-      const bootloaderIdentity = await flashAppOnly({
-        port,
-        bytes: prepared.bytes,
-        normalIdentity: { ...normalIdentity, singleDeviceConfirmed },
-        onWriteStart: () => {
-          appWriteStarted = true;
-          setWriteStarted(true);
-          setPhase("flashing");
-          appendLog("Identity checks passed. Beginning the app-region write at 0x10000…");
-        },
-        onProgress: (written, total) => setProgress(total ? Math.round((written / total) * 100) : 0),
-        onLog: appendLog,
-      });
+      const onWriteStart = () => {
+        appWriteStarted = true;
+        setWriteStarted(true);
+        setPhase("flashing");
+      };
+      const onProgress = (written, total) =>
+        setProgress(total ? Math.round((written / total) * 100) : 0);
+      let reportedRegion = null;
+      const bootloaderIdentity = prepared.multiRegion
+        ? await flashRegions({
+          port,
+          regions: prepared.regions,
+          normalIdentity: { ...normalIdentity, singleDeviceConfirmed },
+          onWriteStart: (plan) => {
+            onWriteStart();
+            appendLog(
+              `Identity checks passed. Writing ${plan.length} verified regions in order: ${plan
+                .map((region) => formatRegionAddress(region.address))
+                .join(" → ")}.`,
+            );
+          },
+          onProgress: (written, total, region) => {
+            if (region && region.address !== reportedRegion) {
+              reportedRegion = region.address;
+              appendLog(`Writing ${region.label ?? region.kind} at ${formatRegionAddress(region.address)}…`);
+            }
+            onProgress(written, total);
+          },
+          onLog: appendLog,
+        })
+        : await flashAppOnly({
+          port,
+          bytes: prepared.bytes,
+          sha256: selected.sha256,
+          normalIdentity: { ...normalIdentity, singleDeviceConfirmed },
+          onWriteStart: () => {
+            onWriteStart();
+            appendLog("Identity checks passed. Beginning the app-region write at 0x10000…");
+          },
+          onProgress,
+          onLog: appendLog,
+        });
       setProgress(100);
       setBootloaderReady(false);
       setPhase("verifying-boot");
@@ -186,10 +241,17 @@ export function useFlasher() {
           bytes: selected.bytes,
           sha256: selected.sha256,
           flashOffset: "0x10000",
+          regions: bootloaderIdentity.regions.map((region) => ({
+            address: formatRegionAddress(region.address),
+            kind: region.kind,
+            bytes: region.bytes,
+            sha256: region.sha256,
+          })),
         },
         write: {
           baud: bootloaderIdentity.baud,
-          appOnly: true,
+          appOnly: !prepared.multiRegion,
+          regionCount: bootloaderIdentity.regions.length,
           eraseAll: false,
           hashVerifiedByDevice: bootloaderIdentity.hashVerifiedByDevice,
         },
@@ -202,8 +264,17 @@ export function useFlasher() {
         postBoot: { healthy: true, firmware: health.version },
       };
       setReceipt(nextReceipt);
+      setDevice(health.device);
+      setVersion(health.version);
+      setScenePhase("idle");
+      setSceneProgress(0);
+      setSceneError("");
+      setSceneResult(null);
       setPhase("complete");
       appendLog(`Flash complete. Framer returned healthy on firmware ${health.version}.`);
+      if (selected.scenePackage) {
+        appendLog(`${selected.scenePackage.name} is RAM-only; use "${selected.scenePackage.actionLabel}" to push it.`);
+      }
     } catch (cause) {
       setPhase("error");
       setError(errorMessage(cause, { writeStarted: appWriteStarted }));
@@ -253,6 +324,44 @@ export function useFlasher() {
     }
   }, [appendLog, normalIdentity, singleDeviceConfirmed]);
 
+  const enableScenePackage = useCallback(async () => {
+    const scenePackage = selected.scenePackage;
+    if (!scenePackage) return;
+    setSceneError("");
+    setSceneResult(null);
+    setSceneProgress(0);
+    setScenePhase("pushing");
+    try {
+      appendLog(`Loading and verifying ${scenePackage.name}…`);
+      const bytes = await loadScenePackage(scenePackage);
+      appendLog(`${scenePackage.name} SHA-256 verified: ${scenePackage.sha256}.`);
+      const result = await pushScenePackageOverHid({
+        device,
+        bytes,
+        package: scenePackage,
+        onProgress: ({ stage, current, total }) => {
+          if (stage === "uploading-chunks" && total) {
+            setSceneProgress(Math.round((current / total) * 100));
+          } else if (stage === "applying-on-keyboard") {
+            setSceneProgress(100);
+            setScenePhase("committing");
+          }
+        },
+      });
+      setSceneResult(result);
+      setSceneProgress(100);
+      setScenePhase("enabled");
+      if (!device) setDevice(result.device);
+      appendLog(
+        `${result.status} · generation ${result.generation} · ${result.chunks} chunks · ${result.bytes} bytes.`,
+      );
+    } catch (cause) {
+      setScenePhase("scene-error");
+      setSceneError(sceneErrorMessage(cause));
+      appendLog(`Scene push stopped: ${sceneErrorMessage(cause)}`);
+    }
+  }, [appendLog, device, selected]);
+
   const confirmSingleDevice = useCallback((confirmed) => {
     setSingleDeviceConfirmed(confirmed);
     setError("");
@@ -266,6 +375,10 @@ export function useFlasher() {
     setError("");
     setBootloaderReady(false);
     setWriteStarted(false);
+    setScenePhase("idle");
+    setSceneProgress(0);
+    setSceneError("");
+    setSceneResult(null);
     if (device) setPhase("identified");
   }, [device]);
 
@@ -282,6 +395,10 @@ export function useFlasher() {
     setReceipt(null);
     setError("");
     setLogs([]);
+    setScenePhase("idle");
+    setSceneProgress(0);
+    setSceneError("");
+    setSceneResult(null);
   }, []);
 
   return {
@@ -302,6 +419,14 @@ export function useFlasher() {
     error,
     logs,
     receipt,
+    scene: {
+      phase: scenePhase,
+      progress: sceneProgress,
+      error: sceneError,
+      result: sceneResult,
+      busy: ["pushing", "committing"].includes(scenePhase),
+    },
+    enableScenePackage,
     connectKeyboard,
     prepareBootloader,
     flash,

@@ -5,7 +5,13 @@ import { rasterizeGlyphAtlasWithMagick } from "../../src/render/index.mjs";
 const ascii = [..."0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"];
 const hiragana = Array.from({ length: 0x56 }, (_, index) => String.fromCodePoint(0x3041 + index));
 const katakana = [...Array.from({ length: 0x5a }, (_, index) => String.fromCodePoint(0x30a1 + index)), "ー"];
-const glyphs = [...new Set([...ascii, ...hiragana, ...katakana])];
+// The compiler caps the hosted cache at 255 glyph ids (one byte). 239 alphanumerics+kana
+// leave room for 16 extras: the punctuation/symbols the shipped widgets use most. Without
+// ":" (HH:MM:SS) hosted cache-only compiles fell back to Chromium raster. Space, "%", "@" and
+// "\\" are excluded (empty label / ImageMagick label escapes) and keep the raster fallback.
+const punctuation = [...":.,-+/!?()'#=&"];
+const symbols = [..."°→"];
+const glyphs = [...new Set([...ascii, ...punctuation, ...symbols, ...hiragana, ...katakana])];
 const entries = [];
 
 for (let offset = 0; offset < glyphs.length; offset += 240) {
