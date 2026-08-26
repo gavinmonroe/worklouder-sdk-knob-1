@@ -1,27 +1,27 @@
 Archive member included to satisfy reference by file (symbol)
 
 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_bswapsi2.o)
-                              /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-6rL6h1/loader-0.o (__bswapsi2)
+                              /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-BP1LyX/loader-0.o (__bswapsi2)
 
 Discarded input sections
 
  .literal.sha256_block
-                0x00000000        0x0 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-6rL6h1/loader-0.o
+                0x00000000        0x0 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-BP1LyX/loader-0.o
  .literal.framer_mqjs_resident_sha256_words
-                0x00000000        0x0 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-6rL6h1/loader-0.o
+                0x00000000        0x0 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-BP1LyX/loader-0.o
  .literal.verify_flash_page
-                0x00000000        0x0 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-6rL6h1/loader-0.o
+                0x00000000        0x0 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-BP1LyX/loader-0.o
  .literal.framer_mqjs_unmap_canary
-                0x00000000        0x0 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-6rL6h1/loader-0.o
+                0x00000000        0x0 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-BP1LyX/loader-0.o
  .literal.framer_mqjs_map_canary
-                0x00000000        0x0 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-6rL6h1/loader-0.o
- .text          0x00000000        0x0 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-6rL6h1/loader-0.o
- .data          0x00000000        0x0 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-6rL6h1/loader-0.o
- .bss           0x00000000        0x0 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-6rL6h1/loader-0.o
- .comment       0x00000000       0x30 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-6rL6h1/loader-0.o
- .xtensa.info   0x00000000       0x38 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-6rL6h1/loader-0.o
- .xt.lit        0x00000000       0x28 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-6rL6h1/loader-0.o
- .xt.prop       0x00000000      0x39c /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-6rL6h1/loader-0.o
+                0x00000000        0x0 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-BP1LyX/loader-0.o
+ .text          0x00000000        0x0 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-BP1LyX/loader-0.o
+ .data          0x00000000        0x0 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-BP1LyX/loader-0.o
+ .bss           0x00000000        0x0 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-BP1LyX/loader-0.o
+ .comment       0x00000000       0x30 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-BP1LyX/loader-0.o
+ .xtensa.info   0x00000000       0x38 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-BP1LyX/loader-0.o
+ .xt.lit        0x00000000       0x28 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-BP1LyX/loader-0.o
+ .xt.prop       0x00000000      0x39c /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-BP1LyX/loader-0.o
  .data          0x00000000        0x0 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_bswapsi2.o)
  .bss           0x00000000        0x0 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_bswapsi2.o)
  .xtensa.info   0x00000000        0x0 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_bswapsi2.o)
@@ -49,26 +49,26 @@ Linker script and memory map
 .text           0x4211e460      0x7a4
  *(.literal .literal.* .gnu.linkonce.literal.*)
  .literal.sha256_k
-                0x4211e460      0x100 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-6rL6h1/loader-0.o
+                0x4211e460      0x100 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-BP1LyX/loader-0.o
  *(.text .text.* .gnu.linkonce.t.*)
  .text.sha256_block
-                0x4211e560      0x1aa /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-6rL6h1/loader-0.o
+                0x4211e560      0x1aa /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-BP1LyX/loader-0.o
                                 0x1ae (size before relaxing)
  *fill*         0x4211e70a        0x2 
  .text.framer_mqjs_resident_sha256_words
-                0x4211e70c      0x110 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-6rL6h1/loader-0.o
+                0x4211e70c      0x110 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-BP1LyX/loader-0.o
                                 0x124 (size before relaxing)
                 0x4211e72c                framer_mqjs_resident_sha256_words
  .text.verify_flash_page
-                0x4211e81c      0x138 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-6rL6h1/loader-0.o
+                0x4211e81c      0x138 /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-BP1LyX/loader-0.o
                                 0x140 (size before relaxing)
  .text.framer_mqjs_unmap_canary
-                0x4211e954       0x5a /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-6rL6h1/loader-0.o
+                0x4211e954       0x5a /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-BP1LyX/loader-0.o
                                  0x66 (size before relaxing)
                 0x4211e954                framer_mqjs_unmap_canary
  *fill*         0x4211e9ae        0x2 
  .text.framer_mqjs_map_canary
-                0x4211e9b0      0x23f /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-6rL6h1/loader-0.o
+                0x4211e9b0      0x23f /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-BP1LyX/loader-0.o
                                 0x26f (size before relaxing)
                 0x4211e9e8                framer_mqjs_map_canary
  *fill*         0x4211ebef        0x0 
@@ -87,6 +87,6 @@ Linker script and memory map
  *(.xtensa.info .xt.prop .xt.lit .debug* .gnu.attributes)
                 0x00000001                        ASSERT ((SIZEOF (.text) <= LENGTH (loader_text)), resident loader exceeds healthy blue-app cavity tail)
                 0x00000001                        ASSERT ((SIZEOF (.forbidden_storage) == 0x0), resident loader gained rodata or writable storage)
-LOAD /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-6rL6h1/loader-0.o
+LOAD /var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-BP1LyX/loader-0.o
 LOAD /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a
-OUTPUT(/var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-6rL6h1/loader-0.elf elf32-xtensa-le)
+OUTPUT(/var/folders/n9/hdh7883x683d2htsf466jfwr0000gn/T/framer-mqjs-module-loader-BP1LyX/loader-0.elf elf32-xtensa-le)

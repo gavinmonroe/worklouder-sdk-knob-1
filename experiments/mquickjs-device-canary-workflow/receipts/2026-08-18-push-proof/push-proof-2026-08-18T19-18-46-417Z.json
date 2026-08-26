@@ -1,0 +1,24 @@
+{
+  "format": "render-v2-push-proof-v1",
+  "startedAt": "2026-08-18T19:18:46.417Z",
+  "steps": [
+    {
+      "name": "detect",
+      "sceneAlive": true
+    },
+    {
+      "name": "build",
+      "frames": 1,
+      "bytes": 62404,
+      "chunks": 21,
+      "sha256": "c3244ca6e59a4c160cb1e816cafb82834824d584f3b2116259a966895535ca22"
+    },
+    {
+      "name": "begin",
+      "status": "error"
+    }
+  ],
+  "result": "FAIL",
+  "error": "begin rejected — a stale transaction may be open; power-cycle and retry",
+  "finishedAt": "2026-08-18T19:18:46.720Z"
+}

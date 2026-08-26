@@ -78,7 +78,7 @@ const expectedPackageAbiSha256 =
 // companion canary's framer-stdlib-gen invocation (mquickjs_atom.h must be
 // generated at the same word size as the library it is paired with).
 const expectedCoreCanarySourceSha256 =
-  "ea0e19d73f927c8540c901b1845bf664542a96527fdd00ac172bcc8fde8ac9d6";
+  "98b92de03542d6fc382a6a293d9041ece7051c5bf4febda5c69f7635f5564e55";
 const expectedCoreCanaryTargetRawSha256 =
   "581e8f6cfbaa1b6cc2e77b7c1ec29506f4d8bbab83a2559d577191c555d095ef";
 

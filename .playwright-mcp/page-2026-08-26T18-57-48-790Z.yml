@@ -1,0 +1,243 @@
+- generic [ref=f10e3]:
+  - heading "Screens panel — states" [level=1] [ref=f10e4]
+  - paragraph [ref=f10e5]: docs/17 multi-widget slot bank · mock data · ScreensView (pure)
+  - generic [ref=f10e6]:
+    - button "Light" [ref=f10e7] [cursor=pointer]
+    - button "Dark" [ref=f10e8] [cursor=pointer]
+    - button "System" [ref=f10e9] [cursor=pointer]
+  - generic [ref=f10e10]:
+    - generic [ref=f10e11]:
+      - generic [ref=f10e12]: Full bank — active, stored (named + unnamed), empty
+      - generic [ref=f10e13]:
+        - generic [ref=f10e15]:
+          - generic [ref=f10e16]:
+            - heading "Screens" [level=2] [ref=f10e17]
+            - generic [ref=f10e18]: The keyboard's widget slot bank — one live at a time, the rest cold storage.
+          - generic [ref=f10e19]:
+            - generic "Active slot / slot count" [ref=f10e20]: slot 0 / 4
+            - button "Refresh slots" [ref=f10e21] [cursor=pointer]: Refresh
+        - generic [ref=f10e26]:
+          - generic [ref=f10e27]: 4 slots · slot 0 live · running generation 7
+          - list "Widget slots" [ref=f10e28]:
+            - listitem [ref=f10e29]:
+              - generic [ref=f10e30]:
+                - generic [ref=f10e31]: Slot 0
+                - generic [ref=f10e32]: On screen
+              - generic [ref=f10e34]:
+                - generic "Weather (device DSL)" [ref=f10e35]
+                - generic [ref=f10e36]:
+                  - generic [ref=f10e37]: gen 7
+                  - generic [ref=f10e38]: ·
+                  - generic "1a2b3c4d5e6f70819a0b1c2d3e4f5061" [ref=f10e39]: 1a2b3c4d
+                - generic [ref=f10e40]: On screen now
+              - button "Replace · gen 8" [ref=f10e43] [cursor=pointer]
+            - listitem [ref=f10e46]:
+              - generic [ref=f10e47]:
+                - generic [ref=f10e48]: Slot 1
+                - generic [ref=f10e49]: Stored
+              - generic [ref=f10e50]:
+                - generic "WPM Pet" [ref=f10e51]
+                - generic [ref=f10e52]:
+                  - generic [ref=f10e53]: gen 3
+                  - generic [ref=f10e54]: ·
+                  - generic "aabbccddeeff00112233445566778899" [ref=f10e55]: aabbccdd
+              - generic [ref=f10e56]:
+                - button "Activate" [ref=f10e57] [cursor=pointer]
+                - button "Push here" [ref=f10e60] [cursor=pointer]
+            - listitem [ref=f10e63]:
+              - generic [ref=f10e64]:
+                - generic [ref=f10e65]: Slot 2
+                - generic [ref=f10e66]: Stored
+              - generic [ref=f10e67]:
+                - generic [ref=f10e68]: Unknown widget
+                - generic [ref=f10e69]:
+                  - generic [ref=f10e70]: gen 1
+                  - generic [ref=f10e71]: ·
+                  - generic "0f1e2d3c4b5a69788796a5b4c3d2e1f0" [ref=f10e72]: 0f1e2d3c
+                - generic [ref=f10e73]: Not in this browser's push history.
+              - generic [ref=f10e74]:
+                - button "Activate" [ref=f10e75] [cursor=pointer]
+                - button "Push here" [ref=f10e78] [cursor=pointer]
+            - listitem [ref=f10e81]:
+              - generic [ref=f10e82]:
+                - generic [ref=f10e83]: Slot 3
+                - generic [ref=f10e84]: Empty
+              - generic [ref=f10e85]:
+                - generic [ref=f10e88]: Empty slot
+                - generic [ref=f10e89]: Push the current widget here.
+              - button "Push here · gen 1" [ref=f10e91] [cursor=pointer]
+          - generic [ref=f10e94]:
+            - generic [ref=f10e95]: Live — on screen now
+            - generic [ref=f10e97]: Stored — one tap to activate
+            - generic [ref=f10e99]: Empty — ready for a push
+    - generic [ref=f10e101]:
+      - generic [ref=f10e102]: Fresh device — one live widget, three open slots
+      - generic [ref=f10e103]:
+        - generic [ref=f10e105]:
+          - generic [ref=f10e106]:
+            - heading "Screens" [level=2] [ref=f10e107]
+            - generic [ref=f10e108]: The keyboard's widget slot bank — one live at a time, the rest cold storage.
+          - generic [ref=f10e109]:
+            - generic "Active slot / slot count" [ref=f10e110]: slot 0 / 4
+            - button "Refresh slots" [ref=f10e111] [cursor=pointer]: Refresh
+        - generic [ref=f10e116]:
+          - generic [ref=f10e117]: 4 slots · slot 0 live · running generation 2
+          - list "Widget slots" [ref=f10e118]:
+            - listitem [ref=f10e119]:
+              - generic [ref=f10e120]:
+                - generic [ref=f10e121]: Slot 0
+                - generic [ref=f10e122]: On screen
+              - generic [ref=f10e124]:
+                - generic "Clock face" [ref=f10e125]
+                - generic [ref=f10e126]:
+                  - generic [ref=f10e127]: gen 2
+                  - generic [ref=f10e128]: ·
+                  - generic "5566778899aabbccddeeff0011223344" [ref=f10e129]: "55667788"
+                - generic [ref=f10e130]: On screen now
+              - button "Replace · gen 3" [ref=f10e133] [cursor=pointer]
+            - listitem [ref=f10e136]:
+              - generic [ref=f10e137]:
+                - generic [ref=f10e138]: Slot 1
+                - generic [ref=f10e139]: Empty
+              - generic [ref=f10e140]:
+                - generic [ref=f10e143]: Empty slot
+                - generic [ref=f10e144]: Push the current widget here.
+              - button "Push here · gen 1" [ref=f10e146] [cursor=pointer]
+            - listitem [ref=f10e149]:
+              - generic [ref=f10e150]:
+                - generic [ref=f10e151]: Slot 2
+                - generic [ref=f10e152]: Empty
+              - generic [ref=f10e153]:
+                - generic [ref=f10e156]: Empty slot
+                - generic [ref=f10e157]: Push the current widget here.
+              - button "Push here · gen 1" [ref=f10e159] [cursor=pointer]
+            - listitem [ref=f10e162]:
+              - generic [ref=f10e163]:
+                - generic [ref=f10e164]: Slot 3
+                - generic [ref=f10e165]: Empty
+              - generic [ref=f10e166]:
+                - generic [ref=f10e169]: Empty slot
+                - generic [ref=f10e170]: Push the current widget here.
+              - button "Push here · gen 1" [ref=f10e172] [cursor=pointer]
+          - generic [ref=f10e175]:
+            - generic [ref=f10e176]: Live — on screen now
+            - generic [ref=f10e178]: Stored — one tap to activate
+            - generic [ref=f10e180]: Empty — ready for a push
+    - generic [ref=f10e182]:
+      - generic [ref=f10e183]: Pushing to slot 3 (busy)
+      - generic [ref=f10e184]:
+        - generic [ref=f10e186]:
+          - generic [ref=f10e187]:
+            - heading "Screens" [level=2] [ref=f10e188]
+            - generic [ref=f10e189]: The keyboard's widget slot bank — one live at a time, the rest cold storage.
+          - generic [ref=f10e190]:
+            - generic "Active slot / slot count" [ref=f10e191]: slot 0 / 4
+            - button "Refresh slots" [disabled] [ref=f10e192]: Refresh
+        - generic [ref=f10e197]:
+          - generic [ref=f10e198]: 4 slots · slot 0 live · running generation 7
+          - list "Widget slots" [ref=f10e199]:
+            - listitem [ref=f10e200]:
+              - generic [ref=f10e201]:
+                - generic [ref=f10e202]: Slot 0
+                - generic [ref=f10e203]: On screen
+              - generic [ref=f10e205]:
+                - generic "Weather (device DSL)" [ref=f10e206]
+                - generic [ref=f10e207]:
+                  - generic [ref=f10e208]: gen 7
+                  - generic [ref=f10e209]: ·
+                  - generic "1a2b3c4d5e6f70819a0b1c2d3e4f5061" [ref=f10e210]: 1a2b3c4d
+                - generic [ref=f10e211]: On screen now
+              - button "Replace · gen 8" [disabled] [ref=f10e214]
+            - listitem [ref=f10e217]:
+              - generic [ref=f10e218]:
+                - generic [ref=f10e219]: Slot 1
+                - generic [ref=f10e220]: Stored
+              - generic [ref=f10e221]:
+                - generic "WPM Pet" [ref=f10e222]
+                - generic [ref=f10e223]:
+                  - generic [ref=f10e224]: gen 3
+                  - generic [ref=f10e225]: ·
+                  - generic "aabbccddeeff00112233445566778899" [ref=f10e226]: aabbccdd
+              - generic [ref=f10e227]:
+                - button "Activate" [disabled] [ref=f10e228]
+                - button "Push here" [disabled] [ref=f10e231]
+            - listitem [ref=f10e234]:
+              - generic [ref=f10e235]:
+                - generic [ref=f10e236]: Slot 2
+                - generic [ref=f10e237]: Stored
+              - generic [ref=f10e238]:
+                - generic [ref=f10e239]: Unknown widget
+                - generic [ref=f10e240]:
+                  - generic [ref=f10e241]: gen 1
+                  - generic [ref=f10e242]: ·
+                  - generic "0f1e2d3c4b5a69788796a5b4c3d2e1f0" [ref=f10e243]: 0f1e2d3c
+                - generic [ref=f10e244]: Not in this browser's push history.
+              - generic [ref=f10e245]:
+                - button "Activate" [disabled] [ref=f10e246]
+                - button "Push here" [disabled] [ref=f10e249]
+            - listitem [ref=f10e252]:
+              - generic [ref=f10e253]:
+                - generic [ref=f10e254]: Slot 3
+                - generic [ref=f10e255]: Empty
+              - generic [ref=f10e256]:
+                - generic [ref=f10e259]: Empty slot
+                - generic [ref=f10e260]: Push the current widget here.
+              - button "Pushing…" [disabled] [ref=f10e262]
+          - generic [ref=f10e266]:
+            - generic [ref=f10e267]: Live — on screen now
+            - generic [ref=f10e269]: Stored — one tap to activate
+            - generic [ref=f10e271]: Empty — ready for a push
+    - generic [ref=f10e273]:
+      - generic [ref=f10e274]: Scanning
+      - generic [ref=f10e275]:
+        - generic [ref=f10e278]:
+          - heading "Screens" [level=2] [ref=f10e279]
+          - generic [ref=f10e280]: The keyboard's widget slot bank — one live at a time, the rest cold storage.
+        - generic [ref=f10e282]:
+          - generic [ref=f10e283]: Reading slot inventory…
+          - generic [ref=f10e287]:
+            - generic: Slot 0
+            - generic: Slot 1
+            - generic: Slot 2
+            - generic: Slot 3
+    - generic [ref=f10e288]:
+      - generic [ref=f10e289]: Disconnected
+      - generic [ref=f10e290]:
+        - generic [ref=f10e293]:
+          - heading "Screens" [level=2] [ref=f10e294]
+          - generic [ref=f10e295]: The keyboard's widget slot bank — one live at a time, the rest cold storage.
+        - generic [ref=f10e297]:
+          - generic [ref=f10e300]: No keyboard connected
+          - generic [ref=f10e301]: Connect and identify a keyboard to see and manage its widget slots.
+    - generic [ref=f10e302]:
+      - generic [ref=f10e303]: Needs identify
+      - generic [ref=f10e304]:
+        - generic [ref=f10e307]:
+          - heading "Screens" [level=2] [ref=f10e308]
+          - generic [ref=f10e309]: The keyboard's widget slot bank — one live at a time, the rest cold storage.
+        - generic [ref=f10e311]:
+          - generic [ref=f10e315]: Identify to read the slots
+          - generic [ref=f10e316]: The slot bank is read from the device's mquickjs capability — identify the firmware to sweep it.
+          - button "Identify firmware" [ref=f10e318] [cursor=pointer]
+    - generic [ref=f10e322]:
+      - generic [ref=f10e323]: Unsupported firmware (single slot)
+      - generic [ref=f10e324]:
+        - generic [ref=f10e327]:
+          - heading "Screens" [level=2] [ref=f10e328]
+          - generic [ref=f10e329]: The keyboard's widget slot bank — one live at a time, the rest cold storage.
+        - generic [ref=f10e334]:
+          - text: This firmware exposes a single fixed widget slot — the multi-slot RPC (
+          - code [ref=f10e335]: uploader=1
+          - text: ) isn't advertised, so there's no slot bank to sweep. Push still targets the one live widget from the
+          - strong [ref=f10e336]: Push
+          - text: card.
+    - generic [ref=f10e337]:
+      - generic [ref=f10e338]: Sweep error
+      - generic [ref=f10e339]:
+        - generic [ref=f10e342]:
+          - heading "Screens" [level=2] [ref=f10e343]
+          - generic [ref=f10e344]: The keyboard's widget slot bank — one live at a time, the rest cold storage.
+        - generic [ref=f10e346]:
+          - alert [ref=f10e347]:
+            - generic [ref=f10e352]: "Couldn't sweep the slot bank: The widget upload RPC did not answer its status probe (op 0)."
+          - button "Try again" [ref=f10e353] [cursor=pointer]

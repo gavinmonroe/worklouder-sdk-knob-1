@@ -1,0 +1,7 @@
+/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-widget-upload/f2up_upload.c:109:12:base64_value	32	static
+/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-widget-upload/f2up_upload.c:3:6:framer_f2up_upload_init	32	static
+/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-widget-upload/f2up_upload.c:17:27:framer_f2up_upload_begin	32	static
+/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-widget-upload/f2up_upload.c:42:27:framer_f2up_upload_chunk	32	static
+/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-widget-upload/f2up_upload.c:67:27:framer_f2up_upload_commit	32	static
+/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-widget-upload/f2up_upload.c:94:6:framer_f2up_upload_abort	32	static
+/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-widget-upload/f2up_upload.c:124:5:framer_f2up_base64_decode	64	static

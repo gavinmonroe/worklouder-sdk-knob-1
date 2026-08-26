@@ -27,12 +27,69 @@ export const TARGET_FACADE_FORMATTER = Object.freeze({
   dayCondition: 8,
   temperaturePair: 9,
   retry: 10,
+  /* Generic variant text: literal = table[clamp(slots[0])], colour = palette0
+   * or, when slots[1] is bound, palette[clamp(slots[1])]. Unlike 2..10 it is
+   * independent of the weather flags word, has a variable literal count, and
+   * exists so ANY widget's pick()-style text can render without borrowing
+   * weather semantics. */
+  variantText: 11,
+  /* Design-true raster variants: the record binds ONE value slot (properties
+   * is exactly `text`; slots 1..3 stay UNUSED) and its table is 1..16
+   * pre-rendered RGB565 rasters, each exactly rect.w*rect.h*2 bytes
+   * (little-endian per pixel, row-major, no stride padding, contiguous in
+   * variant order). Render blits table[clamp(slots[value], 0, count-1)] over
+   * the whole rect — the pixels carry colour, so no palette or glyph state is
+   * consulted and no base pixel survives inside the rect. Flag-word
+   * independent like variantText. */
+  variantRaster: 12, digitRaster: 13,
 });
 
-const CONTRACT_CANONICAL = JSON.stringify({
+/* The v1 canonical is FROZEN: its sha is embedded in the flashed weather asset
+ * and pinned across the canary release evidence. variantText lives only in the
+ * v2 canonical below, so every existing verifier keeps passing byte-for-byte. */
+const CONTRACT_FORMATTERS_V1 = Object.freeze({
+  rootVisibility: 1, tableLiteral: 2, status: 3, packedTemperature: 4,
+  currentCondition: 5, age: 6, weekday: 7, dayCondition: 8,
+  temperaturePair: 9, retry: 10,
+});
+/* The v2 canonical is FROZEN in turn: its sha is pinned by the hardware-proven
+ * widget-upload evidence. variantRaster lives only in the v3 canonical, which
+ * additionally carries the raster table encoding and the raised asset cap. */
+const CONTRACT_FORMATTERS_V2 = Object.freeze({
+  rootVisibility: 1, tableLiteral: 2, status: 3, packedTemperature: 4,
+  currentCondition: 5, age: 6, weekday: 7, dayCondition: 8,
+  temperaturePair: 9, retry: 10, variantText: 11,
+});
+export const TARGET_FACADE_MAX_ASSET_BYTES = 65_536;
+/* v3 raises the per-render overlay budget to one full frame: variantRaster
+ * blits write exactly rect.w*rect.h pixels, so realistic widgets (the weather
+ * example needs ~5,400) blew the glyph-era 4,096 while the admission happily
+ * passed them - an admit-pass/render-fail split that reached hardware as a
+ * black screen.  31,000 is the physical ceiling (the base decode already
+ * rewrites every framebuffer pixel each tick), and admission now proves
+ * formatter-12 targets fit the declared budget, so admit-pass implies
+ * render-cannot-overflow. */
+export const TARGET_FACADE_MAX_OVERLAY_WRITES_V3 = 31_000;
+/* Parallel table KIND for formatter 12: the record's table range fields are
+ * reused, but the byte length widens to the u16 at offsets 38..39 (byte 39 is
+ * zero for every other format) and the blob is raw pixels — the variant count
+ * is the exact quotient of the byte length by rect.w*rect.h*2. */
+const CONTRACT_V3_EXTENSION = Object.freeze({
+  rasterTable: Object.freeze({ pixelFormat: "rgb565-le", order: "row-major",
+    stridePadding: 0, variants: Object.freeze({ min: 1, max: 16 }),
+    record: Object.freeze({ offset: "u16le@36", bytes: "u16le@38" }),
+    bytesRule: "count*rect.width*rect.height*2" }),
+  maxAssetBytes: TARGET_FACADE_MAX_ASSET_BYTES,
+  limits: Object.freeze({ overlayPixelWrites: TARGET_FACADE_MAX_OVERLAY_WRITES_V3,
+    textBytes: TARGET_FACADE_MAX_TEXT_BYTES,
+    admitRule: "sum(formatter-12/13 rect areas) <= header.maxOverlayWrites" }),
+  digitRaster: Object.freeze({ format: 13, divisor: "u32le@30 power-of-ten 1..1000",
+    table: "exactly 10 raster variants", pick: "(max(slot,0)/divisor) % 10" }),
+});
+const contractCanonical = (version, formatters, extension = {}) => JSON.stringify({
   format: TARGET_FACADE_FORMAT,
   profile: TARGET_FACADE_PROFILE,
-  version: 1,
+  version,
   canvas: TARGET_FACADE_CANVAS,
   headerBytes: TARGET_FACADE_HEADER_BYTES,
   targetBytes: TARGET_FACADE_TARGET_BYTES,
@@ -42,9 +99,15 @@ const CONTRACT_CANONICAL = JSON.stringify({
     textBytes: TARGET_FACADE_MAX_TEXT_BYTES },
   mailbox: { bytes: 72, sequence: "u32-seqlock", slots: "16xi32", generation: "u32" },
   properties: TARGET_FACADE_PROPERTY,
-  formatters: TARGET_FACADE_FORMATTER,
+  formatters,
+  ...extension,
 });
+const CONTRACT_CANONICAL = contractCanonical(1, CONTRACT_FORMATTERS_V1);
 
+export const TARGET_FACADE_CONTRACT_V3_SHA256 = createHash("sha256")
+  .update(contractCanonical(3, TARGET_FACADE_FORMATTER, CONTRACT_V3_EXTENSION)).digest("hex");
+export const TARGET_FACADE_CONTRACT_V2_SHA256 = createHash("sha256")
+  .update(contractCanonical(2, CONTRACT_FORMATTERS_V2)).digest("hex");
 export const TARGET_FACADE_CONTRACT_SHA256 = createHash("sha256")
   .update(CONTRACT_CANONICAL).digest("hex");
 
@@ -243,9 +306,28 @@ function decodeTable(asset, header, targetRecord) {
   return values;
 }
 
-const EXPECTED_PROPERTIES = Object.freeze([0, 4, 1, 3, 1, 3, 1, 1, 3, 1, 7]);
-const EXPECTED_TABLE_COUNTS = Object.freeze([0, 0, 1, 5, 1, 17, 3, 8, 17, 1, 1]);
-const USED_SLOTS = Object.freeze([0, 1, 0, 2, 2, 2, 2, 2, 2, 3, 2]);
+const EXPECTED_PROPERTIES = Object.freeze([0, 4, 1, 3, 1, 3, 1, 1, 3, 1, 7, -1, 1, 1]);
+const EXPECTED_TABLE_COUNTS = Object.freeze([0, 0, 1, 5, 1, 17, 3, 8, 17, 1, 1, -1, -2, -3]);
+const USED_SLOTS = Object.freeze([0, 1, 0, 2, 2, 2, 2, 2, 2, 3, 2, 2, 1, 1]);
+/* -1 marks per-format validation handled inline (variantText: properties may be
+ * text or text|color; literal count is 1..16; the colour slot may be UNUSED).
+ * -2 marks the raster table KIND (variantRaster): the range is raw pixels with
+ * a u16 byte length, decoded by decodeRasterTable instead of decodeTable.
+ * -3 marks the DIGIT raster KIND (digitRaster): same pixel encoding with the
+ * count fixed at exactly 10 ("0".."9"); the record's divisor (u32le@30, a
+ * power of ten 1..1000) selects the digit: variant = (slot/divisor) % 10. */
+
+function decodeRasterTable(asset, header, targetRecord, width, height, id) {
+  const offset = u16(targetRecord, 36); const length = u16(targetRecord, 38);
+  const variantBytes = width * height * 2;
+  invariant(offset + length <= header.literalBytes, `Raster table range is invalid for ${id}.`);
+  invariant(length >= variantBytes && length % variantBytes === 0 &&
+    length <= variantBytes * 16,
+  `Raster table byte length is not exactly count*rect.w*rect.h*2 for ${id}.`);
+  return Object.freeze(Array.from({ length: length / variantBytes }, (_, index) =>
+    Buffer.from(asset.subarray(header.literalsAt + offset + index * variantBytes,
+      header.literalsAt + offset + (index + 1) * variantBytes))));
+}
 
 export function decodeTargetFacadeAsset(value, { expectedGeneration, expectedF2jsSha256,
   expectedContractSha256 = TARGET_FACADE_CONTRACT_SHA256, baseFrame } = {}) {
@@ -265,7 +347,7 @@ export function decodeTargetFacadeAsset(value, { expectedGeneration, expectedF2j
     binary[23] <= 16 && u16(binary, 24) >= 1 && u16(binary, 24) <= 64 &&
     binary[26] === 8 && binary[27] === 5 && binary[28] === 7 && binary[29] === 6 &&
     binary[30] === TARGET_FACADE_MAX_TEXT_BYTES && binary[31] === 0 &&
-    u32(binary, 32) >= 1 && u32(binary, 32) <= TARGET_FACADE_MAX_OVERLAY_WRITES,
+    u32(binary, 32) >= 1 && u32(binary, 32) <= TARGET_FACADE_MAX_OVERLAY_WRITES_V3,
   "Target facade profile fields are invalid.");
   const header = { generation, targetsAt: u32(binary, 36), targetsBytes: u32(binary, 40),
     paletteAt: u32(binary, 44), paletteBytes: u32(binary, 48), glyphsAt: u32(binary, 52),
@@ -309,24 +391,58 @@ export function decodeTargetFacadeAsset(value, { expectedGeneration, expectedF2j
     ids.add(id);
     const format = record[25]; const x = u16(record, 16); const y = u16(record, 18);
     const width = u16(record, 20); const height = u16(record, 22);
-    invariant(format >= 1 && format <= 10 && record[24] === EXPECTED_PROPERTIES[format] &&
+    invariant(format >= 1 && format <= 13 &&
+      (EXPECTED_PROPERTIES[format] === -1
+        ? record[24] === 1 || record[24] === 3
+        : record[24] === EXPECTED_PROPERTIES[format]) &&
       width > 0 && height > 0 && x + width <= 100 && y + height <= 310,
     `Target facade geometry/properties are invalid for ${id}.`);
     const usedSlots = USED_SLOTS[format]; const slots = [...record.subarray(26, 30)];
-    invariant(slots.slice(0, usedSlots).every((slot) => slot < 16) &&
+    invariant((format === TARGET_FACADE_FORMATTER.variantText
+      ? slots[0] < 16 && (slots[1] < 16 || slots[1] === UNUSED)
+      : slots.slice(0, usedSlots).every((slot) => slot < 16)) &&
       slots.slice(usedSlots).every((slot) => slot === UNUSED), `Target facade slots are invalid for ${id}.`);
     if (format === 1) invariant(record[30] === UNUSED && record[31] === UNUSED && record[32] === UNUSED &&
       record[34] === 0 && record[35] === 0, "Root visibility metadata is invalid.");
+    else if (format === TARGET_FACADE_FORMATTER.variantRaster)
+      invariant(record[30] === UNUSED && record[31] === UNUSED && record[32] === UNUSED &&
+        record[33] === 0 && record[34] === 0 && record[35] === 0,
+      `Raster target text metadata must stay unused for ${id}.`);
+    else if (format === TARGET_FACADE_FORMATTER.digitRaster)
+      invariant([1, 10, 100, 1000].includes(record.readUInt32LE(30)) &&
+        record[34] === 0 && record[35] === 0,
+      `Digit raster divisor must be a power of ten 1..1000 for ${id}.`);
     else invariant(record[30] < palette.length && record[31] < palette.length && record[32] === 0 &&
       record[33] <= 2 && record[34] >= 1 && record[34] <= TARGET_FACADE_MAX_TEXT_BYTES &&
       record[35] >= 1 && record[35] <= 3, `Target text metadata is invalid for ${id}.`);
-    const tables = decodeTable(binary, header, record);
-    invariant(tables.length === EXPECTED_TABLE_COUNTS[format], `Target literal table count is invalid for ${id}.`);
-    for (const item of tables) for (const code of item) invariant(glyphs.has(code), `Target ${id} uses an absent glyph.`);
+    let tables = Object.freeze([]); let rasters = null;
+    if (EXPECTED_TABLE_COUNTS[format] === -2 || EXPECTED_TABLE_COUNTS[format] === -3) {
+      rasters = decodeRasterTable(binary, header, record, width, height, id);
+      if (EXPECTED_TABLE_COUNTS[format] === -3)
+        invariant(rasters.length === 10,
+          `Digit raster table must hold exactly 10 variants for ${id}.`);
+    } else {
+      tables = Object.freeze(decodeTable(binary, header, record));
+      invariant(EXPECTED_TABLE_COUNTS[format] === -1
+        ? tables.length >= 1 && tables.length <= 16
+        : tables.length === EXPECTED_TABLE_COUNTS[format],
+      `Target literal table count is invalid for ${id}.`);
+      for (const item of tables) for (const code of item) invariant(glyphs.has(code), `Target ${id} uses an absent glyph.`);
+    }
     return Object.freeze({ id, x, y, width, height, properties: record[24], format, slots,
       palette0: record[30], palette1: record[31], font: record[32], align: record[33],
-      maxChars: record[34], scale: record[35], tables: Object.freeze(tables) });
+      maxChars: record[34], scale: record[35], tables, rasters,
+      divisor: record.readUInt32LE(30), paletteCount: binary[23] });
   });
+  // Renderability at admit: a variantRaster blit writes exactly rect.w*rect.h
+  // pixels, so the sum over formatter-12 targets must fit the declared budget
+  // or the asset would admit and then fail every render (the black-screen
+  // class).  Admit-pass now implies raster-render-cannot-overflow.
+  const rasterWrites = targets.reduce((sum, target) =>
+    target.format === 12 || target.format === 13
+      ? sum + target.width * target.height : sum, 0);
+  invariant(rasterWrites <= header.maxOverlayWrites,
+    `Raster targets need ${rasterWrites} overlay writes per render; the asset declares ${header.maxOverlayWrites}.`);
   return Object.freeze({ binary, header: Object.freeze(header), palette: Object.freeze(palette), glyphs,
     targets: Object.freeze(targets), sha256: sha256(binary).toString("hex") });
 }
@@ -357,8 +473,30 @@ function prepare(target, slots) {
   const output = []; const flags = slots[15] >>> 0;
   if ((flags & ~7) !== 0) throw new Error("flags");
   const hasGood = Boolean(flags & 1); let hidden = false; let palette = target.palette0;
+  let raster = null;
   if (target.format === 1) hidden = Boolean(slots[target.slots[0]] & 2);
-  else if (target.format === 2) pushBytes(output, tableValue(target, 0));
+  else if (target.format === 12) {
+    /* variantRaster only clamps its value slot here; the blit happens in
+     * countOrDraw. Reads slots[15] solely through the global check above. */
+    const pick = Math.min(Math.max(slots[target.slots[0]] | 0, 0), target.rasters.length - 1);
+    raster = target.rasters[pick];
+  } else if (target.format === 13) {
+    /* digitRaster: negative values floor at zero; the divisor extracts one
+     * decimal digit, so a multi-digit number costs one slot across its
+     * per-digit subtargets. */
+    const value = slots[target.slots[0]] | 0;
+    const unsignedValue = value < 0 ? 0 : value;
+    raster = target.rasters[Math.floor(unsignedValue / target.divisor) % 10];
+  } else if (target.format === 11) {
+    /* Weather-flag independent by design: a generic widget has no `hasGood`. */
+    const count = target.tables.length;
+    const index = Math.min(Math.max(slots[target.slots[0]] | 0, 0), count - 1);
+    pushBytes(output, tableValue(target, index));
+    if (target.slots[1] !== UNUSED) {
+      const paletteCount = target.paletteCount ?? 16;
+      palette = Math.min(Math.max(slots[target.slots[1]] | 0, 0), paletteCount - 1);
+    }
+  } else if (target.format === 2) pushBytes(output, tableValue(target, 0));
   else if (target.format === 3) {
     const freshness = slots[target.slots[0]];
     if (freshness < 0 || freshness > 4) throw new Error("freshness");
@@ -414,11 +552,23 @@ function prepare(target, slots) {
     if (!hidden) { pushBytes(output, tableValue(target, 0)); pushBytes(output, uintText(retry)); appendAscii(output, "S"); }
   }
   if (output.length > target.maxChars) throw new Error("text-overflow");
-  return Object.freeze({ bytes: Buffer.from(output), hidden, palette });
+  return Object.freeze({ bytes: Buffer.from(output), hidden, palette, raster });
 }
 
 function countOrDraw(frame, decoded, target, prepared, draw) {
   if (prepared.hidden || target.format === 1) return 0;
+  if (target.format === 12 || target.format === 13) {
+    /* Full-rect blit: admission proved the rect sits inside the canvas and the
+     * variant is exactly rect.w*rect.h RGB565LE pixels, so every rect pixel is
+     * overwritten unconditionally — no clipping, no base ghosting. */
+    if (draw) {
+      for (let row = 0; row < target.height; row++) for (let column = 0; column < target.width; column++) {
+        frame[(target.y + row) * 100 + target.x + column] =
+          prepared.raster.readUInt16LE((row * target.width + column) * 2);
+      }
+    }
+    return target.width * target.height;
+  }
   const scale = target.scale; const fontWidth = 5 * scale; const fontHeight = 7 * scale;
   const textWidth = prepared.bytes.length ? prepared.bytes.length * 6 * scale - scale : 0;
   let x = target.x;

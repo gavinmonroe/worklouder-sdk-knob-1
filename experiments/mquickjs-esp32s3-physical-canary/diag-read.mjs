@@ -44,6 +44,8 @@ const expr = String.raw`
     await call("diag2", { method: "widget.mquickjs.diag2" });
     await call("diag3", { method: "widget.mquickjs.diag3" });
     await call("diag4", { method: "widget.mquickjs.diag4" });
+    await call("diag5", { method: "widget.mquickjs.diag5" });
+    await call("diag6", { method: "widget.mquickjs.diag6" });
     await call("scene", { method: "widget.scene.status", params: { protocol: "framer-widget-scene-rpc-v1" } });
     await call("cap0", { method: "widget.mquickjs.cap", params: { page: 0 } });
     // Slot pages: outside the ordered p0..p5 session, so they may be called
@@ -55,6 +57,71 @@ const expr = String.raw`
 })()`;
 
 // --- decode tables -----------------------------------------------------------
+
+// physical_block::reserved_flags[0..1], written once by
+// boot_adopt_default_scene() in psram-module-src/physical_integration.c.
+const ADOPT_OUTCOMES = {
+  0: "not attempted (module has no adopt path, or it never ran)",
+  1: "ADOPTED - the flash default scene is live on ID26/ID27",
+  2: "slot B absent or invalid - device booted its built-in scene",
+  3: "no store: renderer sidecar missing, or the PSRAM buffer could not be taken",
+  4: "renderer gate rejected the package - built-in scene retained",
+};
+const ADOPT_STEPS = {
+  0: "-",
+  1: "controller is not the renderer-v2 ID26 backend (vtable[11] magic)",
+  2: "esp_mmu_map(0x240000, 192 KiB) failed",
+  3: "mapped vaddr outside the data window / unaligned",
+  4: "record magic is not \"F1SCENE1\" (erased flash reads this way)",
+  5: "record version != 1",
+  6: "record package_bytes != 95535",
+  7: "record generation < 2, or expected_generation != generation - 1",
+  8: "record header CRC-32 mismatch",
+  9: "package SHA-256 does not match the record digest",
+  10: "PSRAM buffer allocation rejected",
+  11: "renderer_v1_prepare_store rejected (store already reserved/pending)",
+  12: "renderer_v2_native_prepare rejected (frozen sub-blob digest gate)",
+  13: "renderer_v1_stage_bundle rejected (F1WB validate or generation)",
+  14: "renderer_v2_native_commit CAS failed (buffer retained anyway)",
+  15: "package F1WB header words do not match the record generation",
+  16: "too little internal heap free to add a third esp_mmu_map safely",
+  17: "adopted, but the scene-RPC state was not found or was already in use - "
+    + "committed_generation was NOT advanced, so a host push will be refused",
+};
+
+// physical_block::scene_persist_status, written by scene_persist_step() on the
+// owner task in psram-module-src/physical_integration.c.
+const PERSIST_STATES = {
+  0: "idle - waiting for a committed generation that slot B does not hold",
+  1: "armed - a new committed generation is settling (500 ms)",
+  2: "erasing slot B (one 4 KiB sector per owner tick)",
+  3: "writing the payload (1 KiB per owner tick)",
+  4: "verifying the payload by read-back (512 B per owner tick)",
+  5: "writing the 64-byte header LAST",
+  6: "DONE - slot B holds the committed package",
+  7: "FAILED - stopped for the rest of this boot (see step)",
+};
+const PERSIST_STEPS = {
+  0: "-",
+  1: "bounds check refused a span (never expected; a code fault)",
+  2: "esp_flash_erase_region returned an error",
+  3: "esp_flash_write returned an error",
+  4: "esp_flash_read returned an error",
+  5: "payload read-back did not match the store",
+  6: "the committed store moved or a new upload started mid-persist",
+  7: "header esp_flash_write returned an error",
+  8: "header read-back returned an error",
+  9: "header read-back did not match",
+  10: "the scene-RPC store is not a usable 95,535-byte package",
+  11: "esp_flash region-protection escape unavailable (not this firmware) - "
+    + "nothing was written",
+};
+const PERSIST_REARM = {
+  0: "not attempted (no adopt published a generation)",
+  1: "waiting for the adopted package to reach RV2_SWITCH_ACTIVE",
+  2: "renderer-v2 switch returned to EMPTY - a host push can prepare again",
+  3: "no renderer-v2 sidecar on the controller",
+};
 
 const GATES = {
   0: "entered (loader running, no gate passed yet)",
@@ -154,6 +221,8 @@ const v3 = fields(statusOf(r?.diag3), "v3");
 const v4raw = statusOf(r?.diag4);
 const v4 = typeof v4raw === "string" && v4raw.startsWith("v4;")
   ? v4raw.slice(3) : null;
+const v5 = fields(statusOf(r?.diag5), "v5");
+const v6 = fields(statusOf(r?.diag6), "v6");
 
 if (v1) {
   const gate = u(v1.g);
@@ -289,6 +358,64 @@ if (v4 !== null) {
   }
 }
 
+if (v5) {
+  const packed = u(v5.a);
+  console.log("\n=== widget.mquickjs.diag5 (v5) - boot default-scene adopt ===");
+  if (packed === UNKNOWN) {
+    console.log("  no live resident block - startup never published one");
+  } else {
+    const outcome = (packed >>> 16) & 0xff;
+    const step = (packed >>> 24) & 0xff;
+    console.log({
+      "a  packed adopt word": hex(packed),
+      "   target_admitted": packed & 0xff,
+      "   heap_claimed": (packed >>> 8) & 0xff,
+      "   adopt outcome": `${outcome} = ${ADOPT_OUTCOMES[outcome] ?? "?"}`,
+      "   first failing step": `${step & 0x7f} = ${ADOPT_STEPS[step & 0x7f] ?? "?"}`,
+      "   esp_mmu_unmap error": (step & 0x80) !== 0,
+      "m  block magic": hex(u(v5.m)),
+      "b  block->boot_state": u(v5.b),
+    });
+    if (outcome === 1)
+      console.log("  ID26 clock + ID27 timer come up from flash slot B with no host push.");
+    else if (outcome === 2)
+      console.log("  Write build-diag-module-psram/scene-slot-b.bin to flash paddr 0x240000.");
+  }
+}
+
+if (v6) {
+  const packed = u(v6.p);
+  console.log("\n=== widget.mquickjs.diag6 (v6) - boot-scene persist + re-arm ===");
+  if (packed === UNKNOWN) {
+    console.log("  no live resident block - startup never published one");
+  } else {
+    const state = packed & 0xff;
+    const step = (packed >>> 8) & 0xff;
+    const rearm = (packed >>> 16) & 0xff;
+    const started = (packed >>> 24) & 0xff;
+    const slotB = u(v6.g);
+    const committed = u(v6.c);
+    console.log({
+      "p  packed persist word": hex(packed),
+      "   persist state": `${state} = ${PERSIST_STATES[state] ?? "?"}`,
+      "   step": `${step} = ${PERSIST_STEPS[step] ?? "?"}`,
+      "   renderer-v2 re-arm": `${rearm} = ${PERSIST_REARM[rearm] ?? "?"}`,
+      "   a persist was started this boot": started !== 0,
+      "g  generation now in slot B": slotB,
+      "c  committed generation in the scene-RPC core": committed,
+    });
+    if (committed !== UNKNOWN && slotB !== UNKNOWN && committed === slotB &&
+        committed !== 0)
+      console.log(`  Slot B and the live scene agree on generation ${slotB}: a reset recovers it.`);
+    else if (state === 7) {
+      console.log("  Persist stopped. Slot B is NOT sealed with the live generation; a reset");
+      console.log("  will come up with whatever generation g reports (0 = built-in boot scene).");
+    }
+    if (rearm === 2)
+      console.log(`  The host may push generation ${committed + 1} now (begin expected=${committed}).`);
+  }
+}
+
 // --- telemetry slot pages 6/7 - the device->host value channel ---------------
 // physical_integration.c telemetry_slots_format: "v1;p=<6|7>" then eight
 // ";s<absolute slot>=<8 hex digits>" groups, page 6 = slots 0..7, page 7 =
@@ -329,3 +456,5 @@ if (!v1) console.log("\nwidget.mquickjs.diag did not answer - the DIAG loader is
 if (!v2) console.log("widget.mquickjs.diag2 did not answer.");
 if (!v3) console.log("widget.mquickjs.diag3 did not answer.");
 if (v4 === null) console.log("widget.mquickjs.diag4 did not answer - this loader predates diag4.");
+if (!v5) console.log("widget.mquickjs.diag5 did not answer - this loader predates diag5.");
+if (!v6) console.log("widget.mquickjs.diag6 did not answer - this loader predates diag6.");

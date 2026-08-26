@@ -3,7 +3,7 @@
   "hardwareTouched": false,
   "extractedFrom": {
     "file": "experiments/mquickjs-esp32s3-physical-canary/psram-module-src/physical_integration.c",
-    "sha256": "18b37104b7cbabcc166f061780d64d52575806ef20babf37f79daa23db2e3627"
+    "sha256": "749ca6eddcb5c89935457fa9490afab9ac3f3b875ec2e8d68f111180af130a33"
   },
   "constantsFrom": [
     {

@@ -1,0 +1,80 @@
+- generic [ref=f291e3]:
+  - banner [ref=f291e4]:
+    - generic [ref=f291e5]:
+      - generic [ref=f291e6]:
+        - generic [ref=f291e7]: F1
+        - generic [ref=f291e8]: Widget Designer
+        - generic [ref=f291e9]: v0.1.0
+      - tablist "Workspace" [ref=f291e10]:
+        - tab "Design" [ref=f291e11] [cursor=pointer]
+        - tab "Source" [ref=f291e12] [cursor=pointer]
+        - tab "Events" [ref=f291e13] [cursor=pointer]
+        - tab "Host data" [ref=f291e14] [cursor=pointer]
+        - tab "Inspect" [ref=f291e15] [cursor=pointer]
+        - tab "Export" [active] [selected] [ref=f291e16] [cursor=pointer]
+        - tab "Device" [ref=f291e17] [cursor=pointer]
+      - generic [ref=f291e18]:
+        - generic [ref=f291e19]: No F2JS build
+        - button "Compile" [ref=f291e20] [cursor=pointer]
+        - button "Download package" [disabled] [ref=f291e24]:
+          - generic [ref=f291e27]: Download
+        - button "Toggle theme" [ref=f291e29] [cursor=pointer]
+    - generic [ref=f291e33]:
+      - generic [ref=f291e34]: Examples
+      - generic [ref=f291e35]:
+        - button "V2 events" [ref=f291e37] [cursor=pointer]
+        - button "Focus dial" [ref=f291e40] [cursor=pointer]
+        - button "Weather" [ref=f291e43] [cursor=pointer]
+        - button "Weather (device)" [pressed] [ref=f291e46] [cursor=pointer]
+        - button "Pulse" [ref=f291e49] [cursor=pointer]
+        - button "Pomodoro" [ref=f291e52] [cursor=pointer]
+  - main [ref=f291e54]:
+    - generic [ref=f291e1483]:
+      - generic [ref=f291e1484]:
+        - generic [ref=f291e1485]:
+          - generic [ref=f291e1486]: Build package
+          - generic [ref=f291e1487]: Produces the same binary layout as buildRenderV2MQuickJsPackage() from f1-widget-sdk. Compiled entirely in the browser using WebCrypto for SHA-256 — no upload, no server.
+        - generic [ref=f291e1489]:
+          - button "Build F2JS" [ref=f291e1491] [cursor=pointer]
+          - button "Download" [disabled] [ref=f291e1494]
+      - generic [ref=f291e1497]:
+        - generic [ref=f291e1498]:
+          - generic [ref=f291e1499]: F2UP container (mquickjs)
+          - generic [ref=f291e1500]: Assemble the widget exactly as the device push does — no keyboard needed. The container bytes appear below for inspection.
+        - button "Assemble F2UP" [ref=f291e1504] [cursor=pointer]
+      - generic [ref=f291e1507]:
+        - generic [ref=f291e1508]:
+          - generic [ref=f291e1509]: Budget
+          - generic [ref=f291e1510]: Mirrors RENDER_V2_MQUICKJS_LIMITS.
+        - generic [ref=f291e1512]:
+          - generic [ref=f291e1513]:
+            - generic [ref=f291e1514]: Package
+            - meter "Package" [ref=f291e1515]
+            - generic [ref=f291e1516]: —/98,304
+          - generic [ref=f291e1517]:
+            - generic [ref=f291e1518]: Source
+            - meter "Source" [ref=f291e1519]
+            - generic [ref=f291e1521]: 4,645/8,192
+          - generic [ref=f291e1522]:
+            - generic [ref=f291e1523]: Events
+            - meter "Events" [ref=f291e1524]
+            - generic [ref=f291e1526]: 5/32
+          - generic [ref=f291e1527]:
+            - generic [ref=f291e1528]: DOM targets
+            - meter "DOM targets" [ref=f291e1529]
+            - generic [ref=f291e1531]: 9/16
+      - generic [ref=f291e1532]:
+        - generic [ref=f291e1533]: What this does
+        - list [ref=f291e1536]:
+          - listitem [ref=f291e1537]: Compiles the F1SC CSS subset into a fixed-glyph scene (col, row, glyph, color, glow).
+          - listitem [ref=f291e1538]: Emits a MicroQuickJS bundle for the widget on / getInt / setInt / commit / isHeld surface.
+          - listitem [ref=f291e1539]: Wraps the scene + runtime into a single FRMRv2MJS F2JS blob.
+          - listitem [ref=f291e1540]: Round-trips with the SDK's decodeRenderV2MQuickJsPackage().
+  - contentinfo [ref=f291e355]:
+    - button "No device connected — open Device tab to connect" [ref=f291e357] [cursor=pointer]:
+      - generic [ref=f291e359]: Disconnected
+    - generic [ref=f291e361]: Sim ready
+    - button "View diagnostics — no issues" [ref=f291e365] [cursor=pointer]:
+      - generic [ref=f291e367]: No issues
+    - button "No F2JS build — open Export tab" [ref=f291e369] [cursor=pointer]:
+      - generic [ref=f291e370]: No F2JS build

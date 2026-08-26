@@ -1,13 +1,15 @@
-// Every address this app is ever allowed to write. All three live inside the
+// Every address this app is ever allowed to write. All four live inside the
 // existing `factory` partition (0x10000..0x810000); the bootloader, partition
 // table, NVS, filesystem, and coredump regions are unreachable by design.
 export const APP_REGION_ADDRESS = 0x10000;
 export const MODULE_TEXT_PAGE_ADDRESS = 0x210000;
 export const MODULE_RODATA_PAGE_ADDRESS = 0x230000;
+export const SCENE_SLOT_B_ADDRESS = 0x240000;
 export const ALLOWED_REGION_ADDRESSES = Object.freeze([
   APP_REGION_ADDRESS,
   MODULE_TEXT_PAGE_ADDRESS,
   MODULE_RODATA_PAGE_ADDRESS,
+  SCENE_SLOT_B_ADDRESS,
 ]);
 export const REGION_KINDS = Object.freeze(["page", "app"]);
 

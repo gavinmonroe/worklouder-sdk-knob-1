@@ -1,0 +1,212 @@
+{
+  "status": "PASS_SCENE_SLOT_B_HOST_PROOF_NO_HARDWARE",
+  "hardwareTouched": false,
+  "extractedFrom": {
+    "file": "experiments/mquickjs-esp32s3-physical-canary/psram-module-src/physical_integration.c",
+    "sha256": "45451374cf9c4360763ad9d370e2fd1e23c75303052e1881b79de13085c3576c"
+  },
+  "extractedFunctions": [
+    "scene_read32",
+    "scene_crc32",
+    "scene_record_is_valid",
+    "scene_package_header_is_f1wb",
+    "scene_copy",
+    "scene_flash_span_allowed",
+    "scene_record_header_build",
+    "scene_persist_advance"
+  ],
+  "extractedRecords": [
+    "scene_flash_ops",
+    "scene_persist_context"
+  ],
+  "extractedDefines": [
+    "SCENE_RECORD_HEADER_BYTES",
+    "SCENE_RECORD_SHA_OFFSET",
+    "SCENE_RECORD_VERSION",
+    "SCENE_RECORD_MAGIC_0",
+    "SCENE_RECORD_MAGIC_1",
+    "SCENE_PACKAGE_BYTES",
+    "SCENE_FOCUS_F1WB_BYTES",
+    "SCENE_F1WB_MAGIC",
+    "SCENE_GENERATION",
+    "SCENE_EXPECTED_GENERATION",
+    "SCENE_MIN_GENERATION",
+    "SCENE_STEP_NONE",
+    "SCENE_STEP_MAGIC",
+    "SCENE_STEP_VERSION",
+    "SCENE_STEP_SIZE",
+    "SCENE_STEP_GENERATION",
+    "SCENE_STEP_HEADER_CRC",
+    "SCENE_PERSIST_IDLE",
+    "SCENE_PERSIST_ARMED",
+    "SCENE_PERSIST_ERASE",
+    "SCENE_PERSIST_WRITE",
+    "SCENE_PERSIST_VERIFY",
+    "SCENE_PERSIST_HEADER",
+    "SCENE_PERSIST_DONE",
+    "SCENE_PERSIST_FAILED",
+    "SCENE_PSTEP_NONE",
+    "SCENE_PSTEP_BOUNDS",
+    "SCENE_PSTEP_ERASE",
+    "SCENE_PSTEP_WRITE",
+    "SCENE_PSTEP_READBACK",
+    "SCENE_PSTEP_MISMATCH",
+    "SCENE_PSTEP_MOVED",
+    "SCENE_PSTEP_HEADER_WRITE",
+    "SCENE_PSTEP_HEADER_READBACK",
+    "SCENE_PSTEP_HEADER_MISMATCH",
+    "SCENE_PSTEP_STORE",
+    "SCENE_PERSIST_BEGIN",
+    "SCENE_PERSIST_END",
+    "SCENE_PERSIST_SECTOR_BYTES",
+    "SCENE_PERSIST_SECTORS",
+    "SCENE_PERSIST_CHUNK_BYTES",
+    "SCENE_PERSIST_VERIFY_BYTES"
+  ],
+  "hostSubstitutions": [
+    "scene_flash_ops backed by an in-process NOR-flash model (sector erase to 0xff, program clears bits only, poisoned outside [0x240000,0x270000)); no safety bound or sequencing decision is substituted"
+  ],
+  "pinnedAddresses": [
+    {
+      "macro": "STOCK_SHA256",
+      "address": "0x4211ae1c",
+      "symbol": "sha256",
+      "evidence": "4211ae1c <sha256>:"
+    },
+    {
+      "macro": "STOCK_PREPARE_STORE",
+      "address": "0x42119e74",
+      "symbol": "renderer_v1_prepare_store",
+      "evidence": "42119e74 <renderer_v1_prepare_store>:"
+    },
+    {
+      "macro": "STOCK_STAGE_BUNDLE",
+      "address": "0x42119ebc",
+      "symbol": "renderer_v1_stage_bundle",
+      "evidence": "42119ebc <renderer_v1_stage_bundle>:"
+    },
+    {
+      "macro": "STOCK_V2_PREPARE",
+      "address": "0x4211d5a4",
+      "symbol": "renderer_v2_native_prepare",
+      "evidence": "4211d5a4 <renderer_v2_native_prepare>:"
+    },
+    {
+      "macro": "STOCK_V2_COMMIT",
+      "address": "0x4211d9b8",
+      "symbol": "renderer_v2_native_commit",
+      "evidence": "4211d9b8 <renderer_v2_native_commit>:"
+    },
+    {
+      "macro": "STOCK_V2_CANCEL",
+      "address": "0x4211d9f4",
+      "symbol": "renderer_v2_native_cancel",
+      "evidence": "4211d9f4 <renderer_v2_native_cancel>:"
+    },
+    {
+      "macro": "STOCK_MMU_MAP",
+      "address": "0x420f539c",
+      "symbol": "esp_mmu_map",
+      "evidence": "PROVIDE(esp_mmu_map = 0x420f539c);"
+    },
+    {
+      "macro": "STOCK_MMU_UNMAP",
+      "address": "0x420f5774",
+      "symbol": "esp_mmu_unmap",
+      "evidence": "PROVIDE(esp_mmu_unmap = 0x420f5774);"
+    }
+  ],
+  "flashApiEvidence": [
+    {
+      "macro": "STOCK_FLASH_ERASE",
+      "address": "0x4037f0f0",
+      "symbol": "esp_flash_erase_region",
+      "evidence": "entry at 0x4037f0f0; only l32r of the __func__ literal 0x40374c34 (\"esp_flash_erase_region\") in the whole image is at 0x4037f28e"
+    },
+    {
+      "macro": "STOCK_FLASH_WRITE",
+      "address": "0x4037f460",
+      "symbol": "esp_flash_write",
+      "evidence": "entry at 0x4037f460; only l32r of the __func__ literal 0x40374c44 (\"esp_flash_write\") in the whole image is at 0x4037f54d"
+    },
+    {
+      "macro": "STOCK_FLASH_READ",
+      "address": "0x4037f31c",
+      "symbol": "esp_flash_read",
+      "evidence": "same entry a1,64 + s32i a2,a1,16 + chip_check prologue as esp_flash_erase_region, between it and esp_flash_write"
+    }
+  ],
+  "registryLayoutEvidence": [
+    {
+      "macro": "SCENE_RPC_MAP_OFFSET",
+      "value": 132,
+      "address": "0x42054164",
+      "bytes": "a2a084",
+      "meaning": "movi a10,132 in the stock RPC registrar 0x420540f4"
+    },
+    {
+      "macro": "SCENE_RPC_NODE_VALUE",
+      "value": 28,
+      "address": "0x42053fa6",
+      "bytes": "22c21c",
+      "meaning": "addi a2,a2,28 in the map helper 0x42053f78 (returns &node->mapped)"
+    },
+    {
+      "macro": "SCENE_RPC_NODE_KEY_POINTER",
+      "value": 4,
+      "address": "0x420541f2",
+      "bytes": "b812",
+      "meaning": "l32i.n a11,a2,4 in the map find 0x420541d8 (key data pointer)"
+    },
+    {
+      "macro": "SCENE_RPC_NODE_KEY_BYTES",
+      "value": 8,
+      "address": "0x420541ea",
+      "bytes": "8822",
+      "meaning": "l32i.n a8,a2,8 in the map find 0x420541d8 (key length)"
+    },
+    {
+      "macro": "SCENE_RPC_NODE_NEXT",
+      "value": 0,
+      "address": "0x42054200",
+      "bytes": "2802",
+      "meaning": "l32i.n a2,a2,0 in the map find 0x420541d8 (node->_M_nxt)"
+    }
+  ],
+  "regionProtectionEvidence": {
+    "osFuncTable": "0x3fca84a4",
+    "regionProtected": "0x4037f904",
+    "noProtectByte": "os_func_data+4 (l8ui a8,a2,4 at 0x4037f913)",
+    "readOnlyScan": "0x420c2af4 (all partition flags are 0)",
+    "appPartitionCheck": "0x420c2b44 esp_partition_main_flash_region_safe",
+    "firstAppPartition": "factory @0x10000 +0x800000"
+  },
+  "sidecarSwitchOffset": "0x4f8 (renderer_v2_native_commit / _cancel)",
+  "pinnedEvidenceFrom": [
+    "f1-widget-sdk/build/combined-renderer-v2-clock-blue-timer/renderer-v2-disassembly.txt",
+    "experiments/mquickjs-esp32s3-module-loader/resident_loader.ld",
+    "f1-widget-sdk/build/combined-renderer-v2-clock-blue-timer/framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-blue-timer-app.bin"
+  ],
+  "record": {
+    "file": "experiments/mquickjs-esp32s3-physical-canary/build-scene-slot-b-host-proof/scene-slot-b.record.bin",
+    "bytes": 95599,
+    "sha256": "599be673ca9aba43a1fc64ec73324137919df70d9475ff8477100aa57cf0008f",
+    "headerCrc32": "0x709d3af4",
+    "payloadSha256": "5b1b9a068e33b8b09f0596b49df0b7f79e22f05ee1f21ce7939b6c6965753ac7"
+  },
+  "driver": {
+    "file": "experiments/mquickjs-esp32s3-physical-canary/build-scene-slot-b-host-proof/scene-slot-b-host-proof.c",
+    "sha256": "d1d5536638be44b8ad68972f0c400cafa69ba08e8f7be62fd1a7f32288f23b81",
+    "sanitizers": [
+      "address",
+      "undefined"
+    ],
+    "warnings": "-Wall -Wextra -Werror"
+  },
+  "result": {
+    "status": "PASS_SCENE_SLOT_B_EXACT_SOURCE",
+    "checks": 74,
+    "failures": 0,
+    "headerCrc32": "0x709d3af4"
+  }
+}

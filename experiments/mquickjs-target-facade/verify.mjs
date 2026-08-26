@@ -12,9 +12,10 @@ import { decodeRasterAnimation } from "../../f1-widget-sdk/src/render/raster-ani
 import { decodeWidgetBundle } from "../../f1-widget-sdk/src/render/widget-bundle.mjs";
 import { decodeRenderV2MQuickJsPackage } from "../../f1-widget-sdk/src/render-v2/mquickjs.mjs";
 import {
-  buildWeatherTargetFacadeAsset, decodeTargetFacadeAsset, packTemperatureAscii,
-  renderTargetFacadeHost, TARGET_FACADE_CONTRACT_SHA256, TARGET_FACADE_RESULT,
-  WEATHER_TARGET_FACADE_TARGETS,
+  buildWeatherTargetFacadeAsset, crc32, decodeTargetFacadeAsset, packTemperatureAscii,
+  renderTargetFacadeHost, TARGET_FACADE_CONTRACT_SHA256, TARGET_FACADE_CONTRACT_V2_SHA256,
+  TARGET_FACADE_CONTRACT_V3_SHA256, TARGET_FACADE_HEADER_BYTES, TARGET_FACADE_MAX_ASSET_BYTES,
+  TARGET_FACADE_RESULT, WEATHER_TARGET_FACADE_TARGETS,
 } from "./contract.mjs";
 
 const execute = promisify(execFile);
@@ -129,6 +130,338 @@ try {
   invariant(nativeOutput.results.map(({ result }) => result).join() === expectedResults.join(),
     "C result sequence differs from the host oracle.");
 
+  /* ---- contract v2: formatter 11 (variantText) through the same C binary ----
+   * The variant asset reuses the weather header, first twelve targets, palette,
+   * glyph, and literal sections verbatim; the d3 row and retry become four
+   * variantText targets whose tables append after the weather literals, and the
+   * embedded contract identity moves to v2. Slots 9, 10, 11, and 14 are only
+   * referenced by the replaced targets, so the surviving weather formatters
+   * keep their exact live semantics in every mixed case. */
+  const variantTable = (strings) => Buffer.concat([Buffer.from([strings.length]),
+    ...strings.map((text) => Buffer.concat([Buffer.from([text.length]),
+      Buffer.from(text, "ascii")]))]);
+  const variantTables = [
+    variantTable(["OFF", "ON", "AUTO"]),
+    variantTable(Array.from({ length: 16 }, (_, index) => `V${index}`)),
+    variantTable(["SOLO"]),
+    variantTable(["ZERO", "ONE", "TWO", "THREE", "FOUR"]),
+  ];
+  const variantRecord = ({ id, x, y, width, height, properties, slots, palette0,
+    palette1, align, maxChars, table }) => {
+    const record = Buffer.alloc(40);
+    record.write(id, 0, "ascii");
+    record.writeUInt16LE(x, 16); record.writeUInt16LE(y, 18);
+    record.writeUInt16LE(width, 20); record.writeUInt16LE(height, 22);
+    record[24] = properties; record[25] = 11;
+    [...slots, 0xff, 0xff, 0xff, 0xff].slice(0, 4)
+      .forEach((slot, index) => { record[26 + index] = slot; });
+    record[30] = palette0; record[31] = palette1; record[33] = align;
+    record[34] = maxChars; record[35] = 1;
+    record.writeUInt16LE(decoded.header.literalBytes +
+      variantTables.slice(0, table).reduce((sum, value) => sum + value.length, 0), 36);
+    record[38] = variantTables[table].length;
+    return record;
+  };
+  const variantAsset = Buffer.concat([
+    asset.binary.subarray(0, decoded.header.targetsAt + 12 * 40),
+    variantRecord({ id: "variantA", x: 12, y: 248, width: 60, height: 9, properties: 1,
+      slots: [9], palette0: 2, palette1: 0, align: 0, maxChars: 8, table: 0 }),
+    variantRecord({ id: "variantB", x: 12, y: 260, width: 76, height: 9, properties: 3,
+      slots: [10, 11], palette0: 0, palette1: 1, align: 1, maxChars: 10, table: 1 }),
+    variantRecord({ id: "variantC", x: 43, y: 252, width: 45, height: 10, properties: 3,
+      slots: [14], palette0: 4, palette1: 0, align: 2, maxChars: 6, table: 2 }),
+    variantRecord({ id: "variantD", x: 8, y: 296, width: 84, height: 9, properties: 3,
+      slots: [9, 14], palette0: 3, palette1: 2, align: 1, maxChars: 12, table: 3 }),
+    asset.binary.subarray(decoded.header.paletteAt),
+    ...variantTables,
+  ]);
+  variantAsset.writeUInt32LE(variantAsset.length, 8);
+  variantAsset.writeUInt32LE(decoded.header.literalBytes +
+    variantTables.reduce((sum, value) => sum + value.length, 0), 64);
+  Buffer.from(TARGET_FACADE_CONTRACT_V2_SHA256, "hex").copy(variantAsset, 160);
+  variantAsset.writeUInt32LE(crc32(variantAsset.subarray(TARGET_FACADE_HEADER_BYTES)), 72);
+  variantAsset.writeUInt32LE(crc32(variantAsset.subarray(0, TARGET_FACADE_HEADER_BYTES),
+    { zeroFrom: 76, zeroBytes: 4 }), 76);
+  const decodedVariant = decodeTargetFacadeAsset(variantAsset, { expectedGeneration: 18,
+    expectedF2jsSha256: asset.f2jsSha256,
+    expectedContractSha256: TARGET_FACADE_CONTRACT_V2_SHA256, baseFrame: base });
+  let hostRejectsV1 = false;
+  try {
+    decodeTargetFacadeAsset(variantAsset, { expectedGeneration: 18,
+      expectedF2jsSha256: asset.f2jsSha256 });
+  } catch { hostRejectsV1 = true; }
+  invariant(hostRejectsV1, "variantText asset must not decode under the frozen v1 contract sha.");
+
+  const variantSlots = ({ revision, flags = 1, v9 = 0, v10 = 0, v11 = 0, v14 = 0 }) => {
+    const slots = weatherSlots({ revision, current: 45, currentMeta: 21,
+      days: [[50, 34, 43], [59, 36, 46], [0, 0, 0]], age: 120, freshness: 1, flags });
+    slots[9] = v9; slots[10] = v10; slots[11] = v11; slots[14] = v14;
+    return slots;
+  };
+  const variantCases = [
+    { name: "variant-first-entries", sequence: 2, admittedGeneration: 18,
+      slots: variantSlots({ revision: 2 }) },
+    { name: "variant-selection-and-colour", sequence: 4, admittedGeneration: 18,
+      slots: variantSlots({ revision: 4, v9: 2, v10: 7, v11: 3, v14: 5 }) },
+    { name: "variant-clamp-negative", sequence: 6, admittedGeneration: 18,
+      slots: variantSlots({ revision: 6, v9: -5, v10: -2147483648, v11: -1, v14: -7 }) },
+    { name: "variant-clamp-past-end", sequence: 8, admittedGeneration: 18,
+      slots: variantSlots({ revision: 8, v9: 99, v10: 2147483647, v11: 200, v14: 1000 }) },
+    { name: "variant-ignores-flags-word", sequence: 10, admittedGeneration: 18,
+      slots: variantSlots({ revision: 10, flags: 0, v9: 2, v10: 7, v11: 3, v14: 5 }) },
+    { name: "variant-hidden-root", sequence: 12, admittedGeneration: 18,
+      slots: variantSlots({ revision: 12, flags: 3, v9: 1, v10: 1, v11: 1, v14: 1 }) },
+    { name: "variant-exact-upper-bounds", sequence: 14, admittedGeneration: 18,
+      slots: variantSlots({ revision: 14, v9: 1, v10: 15, v11: 7 }) },
+  ];
+  const variantState = { lastAppliedRevision: 0 };
+  const variantHost = variantCases.map((mailbox) => renderTargetFacadeHost({
+    decoded: decodedVariant, baseFrame: base, mailbox, state: variantState }));
+  const variantExpected = [0, 0, 0, 0, 0, 1, 0];
+  invariant(variantHost.map(({ result }) => result).join() === variantExpected.join(),
+    `variantText host result sequence changed: ${variantHost.map(({ result }) => result)}.`);
+  /* Nothing below raster row 240 belongs to a surviving weather target, so the
+   * band must be identical whether the flags word reports live or waiting. */
+  const variantBand = (frame) => rawFrame(frame).subarray(240 * 100 * 2);
+  invariant(variantBand(variantHost[1].frame).equals(variantBand(variantHost[4].frame)),
+    "variantText render must be independent of the weather flags word.");
+  const variantHostFrames = Buffer.concat(variantHost.map(({ frame }) => rawFrame(frame)));
+  await Promise.all([
+    writeFile(path.join(output, "variant-gen18.f2tf"), variantAsset),
+    writeFile(path.join(output, "variant-cases.bin"), encodeCases(variantCases)),
+  ]);
+  const variantFramesPath = path.join(temporary, "variant-c-frames.bin");
+  const variantNative = JSON.parse((await run(native, [path.join(output, "variant-gen18.f2tf"),
+    path.join(output, "weather-gen18-base.rgb565le"), path.join(output, "variant-cases.bin"),
+    variantFramesPath, asset.f2jsSha256, TARGET_FACADE_CONTRACT_V2_SHA256])).stdout);
+  invariant((await readFile(variantFramesPath)).equals(variantHostFrames),
+    "Host and freestanding C variantText RGB565 frames differ.");
+  invariant(variantNative.results.map(({ result }) => result).join() === variantExpected.join(),
+    "C variantText result sequence differs from the host oracle.");
+  invariant(variantNative.results.map(({ writes }) => writes).join() ===
+    variantHost.map(({ metrics }) => metrics.overlayWrites).join(),
+  "variantText overlay write counts differ between C and the host oracle.");
+  let cRejectsV1 = false;
+  try {
+    await run(native, [path.join(output, "variant-gen18.f2tf"),
+      path.join(output, "weather-gen18-base.rgb565le"), path.join(output, "variant-cases.bin"),
+      path.join(temporary, "variant-v1-frames.bin"), asset.f2jsSha256,
+      TARGET_FACADE_CONTRACT_SHA256]);
+  } catch { cRejectsV1 = true; }
+  invariant(cRejectsV1, "C admission must reject the v2 asset under the frozen v1 contract sha.");
+
+  /* ---- contract v3: formatter 12 (variantRaster) through the same C binary ----
+   * Mirrors the v2 layering: the raster asset reuses the weather header, first
+   * twelve targets, palette, glyph, and literal sections verbatim; the d3 row
+   * and retry (the sole users of slots 9, 10, 11, and 14) become three
+   * variantRaster targets plus one surviving variantText target, their raster
+   * and literal tables append after the weather literals, and the embedded
+   * contract identity moves to v3. Every raster pixel is generated to DIFFER
+   * from the base pixel beneath it, so the full-rect equality assertions below
+   * also prove that no base pixel ghosts through a blit. */
+  const rasterVariants = (x, y, width, height, count, seed) =>
+    Array.from({ length: count }, (_, variant) => {
+      const pixels = Buffer.alloc(width * height * 2);
+      for (let row = 0; row < height; row++) for (let column = 0; column < width; column++) {
+        let value = (seed + variant * 0x1111 + row * 0x0107 + column * 0x0013 +
+          (((row ^ column) & 1) ? 0x8000 : 0)) & 0xffff;
+        if (value === base[(y + row) * 100 + x + column]) value ^= 1;
+        pixels.writeUInt16LE(value, (row * width + column) * 2);
+      }
+      return pixels;
+    });
+  const rasterTargets = [
+    /* digitTens/digitOnes share ONE slot (9) with divisors 10 and 1 - the
+     * formatter-13 contract: variant = (max(slot,0)/divisor) % 10. */
+    { id: "digitTens", x: 12, y: 248, width: 6, height: 8, slot: 9, count: 10, seed: 0x9b1d, format: 13, divisor: 10 },
+    { id: "digitOnes", x: 20, y: 248, width: 6, height: 8, slot: 9, count: 10, seed: 0x24c7, format: 13, divisor: 1 },
+    { id: "rasterEdge", x: 80, y: 290, width: 20, height: 20, slot: 11, count: 4, seed: 0x51f2, format: 12 },
+  ];
+  for (const entry of rasterTargets) {
+    entry.variants = rasterVariants(entry.x, entry.y, entry.width, entry.height, entry.count, entry.seed);
+    entry.table = Buffer.concat(entry.variants);
+  }
+  const mixTable = variantTable(["RASTER", "MIXED", "VTHREE"]);
+  const rasterRecord = (entry, offset) => {
+    const record = Buffer.alloc(40);
+    record.write(entry.id, 0, "ascii");
+    record.writeUInt16LE(entry.x, 16); record.writeUInt16LE(entry.y, 18);
+    record.writeUInt16LE(entry.width, 20); record.writeUInt16LE(entry.height, 22);
+    record[24] = 1; record[25] = entry.format;
+    record[26] = entry.slot; record[27] = 0xff; record[28] = 0xff; record[29] = 0xff;
+    if (entry.format === 13) record.writeUInt32LE(entry.divisor, 30);
+    else { record[30] = 0xff; record[31] = 0xff; record[32] = 0xff; record[33] = 0; }
+    record[34] = 0; record[35] = 0;
+    record.writeUInt16LE(offset, 36); record.writeUInt16LE(entry.table.length, 38);
+    return record;
+  };
+  const mixRecord = Buffer.alloc(40);
+  mixRecord.write("variantMix", 0, "ascii");
+  mixRecord.writeUInt16LE(12, 16); mixRecord.writeUInt16LE(260, 18);
+  mixRecord.writeUInt16LE(76, 20); mixRecord.writeUInt16LE(9, 22);
+  mixRecord[24] = 1; mixRecord[25] = 11;
+  mixRecord[26] = 14; mixRecord[27] = 0xff; mixRecord[28] = 0xff; mixRecord[29] = 0xff;
+  mixRecord[30] = 2; mixRecord[31] = 0; mixRecord[32] = 0; mixRecord[33] = 0;
+  mixRecord[34] = 8; mixRecord[35] = 1;
+  mixRecord.writeUInt16LE(decoded.header.literalBytes +
+    rasterTargets.reduce((sum, entry) => sum + entry.table.length, 0), 36);
+  mixRecord[38] = mixTable.length;
+  let rasterCursor = decoded.header.literalBytes;
+  const rasterRecords = rasterTargets.map((entry) => {
+    const record = rasterRecord(entry, rasterCursor);
+    rasterCursor += entry.table.length;
+    return record;
+  });
+  const rasterAsset = Buffer.concat([
+    asset.binary.subarray(0, decoded.header.targetsAt + 12 * 40),
+    ...rasterRecords,
+    mixRecord,
+    asset.binary.subarray(decoded.header.paletteAt),
+    ...rasterTargets.map((entry) => entry.table),
+    mixTable,
+  ]);
+  rasterAsset.writeUInt32LE(rasterAsset.length, 8);
+  rasterAsset.writeUInt32LE(decoded.header.literalBytes + mixTable.length +
+    rasterTargets.reduce((sum, entry) => sum + entry.table.length, 0), 64);
+  Buffer.from(TARGET_FACADE_CONTRACT_V3_SHA256, "hex").copy(rasterAsset, 160);
+  rasterAsset.writeUInt32LE(crc32(rasterAsset.subarray(TARGET_FACADE_HEADER_BYTES)), 72);
+  rasterAsset.writeUInt32LE(crc32(rasterAsset.subarray(0, TARGET_FACADE_HEADER_BYTES),
+    { zeroFrom: 76, zeroBytes: 4 }), 76);
+  invariant(rasterAsset.length > 4096 && rasterAsset.length <= TARGET_FACADE_MAX_ASSET_BYTES,
+    "The raster asset must exceed the frozen 4096-byte cap yet stay within the v3 cap.");
+  const decodedRaster = decodeTargetFacadeAsset(rasterAsset, { expectedGeneration: 18,
+    expectedF2jsSha256: asset.f2jsSha256,
+    expectedContractSha256: TARGET_FACADE_CONTRACT_V3_SHA256, baseFrame: base });
+  invariant(decodedRaster.targets[12].format === 13 &&
+    decodedRaster.targets[12].rasters.length === 10 &&
+    decodedRaster.targets[12].divisor === 10 &&
+    decodedRaster.targets[13].format === 13 &&
+    decodedRaster.targets[13].rasters.length === 10 &&
+    decodedRaster.targets[13].divisor === 1 &&
+    decodedRaster.targets[14].rasters.length === 4 &&
+    decodedRaster.targets[15].format === 11 && decodedRaster.targets[15].tables.length === 3,
+  "Decoded raster asset shape is wrong.");
+  const rejects = (options) => {
+    try { decodeTargetFacadeAsset(rasterAsset, { expectedGeneration: 18,
+      expectedF2jsSha256: asset.f2jsSha256, baseFrame: base, ...options }); return false; }
+    catch { return true; }
+  };
+  invariant(rejects({}), "The raster asset must not decode under the frozen v1 contract sha.");
+  invariant(rejects({ expectedContractSha256: TARGET_FACADE_CONTRACT_V2_SHA256 }),
+    "The raster asset must not decode under the frozen v2 contract sha.");
+
+  const rasterSlots = ({ revision, flags = 1, v9 = 0, v10 = 0, v11 = 0, v14 = 0 }) => {
+    const slots = weatherSlots({ revision, current: 45, currentMeta: 21,
+      days: [[50, 34, 43], [59, 36, 46], [0, 0, 0]], age: 120, freshness: 1, flags });
+    slots[9] = v9; slots[10] = v10; slots[11] = v11; slots[14] = v14;
+    return slots;
+  };
+  const rasterCases = [
+    /* slot 9 drives BOTH digit subtargets: tens = (v/10)%10, ones = v%10. */
+    { name: "raster-first-variants", sequence: 2, admittedGeneration: 18,
+      slots: rasterSlots({ revision: 2 }) },
+    { name: "raster-digit-42", sequence: 4, admittedGeneration: 18,
+      slots: rasterSlots({ revision: 4, v9: 42, v11: 2, v14: 1 }) },
+    { name: "raster-clamp-negative", sequence: 6, admittedGeneration: 18,
+      slots: rasterSlots({ revision: 6, v9: -2147483648, v11: -1, v14: -9 }) },
+    { name: "raster-digit-999-and-intmax", sequence: 8, admittedGeneration: 18,
+      slots: rasterSlots({ revision: 8, v9: 999, v10: 2147483647, v11: 1000, v14: 64 }) },
+    { name: "raster-ignores-flags-word", sequence: 10, admittedGeneration: 18,
+      slots: rasterSlots({ revision: 10, flags: 0, v9: 42, v11: 2, v14: 1 }) },
+    { name: "raster-hidden-root", sequence: 12, admittedGeneration: 18,
+      slots: rasterSlots({ revision: 12, flags: 3, v9: 7, v11: 1, v14: 1 }) },
+    { name: "raster-digit-intmax", sequence: 14, admittedGeneration: 18,
+      slots: rasterSlots({ revision: 14, v9: 2147483647, v11: 3, v14: 2 }) },
+  ];
+  const rasterState = { lastAppliedRevision: 0 };
+  const rasterHost = rasterCases.map((mailbox) => renderTargetFacadeHost({
+    decoded: decodedRaster, baseFrame: base, mailbox, state: rasterState }));
+  const rasterExpected = [0, 0, 0, 0, 0, 1, 0];
+  invariant(rasterHost.map(({ result }) => result).join() === rasterExpected.join(),
+    `variantRaster host result sequence changed: ${rasterHost.map(({ result }) => result)}.`);
+  /* Full-rect coverage: every pixel of every raster rect must equal the
+   * independently clamped variant's pixel — and because generation forced each
+   * variant pixel to differ from the base beneath it, equality doubles as
+   * proof that the blit overwrote the entire rect. */
+  const clampPick = (value, count) => Math.min(Math.max(value, 0), count - 1);
+  for (const [caseIndex, entry] of rasterCases.entries()) {
+    if (rasterExpected[caseIndex] !== TARGET_FACADE_RESULT.ok) continue;
+    for (const target of rasterTargets) {
+      const variant = target.variants[target.format === 13
+        ? Math.floor(Math.max(entry.slots[target.slot], 0) / target.divisor) % 10
+        : clampPick(entry.slots[target.slot], target.count)];
+      for (let row = 0; row < target.height; row++) for (let column = 0; column < target.width; column++) {
+        invariant(rasterHost[caseIndex].frame[(target.y + row) * 100 + target.x + column] ===
+          variant.readUInt16LE((row * target.width + column) * 2),
+        `${target.id} pixel (${column},${row}) is wrong in ${entry.name}.`);
+      }
+    }
+  }
+  invariant(rawFrame(rasterHost[5].frame).equals(asset.baseBytes),
+    "The hidden-root raster case must leave the exact base frame.");
+  const rasterBand = (frame) => rawFrame(frame).subarray(240 * 100 * 2);
+  invariant(rasterBand(rasterHost[1].frame).equals(rasterBand(rasterHost[4].frame)),
+    "variantRaster render must be independent of the weather flags word.");
+  const rasterHostFrames = Buffer.concat(rasterHost.map(({ frame }) => rawFrame(frame)));
+  await Promise.all([
+    writeFile(path.join(output, "raster-gen18.f2tf"), rasterAsset),
+    writeFile(path.join(output, "raster-cases.bin"), encodeCases(rasterCases)),
+  ]);
+  const rasterFramesPath = path.join(temporary, "raster-c-frames.bin");
+  const rasterNative = JSON.parse((await run(native, [path.join(output, "raster-gen18.f2tf"),
+    path.join(output, "weather-gen18-base.rgb565le"), path.join(output, "raster-cases.bin"),
+    rasterFramesPath, asset.f2jsSha256, TARGET_FACADE_CONTRACT_V3_SHA256])).stdout);
+  invariant((await readFile(rasterFramesPath)).equals(rasterHostFrames),
+    "Host and freestanding C variantRaster RGB565 frames differ.");
+  invariant(rasterNative.results.map(({ result }) => result).join() === rasterExpected.join(),
+    "C variantRaster result sequence differs from the host oracle.");
+  invariant(rasterNative.results.map(({ writes }) => writes).join() ===
+    rasterHost.map(({ metrics }) => metrics.overlayWrites).join(),
+  "variantRaster overlay write counts differ between C and the host oracle.");
+  const cRejectsRaster = async (contractSha) => {
+    try {
+      await run(native, [path.join(output, "raster-gen18.f2tf"),
+        path.join(output, "weather-gen18-base.rgb565le"), path.join(output, "raster-cases.bin"),
+        path.join(temporary, "raster-reject-frames.bin"), asset.f2jsSha256, contractSha]);
+      return false;
+    } catch { return true; }
+  };
+  invariant(await cRejectsRaster(TARGET_FACADE_CONTRACT_SHA256),
+    "C admission must reject the v3 asset under the frozen v1 contract sha.");
+  invariant(await cRejectsRaster(TARGET_FACADE_CONTRACT_V2_SHA256),
+    "C admission must reject the v3 asset under the frozen v2 contract sha.");
+
+  /* The exact v3 asset-cap boundary through the compiled C: a copy padded with
+   * unreferenced table bytes to exactly 65536 admits and renders the very same
+   * frames; one byte more must fail admission. */
+  const paddedAsset = (bytes) => {
+    const padded = Buffer.concat([rasterAsset, Buffer.alloc(bytes - rasterAsset.length, 0xa5)]);
+    padded.writeUInt32LE(padded.length, 8);
+    padded.writeUInt32LE(padded.length - decoded.header.literalsAt, 64);
+    padded.writeUInt32LE(crc32(padded.subarray(TARGET_FACADE_HEADER_BYTES)), 72);
+    padded.writeUInt32LE(crc32(padded.subarray(0, TARGET_FACADE_HEADER_BYTES),
+      { zeroFrom: 76, zeroBytes: 4 }), 76);
+    return padded;
+  };
+  const capExactPath = path.join(temporary, "raster-cap-exact.f2tf");
+  await writeFile(capExactPath, paddedAsset(TARGET_FACADE_MAX_ASSET_BYTES));
+  const capExactFramesPath = path.join(temporary, "raster-cap-frames.bin");
+  const capExact = JSON.parse((await run(native, [capExactPath,
+    path.join(output, "weather-gen18-base.rgb565le"), path.join(output, "raster-cases.bin"),
+    capExactFramesPath, asset.f2jsSha256, TARGET_FACADE_CONTRACT_V3_SHA256])).stdout);
+  invariant(capExact.results.map(({ result }) => result).join() === rasterExpected.join() &&
+    (await readFile(capExactFramesPath)).equals(rasterHostFrames),
+  "A cap-exact 65536-byte asset must admit and render identically.");
+  const overCapPath = path.join(temporary, "raster-over-cap.f2tf");
+  await writeFile(overCapPath, paddedAsset(TARGET_FACADE_MAX_ASSET_BYTES + 1));
+  let cRejectsOverCap = false;
+  try {
+    await run(native, [overCapPath, path.join(output, "weather-gen18-base.rgb565le"),
+      path.join(output, "raster-cases.bin"), path.join(temporary, "raster-over-frames.bin"),
+      asset.f2jsSha256, TARGET_FACADE_CONTRACT_V3_SHA256]);
+  } catch { cRejectsOverCap = true; }
+  invariant(cRejectsOverCap, "C admission must reject one byte past the v3 asset cap.");
+
   const cross = path.join(temporary, "target_facade.o");
   await run(xtensa("gcc"), ["-std=c11", "-Os", "-ffreestanding", "-fno-builtin",
     "-fno-stack-protector", "-fno-unwind-tables", "-fno-asynchronous-unwind-tables",
@@ -158,6 +491,29 @@ try {
       overlayWrites: host[index].metrics.overlayWrites })),
       tornMidCopy: nativeOutput.torn, malformedAssets: nativeOutput.malformed,
       overlayOverflowBeforeDraw: nativeOutput.overflow },
+    variantProof: { contractV2Sha256: TARGET_FACADE_CONTRACT_V2_SHA256,
+      assetSha256: sha256(variantAsset), assetBytes: variantAsset.length,
+      hostVsCFrames: "PIXEL_EXACT", frozenV1ShaRejects: { host: true, c: true },
+      flagsWordIndependent: true,
+      cases: variantCases.map((entry, index) => ({ name: entry.name,
+        result: variantExpected[index],
+        frameSha256: sha256(variantHostFrames.subarray(index * 62_000, (index + 1) * 62_000)),
+        overlayWrites: variantHost[index].metrics.overlayWrites })) },
+    rasterProof: { contractV3Sha256: TARGET_FACADE_CONTRACT_V3_SHA256,
+      assetSha256: sha256(rasterAsset), assetBytes: rasterAsset.length,
+      exceedsFrozenV2AssetCap: rasterAsset.length > 4096,
+      hostVsCFrames: "PIXEL_EXACT",
+      frozenShaRejects: { v1: { host: true, c: true }, v2: { host: true, c: true } },
+      oldAssetsStillAdmitUnderOwnShas: true, fullRectCoverage: true,
+      hiddenRootLeavesExactBase: true, flagsWordIndependent: true,
+      assetCapBoundary: { admits: TARGET_FACADE_MAX_ASSET_BYTES,
+        rejects: TARGET_FACADE_MAX_ASSET_BYTES + 1 },
+      targets: rasterTargets.map(({ id, x, y, width, height, slot, count }) =>
+        ({ id, x, y, width, height, slot, count })),
+      cases: rasterCases.map((entry, index) => ({ name: entry.name,
+        result: rasterExpected[index],
+        frameSha256: sha256(rasterHostFrames.subarray(index * 62_000, (index + 1) * 62_000)),
+        overlayWrites: rasterHost[index].metrics.overlayWrites })) },
     xtensa: { compiler: compiler.stdout.split("\n")[0], objectBytes: object.length,
       objectSha256: sha256(object), textBytes: sectionBytes(sections.stdout, ".text"),
       rodataBytes: sectionBytes(sections.stdout, ".rodata"), writableGlobalBytes: writableBytes,
@@ -174,7 +530,8 @@ try {
   };
   await writeFile(path.join(output, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
   console.log(JSON.stringify({ status: manifest.status, asset: manifest.asset, proof: manifest.proof,
-    xtensa: manifest.xtensa, timingEstimate: manifest.timingEstimate }, null, 2));
+    variantProof: manifest.variantProof, rasterProof: manifest.rasterProof, xtensa: manifest.xtensa,
+    timingEstimate: manifest.timingEstimate }, null, 2));
 } finally {
   await rm(temporary, { recursive: true, force: true });
 }

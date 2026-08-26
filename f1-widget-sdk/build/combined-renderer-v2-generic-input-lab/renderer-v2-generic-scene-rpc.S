@@ -40,7 +40,7 @@
 .Lscene_json_root_dtor:        .long 0x42004f80
 .Lscene_rpc_respond:           .long 0x42057d40
 .Lscene_json_allocator:        .long 0x3fca4f34
-.Lscene_allocation_bytes:      .long 98624
+.Lscene_allocation_bytes:      .long 99136
 .Lscene_store_bytes:           .long 98304
 .Lscene_chunk_bytes:           .long 3072
 .Lscene_store_offset:          .long 320
@@ -165,32 +165,45 @@
 .Lcap_format_value_4: .long 0x6361702d
 .Lcap_format_value_5: .long 0x6567616b
 .Lcap_format_value_6: .long 0x0031762d
-.Lcap_max_bundle_key_0: .long 0x4278616d
-.Lcap_max_bundle_key_1: .long 0x6c646e75
-.Lcap_max_bundle_key_2: .long 0x74794265
-.Lcap_max_bundle_key_3: .long 0x00007365
-.Lcap_max_bundle_value_0: .long 0x30333839
-.Lcap_max_bundle_value_1: .long 0x00000034
-.Lcap_chunk_raw_key_0: .long 0x6e756863
-.Lcap_chunk_raw_key_1: .long 0x7761526b
-.Lcap_chunk_raw_key_2: .long 0x65747942
-.Lcap_chunk_raw_key_3: .long 0x00000073
-.Lcap_chunk_raw_value_0: .long 0x32373033
-.Lcap_chunk_raw_value_1: .long 0x00000000
-.Lcap_max_chunks_key_0: .long 0x4378616d
-.Lcap_max_chunks_key_1: .long 0x6b6e7568
-.Lcap_max_chunks_key_2: .long 0x00000073
-.Lcap_max_chunks_value_0: .long 0x00003233
+.Lcap_bundle_key_0: .long 0x4278616d
+.Lcap_bundle_key_1: .long 0x6c646e75
+.Lcap_bundle_key_2: .long 0x74794265
+.Lcap_bundle_key_3: .long 0x00007365
+.Lcap_bundle_value_0: .long 0x30333839
+.Lcap_bundle_value_1: .long 0x00000034
+.Lcap_chunk_key_0: .long 0x6e756863
+.Lcap_chunk_key_1: .long 0x7761526b
+.Lcap_chunk_key_2: .long 0x65747942
+.Lcap_chunk_key_3: .long 0x00000073
+.Lcap_chunk_value_0: .long 0x32373033
+.Lcap_chunk_value_1: .long 0x00000000
+.Lcap_chunks_key_0: .long 0x4378616d
+.Lcap_chunks_key_1: .long 0x6b6e7568
+.Lcap_chunks_key_2: .long 0x00000073
+.Lcap_chunks_value_0: .long 0x00003233
 .Lcap_generation_key_0: .long 0x6d6d6f63
 .Lcap_generation_key_1: .long 0x65747469
 .Lcap_generation_key_2: .long 0x6e654764
 .Lcap_generation_key_3: .long 0x74617265
 .Lcap_generation_key_4: .long 0x006e6f69
-.Lcap_v1_packages_key_0: .long 0x61503176
-.Lcap_v1_packages_key_1: .long 0x67616b63
-.Lcap_v1_packages_key_2: .long 0x00007365
-.Lcap_v1_packages_value_0: .long 0x65757274
-.Lcap_v1_packages_value_1: .long 0x00000000
+.Lcap_code_key_0: .long 0x65646f63
+.Lcap_code_key_1: .long 0x00000000
+.Lcapoff_protocol_key: .long 98624
+.Lcapoff_protocol_value: .long 98636
+.Lcapoff_profile_key: .long 98664
+.Lcapoff_profile_value: .long 98680
+.Lcapoff_format_key: .long 98716
+.Lcapoff_format_value: .long 98732
+.Lcapoff_bundle_key: .long 98760
+.Lcapoff_bundle_value: .long 98776
+.Lcapoff_chunk_key: .long 98784
+.Lcapoff_chunk_value: .long 98800
+.Lcapoff_chunks_key: .long 98808
+.Lcapoff_chunks_value: .long 98820
+.Lcapoff_generation_key: .long 98824
+.Lcapoff_code_key: .long 98844
+.Lcapoff_generation_decimal: .long 98852
+.Lcapoff_code_decimal: .long 98864
 
     .section .text.renderer_scene_rpc,"ax",@progbits
     .balign 4
@@ -292,6 +305,122 @@ renderer_scene_rpc_init_strings:
     s32i    a8,a7,4
     l32r    a8,.Lr_ok
     s32i    a8,a7,8
+    l32r    a8,.Lcapoff_protocol_key
+    add     a7,a2,a8
+    l32r    a8,.Lcap_protocol_key_0
+    s32i    a8,a7,0
+    l32r    a8,.Lcap_protocol_key_1
+    s32i    a8,a7,4
+    l32r    a8,.Lcap_protocol_key_2
+    s32i    a8,a7,8
+    l32r    a8,.Lcap_protocol_value_0
+    s32i    a8,a7,12
+    l32r    a8,.Lcap_protocol_value_1
+    s32i    a8,a7,16
+    l32r    a8,.Lcap_protocol_value_2
+    s32i    a8,a7,20
+    l32r    a8,.Lcap_protocol_value_3
+    s32i    a8,a7,24
+    l32r    a8,.Lcap_protocol_value_4
+    s32i    a8,a7,28
+    l32r    a8,.Lcap_protocol_value_5
+    s32i    a8,a7,32
+    l32r    a8,.Lcap_protocol_value_6
+    s32i    a8,a7,36
+    l32r    a8,.Lcap_profile_key_0
+    s32i    a8,a7,40
+    l32r    a8,.Lcap_profile_key_1
+    s32i    a8,a7,44
+    l32r    a8,.Lcap_profile_key_2
+    s32i    a8,a7,48
+    l32r    a8,.Lcap_profile_key_3
+    s32i    a8,a7,52
+    l32r    a8,.Lcap_profile_value_0
+    s32i    a8,a7,56
+    l32r    a8,.Lcap_profile_value_1
+    s32i    a8,a7,60
+    l32r    a8,.Lcap_profile_value_2
+    s32i    a8,a7,64
+    l32r    a8,.Lcap_profile_value_3
+    s32i    a8,a7,68
+    l32r    a8,.Lcap_profile_value_4
+    s32i    a8,a7,72
+    l32r    a8,.Lcap_profile_value_5
+    s32i    a8,a7,76
+    l32r    a8,.Lcap_profile_value_6
+    s32i    a8,a7,80
+    l32r    a8,.Lcap_profile_value_7
+    s32i    a8,a7,84
+    l32r    a8,.Lcap_profile_value_8
+    s32i    a8,a7,88
+    l32r    a8,.Lcap_format_key_0
+    s32i    a8,a7,92
+    l32r    a8,.Lcap_format_key_1
+    s32i    a8,a7,96
+    l32r    a8,.Lcap_format_key_2
+    s32i    a8,a7,100
+    l32r    a8,.Lcap_format_key_3
+    s32i    a8,a7,104
+    l32r    a8,.Lcap_format_value_0
+    s32i    a8,a7,108
+    l32r    a8,.Lcap_format_value_1
+    s32i    a8,a7,112
+    l32r    a8,.Lcap_format_value_2
+    s32i    a8,a7,116
+    l32r    a8,.Lcap_format_value_3
+    s32i    a8,a7,120
+    l32r    a8,.Lcap_format_value_4
+    s32i    a8,a7,124
+    l32r    a8,.Lcap_format_value_5
+    s32i    a8,a7,128
+    l32r    a8,.Lcap_format_value_6
+    s32i    a8,a7,132
+    l32r    a8,.Lcap_bundle_key_0
+    s32i    a8,a7,136
+    l32r    a8,.Lcap_bundle_key_1
+    s32i    a8,a7,140
+    l32r    a8,.Lcap_bundle_key_2
+    s32i    a8,a7,144
+    l32r    a8,.Lcap_bundle_key_3
+    s32i    a8,a7,148
+    l32r    a8,.Lcap_bundle_value_0
+    s32i    a8,a7,152
+    l32r    a8,.Lcap_bundle_value_1
+    s32i    a8,a7,156
+    l32r    a8,.Lcap_chunk_key_0
+    s32i    a8,a7,160
+    l32r    a8,.Lcap_chunk_key_1
+    s32i    a8,a7,164
+    l32r    a8,.Lcap_chunk_key_2
+    s32i    a8,a7,168
+    l32r    a8,.Lcap_chunk_key_3
+    s32i    a8,a7,172
+    l32r    a8,.Lcap_chunk_value_0
+    s32i    a8,a7,176
+    l32r    a8,.Lcap_chunk_value_1
+    s32i    a8,a7,180
+    l32r    a8,.Lcap_chunks_key_0
+    s32i    a8,a7,184
+    l32r    a8,.Lcap_chunks_key_1
+    s32i    a8,a7,188
+    l32r    a8,.Lcap_chunks_key_2
+    s32i    a8,a7,192
+    l32r    a8,.Lcap_chunks_value_0
+    s32i    a8,a7,196
+    l32r    a8,.Lcap_generation_key_0
+    s32i    a8,a7,200
+    l32r    a8,.Lcap_generation_key_1
+    s32i    a8,a7,204
+    l32r    a8,.Lcap_generation_key_2
+    s32i    a8,a7,208
+    l32r    a8,.Lcap_generation_key_3
+    s32i    a8,a7,212
+    l32r    a8,.Lcap_generation_key_4
+    s32i    a8,a7,216
+    l32r    a8,.Lcap_code_key_0
+    s32i    a8,a7,220
+    l32r    a8,.Lcap_code_key_1
+    s32i    a8,a7,224
     memw
     retw.n
     .size renderer_scene_rpc_init_strings,.-renderer_scene_rpc_init_strings
@@ -548,12 +677,13 @@ renderer_scene_rpc_read_integer:
 renderer_scene_rpc_reply_status:
     entry   a1,112
     mov     a7,a2
+    mov     a2,a5                     /* keep the state; a5 is about to move */
     mov     a6,a3
     mov     a3,a4
     addi    a4,a5,313                 /* "status" inside widget.scene.status */
     addi    a5,a5,192                 /* persistent "error" */
-    beqz    a3,.Lscene_reply_value_ready
-    addi    a5,a5,8                   /* persistent "ok" */
+    bnei    a3,1,.Lscene_reply_value_ready
+    addi    a5,a5,8                   /* persistent "ok" (code 1) */
 .Lscene_reply_value_ready:
     l32r    a8,.Lscene_json_allocator
     s32i    a8,a1,16
@@ -579,6 +709,27 @@ renderer_scene_rpc_reply_status:
     movi.n  a12,0
     l32r    a8,.Lscene_json_assign_string
     callx8  a8
+    bnei    a3,1,.Lscene_reply_emit_code
+    j       .Lscene_reply_code_done
+.Lscene_reply_emit_code:
+    neg     a10,a3
+    l32r    a8,.Lcapoff_code_decimal
+    add     a11,a2,a8
+    call8   renderer_scene_rpc_u32_decimal
+    beqz    a10,.Lscene_reply_code_done
+    mov     a10,a1
+    addi    a11,a1,16
+    l32r    a8,.Lcapoff_code_key
+    add     a12,a2,a8
+    l32r    a8,.Lscene_json_response_key
+    callx8  a8
+    mov     a10,a1
+    l32r    a8,.Lcapoff_code_decimal
+    add     a11,a2,a8
+    movi.n  a12,0
+    l32r    a8,.Lscene_json_assign_string
+    callx8  a8
+.Lscene_reply_code_done:
     mov     a10,a7
     mov     a11,a6
     addi    a12,a1,16
@@ -672,127 +823,17 @@ renderer_scene_rpc_handle_capabilities:
     beqz    a7,.Lscene_cap_return
     beqz    a6,.Lscene_cap_return
     beqz    a5,.Lscene_cap_return
-    l32r    a8,.Lcap_protocol_key_0
-    s32i    a8,a1,16
-    l32r    a8,.Lcap_protocol_key_1
-    s32i    a8,a1,20
-    l32r    a8,.Lcap_protocol_key_2
-    s32i    a8,a1,24
-    l32r    a8,.Lcap_protocol_value_0
-    s32i    a8,a1,28
-    l32r    a8,.Lcap_protocol_value_1
-    s32i    a8,a1,32
-    l32r    a8,.Lcap_protocol_value_2
-    s32i    a8,a1,36
-    l32r    a8,.Lcap_protocol_value_3
-    s32i    a8,a1,40
-    l32r    a8,.Lcap_protocol_value_4
-    s32i    a8,a1,44
-    l32r    a8,.Lcap_protocol_value_5
-    s32i    a8,a1,48
-    l32r    a8,.Lcap_protocol_value_6
-    s32i    a8,a1,52
-    l32r    a8,.Lcap_profile_key_0
-    s32i    a8,a1,56
-    l32r    a8,.Lcap_profile_key_1
-    s32i    a8,a1,60
-    l32r    a8,.Lcap_profile_key_2
-    s32i    a8,a1,64
-    l32r    a8,.Lcap_profile_key_3
-    s32i    a8,a1,68
-    l32r    a8,.Lcap_profile_value_0
-    s32i    a8,a1,72
-    l32r    a8,.Lcap_profile_value_1
-    s32i    a8,a1,76
-    l32r    a8,.Lcap_profile_value_2
-    s32i    a8,a1,80
-    l32r    a8,.Lcap_profile_value_3
-    s32i    a8,a1,84
-    l32r    a8,.Lcap_profile_value_4
-    s32i    a8,a1,88
-    l32r    a8,.Lcap_profile_value_5
-    s32i    a8,a1,92
-    l32r    a8,.Lcap_profile_value_6
-    s32i    a8,a1,96
-    l32r    a8,.Lcap_profile_value_7
-    s32i    a8,a1,100
-    l32r    a8,.Lcap_profile_value_8
-    s32i    a8,a1,104
-    l32r    a8,.Lcap_format_key_0
-    s32i    a8,a1,108
-    l32r    a8,.Lcap_format_key_1
-    s32i    a8,a1,112
-    l32r    a8,.Lcap_format_key_2
-    s32i    a8,a1,116
-    l32r    a8,.Lcap_format_key_3
-    s32i    a8,a1,120
-    l32r    a8,.Lcap_format_value_0
-    s32i    a8,a1,124
-    l32r    a8,.Lcap_format_value_1
-    s32i    a8,a1,128
-    l32r    a8,.Lcap_format_value_2
-    s32i    a8,a1,132
-    l32r    a8,.Lcap_format_value_3
-    s32i    a8,a1,136
-    l32r    a8,.Lcap_format_value_4
-    s32i    a8,a1,140
-    l32r    a8,.Lcap_format_value_5
-    s32i    a8,a1,144
-    l32r    a8,.Lcap_format_value_6
-    s32i    a8,a1,148
-    l32r    a8,.Lcap_max_bundle_key_0
-    s32i    a8,a1,152
-    l32r    a8,.Lcap_max_bundle_key_1
-    s32i    a8,a1,156
-    l32r    a8,.Lcap_max_bundle_key_2
-    s32i    a8,a1,160
-    l32r    a8,.Lcap_max_bundle_key_3
-    s32i    a8,a1,164
-    l32r    a8,.Lcap_max_bundle_value_0
-    s32i    a8,a1,168
-    l32r    a8,.Lcap_max_bundle_value_1
-    s32i    a8,a1,172
-    l32r    a8,.Lcap_chunk_raw_key_0
-    s32i    a8,a1,176
-    l32r    a8,.Lcap_chunk_raw_key_1
-    s32i    a8,a1,180
-    l32r    a8,.Lcap_chunk_raw_key_2
-    s32i    a8,a1,184
-    l32r    a8,.Lcap_chunk_raw_key_3
-    s32i    a8,a1,188
-    l32r    a8,.Lcap_chunk_raw_value_0
-    s32i    a8,a1,192
-    l32r    a8,.Lcap_chunk_raw_value_1
-    s32i    a8,a1,196
-    l32r    a8,.Lcap_max_chunks_key_0
-    s32i    a8,a1,200
-    l32r    a8,.Lcap_max_chunks_key_1
-    s32i    a8,a1,204
-    l32r    a8,.Lcap_max_chunks_key_2
-    s32i    a8,a1,208
-    l32r    a8,.Lcap_max_chunks_value_0
-    s32i    a8,a1,212
-    l32r    a8,.Lcap_generation_key_0
-    s32i    a8,a1,216
-    l32r    a8,.Lcap_generation_key_1
-    s32i    a8,a1,220
-    l32r    a8,.Lcap_generation_key_2
-    s32i    a8,a1,224
-    l32r    a8,.Lcap_generation_key_3
-    s32i    a8,a1,228
-    l32r    a8,.Lcap_generation_key_4
-    s32i    a8,a1,232
     /* Request root retains the accepted callback/request lifetime. */
-    addi    a10,a1,320
+    addi    a10,a1,96
     mov     a11,a5
     call8   renderer_scene_rpc_make_root
-    /* Canonical u32 decimal occupies stack +236..+246 plus NUL. */
+    /* committedGeneration -> canonical decimal in persistent RAM. */
     l32i    a10,a7,8
-    addi    a11,a1,236
+    l32r    a8,.Lcapoff_generation_decimal
+    add     a11,a7,a8
     call8   renderer_scene_rpc_u32_decimal
     beqz    a10,.Lscene_cap_return_request
-    /* Response root at +256; proxy scratch at +248. */
-    addi    a4,a1,256
+    addi    a4,a1,32
     l32r    a8,.Lscene_json_allocator
     s32i    a8,a4,0
     movi.n  a9,0
@@ -807,117 +848,111 @@ renderer_scene_rpc_handle_capabilities:
     s16i    a8,a4,52
     s8i     a9,a4,60
     s16i    a8,a4,62
-    /* status/ok are persistent RAM substrings in the accepted scene state. */
-    addi    a10,a1,248
-    addi    a11,a1,256
+    /* status/ok: already persistent substrings of the scene state. */
+    addi    a10,a1,16
+    addi    a11,a1,32
     addi    a12,a7,313
     l32r    a8,.Lscene_json_response_key
     callx8  a8
-    addi    a10,a1,248
+    addi    a10,a1,16
     addi    a11,a7,200
     movi.n  a12,0
     l32r    a8,.Lscene_json_assign_string
     callx8  a8
-    addi    a10,a1,248
-    addi    a11,a1,256
-    addi    a12,a1,16
+    addi    a10,a1,16
+    addi    a11,a1,32
+    l32r    a8,.Lcapoff_protocol_key
+    add     a12,a7,a8
     l32r    a8,.Lscene_json_response_key
     callx8  a8
-    addi    a10,a1,248
-    addi    a11,a1,28
+    addi    a10,a1,16
+    l32r    a8,.Lcapoff_protocol_value
+    add     a11,a7,a8
     movi.n  a12,0
     l32r    a8,.Lscene_json_assign_string
     callx8  a8
-    l32r    a8,.Lcap_v1_packages_key_0
-    s32i    a8,a1,16
-    l32r    a8,.Lcap_v1_packages_key_1
-    s32i    a8,a1,20
-    l32r    a8,.Lcap_v1_packages_key_2
-    s32i    a8,a1,24
-    l32r    a8,.Lcap_v1_packages_value_0
-    s32i    a8,a1,28
-    l32r    a8,.Lcap_v1_packages_value_1
-    s32i    a8,a1,32
-    addi    a10,a1,248
-    addi    a11,a1,256
-    addi    a12,a1,16
+    addi    a10,a1,16
+    addi    a11,a1,32
+    l32r    a8,.Lcapoff_profile_key
+    add     a12,a7,a8
     l32r    a8,.Lscene_json_response_key
     callx8  a8
-    addi    a10,a1,248
-    addi    a11,a1,28
+    addi    a10,a1,16
+    l32r    a8,.Lcapoff_profile_value
+    add     a11,a7,a8
     movi.n  a12,0
     l32r    a8,.Lscene_json_assign_string
     callx8  a8
-    addi    a10,a1,248
-    addi    a11,a1,256
-    addi    a12,a1,56
+    addi    a10,a1,16
+    addi    a11,a1,32
+    l32r    a8,.Lcapoff_format_key
+    add     a12,a7,a8
     l32r    a8,.Lscene_json_response_key
     callx8  a8
-    addi    a10,a1,248
-    addi    a11,a1,72
+    addi    a10,a1,16
+    l32r    a8,.Lcapoff_format_value
+    add     a11,a7,a8
     movi.n  a12,0
     l32r    a8,.Lscene_json_assign_string
     callx8  a8
-    addi    a10,a1,248
-    addi    a11,a1,256
-    addi    a12,a1,108
+    addi    a10,a1,16
+    addi    a11,a1,32
+    l32r    a8,.Lcapoff_bundle_key
+    add     a12,a7,a8
     l32r    a8,.Lscene_json_response_key
     callx8  a8
-    addi    a10,a1,248
-    addi    a11,a1,124
+    addi    a10,a1,16
+    l32r    a8,.Lcapoff_bundle_value
+    add     a11,a7,a8
     movi.n  a12,0
     l32r    a8,.Lscene_json_assign_string
     callx8  a8
-    addi    a10,a1,248
-    addi    a11,a1,256
-    addi    a12,a1,152
+    addi    a10,a1,16
+    addi    a11,a1,32
+    l32r    a8,.Lcapoff_chunk_key
+    add     a12,a7,a8
     l32r    a8,.Lscene_json_response_key
     callx8  a8
-    addi    a10,a1,248
-    addi    a11,a1,168
+    addi    a10,a1,16
+    l32r    a8,.Lcapoff_chunk_value
+    add     a11,a7,a8
     movi.n  a12,0
     l32r    a8,.Lscene_json_assign_string
     callx8  a8
-    addi    a10,a1,248
-    addi    a11,a1,256
-    addi    a12,a1,176
+    addi    a10,a1,16
+    addi    a11,a1,32
+    l32r    a8,.Lcapoff_chunks_key
+    add     a12,a7,a8
     l32r    a8,.Lscene_json_response_key
     callx8  a8
-    addi    a10,a1,248
-    addi    a11,a1,192
+    addi    a10,a1,16
+    l32r    a8,.Lcapoff_chunks_value
+    add     a11,a7,a8
     movi.n  a12,0
     l32r    a8,.Lscene_json_assign_string
     callx8  a8
-    addi    a10,a1,248
-    addi    a11,a1,256
-    addi    a12,a1,200
+    addi    a10,a1,16
+    addi    a11,a1,32
+    l32r    a8,.Lcapoff_generation_key
+    add     a12,a7,a8
     l32r    a8,.Lscene_json_response_key
     callx8  a8
-    addi    a10,a1,248
-    addi    a11,a1,212
-    movi.n  a12,0
-    l32r    a8,.Lscene_json_assign_string
-    callx8  a8
-    addi    a10,a1,248
-    addi    a11,a1,256
-    addi    a12,a1,216
-    l32r    a8,.Lscene_json_response_key
-    callx8  a8
-    addi    a10,a1,248
-    addi    a11,a1,236
+    addi    a10,a1,16
+    l32r    a8,.Lcapoff_generation_decimal
+    add     a11,a7,a8
     movi.n  a12,0
     l32r    a8,.Lscene_json_assign_string
     callx8  a8
     mov     a10,a6
     mov     a11,a5
-    addi    a12,a1,256
+    addi    a12,a1,32
     l32r    a8,.Lscene_rpc_respond
     callx8  a8
-    addi    a10,a1,256
+    addi    a10,a1,32
     l32r    a8,.Lscene_json_root_dtor
     callx8  a8
 .Lscene_cap_return_request:
-    addi    a10,a1,320
+    addi    a10,a1,96
     l32r    a8,.Lscene_json_root_dtor
     callx8  a8
 .Lscene_cap_return:
@@ -965,10 +1000,7 @@ renderer_scene_rpc_handle_begin:
     mov     a10,a7
     addi    a11,a1,192
     call8   renderer_scene_rpc_core_begin_args
-    movi.n  a12,0
-    movi.n  a8,1
-    bne     a10,a8,.Lscene_begin_reply
-    movi.n  a12,1
+    mov     a12,a10
     j       .Lscene_begin_reply
 .Lscene_begin_error:
     movi.n  a12,0
@@ -1025,10 +1057,7 @@ renderer_scene_rpc_handle_write:
     mov     a10,a7
     addi    a11,a1,192
     call8   renderer_scene_rpc_core_write_base64_args
-    movi.n  a12,0
-    movi.n  a8,1
-    bne     a10,a8,.Lscene_write_reply
-    movi.n  a12,1
+    mov     a12,a10
     j       .Lscene_write_reply
 .Lscene_write_error:
     movi.n  a12,0
@@ -1080,10 +1109,7 @@ renderer_scene_rpc_handle_commit:
     mov     a10,a7
     addi    a11,a1,192
     call8   renderer_scene_rpc_core_commit_args
-    movi.n  a12,0
-    movi.n  a8,1
-    bne     a10,a8,.Lscene_commit_reply
-    movi.n  a12,1
+    mov     a12,a10
     j       .Lscene_commit_reply
 .Lscene_commit_error:
     movi.n  a12,0
@@ -1127,10 +1153,7 @@ renderer_scene_rpc_handle_abort:
     l32i    a12,a1,196
     l32i    a13,a1,200
     call8   renderer_scene_rpc_core_abort
-    movi.n  a12,0
-    movi.n  a8,1
-    bne     a10,a8,.Lscene_abort_reply
-    movi.n  a12,1
+    mov     a12,a10
     j       .Lscene_abort_reply
 .Lscene_abort_error:
     movi.n  a12,0

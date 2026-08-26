@@ -73,16 +73,60 @@ const substitutions = [
       "  `Diagnostic block size ${blockBytes} moved off the release size ` +\n" +
       "  `${expected.releaseBlockBytes}: the instrumentation escaped the fixed " +
       "runtime storage.`);",
-    /* The two replacement pointers do not fit in the padding that preceded
-     * static_task, so the block reclaims one 16-byte alignment quantum less
-     * than the raw heap size.  Allow exactly one quantum of slack either way
-     * and nothing more: anything outside that means the 64 KiB array is still
-     * (or partly still) resident in the internal-RAM block. */
-    to: "invariant(Math.abs((expected.releaseBlockBytes - blockBytes) - heapBytes) <= 16,\n" +
-      "  `PSRAM block size ${blockBytes} did not shrink the frozen ` +\n" +
-      "  `${expected.releaseBlockBytes} B block by the ${heapBytes} B VM heap ` +\n" +
-      "  `(one 16-byte alignment quantum of slack): the heap did not leave " +
-      "internal RAM.`);",
+    /* The heap-left-internal-RAM proof, restated for the widget-upload block
+     * additions: the frozen release block minus the 64 KiB VM heap, plus the
+     * pinned widget-upload state (assets table, upload transaction incl. its
+     * admission record, persist bookkeeping, arena pointers - the 3 KiB chunk
+     * scratch deliberately lives on the PSRAM staging arena's tail, NOT here).
+     * 2026-08-26: +176 B for the multi-widget slot bank (docs/17): per-slot
+     * generations (16) + sha16 inventory (64) + active/session/base/arena/
+     * activate/switching words (24) + the owner_platform copy kept for
+     * activation reinit (60) + padding.  +144 B for Phase B multi-screen:
+     * the second screen proxy (proxy_storage_second, 148 B incl. the
+     * appended screen_slot word both proxies gained) + the setup-owned
+     * adoption arena pointer, net of padding.  The exact figure is pinned so
+     * any future in-block growth must come back to this comment and justify
+     * itself. */
+    to: "const widgetUploadBlockBytes = 960;\n" + /* +32: 2026-08-26 proxy lifecycle forensics counters (op 7), padding-rounded */
+      
+      "invariant(blockBytes === expected.releaseBlockBytes - heapBytes + 16 + " +
+      "widgetUploadBlockBytes,\n" +
+      "  `PSRAM block size ${blockBytes} is not the frozen release block ` +\n" +
+      "  `${expected.releaseBlockBytes} minus the ${heapBytes} B VM heap plus ` +\n" +
+      "  `one alignment quantum plus the pinned ${widgetUploadBlockBytes} B of ` +\n" +
+      "  `widget-upload state: unexplained internal-RAM drift.`);",
+  },
+  {
+    /* Three more aligned in-block words for widget.mquickjs.diag6: the persist
+     * state machine's status, the generation currently sealed into slot B, and
+     * the last committed generation observed in the scene-RPC core.  They only
+     * exist in psram-module-src/physical_integration.c, which is exactly the
+     * translation unit this wrapper points the probe at. */
+    what: "persist offset probes",
+    from: '  ["BLK_ADOPT_FLAGS", "offsetof(physical_block, target_admitted)"],\n' +
+      '  ["BLK_OWNER", "offsetof(physical_block, owner)"],',
+    to: '  ["BLK_ADOPT_FLAGS", "offsetof(physical_block, target_admitted)"],\n' +
+      '  ["BLK_PERSIST_STATUS", "offsetof(physical_block, scene_persist_status)"],\n' +
+      '  ["BLK_PERSIST_GENERATION",\n' +
+      '    "offsetof(physical_block, scene_persist_generation)"],\n' +
+      '  ["BLK_PERSIST_OBSERVED",\n' +
+      '    "offsetof(physical_block, scene_persist_observed)"],\n' +
+      '  ["BLK_OWNER", "offsetof(physical_block, owner)"],',
+  },
+  {
+    what: "persist offset invariant",
+    from: "invariant((blockProbe.BLK_ADOPT_FLAGS & 3) === 0 &&\n" +
+      "  blockProbe.BLK_ADOPT_FLAGS + 4 <= blockProbe.sizeofBlock,\n" +
+      "`BLK_ADOPT_FLAGS=${blockProbe.BLK_ADOPT_FLAGS} is not an aligned in-block word.`);",
+    to: "invariant((blockProbe.BLK_ADOPT_FLAGS & 3) === 0 &&\n" +
+      "  blockProbe.BLK_ADOPT_FLAGS + 4 <= blockProbe.sizeofBlock,\n" +
+      "`BLK_ADOPT_FLAGS=${blockProbe.BLK_ADOPT_FLAGS} is not an aligned in-block word.`);\n" +
+      "for (const name of [\"BLK_PERSIST_STATUS\", \"BLK_PERSIST_GENERATION\",\n" +
+      "  \"BLK_PERSIST_OBSERVED\"]) {\n" +
+      "  invariant((blockProbe[name] & 3) === 0 &&\n" +
+      "    blockProbe[name] + 4 <= blockProbe.sizeofBlock,\n" +
+      "    `${name}=${blockProbe[name]} is not an aligned in-block word.`);\n" +
+      "}",
   },
   { what: "text page name", from: '"mqjs-id28-text-page-diag.bin"',
     to: '"mqjs-id28-text-page-psram.bin"' },
@@ -171,6 +215,52 @@ const wrapper = {
    * four-method RPC bitmask, not a page count.  Pages 6 and 7 are therefore an
    * extension advertised only here, in the build manifest.  Hosts that only
    * know the release protocol keep polling pages 0..5 and never see them. */
+  /* Diagnostic methods this workstream adds on top of the four the upstream
+   * diagnostic loader documents.  build-diag-module.mjs is not edited here, so
+   * its own manifest still lists only diag..diag4. */
+  diagnosticExtension: {
+    methods: {
+      "widget.mquickjs.diag5": {
+        format: "v5;a=<packed adopt word>;m=<block magic>;b=<boot_state>",
+        packedAdoptWord: "target_admitted | heap_claimed<<8 | " +
+          "adopt outcome<<16 | first failing step<<24 (bit 0x80 of the step " +
+          "additionally means esp_mmu_unmap reported an error)",
+      },
+      "widget.mquickjs.diag6": {
+        format: "v6;p=<packed persist word>;g=<generation now in slot B>;" +
+          "c=<committed generation in the scene-RPC core>",
+        packedPersistWord: "persist state | step<<8 | renderer-v2 re-arm<<16 " +
+          "| started<<24",
+        states: "0 idle, 1 armed, 2 erasing, 3 writing payload, " +
+          "4 verifying payload, 5 writing header, 6 done, 7 failed",
+        rearm: "0 not attempted, 1 waiting for RV2_SWITCH_ACTIVE, " +
+          "2 switch returned to EMPTY, 3 no sidecar",
+      },
+    },
+    reader: "experiments/mquickjs-esp32s3-physical-canary/diag-read.mjs",
+  },
+  bootScenePersistence: {
+    slot: "flash paddr 0x240000..0x270000 (slot B), 64-byte header + payload",
+    record: "build-scene-slot-b.mjs layout; generation >= 2 with " +
+      "expected_generation == generation - 1",
+    onBoot: "boot_adopt_default_scene republishes the record and advances the " +
+      "scene-RPC committed_generation to the adopted generation, then the " +
+      "owner task returns the renderer-v2 switch word to EMPTY once the " +
+      "package is ACTIVE so the host can push generation N+1",
+    onCommit: "the owner task re-seals slot B payload-first, header LAST, one " +
+      "4 KiB sector erase / 1 KiB write / 256 B verify read per tick",
+    flashApi: {
+      "esp_flash_erase_region": "0x4037f0f0",
+      "esp_flash_write": "0x4037f460",
+      "esp_flash_read": "0x4037f31c",
+      chip: "NULL -> esp_flash_default_chip via chip_check 0x4037edf0",
+      regionProtectionEscape:
+        "app_func_arg_t::no_protect (os_func_data+4) raised for exactly one " +
+        "stock call, because slot B is inside the factory APP partition and " +
+        "esp_partition_main_flash_region_safe (0x420c2b44) refuses it",
+    },
+    proof: "experiments/mquickjs-esp32s3-physical-canary/scene-slot-b-host-proof.mjs",
+  },
   telemetryExtension: {
     method: "widget.mquickjs.telemetry",
     pages: [6, 7],

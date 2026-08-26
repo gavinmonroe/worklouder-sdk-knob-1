@@ -27,10 +27,12 @@ describe("write-scope addresses", () => {
     expect(html).not.toContain("0x210000");
   });
 
-  it("lists all three weather regions in write order", () => {
+  it("lists all four weather regions in write order", () => {
     const html = renderToStaticMarkup(<WriteScopeAddresses firmware={byId["weather-mquickjs"]} />);
+    expect(html.indexOf("0x240000")).toBeLessThan(html.indexOf("0x210000"));
     expect(html.indexOf("0x210000")).toBeLessThan(html.indexOf("0x230000"));
     expect(html.indexOf("0x230000")).toBeLessThan(html.indexOf("0x10000"));
+    expect(html).toContain("Clock + Timer scene slot B (persisted)");
     expect(html).toContain("MicroQuickJS text page");
     expect(html).toContain("MicroQuickJS rodata page");
     expect(html).toContain("Weather app");
@@ -46,18 +48,28 @@ describe("scene package action", () => {
     ).toBe("");
   });
 
-  for (const id of ["clock-timer", "weather-mquickjs"]) {
-    it(`offers the enable action on ${id}`, () => {
-      const html = renderToStaticMarkup(
-        <ScenePackageNotice firmware={byId[id]} scene={idleScene} supported onEnable={() => {}} />,
-      );
-      expect(html).toContain("Enable clock &amp; timer");
-      expect(html).toContain("32 chunks");
-      expect(html).toContain("generation 1 → 2");
-      expect(html).toMatch(/RAM, not flash/u);
-      expect(html).toContain("after every power cycle");
-    });
-  }
+  it("offers the enable action on clock-timer", () => {
+    const html = renderToStaticMarkup(
+      <ScenePackageNotice firmware={byId["clock-timer"]} scene={idleScene} supported onEnable={() => {}} />,
+    );
+    expect(html).toContain("Enable clock &amp; timer");
+    expect(html).toContain("32 chunks");
+    expect(html).toContain("generation 1 → 2");
+    expect(html).toMatch(/RAM, not flash/u);
+    expect(html).toContain("after every power cycle");
+  });
+
+  it("offers only the fallback push action on weather-mquickjs, since firmware persists it", () => {
+    const html = renderToStaticMarkup(
+      <ScenePackageNotice firmware={byId["weather-mquickjs"]} scene={idleScene} supported onEnable={() => {}} />,
+    );
+    expect(html).toContain("Push clock &amp; timer again");
+    expect(html).toContain("normally not needed");
+    expect(html).toContain("firmware restores it at boot");
+    expect(html).not.toContain("Enable clock &amp; timer");
+    expect(html).toContain("32 chunks");
+    expect(html).toContain("generation 1 → 2");
+  });
 
   it("surfaces a rejected begin and the acknowledged commit", () => {
     const rejected = renderToStaticMarkup(
@@ -78,14 +90,34 @@ describe("scene package action", () => {
           ...idleScene,
           phase: "enabled",
           progress: 100,
-          result: { status: "FOCUS_TIMER_PACKAGE_COMMIT_ACKNOWLEDGED", generation: 2, chunks: 32 },
+          result: { status: "FOCUS_TIMER_PACKAGE_COMMIT_ACKNOWLEDGED", alreadyEnabled: false, generation: 2, chunks: 32 },
         }}
         supported
         onEnable={() => {}}
       />,
     );
-    expect(enabled).toContain("FOCUS_TIMER_PACKAGE_COMMIT_ACKNOWLEDGED");
+    expect(enabled).toContain("Enabled (generation 2)");
+    expect(enabled).toContain("32 chunks accepted");
     expect(enabled).toContain("Push again");
+  });
+
+  it("reports an already-enabled-by-firmware result without implying a push happened", () => {
+    const alreadyEnabled = renderToStaticMarkup(
+      <ScenePackageNotice
+        firmware={byId["clock-timer"]}
+        scene={{
+          ...idleScene,
+          phase: "enabled",
+          progress: 100,
+          result: { status: "FOCUS_TIMER_PACKAGE_ALREADY_ENABLED", alreadyEnabled: true,
+            generation: 4, reason: "committed-sha-match" },
+        }}
+        supported
+        onEnable={() => {}}
+      />,
+    );
+    expect(alreadyEnabled).toContain("Already enabled by firmware (generation 4)");
+    expect(alreadyEnabled).not.toContain("Enabled (generation 4)");
   });
 
   it("disables the action when WebHID is unavailable", () => {

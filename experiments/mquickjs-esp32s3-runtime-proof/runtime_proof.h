@@ -36,7 +36,7 @@ extern "C" {
 #define FRAMER_RUNTIME_OWNER_BYTES 26952u
 #define FRAMER_RUNTIME_STATIC_TASK_BYTES 352u
 #define FRAMER_RUNTIME_RPC_CONTEXT_BYTES 352u
-#define FRAMER_RUNTIME_RPC_CONTEXT_COUNT 4u
+#define FRAMER_RUNTIME_RPC_CONTEXT_COUNT 5u
 #define FRAMER_RUNTIME_BRIDGE_SLACK_BYTES 2048u
 #define FRAMER_RUNTIME_PHYSICAL_BLOCK_AUDITED_MIN_BYTES 92896u
 #define FRAMER_RUNTIME_INTERNAL_RESERVE_BYTES 32768u
@@ -68,6 +68,7 @@ extern "C" {
 #define FRAMER_RUNTIME_RPC_METHOD_TELEMETRY "widget.mquickjs.telemetry"
 #define FRAMER_RUNTIME_RPC_METHOD_EVENT "widget.mquickjs.event"
 #define FRAMER_RUNTIME_RPC_METHOD_RECEIPT "widget.mquickjs.receipt"
+#define FRAMER_RUNTIME_RPC_METHOD_UPLOAD "widget.mquickjs.upload"
 
 #define FRAMER_RUNTIME_ADDR_ESP_TIMER_GET_TIME 0x4037e028u
 #define FRAMER_RUNTIME_ADDR_HEAP_CAPS_FREE 0x4037e250u
@@ -139,6 +140,9 @@ typedef struct {
     uint32_t generation;
     uint32_t key_events;
     uint32_t chord_events;
+    /* Nonzero when the module registers widget.mquickjs.upload, so cap page 0
+     * advertises uploader=1 and the Designer enables its push gate. */
+    uint32_t runtime_uploader;
 } framer_runtime_capability;
 
 typedef struct {

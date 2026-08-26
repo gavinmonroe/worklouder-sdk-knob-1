@@ -90,16 +90,169 @@
     "malformedAssets": "PASS",
     "overlayOverflowBeforeDraw": "PASS"
   },
+  "variantProof": {
+    "contractV2Sha256": "0176edae816d6d58541cc1c04150391cf76779851a117f79f3387f527bc53ed7",
+    "assetSha256": "991dbf432795e753331d7e3cf098ae6089e00d00c081d0f9fe864eb6b85d097b",
+    "assetBytes": 1474,
+    "hostVsCFrames": "PIXEL_EXACT",
+    "frozenV1ShaRejects": {
+      "host": true,
+      "c": true
+    },
+    "flagsWordIndependent": true,
+    "cases": [
+      {
+        "name": "variant-first-entries",
+        "result": 0,
+        "frameSha256": "18e5b7bf0bbd6ea3f024fa148b5eee86a879407da23ebfba9f36b31cb7922fd3",
+        "overlayWrites": 1106
+      },
+      {
+        "name": "variant-selection-and-colour",
+        "result": 0,
+        "frameSha256": "2b0e7cdb66689b14f635d2a4ee01644d83342bdd9e3318f5fa735a64f7f9d9b5",
+        "overlayWrites": 1092
+      },
+      {
+        "name": "variant-clamp-negative",
+        "result": 0,
+        "frameSha256": "18e5b7bf0bbd6ea3f024fa148b5eee86a879407da23ebfba9f36b31cb7922fd3",
+        "overlayWrites": 1106
+      },
+      {
+        "name": "variant-clamp-past-end",
+        "result": 0,
+        "frameSha256": "cbf763237d77733f5fccde81fa2311727bed691f2342b29d748629ba8185ffb7",
+        "overlayWrites": 1126
+      },
+      {
+        "name": "variant-ignores-flags-word",
+        "result": 0,
+        "frameSha256": "e971b6a7fa2ac0865b968e32b535a1851d40427c21229eca7fa07ee93089f12d",
+        "overlayWrites": 932
+      },
+      {
+        "name": "variant-hidden-root",
+        "result": 1,
+        "frameSha256": "2f8263490c50631c3cdb7f992efde976ac794d8a3e599cc785a1e81bfa0e5c68",
+        "overlayWrites": 0
+      },
+      {
+        "name": "variant-exact-upper-bounds",
+        "result": 0,
+        "frameSha256": "d0a704c3e8b51233df521452dce5fc0b19cdd810c1012be545211c552fe4c9d3",
+        "overlayWrites": 1087
+      }
+    ]
+  },
+  "rasterProof": {
+    "contractV3Sha256": "455e02819595f810909a11afdcda7eb5aa0b4d6e792b154d29711ebea906631b",
+    "assetSha256": "66e343d7e1520d35d428d39e15dd65643e050766c75898d93f48bc17eb6093c6",
+    "assetBytes": 6516,
+    "exceedsFrozenV2AssetCap": true,
+    "hostVsCFrames": "PIXEL_EXACT",
+    "frozenShaRejects": {
+      "v1": {
+        "host": true,
+        "c": true
+      },
+      "v2": {
+        "host": true,
+        "c": true
+      }
+    },
+    "oldAssetsStillAdmitUnderOwnShas": true,
+    "fullRectCoverage": true,
+    "hiddenRootLeavesExactBase": true,
+    "flagsWordIndependent": true,
+    "assetCapBoundary": {
+      "admits": 65536,
+      "rejects": 65537
+    },
+    "targets": [
+      {
+        "id": "digitTens",
+        "x": 12,
+        "y": 248,
+        "width": 6,
+        "height": 8,
+        "slot": 9,
+        "count": 10
+      },
+      {
+        "id": "digitOnes",
+        "x": 20,
+        "y": 248,
+        "width": 6,
+        "height": 8,
+        "slot": 9,
+        "count": 10
+      },
+      {
+        "id": "rasterEdge",
+        "x": 80,
+        "y": 290,
+        "width": 20,
+        "height": 20,
+        "slot": 11,
+        "count": 4
+      }
+    ],
+    "cases": [
+      {
+        "name": "raster-first-variants",
+        "result": 0,
+        "frameSha256": "c53d27c7dcc60f04e1b29446f1c61bc1feb0ec99f9c261b345750804349cb35c",
+        "overlayWrites": 1499
+      },
+      {
+        "name": "raster-digit-42",
+        "result": 0,
+        "frameSha256": "a78530c1181b749feac662b5a154a3273fdda2aa61024e04df332ed14f0c1ee5",
+        "overlayWrites": 1477
+      },
+      {
+        "name": "raster-clamp-negative",
+        "result": 0,
+        "frameSha256": "c53d27c7dcc60f04e1b29446f1c61bc1feb0ec99f9c261b345750804349cb35c",
+        "overlayWrites": 1499
+      },
+      {
+        "name": "raster-digit-999-and-intmax",
+        "result": 0,
+        "frameSha256": "75a14cf47051e57ba8a3df9fac90566c41ed99f4d4513bf255ccd7fe9ad357ae",
+        "overlayWrites": 1496
+      },
+      {
+        "name": "raster-ignores-flags-word",
+        "result": 0,
+        "frameSha256": "f804a92b8a82efe17ab9c1fc75fd1a7b45e02ee2c78a987c24c73b495e22e7aa",
+        "overlayWrites": 1317
+      },
+      {
+        "name": "raster-hidden-root",
+        "result": 1,
+        "frameSha256": "2f8263490c50631c3cdb7f992efde976ac794d8a3e599cc785a1e81bfa0e5c68",
+        "overlayWrites": 0
+      },
+      {
+        "name": "raster-digit-intmax",
+        "result": 0,
+        "frameSha256": "acd9fc2442c16c2c75fc96683bcb99e2f2f4b8ed537f23cad3e879a578cf1f40",
+        "overlayWrites": 1496
+      }
+    ]
+  },
   "xtensa": {
     "compiler": "xtensa-esp-elf-gcc (crosstool-NG esp-13.2.0_20240530) 13.2.0",
-    "objectBytes": 21552,
-    "objectSha256": "99f3d9c3c8bb81a7472856e3664220d5d92520c89533d8d672bad66fdf530521",
-    "textBytes": 4364,
-    "rodataBytes": 72,
+    "objectBytes": 24840,
+    "objectSha256": "8f66f46205a687a6339dfa6c6b1f604b5bc0deeefd0d273e1bcb48b40e380978",
+    "textBytes": 5289,
+    "rodataBytes": 90,
     "writableGlobalBytes": 0,
     "undefinedSymbols": 0,
-    "maxCompilerReportedFrameBytes": 576,
-    "conservativeAllStaticFramesBytes": 1296
+    "maxCompilerReportedFrameBytes": 592,
+    "conservativeAllStaticFramesBytes": 1376
   },
   "timingEstimate": {
     "kind": "analytic-not-device-measured",

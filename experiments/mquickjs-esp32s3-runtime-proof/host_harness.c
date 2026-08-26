@@ -199,6 +199,18 @@ int main(void)
             memcpy(module_abi_page, guarded.output,
                    strlen(guarded.output) + 1u);
     }
+    /* uploader= on page 0 follows the capability field; everything else on
+     * the page is unchanged by the flag. */
+    capability.runtime_uploader = 1u;
+    guarded.guard = 0xa5u;
+    assert(framer_runtime_capability_format(&capability, 0u, guarded.output));
+    assert(strlen(guarded.output) <= 112u && guarded.guard == 0xa5u);
+    assert(strstr(guarded.output, ";uploader=1") != (char *)0);
+    capability.runtime_uploader = 0u;
+    guarded.guard = 0xa5u;
+    assert(framer_runtime_capability_format(&capability, 0u, guarded.output));
+    assert(strstr(guarded.output, ";uploader=0") != (char *)0);
+
     assert(strcmp(FRAMER_RUNTIME_PACKAGE_ABI_SHA256,
                   FRAMER_RUNTIME_MODULE_ABI_SHA256) != 0);
     assert(strcmp(package_abi_page,

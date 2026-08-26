@@ -353,7 +353,9 @@ export function useFlasher() {
       setScenePhase("enabled");
       if (!device) setDevice(result.device);
       appendLog(
-        `${result.status} · generation ${result.generation} · ${result.chunks} chunks · ${result.bytes} bytes.`,
+        result.alreadyEnabled
+          ? `${result.status} · generation ${result.generation} · no push needed (${result.reason}).`
+          : `${result.status} · generation ${result.generation} · ${result.chunks} chunks · ${result.bytes} bytes.`,
       );
     } catch (cause) {
       setScenePhase("scene-error");

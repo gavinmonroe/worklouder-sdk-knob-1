@@ -9,11 +9,20 @@ import { FramerHidClient, requestFramerHid } from "./framer-hid.js";
 export const SCENE_RPC_PROTOCOL = "framer-widget-scene-rpc-v1";
 
 export const SCENE_RPC_METHODS = Object.freeze({
+  capabilities: "widget.scene.capabilities",
   begin: "widget.scene.begin",
   write: "widget.scene.write",
   commit: "widget.scene.commit",
   abort: "widget.scene.abort",
+  status: "widget.scene.status",
 });
+
+// The generation baked into today's flashed clock+timer image (see
+// f1-widget-sdk/examples/render-v2-focus-timer/focus-timer-package.mjs,
+// FOCUS_TIMER_PACKAGE.generation). Used by the idempotency rule below to
+// tell a genuine boot-adopted/committed generation reading apart from the
+// absence of one.
+const MINIMUM_BOOT_ADOPTED_GENERATION = 2;
 
 export const SCENE_RPC_LIMITS = Object.freeze({
   maxBundleBytes: 96 * 1024,
@@ -72,10 +81,29 @@ function assertStatusOnly(response, operation) {
 }
 
 /**
- * Build the exact begin / write / commit payloads for one pinned package.
- * The bytes must already carry the pinned generation; nothing is rewritten.
+ * The F1WB header stores its generation as a little-endian uint32 at byte
+ * offset 8 (see f1-widget-sdk/src/render/widget-bundle.mjs encodeWidgetBundle
+ * / decodeWidgetBundle). Every other byte -- raster/program payloads
+ * included -- is generation-independent, so advancing the generation is a
+ * four-byte patch, not a rebuild. Mirrors the same rewrite
+ * f1-widget-sdk/input-lab/lib/browser-scene-hid.mjs already performs for the
+ * generic render-v2 package.
  */
-export async function createScenePackageUpload(input, descriptor) {
+function rewriteGeneration(bytes, generation) {
+  const rewritten = new Uint8Array(bytes);
+  new DataView(rewritten.buffer, rewritten.byteOffset, rewritten.byteLength).setUint32(8, generation, true);
+  return rewritten;
+}
+
+/**
+ * Build the exact begin / write / commit payloads for one pinned package.
+ * `expectedGeneration` defaults to the descriptor's own pinned
+ * expectedGeneration (the historical generation-1-to-2 push); passing a
+ * different value rewrites the F1WB generation word in place before hashing
+ * and chunking, so a status-derived caller can push "whatever the device
+ * reports, plus one" without a second frozen build of the package.
+ */
+export async function createScenePackageUpload(input, descriptor, { expectedGeneration: expectedGenerationOverride } = {}) {
   invariant(
     descriptor && Number.isInteger(descriptor.bytes) && typeof descriptor.sha256 === "string",
     "A scene package descriptor must pin its exact byte count and SHA-256.",
@@ -88,25 +116,39 @@ export async function createScenePackageUpload(input, descriptor) {
     "A scene package must advance the committed generation by exactly one.",
     "SCENE_PACKAGE_INVALID",
   );
-
-  const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
+  const resolvedExpectedGeneration = expectedGenerationOverride ?? descriptor.expectedGeneration;
   invariant(
-    bytes.length === descriptor.bytes,
-    `Scene package size changed: expected ${descriptor.bytes}, received ${bytes.length} bytes.`,
+    Number.isInteger(resolvedExpectedGeneration) && resolvedExpectedGeneration >= 0 &&
+      resolvedExpectedGeneration < 0xffffffff,
+    "Scene push expected generation must be a uint32 below its maximum.",
+    "SCENE_PACKAGE_INVALID",
+  );
+
+  const original = input instanceof Uint8Array ? input : new Uint8Array(input);
+  invariant(
+    original.length === descriptor.bytes,
+    `Scene package size changed: expected ${descriptor.bytes}, received ${original.length} bytes.`,
     "SCENE_PACKAGE_INVALID",
   );
   invariant(
-    bytes.length > 0 && bytes.length <= SCENE_RPC_LIMITS.maxBundleBytes,
+    original.length > 0 && original.length <= SCENE_RPC_LIMITS.maxBundleBytes,
     "Scene package exceeds the 96 KiB scene-store bound.",
     "SCENE_PACKAGE_INVALID",
   );
 
+  const generation = resolvedExpectedGeneration + 1;
+  const bytes = generation === descriptor.generation ? original : rewriteGeneration(original, generation);
   const sha256 = await sha256Hex(bytes);
-  invariant(
-    sha256 === descriptor.sha256,
-    "Scene package SHA-256 does not match the pinned catalog entry.",
-    "SCENE_PACKAGE_INVALID",
-  );
+  if (resolvedExpectedGeneration === descriptor.expectedGeneration) {
+    // Canonical case: the frozen, catalog-pinned composite advancing from
+    // the boot template generation straight to its exact frozen sha. Pin it
+    // so this well-trodden path can never silently drift.
+    invariant(
+      sha256 === descriptor.sha256,
+      "Scene package SHA-256 does not match the pinned catalog entry.",
+      "SCENE_PACKAGE_INVALID",
+    );
+  }
 
   const totalChunks = Math.ceil(bytes.length / SCENE_RPC_LIMITS.chunkRawBytes);
   invariant(
@@ -120,7 +162,7 @@ export async function createScenePackageUpload(input, descriptor) {
     "SCENE_PACKAGE_INVALID",
   );
 
-  const { generation, expectedGeneration } = descriptor;
+  const expectedGeneration = resolvedExpectedGeneration;
   const transactionId = `f2pt-${generation.toString(16).padStart(8, "0")}-${sha256.slice(0, 16)}`;
   const manifest = Object.freeze({
     protocol: SCENE_RPC_PROTOCOL,
@@ -171,13 +213,76 @@ export async function createScenePackageUpload(input, descriptor) {
   });
 }
 
+function parseCanonicalGeneration(value) {
+  const text = typeof value === "number" && Number.isInteger(value) ? String(value) : value;
+  if (typeof text !== "string" || !/^(?:0|[1-9][0-9]*)$/u.test(text)) return null;
+  const parsed = Number(text);
+  return Number.isSafeInteger(parsed) && parsed >= 0 && parsed < 0xffffffff ? parsed : null;
+}
+
+function parseCommittedSha256(value) {
+  return typeof value === "string" && /^[0-9a-f]{64}$/u.test(value) ? value : null;
+}
+
 /**
- * begin → 32 writes → commit, aborting the transaction on any failure that did
- * not leave the keyboard in an indeterminate state.
+ * Best-effort read of the device's committed scene generation (and, where
+ * advertised, package identity) before a push. Tries
+ * widget.scene.capabilities, then widget.scene.status; either method being
+ * unreachable, erroring, or answering without a committedGeneration field
+ * (today's flashed firmware replies bare {status:"ok"}) is expected, not a
+ * failure -- the probe just reports "unavailable". See
+ * f1-widget-sdk/examples/render-v2-focus-timer/focus-timer-package.mjs's
+ * matching probeFocusTimerCommittedPackage for the full idempotency rule
+ * this implements, mirrored here for the browser transport.
+ */
+export async function probeScenePackageStatus(rpc) {
+  invariant(typeof rpc === "function", "Scene status probe requires an rpc() transport.", "SCENE_PACKAGE_INVALID");
+  for (const method of [SCENE_RPC_METHODS.capabilities, SCENE_RPC_METHODS.status]) {
+    let response;
+    try { response = await rpc(method, { protocol: SCENE_RPC_PROTOCOL }); }
+    catch { continue; }
+    if (!response || typeof response !== "object" || Array.isArray(response) || response.status === "error") continue;
+    const generation = parseCanonicalGeneration(response.committedGeneration);
+    if (generation === null) continue;
+    return Object.freeze({ source: method, generation,
+      sha256: parseCommittedSha256(response.committedSha256 ?? response.packageSha256) });
+  }
+  return Object.freeze({ source: "unavailable", generation: null, sha256: null });
+}
+
+function alreadyEnabledResult(generation, reason) {
+  return Object.freeze({ status: "FOCUS_TIMER_PACKAGE_ALREADY_ENABLED", alreadyEnabled: true, generation, reason });
+}
+
+/**
+ * Status-derived, idempotent push: probes the device's committed
+ * generation, skips the push entirely (no begin/write/commit at all) when
+ * the reported package identity already matches, otherwise pushes
+ * expectedGeneration -> +1 (begin -> 32 writes -> commit, aborting on any
+ * failure that did not leave the keyboard indeterminate). A push rejection
+ * is classified as "already enabled" instead of an error exactly per the
+ * rule in probeFocusTimerCommittedPackage's doc comment: any rejected stage
+ * when the probed committedGeneration is known and >=
+ * MINIMUM_BOOT_ADOPTED_GENERATION, or specifically a rejected `begin` when
+ * the probe found no generation at all (legacy firmware).
  */
 export async function pushScenePackage({ rpc, bytes, package: descriptor, onProgress = null } = {}) {
   invariant(typeof rpc === "function", "Scene push requires an rpc() transport.", "SCENE_PACKAGE_INVALID");
-  const upload = await createScenePackageUpload(bytes, descriptor);
+
+  const status = await probeScenePackageStatus(rpc);
+  onProgress?.({ stage: "status-probe", source: status.source, committedGeneration: status.generation });
+
+  if (status.generation !== null && status.sha256) {
+    const candidateBytes = status.generation === descriptor.generation
+      ? (bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes))
+      : rewriteGeneration(bytes, status.generation);
+    if ((await sha256Hex(candidateBytes)) === status.sha256) {
+      return alreadyEnabledResult(status.generation, "committed-sha-match");
+    }
+  }
+
+  const expectedGeneration = status.generation ?? descriptor.expectedGeneration;
+  const upload = await createScenePackageUpload(bytes, descriptor, { expectedGeneration });
   let begun = false;
   let indeterminate = false;
   try {
@@ -219,6 +324,7 @@ export async function pushScenePackage({ rpc, bytes, package: descriptor, onProg
     begun = false;
     return Object.freeze({
       status: "FOCUS_TIMER_PACKAGE_COMMIT_ACKNOWLEDGED",
+      alreadyEnabled: false,
       generation: upload.commit.generation,
       bytes: upload.commit.totalBytes,
       chunks: upload.commit.totalChunks,
@@ -227,6 +333,14 @@ export async function pushScenePackage({ rpc, bytes, package: descriptor, onProg
   } catch (error) {
     if (begun && !indeterminate && error.code !== "SCENE_RPC_INDETERMINATE") {
       await rpc(SCENE_RPC_METHODS.abort, upload.abort).catch(() => {});
+    }
+    const rejected = error.code === "SCENE_RPC_REJECTED" || error.code === "SCENE_BEGIN_REJECTED";
+    if (rejected) {
+      const knownBootAdopted = status.generation !== null && status.generation >= MINIMUM_BOOT_ADOPTED_GENERATION;
+      if (knownBootAdopted) return alreadyEnabledResult(status.generation, "rejected-at-known-boot-adopted-generation");
+      if (status.generation === null && error.code === "SCENE_BEGIN_REJECTED") {
+        return alreadyEnabledResult(expectedGeneration, "begin-rejected-generation-unknown-legacy");
+      }
     }
     throw error;
   }

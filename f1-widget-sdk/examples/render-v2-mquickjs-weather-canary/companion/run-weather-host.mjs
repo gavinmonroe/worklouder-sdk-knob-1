@@ -13,12 +13,13 @@ import { main as runZipSyncMain } from "../tools/zip-sync.mjs";
  * companion. Every boot needs two things done once Input's local debugger is
  * open on 9230:
  *
- *  1. Push the RAM-only clock+timer generation-2 package
+ *  1. Push the clock+timer package, status-derived and idempotent
  *     (examples/render-v2-focus-timer/tools/push-focus-timer-package.mjs).
- *     The ESP32 module loses this on every power-cycle, so it must be
- *     re-pushed on every boot. The device only accepts one live push per
- *     boot; a rejected `begin` means it is already applied this boot, which
- *     is expected, not an error.
+ *     A firmware that has not yet boot-adopted or persisted it still loses
+ *     it on every power-cycle, so it is re-pushed on every boot; a firmware
+ *     that already has this exact package committed (boot-adopted from
+ *     flash, or persisted from an earlier push) is detected via
+ *     widget.scene.capabilities/status and is left alone, not re-pushed.
  *  2. Run the zip-sync poll/push loop in the foreground
  *     (tools/zip-sync.mjs): persists the keyboard-saved ZIP, fetches
  *     Open-Meteo weather for it, pushes the weather events, and acks.
@@ -37,14 +38,24 @@ function defaultLog(line) {
 }
 
 /**
- * Pushes the frozen clock+timer generation-2 composite once. Tolerates a
- * rejected `begin` (device already has it applied this boot) as a
- * non-fatal, expected outcome; any other failure propagates.
+ * Pushes the clock+timer composite once, status-derived and idempotent (see
+ * publishFocusTimerPackageIfNeeded in focus-timer-package.mjs for the exact
+ * rule). Tolerates both an "already enabled" result -- returned, not thrown,
+ * whenever the probed committed generation already matches or a push at
+ * that generation is rejected -- and, as a legacy safety net for firmware
+ * that predates the status/capabilities generation report, a directly
+ * thrown rejected `begin` (device already has it applied this boot). Any
+ * other failure propagates.
  */
 export async function pushClockTimerPackageOnce({ log = defaultLog, port = 9230,
   runPublisher = runFocusTimerPublisher } = {}) {
   try {
-    await runPublisher(["--confirm-live-rpc", "--input-port", String(port)], { log });
+    const result = await runPublisher(["--confirm-live-rpc", "--input-port", String(port)], { log });
+    if (result?.alreadyEnabled) {
+      log(JSON.stringify({ status: "FOCUS_TIMER_PACKAGE_ALREADY_APPLIED",
+        detail: `clock + timer package is already enabled by firmware (generation ${result.generation})`,
+        reason: result.reason }));
+    }
   } catch (error) {
     if (error.code === "FOCUS_TIMER_RPC_REJECTED" && /\bbegin\b/i.test(error.message ?? "")) {
       log(JSON.stringify({ status: "FOCUS_TIMER_PACKAGE_ALREADY_APPLIED",

@@ -15,9 +15,15 @@ extern "C" {
 #define FRAMER_TF_TARGET_COUNT 16u
 #define FRAMER_TF_HEADER_BYTES 192u
 #define FRAMER_TF_TARGET_BYTES 40u
-#define FRAMER_TF_MAX_ASSET_BYTES 4096u
+/* Contract v3 raised this from 4096: variantRaster tables carry pre-rendered
+ * RGB565 pixels inside the F2TF section, so the asset cap now matches the
+ * space the frozen 96 KB upload container can devote to the facade. */
+#define FRAMER_TF_MAX_ASSET_BYTES 65536u
 #define FRAMER_TF_MAX_TEXT_BYTES 23u
-#define FRAMER_TF_MAX_OVERLAY_WRITES 4096u
+/* v3: one full frame.  variantRaster blits write exactly rect.w*rect.h pixels
+ * and realistic widgets exceed the glyph-era 4096; the base decode already
+ * rewrites all 31,000 pixels per tick, so this is the physical ceiling. */
+#define FRAMER_TF_MAX_OVERLAY_WRITES 31000u
 #define FRAMER_TF_SNAPSHOT_ATTEMPTS 3u
 
 typedef enum {

@@ -8,6 +8,8 @@
  *   widget.mquickjs.diag2  live owner-task boot state + timing + heap
  *   widget.mquickjs.diag3  live owner admission forensics (why boot failed)
  *   widget.mquickjs.diag4  captured JS exception text (instrumented module only)
+ *   widget.mquickjs.diag5  boot default-scene adopt outcome
+ *   widget.mquickjs.diag6  boot-scene persist machine + renderer-v2 re-arm
  *
  * Every response string is re-rendered from live memory inside the RPC
  * callback, so repeated reads show progression rather than a frozen snapshot
@@ -45,6 +47,29 @@
  * classify_exception ("<Error name>: <message> @<stack>") and preserves it
  * across framer_mqjs_destroy.  A release module never writes it, so the field
  * reads "v4;empty" there.  Non-printable bytes are folded to '.'.
+ *
+ * v5 (widget.mquickjs.diag5), 35 chars:
+ *   v5;a=<target_admitted | heap_claimed<<8 | adopt outcome<<16 | step<<24>
+ *     ;m=<block magic>;b=<boot_state>
+ * The adopt outcome and step bytes are physical_block::reserved_flags[0..1],
+ * written once by boot_adopt_default_scene() on the setup task.  Outcome:
+ * 0 not attempted, 1 adopted OK, 2 slot B absent/invalid, 3 no store/sidecar,
+ * 4 renderer gate rejected.  Step names the first failing gate; bit 7 (0x80)
+ * additionally means esp_mmu_unmap reported an error.  A module that has no
+ * adopt path leaves both bytes zero, so the field reads outcome 0.
+ *
+ * v6 (widget.mquickjs.diag6), 35 chars:
+ *   v6;p=<persist status>;g=<generation now in slot B>;c=<last committed
+ *     generation observed in the scene-RPC core>
+ * persist status packs state | step<<8 | rearm<<16 | started<<24, from
+ * physical_block::scene_persist_status.  state: 0 idle, 1 armed, 2 erasing,
+ * 3 writing payload, 4 verifying payload, 5 writing header, 6 done, 7 failed.
+ * step names the failing operation (1 bounds, 2 erase, 3 write, 4 read-back,
+ * 5 payload mismatch, 6 store moved under the machine, 7 header write,
+ * 8 header read-back, 9 header mismatch, 10 store unusable).  rearm: 0 not
+ * attempted, 1 waiting for the adopted package to go ACTIVE, 2 renderer-v2
+ * switch returned to EMPTY, 3 no sidecar.  A module without the persist path
+ * leaves all three words zero.
  *
  * Any field reads 0xffffffff when the resident block pointer is unknown or
  * outside internal RAM (nothing was mapped, or startup was never reached).
@@ -105,11 +130,12 @@ typedef uint32_t (*stack_water_fn)(void *task);
 
 /* Exact framer_runtime_rpc_context layout (352 bytes). */
 #define DIAG_CTX_BYTES 352u
-#define DIAG_CTX_COUNT 4u
+#define DIAG_CTX_COUNT 6u
 #define DIAG_OFF_LOCK 0u
 #define DIAG_OFF_CALLS 4u
 /* reserved[+8..+191] is free for the loader's own bookkeeping. */
-/* 1 = v1 gates, 2 = v2 owner, 3 = v3 admission, 4 = v4 exception text. */
+/* 1 = v1 gates, 2 = v2 owner, 3 = v3 admission, 4 = v4 exception text,
+ * 5 = v5 boot default-scene adopt outcome, 6 = v6 boot-scene persist. */
 #define DIAG_OFF_TAG 8u
 #define DIAG_OFF_BLOCK 12u   /* 16-aligned resident block pointer, 0 = unknown */
 #define DIAG_OFF_ELAPSED 16u /* us from loader entry to startup return, 0 = n/a */
@@ -140,9 +166,21 @@ _Static_assert(DIAG_OFF_VALUE + DIAG_VALUE_BYTES == DIAG_OFF_STATUS_KEY,
  * telemetry.permanently_disabled<<8. */
 #if !defined(BLK_MAGIC) || !defined(BLK_BOOT_STATE) || \
     !defined(BLK_OWNER_TEL_BOOTED) || !defined(BLK_LAST_ERROR) || \
-    !defined(BLK_LAST_ERROR_BYTES)
+    !defined(BLK_LAST_ERROR_BYTES) || !defined(BLK_ADOPT_FLAGS) || \
+    !defined(BLK_PERSIST_STATUS) || !defined(BLK_PERSIST_GENERATION) || \
+    !defined(BLK_PERSIST_OBSERVED)
 #error "diagnostic loader must receive physical_block offsets from the build"
 #endif
+
+/* BLK_ADOPT_FLAGS is offsetof(physical_block, target_admitted): one aligned
+ * word holding target_admitted | heap_claimed<<8 | reserved_flags[0]<<16 |
+ * reserved_flags[1]<<24.  The build script asserts the alignment. */
+_Static_assert(((uint32_t)BLK_ADOPT_FLAGS & 3u) == 0u,
+               "diag5 reads the adopt flags with an aligned 32-bit load only");
+_Static_assert(((uint32_t)BLK_PERSIST_STATUS & 3u) == 0u &&
+                   ((uint32_t)BLK_PERSIST_GENERATION & 3u) == 0u &&
+                   ((uint32_t)BLK_PERSIST_OBSERVED & 3u) == 0u,
+               "diag6 reads the persist words with aligned 32-bit loads only");
 
 /* "v4;" plus the whole last_error buffer plus NUL must fit the RPC value. */
 _Static_assert(3u + (uint32_t)BLK_LAST_ERROR_BYTES + 1u <= DIAG_VALUE_BYTES,
@@ -329,10 +367,37 @@ __attribute__((noinline)) static void diag_render_admit(uint8_t *ctx)
     *p = 0u; /* 2 + 10 * 11 = 112 bytes exactly */
 }
 
+__attribute__((noinline)) static void diag_render_adopt(uint8_t *ctx)
+{
+    uint8_t *value = ctx + DIAG_OFF_VALUE;
+    uint8_t *p = value;
+    uint32_t block = diag_slot(ctx, DIAG_OFF_BLOCK);
+    diag_zero(value, DIAG_VALUE_BYTES);
+    p = diag_word(p, W4('v', '5', 0, 0), 2u);
+    p = diag_field(p, W4('a', 0, 0, 0), 1u, diag_peek(block, BLK_ADOPT_FLAGS));
+    p = diag_field(p, W4('m', 0, 0, 0), 1u, diag_peek(block, BLK_MAGIC));
+    p = diag_field(p, W4('b', 0, 0, 0), 1u, diag_peek(block, BLK_BOOT_STATE));
+    *p = 0u; /* 2 + 3 * 11 = 35 bytes */
+}
+
 /* runtime_state::last_error, copied byte by byte out of aligned 32-bit DRAM
  * loads and sanitised again on the way out.  BLK_LAST_ERROR_BYTES is a
  * multiple of four and the buffer is word aligned, so no unaligned or
  * out-of-block load is ever issued. */
+__attribute__((noinline)) static void diag_render_persist(uint8_t *ctx)
+{
+    uint8_t *value = ctx + DIAG_OFF_VALUE;
+    uint8_t *p = value;
+    uint32_t block = diag_slot(ctx, DIAG_OFF_BLOCK);
+    diag_zero(value, DIAG_VALUE_BYTES);
+    p = diag_word(p, W4('v', '6', 0, 0), 2u);
+    p = diag_field(p, W4('p', 0, 0, 0), 1u, diag_peek(block, BLK_PERSIST_STATUS));
+    p = diag_field(p, W4('g', 0, 0, 0), 1u,
+                   diag_peek(block, BLK_PERSIST_GENERATION));
+    p = diag_field(p, W4('c', 0, 0, 0), 1u,
+                   diag_peek(block, BLK_PERSIST_OBSERVED));
+    *p = 0u; /* 2 + 3 * 11 = 35 bytes */
+}
 __attribute__((noinline)) static void diag_render_error(uint8_t *ctx)
 {
     uint8_t *value = ctx + DIAG_OFF_VALUE;
@@ -397,6 +462,10 @@ static void diag_rpc_callback(void *callback_object, void *response_holder,
         diag_render_admit(context);
     else if (tag == 4u)
         diag_render_error(context);
+    else if (tag == 5u)
+        diag_render_adopt(context);
+    else if (tag == 6u)
+        diag_render_persist(context);
     else
         diag_render_gates(context);
     STOCK_RPC_REPLY(response, request, 1u, context);
@@ -419,7 +488,7 @@ __attribute__((noinline)) static uint32_t diag_context_init(uint8_t *ctx,
     p = diag_word(p, W4('s', 't', 'a', 't'), 4u);
     p = diag_word(p, W4('u', 's', 0, 0), 3u);
     diag_slot_set(ctx, DIAG_OFF_TAG, tag);
-    /* method = "widget.mquickjs.diag" [+ '2' | '3' | '4'] */
+    /* method = "widget.mquickjs.diag" [+ '2' | '3' | '4' | '5'] */
     p = ctx + DIAG_OFF_METHOD;
     p = diag_word(p, W4('w', 'i', 'd', 'g'), 4u);
     p = diag_word(p, W4('e', 't', '.', 'm'), 4u);
@@ -435,7 +504,7 @@ __attribute__((noinline)) static uint32_t diag_context_init(uint8_t *ctx,
     return 21u;
 }
 
-/* One allocation for all four contexts: fewer heap objects means less
+/* One allocation for all six contexts: fewer heap objects means less
  * fragmentation ahead of the 95568-byte resident-block allocation.  The stock
  * allocator returns 8-byte alignment and DIAG_CTX_BYTES is a multiple of 8, so
  * every carved context stays 8-aligned (the layout only needs 4). */

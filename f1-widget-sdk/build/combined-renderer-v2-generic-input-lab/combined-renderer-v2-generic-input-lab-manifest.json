@@ -70,11 +70,11 @@
   "module": {
     "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-generic-input-lab/renderer-v2-generic-id26.bin",
     "baseAddress": "0x421187cc",
-    "entryAddress": 1108446268,
-    "bytes": 22740,
-    "sha256": "4fd8a7b848705f22eb96463ae915caa41aedbd04147e0ece0b7b9a201cd2c1a4",
+    "entryAddress": 1108446324,
+    "bytes": 22728,
+    "sha256": "46d1636c2bac5777d7a90e1edce5868708953502326720c6ee85402079571f0d",
     "capacityBytes": 30540,
-    "headroomBytes": 7800,
+    "headroomBytes": 7812,
     "relocations": 0,
     "undefinedSymbols": 0,
     "staticDataBytes": 0,
@@ -104,17 +104,17 @@
     "sidecarAllocationBytes": 692,
     "ownedBundleAllocationBytes": 98304,
     "ownedProgramAllocationBytes": 29824,
-    "sceneRpcAllocationBytes": 98624,
+    "sceneRpcAllocationBytes": 99136,
     "eventRpcAllocationBytes": 40,
-    "integratedIromModuleBytes": 22740,
-    "integratedIromModuleSha256": "4fd8a7b848705f22eb96463ae915caa41aedbd04147e0ece0b7b9a201cd2c1a4",
+    "integratedIromModuleBytes": 22728,
+    "integratedIromModuleSha256": "46d1636c2bac5777d7a90e1edce5868708953502326720c6ee85402079571f0d",
     "integratedIromModuleAddress": "0x421187cc",
     "integratedIromCavityBytes": 30540,
-    "integratedIromEntryAddress": "0x42118c3c",
+    "integratedIromEntryAddress": "0x42118c74",
     "wrapperCall": {
       "address": "0x421170c5",
       "acceptedBytes": "25ba01",
-      "candidateBytes": "65b701"
+      "candidateBytes": "e5ba01"
     },
     "renderV2Profile": "framer-f1-render-v2-structural-v1",
     "packageFormat": "framer-render-v2-package-v1",
@@ -176,30 +176,30 @@
     "app": {
       "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-generic-input-lab/framer-0.4.1-input-lab-renderer-v2-generic-id26-app.bin",
       "bytes": 2062912,
-      "sha256": "371ee26ebb74c37fde96213ace9f4c506ac98d5293ff09ffe3f863ced9c98f06"
+      "sha256": "4e045ec270462754e8415c1e2d30181f500791db9d55cbeb98b8650621a78d1d"
     },
     "merged": {
       "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-generic-input-lab/framer-0.4.1-input-lab-renderer-v2-generic-id26-merged.bin",
       "bytes": 2128448,
-      "sha256": "6ee77e34ac2ac1069bb983406f63a3a461bbd752810477eaeb7a51be7c6c48b4"
+      "sha256": "5115f60a57f9ac9af7579679d03f766748d295eaa0851e1243164af7b77a0417"
     },
     "code": {
       "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-generic-input-lab/input-lab-renderer-v2-generic-irom.bin",
       "bytes": 36872,
-      "sha256": "ac79cc1ca0f2b3b135a11d1fbfc3748c10539cc60702b8f99dcedca0221d290c"
+      "sha256": "8159937864c5f6edd1c3adf01c144fb628b8f467dbc0057f62c554e166dc46fb"
     },
     "module": {
       "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-generic-input-lab/renderer-v2-generic-id26.bin",
-      "bytes": 22740,
-      "sha256": "4fd8a7b848705f22eb96463ae915caa41aedbd04147e0ece0b7b9a201cd2c1a4"
+      "bytes": 22728,
+      "sha256": "46d1636c2bac5777d7a90e1edce5868708953502326720c6ee85402079571f0d"
     },
     "inspection": {
       "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-generic-input-lab/framer-0.4.1-input-lab-renderer-v2-generic-id26-app.bin",
       "fileBytes": 2062912,
-      "fileSha256": "371ee26ebb74c37fde96213ace9f4c506ac98d5293ff09ffe3f863ced9c98f06",
+      "fileSha256": "4e045ec270462754e8415c1e2d30181f500791db9d55cbeb98b8650621a78d1d",
       "appOffset": "0x0",
       "appBytes": 2062912,
-      "appSha256": "371ee26ebb74c37fde96213ace9f4c506ac98d5293ff09ffe3f863ced9c98f06",
+      "appSha256": "4e045ec270462754e8415c1e2d30181f500791db9d55cbeb98b8650621a78d1d",
       "segmentCount": 6,
       "segments": [
         {
@@ -247,12 +247,12 @@
       ],
       "checksum": {
         "offset": "0x1f7a1f",
-        "value": "0x8c",
+        "value": "0x58",
         "valid": true
       },
       "digest": {
         "offset": "0x1f7a20",
-        "sha256": "ecaec35c08fbcf685144c75539df80fe821ac3620c19ebbc37b63027406ccb7d",
+        "sha256": "a4afccb90eefa61a6c172e2c932fa657417b5e4457081a5fd149c8876362fae0",
         "valid": true
       },
       "factoryPartitionFit": true,
@@ -281,5 +281,5 @@
     "offset": "0x10000",
     "approval": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-generic-input-lab/combined-renderer-v2-generic-input-lab-device-approval.json"
   },
-  "elapsedMs": 907
+  "elapsedMs": 774
 }

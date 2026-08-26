@@ -5,8 +5,8 @@ import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
 import { InputWlrpcSceneTransport } from "../../../input-lab/lib/input-wlrpc-scene-transport.mjs";
-import { buildFocusTimerPackage, FOCUS_TIMER_PACKAGE,
-  publishFocusTimerPackageSmoke } from "../focus-timer-package.mjs";
+import { FOCUS_TIMER_PACKAGE,
+  publishFocusTimerPackageIfNeeded } from "../focus-timer-package.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const timerBuild = path.resolve(here, "../build");
@@ -41,18 +41,30 @@ export async function runFocusTimerPublisher(argv, {
     read(path.join(timerBuild, "render-v2-focus-timer.f2ep")),
     read(path.join(timerBuild, "render-v2-focus-timer.base.lzss")),
   ]);
-  const packageValue = buildFocusTimerPackage({ focusF1wb, focusF2ep, timerF2ep, timerBaseLzss,
-    generation: FOCUS_TIMER_PACKAGE.generation });
+  const sourceParts = { focusF1wb, focusF2ep, timerF2ep, timerBaseLzss };
   const transport = transportFactory({ port: options.port, timeoutMs: 30_000 });
   invariant(transport && typeof transport.rpc === "function",
     "Focus-timer transport must expose rpc().");
-  log(JSON.stringify({ status: "FOCUS_TIMER_PACKAGE_READY", target: "knob_f1@0.4.1/id26+id27",
-    expectedGeneration: FOCUS_TIMER_PACKAGE.expectedGeneration,
-    generation: FOCUS_TIMER_PACKAGE.generation, bytes: packageValue.binary.length,
-    chunks: FOCUS_TIMER_PACKAGE.chunks, sha256: packageValue.sha256, hostClockSync: false }));
-  const result = await publishFocusTimerPackageSmoke({ package: packageValue,
+  const target = "knob_f1@0.4.1/id26+id27";
+  const result = await publishFocusTimerPackageIfNeeded({
     rpc: (method, params) => transport.rpc(method, params),
-    onProgress(record) { log(JSON.stringify({ status: "FOCUS_TIMER_PACKAGE_PROGRESS", ...record })); } });
+    sourceParts,
+    onStatus(record) {
+      if (record.stage === "status-probe") {
+        log(JSON.stringify({ status: "FOCUS_TIMER_PACKAGE_STATUS_PROBE", target,
+          source: record.source, committedGeneration: record.committedGeneration }));
+      } else if (record.stage === "target-selected") {
+        log(JSON.stringify({ status: "FOCUS_TIMER_PACKAGE_READY", target,
+          expectedGeneration: record.expectedGeneration, generation: record.generation,
+          bytes: record.bytes, chunks: FOCUS_TIMER_PACKAGE.chunks, sha256: record.sha256,
+          hostClockSync: false }));
+      } else if (record.stage === "already-enabled") {
+        log(JSON.stringify({ status: "FOCUS_TIMER_PACKAGE_ALREADY_ENABLED", target,
+          generation: record.generation, reason: record.reason }));
+      }
+    },
+    onProgress(record) { log(JSON.stringify({ status: "FOCUS_TIMER_PACKAGE_PROGRESS", ...record })); },
+  });
   log(JSON.stringify(result));
   return result;
 }

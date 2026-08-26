@@ -12,6 +12,7 @@ import {
   SCENE_RPC_PROTOCOL,
   createScenePackageUpload,
   loadScenePackage,
+  probeScenePackageStatus,
   pushScenePackage,
 } from "../src/lib/scene-push.js";
 
@@ -23,11 +24,23 @@ const descriptor = firmwareCatalog.find((firmware) => firmware.id === "clock-tim
 const readPackage = async () => new Uint8Array(await readFile(path.join(root, packagePath)));
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 
-/** Records every RPC and replies with the shapes the firmware returns. */
-function fakeTransport({ beginStatus = "ok", writeStatus = () => "ok", commitStatus = "ok", commitThrows = false } = {}) {
+/**
+ * Records every RPC and replies with the shapes the firmware returns. Today's
+ * real firmware has not shipped committedGeneration reporting yet, so by
+ * default capabilities/status are unimplemented methods -- pushScenePackage's
+ * status probe must tolerate that and fall back to the legacy generation
+ * 1 -> 2 push, exactly like it did before the probe existed.
+ */
+function fakeTransport({ beginStatus = "ok", writeStatus = () => "ok", commitStatus = "ok", commitThrows = false,
+  committedGeneration = null, committedSha256 = null } = {}) {
   const calls = [];
   const rpc = async (method, params) => {
     calls.push({ method, params });
+    if (method === SCENE_RPC_METHODS.capabilities) {
+      if (committedGeneration === null) throw new Error(`unexpected method ${method}`);
+      return { status: "ok", committedGeneration, ...(committedSha256 ? { committedSha256 } : {}) };
+    }
+    if (method === SCENE_RPC_METHODS.status) throw new Error(`unexpected method ${method}`);
     if (method === SCENE_RPC_METHODS.begin) return { status: beginStatus };
     if (method === SCENE_RPC_METHODS.write) return { status: writeStatus(params.index) };
     if (method === SCENE_RPC_METHODS.commit) {
@@ -131,28 +144,30 @@ describe("scene push over a fake HID transport", () => {
     });
 
     expect(result.status).toBe("FOCUS_TIMER_PACKAGE_COMMIT_ACKNOWLEDGED");
-    expect(result).toMatchObject({ generation: 2, bytes: 95_535, chunks: 32, sha256: descriptor.sha256 });
+    expect(result).toMatchObject({ alreadyEnabled: false, generation: 2, bytes: 95_535, chunks: 32,
+      sha256: descriptor.sha256 });
     expect(calls.map(({ method }) => method)).toEqual([
+      SCENE_RPC_METHODS.capabilities,
+      SCENE_RPC_METHODS.status,
       SCENE_RPC_METHODS.begin,
       ...Array(32).fill(SCENE_RPC_METHODS.write),
       SCENE_RPC_METHODS.commit,
     ]);
     expect(calls.filter(({ method }) => method === SCENE_RPC_METHODS.abort)).toHaveLength(0);
-    expect(calls[0].params.expectedGeneration).toBe(1);
+    expect(calls.find(({ method }) => method === SCENE_RPC_METHODS.begin).params.expectedGeneration).toBe(1);
     expect(calls.at(-1).params.generation).toBe(2);
     expect(stages.at(-1)).toMatchObject({ stage: "applying-on-keyboard" });
     expect(stages.filter(({ stage }) => stage === "uploading-chunks")).toHaveLength(33);
   });
 
-  it("explains a rejected begin without writing any chunk", async () => {
+  it("classifies a rejected begin as already-enabled instead of throwing, when the committed generation is unknown", async () => {
     const { rpc, calls } = fakeTransport({ beginStatus: "error" });
-    await expect(
-      pushScenePackage({ rpc, bytes: await readPackage(), package: descriptor }),
-    ).rejects.toMatchObject({
-      code: "SCENE_BEGIN_REJECTED",
-      message: expect.stringMatching(/already enabled this boot.*power-cycle/isu),
-    });
-    expect(calls.map(({ method }) => method)).toEqual([SCENE_RPC_METHODS.begin]);
+    const result = await pushScenePackage({ rpc, bytes: await readPackage(), package: descriptor });
+    expect(result).toEqual({ status: "FOCUS_TIMER_PACKAGE_ALREADY_ENABLED", alreadyEnabled: true,
+      generation: 1, reason: "begin-rejected-generation-unknown-legacy" });
+    expect(calls.map(({ method }) => method)).toEqual(
+      [SCENE_RPC_METHODS.capabilities, SCENE_RPC_METHODS.status, SCENE_RPC_METHODS.begin],
+    );
   });
 
   it("aborts the transaction when a chunk is rejected", async () => {
@@ -192,5 +207,80 @@ describe("scene push over a fake HID transport", () => {
     await expect(
       pushScenePackage({ rpc, bytes: await readPackage(), package: descriptor }),
     ).rejects.toMatchObject({ code: "SCENE_RPC_INDETERMINATE" });
+  });
+});
+
+describe("status-derived generation rewrite", () => {
+  it("rewrites only the F1WB generation word for expectedGeneration values other than the descriptor default", async () => {
+    const bytes = await readPackage();
+    const upload = await createScenePackageUpload(bytes, descriptor, { expectedGeneration: 6 });
+    expect(upload.manifest.expectedGeneration).toBe(6);
+    expect(upload.manifest.generation).toBe(7);
+    expect(upload.manifest.transactionId).toBe(`f2pt-00000007-${upload.manifest.sha256.slice(0, 16)}`);
+    expect(upload.manifest.sha256).not.toBe(descriptor.sha256);
+
+    const rebuilt = Buffer.concat(upload.chunks.map((chunk) => Buffer.from(chunk.data, "base64")));
+    expect(sha256(rebuilt)).toBe(upload.manifest.sha256);
+    // Every byte outside the four-byte F1WB generation word (offset 8..11)
+    // is unchanged from the frozen catalog-pinned package.
+    expect(rebuilt.subarray(12).equals(Buffer.from(bytes).subarray(12))).toBe(true);
+    expect(rebuilt.readUInt32LE(8)).toBe(7);
+
+    // The default (no override) path is untouched: still the exact frozen
+    // generation-1-to-2 identity.
+    const canonical = await createScenePackageUpload(bytes, descriptor);
+    expect(canonical.manifest.sha256).toBe(descriptor.sha256);
+  });
+});
+
+describe("status probe and idempotent push", () => {
+  it("probeScenePackageStatus prefers capabilities, tolerates an unreachable/fieldless method, and parses a canonical decimal-string generation", async () => {
+    const numeric = await probeScenePackageStatus(async (method) => (
+      method === SCENE_RPC_METHODS.capabilities ? { status: "ok", committedGeneration: 5 } : { status: "ok" }
+    ));
+    expect(numeric).toEqual({ source: SCENE_RPC_METHODS.capabilities, generation: 5, sha256: null });
+
+    const stringGeneration = await probeScenePackageStatus(async (method) => {
+      if (method === SCENE_RPC_METHODS.capabilities) throw new Error("unsupported");
+      return { status: "ok", committedGeneration: "9", committedSha256: "b".repeat(64) };
+    });
+    expect(stringGeneration).toEqual({ source: SCENE_RPC_METHODS.status, generation: 9, sha256: "b".repeat(64) });
+
+    const unavailable = await probeScenePackageStatus(async () => ({ status: "ok" }));
+    expect(unavailable).toEqual({ source: "unavailable", generation: null, sha256: null });
+  });
+
+  it("skips the push entirely when the committed sha already matches the rebuilt package at that generation", async () => {
+    const bytes = await readPackage();
+    const upload = await createScenePackageUpload(bytes, descriptor, { expectedGeneration: 4 });
+    const { rpc, calls } = fakeTransport({ committedGeneration: 5, committedSha256: upload.manifest.sha256 });
+    const result = await pushScenePackage({ rpc, bytes, package: descriptor });
+    expect(result).toEqual({ status: "FOCUS_TIMER_PACKAGE_ALREADY_ENABLED", alreadyEnabled: true,
+      generation: 5, reason: "committed-sha-match" });
+    expect(calls.map(({ method }) => method)).toEqual([SCENE_RPC_METHODS.capabilities]);
+  });
+
+  it("pushes N -> N+1 when the committed generation is known but its sha does not match", async () => {
+    const { rpc, calls } = fakeTransport({ committedGeneration: 4, committedSha256: "0".repeat(64) });
+    const result = await pushScenePackage({ rpc, bytes: await readPackage(), package: descriptor });
+    expect(result).toMatchObject({ alreadyEnabled: false, generation: 5 });
+    const begin = calls.find(({ method }) => method === SCENE_RPC_METHODS.begin);
+    expect(begin.params.expectedGeneration).toBe(4);
+    expect(begin.params.generation).toBe(5);
+  });
+
+  it("classifies a rejected push as already-enabled when the committed generation is known and boot-adopted", async () => {
+    const { rpc, calls } = fakeTransport({ committedGeneration: 2, beginStatus: "error" });
+    const result = await pushScenePackage({ rpc, bytes: await readPackage(), package: descriptor });
+    expect(result).toEqual({ status: "FOCUS_TIMER_PACKAGE_ALREADY_ENABLED", alreadyEnabled: true,
+      generation: 2, reason: "rejected-at-known-boot-adopted-generation" });
+    expect(calls.map(({ method }) => method)).toEqual([SCENE_RPC_METHODS.capabilities, SCENE_RPC_METHODS.begin]);
+  });
+
+  it("does not swallow a genuine chunk-write failure when the committed generation is unknown", async () => {
+    const { rpc } = fakeTransport({ writeStatus: (index) => (index === 4 ? "error" : "ok") });
+    await expect(
+      pushScenePackage({ rpc, bytes: await readPackage(), package: descriptor }),
+    ).rejects.toMatchObject({ code: "SCENE_RPC_REJECTED" });
   });
 });

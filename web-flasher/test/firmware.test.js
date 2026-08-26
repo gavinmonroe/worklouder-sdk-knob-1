@@ -16,7 +16,7 @@ import {
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const byId = Object.fromEntries(firmwareCatalog.map((firmware) => [firmware.id, firmware]));
-const release = "experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-18-id28-zip-settings-psram";
+const release = "experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-18-id28-persist-btp1";
 const fixtures = [
   {
     ...byId["wpm-pet"],
@@ -41,9 +41,10 @@ const fixtures = [
 ];
 
 const weatherRegionPaths = {
+  0x240000: `${release}/scene-slot-b.bin`,
   0x210000: `${release}/mqjs-id28-text-page.bin`,
   0x230000: `${release}/mqjs-id28-rodata-page.bin`,
-  0x10000: `${release}/framer-0.4.1-mqjs-id28-weather-zip-psram-app.bin`,
+  0x10000: `${release}/framer-0.4.1-mqjs-id28-weather-zip-persist-btp1-app.bin`,
 };
 
 function readRepoFile(relativePath) {
@@ -104,16 +105,20 @@ describe("multi-region write plans", () => {
     const { weather, map } = weatherFetchMap();
     const regions = await loadFirmwareRegions(weather, diskFetch(map));
     expect(regions.map(({ address, kind }) => [address, kind])).toEqual([
+      [0x240000, "page"],
       [0x210000, "page"],
       [0x230000, "page"],
       [0x10000, "app"],
     ]);
     expect(regions.map(({ sha256 }) => sha256)).toEqual(weather.regions.map((region) => region.sha256));
-    expect(regions.map(({ bytes }) => bytes.length)).toEqual([131_072, 65_536, 2_062_912]);
-    // Only the app region is checked for ESP image structure.
+    expect(regions.map(({ bytes }) => bytes.length)).toEqual([95_599, 131_072, 65_536, 2_062_912]);
+    // Only the app region is checked for ESP image structure. The slot-B
+    // page is opaque, non-4KiB-aligned scene data and is only size/hash
+    // checked, exactly like the module pages.
     expect(regions[0].validation.image).toBeNull();
     expect(regions[1].validation.image).toBeNull();
-    expect(regions[2].validation.image.segmentCount).toBe(6);
+    expect(regions[2].validation.image).toBeNull();
+    expect(regions[3].validation.image.segmentCount).toBe(6);
 
     const plan = await loadFlashPlan(weather, diskFetch(map));
     expect(plan.multiRegion).toBe(true);
@@ -156,6 +161,15 @@ describe("multi-region write plans", () => {
 
   it("accepts the approved plan shape", () => {
     expect(() => assertRegionPlan(base)).not.toThrow();
+  });
+
+  it("accepts the scene-slot-B address with a non-4KiB-aligned page length", () => {
+    // scene-slot-b.bin is 95,599 bytes -- not a multiple of the 4 KiB flash
+    // sector size -- and is written unpadded, exactly as the real device
+    // release ships it.
+    const slotB = { address: 0x240000, kind: "page", bytes: 95_599, sha256: "d".repeat(64), url: "slot-b" };
+    expect(slotB.bytes % 4096).not.toBe(0);
+    expect(() => assertRegionPlan([slotB, ...base])).not.toThrow();
   });
 
   it("refuses plans that break the safety contract", () => {

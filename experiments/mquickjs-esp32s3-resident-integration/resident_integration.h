@@ -211,6 +211,15 @@ typedef struct framer_resident_owner {
 void framer_resident_owner_init_shell(framer_resident_owner *owner,
                                       const framer_resident_engine_api *engine,
                                       const framer_resident_platform *platform);
+/* Identical to init_shell EXCEPT that owner->task_stack is preserved, so a
+ * STOPPED owner can be recycled for a new boot from any task — including a
+ * task whose live stack IS owner->task_stack (the slot-switch case: the VM
+ * task parks in its loop, another task re-initialises everything around the
+ * stack it is standing on, and the VM task then boots the next widget).
+ * Only call after framer_resident_owner_stop_on_task() returned nonzero. */
+void framer_resident_owner_reinit_shell(framer_resident_owner *owner,
+                                        const framer_resident_engine_api *engine,
+                                        const framer_resident_platform *platform);
 int framer_resident_owner_mark_module_mapped(framer_resident_owner *owner);
 /* This must be called by the dedicated VM-owner task. Parsing, allocation,
  * engine init, and source load all occur on that task, never in a producer or

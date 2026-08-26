@@ -354,13 +354,10 @@ static void owner_reschedule(framer_resident_owner *owner)
     }
 }
 
-void framer_resident_owner_init_shell(framer_resident_owner *owner,
-                                      const framer_resident_engine_api *engine,
-                                      const framer_resident_platform *platform)
+static void owner_shell_arm(framer_resident_owner *owner,
+                            const framer_resident_engine_api *engine,
+                            const framer_resident_platform *platform)
 {
-    if (owner == (framer_resident_owner *)0)
-        return;
-    zero_bytes(owner, sizeof(*owner));
     if (engine != (const framer_resident_engine_api *)0)
         copy_bytes(&owner->engine, engine, sizeof(*engine));
     if (platform != (const framer_resident_platform *)0)
@@ -372,6 +369,34 @@ void framer_resident_owner_init_shell(framer_resident_owner *owner,
     __atomic_store_n(&owner->source_quiesce_state,
                      FRAMER_RESIDENT_SOURCES_UNARMED, __ATOMIC_RELEASE);
     owner->prefer_input = 1u;
+}
+
+void framer_resident_owner_init_shell(framer_resident_owner *owner,
+                                      const framer_resident_engine_api *engine,
+                                      const framer_resident_platform *platform)
+{
+    if (owner == (framer_resident_owner *)0)
+        return;
+    zero_bytes(owner, sizeof(*owner));
+    owner_shell_arm(owner, engine, platform);
+}
+
+void framer_resident_owner_reinit_shell(framer_resident_owner *owner,
+                                        const framer_resident_engine_api *engine,
+                                        const framer_resident_platform *platform)
+{
+    size_t stack_at;
+    size_t stack_end;
+    if (owner == (framer_resident_owner *)0)
+        return;
+    /* Zero everything around task_stack, never the stack itself: the VM
+     * task may be parked ON that stack while another task runs this. */
+    stack_at = (size_t)((const uint8_t *)owner->task_stack -
+                        (const uint8_t *)owner);
+    stack_end = stack_at + sizeof(owner->task_stack);
+    zero_bytes(owner, stack_at);
+    zero_bytes((uint8_t *)owner + stack_end, sizeof(*owner) - stack_end);
+    owner_shell_arm(owner, engine, platform);
 }
 
 int framer_resident_owner_mark_module_mapped(framer_resident_owner *owner)
@@ -989,6 +1014,11 @@ framer_mqjs_result framer_resident_owner_step(framer_resident_owner *owner)
         owner_runtime_leave(owner);
         return result;
     }
+    /* A keyless admission has no input machinery: the engine's drain is a
+     * hard error there, so a stray input_pending (e.g. a focus resync latch)
+     * must never select the drain leg. Clear it instead of draining. */
+    if (owner->admission.key_count == 0u)
+        __atomic_store_n(&owner->input_pending, 0u, __ATOMIC_RELEASE);
     head = __atomic_load_n(&owner->queue_head, __ATOMIC_RELAXED);
     tail = __atomic_load_n(&owner->queue_tail, __ATOMIC_ACQUIRE);
     input_pending = __atomic_load_n(&owner->input_pending, __ATOMIC_ACQUIRE);

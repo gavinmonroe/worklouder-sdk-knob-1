@@ -1,0 +1,97 @@
+{
+  "format": "framer-f1-mquickjs-app-only-receipt-v1",
+  "status": "FAILED_STOPPED",
+  "mode": "fast-diff",
+  "startedAt": "2026-08-18T14:36:05.930Z",
+  "app": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/framer-0.4.1-mqjs-id28-PSRAM-module-app.bin",
+    "bytes": 2062912,
+    "sha256": "ac51a1473ae312e0fc0053830b6b9ac91b3f716a3a7c30d5ac1e0c52de742d22",
+    "offset": 65536
+  },
+  "expectLiveSha256": "4736206f7bd3aa0e16ecda7f97412a24838d7060b8e25ea7aa54c2516a855ee1",
+  "phases": [],
+  "ranges": [
+    {
+      "offset": 0,
+      "bytes": 4096,
+      "end": 4096
+    },
+    {
+      "offset": 515728,
+      "bytes": 4096,
+      "end": 519824
+    },
+    {
+      "offset": 1031456,
+      "bytes": 4096,
+      "end": 1035552
+    },
+    {
+      "offset": 1547184,
+      "bytes": 4096,
+      "end": 1551280
+    },
+    {
+      "offset": 1959016,
+      "bytes": 2,
+      "end": 1959018
+    },
+    {
+      "offset": 1959052,
+      "bytes": 1,
+      "end": 1959053
+    },
+    {
+      "offset": 1959088,
+      "bytes": 31,
+      "end": 1959119
+    },
+    {
+      "offset": 1959274,
+      "bytes": 2,
+      "end": 1959276
+    },
+    {
+      "offset": 1959332,
+      "bytes": 11,
+      "end": 1959343
+    },
+    {
+      "offset": 1959410,
+      "bytes": 19,
+      "end": 1959429
+    },
+    {
+      "offset": 1959465,
+      "bytes": 76,
+      "end": 1959541
+    },
+    {
+      "offset": 1959574,
+      "bytes": 15,
+      "end": 1959589
+    },
+    {
+      "offset": 1959977,
+      "bytes": 420,
+      "end": 1960397
+    },
+    {
+      "offset": 1960436,
+      "bytes": 2,
+      "end": 1960438
+    },
+    {
+      "offset": 1960518,
+      "bytes": 3354,
+      "end": 1963872
+    },
+    {
+      "offset": 2058816,
+      "bytes": 4096,
+      "end": 2062912
+    }
+  ],
+  "error": "Command failed: /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.venv-esptool/bin/esptool --chip esp32s3 --port /dev/cu.usbmodem83201 --baud 115200 --after no-reset chip-id\n\nA fatal error occurred: Could not open /dev/cu.usbmodem83201, the port is busy or doesn't exist.\n([Errno 2] could not open port /dev/cu.usbmodem83201: [Errno 2] No such file or directory: '/dev/cu.usbmodem83201')\n\nHint: Check if the port is correct and ESP connected\n\n"
+}

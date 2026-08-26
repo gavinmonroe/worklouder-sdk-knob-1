@@ -2,7 +2,23 @@ import { evaluateInInput } from "../../../framer-widgets/lib/input-inspector.mjs
 
 import { WIDGET_SCENE_RPC_METHODS } from "../../src/render/scene-rpc.mjs";
 
-const METHODS = Object.freeze(new Set(Object.values(WIDGET_SCENE_RPC_METHODS)));
+/* The scene methods plus the mquickjs module's five methods (docs/16): same
+ * inert JSON envelope, no change to how expressions are built - the set only
+ * names which methods may ride it. */
+const METHODS = Object.freeze(new Set([
+  ...Object.values(WIDGET_SCENE_RPC_METHODS),
+  "widget.mquickjs.cap",
+  "widget.mquickjs.telemetry",
+  "widget.mquickjs.event",
+  "widget.mquickjs.receipt",
+  "widget.mquickjs.upload",
+  "widget.mquickjs.diag",
+  "widget.mquickjs.diag2",
+  "widget.mquickjs.diag3",
+  "widget.mquickjs.diag4",
+  "widget.mquickjs.diag5",
+  "widget.mquickjs.diag6",
+]));
 const MAX_RPC_ENVELOPE_BYTES = 8 * 1024;
 
 function invariant(value, message) { if (!value) throw new Error(message); }

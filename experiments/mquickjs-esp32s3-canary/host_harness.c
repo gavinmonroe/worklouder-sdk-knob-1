@@ -481,12 +481,34 @@ int main(void)
            focus_telemetry.key_hold_events >= 2u);
     framer_mqjs_destroy(&focus_runtime);
 
+    /* A keyless runtime (a widget with no key handlers) must treat a focus
+     * release as a completed no-op: queueing a resync would hand the adapter
+     * work that input_drain refuses (its key_count gate), which the resident
+     * owner then books as an unrecoverable engine failure. Regression for the
+     * first zero-key widget permanently disabling itself on hardware. */
+    memset(platform.mailbox_slots, 0, sizeof(platform.mailbox_slots));
+    platform.mailbox_publishes = platform.mailbox_revision = 0u;
+    platform.reject_publish = 0;
+    memset(&config.input, 0, sizeof(config.input));
+    assert(framer_mqjs_init(&focus_runtime, heap.bytes, sizeof(heap.bytes),
+                            &config) == FRAMER_MQJS_OK);
+    assert(framer_mqjs_load(&focus_runtime, widget_source,
+                            sizeof(widget_source) - 1u, 1) == FRAMER_MQJS_OK);
+    assert(framer_mqjs_input_request_focus_release(&focus_runtime, 2000u) ==
+           FRAMER_MQJS_OK);
+    assert(framer_mqjs_dispatch(&focus_runtime, "host.rpc:0xB201", 7, 5) ==
+           FRAMER_MQJS_OK);
+    framer_mqjs_get_telemetry(&focus_runtime, &focus_telemetry);
+    assert(focus_telemetry.enabled == 1u &&
+           focus_telemetry.pending_input_events == 0u);
+    framer_mqjs_destroy(&focus_runtime);
+
     /* The third queued handler throws after two successes. That owner call
      * stops after three callback attempts plus one bounded recovery, retaining
      * the fourth snapshot for a later call without replay or livelock. */
     memset(platform.mailbox_slots, 0, sizeof(platform.mailbox_slots));
     platform.mailbox_publishes = platform.mailbox_revision = 0u;
-    config.input.key_count = 4u;
+    configure(&config, &platform);
     config.input.chord_count = 0u;
     assert(framer_mqjs_init(&failure_runtime, heap.bytes, sizeof(heap.bytes),
                             &config) == FRAMER_MQJS_OK);

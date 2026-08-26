@@ -20,9 +20,10 @@
 //                              must inflate to exactly 62,000 B and match the
 //                              .rgb565le, the F2TF must stay <= 4,096 B and
 //                              decode/admit at generation 19 against that exact
-//                              package digest and the pinned contract digest,
-//                              and the manifest records customAssets:true plus
-//                              the actual digests.
+//                              package digest and the pinned v2 contract digest
+//                              (a v1-embedding F2TF is resealed to v2 before it
+//                              is embedded), and the manifest records
+//                              customAssets:true plus the actual digests.
 //
 // Outputs into the output directory:
 //   mqjs-id28-text-page-diag.bin      0x20000, flash at 0x210000
@@ -45,8 +46,9 @@ import { inspectEsp32AppImage, repairEsp32AppIntegrity } from
   "../../custom-firmware/lib/esp-app-image.mjs";
 import { decodeRenderV2MQuickJsPackage } from
   "../../f1-widget-sdk/src/render-v2/mquickjs.mjs";
-import { decodeTargetFacadeAsset, TARGET_FACADE_CONTRACT_SHA256 } from
-  "../mquickjs-target-facade/contract.mjs";
+import { crc32, decodeTargetFacadeAsset, TARGET_FACADE_CONTRACT_SHA256,
+  TARGET_FACADE_CONTRACT_V2_SHA256, TARGET_FACADE_CONTRACT_V3_SHA256,
+  TARGET_FACADE_HEADER_BYTES } from "../mquickjs-target-facade/contract.mjs";
 
 const execute = promisify(execFile);
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -59,6 +61,7 @@ const resident = path.join(repository, "experiments/mquickjs-esp32s3-resident-in
 const moduleLoader = path.join(repository, "experiments/mquickjs-esp32s3-module-loader");
 const target = path.join(repository, "experiments/mquickjs-target-facade");
 const runtimeProof = path.join(repository, "experiments/mquickjs-esp32s3-runtime-proof");
+const widgetUpload = path.join(repository, "experiments/mquickjs-widget-upload");
 const healthyApp = path.join(repository,
   "f1-widget-sdk/build/combined-renderer-v2-clock-blue-timer/" +
   "framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-blue-timer-app.bin");
@@ -98,12 +101,21 @@ const expected = Object.freeze({
   lzssSha256: "dbf16d41750555b7a3403b4b568530a0b5cab1d6b3bf0558c836823749293a12",
   sourceSha256: "a9b1a833a75f8a296ae5e2575f31ec1030af0c8a944031858e0506456f8864ab",
   targetContractSha256: "8220152a09348da34cdd70dd7d370197f2f3fc46a9f45e50d7fb7015bdb8579a",
+  /* Additive v2 (formatter 11 variantText).  The module bakes THIS identity:
+   * the emitted framer_physical_target_contract_sha256 and the embedded F2TF
+   * both carry v2, so uploaded widgets and the boot widget admit under one
+   * expected contract sha.  Cross-checked against the contract.mjs export
+   * below; the emission itself always derives from the import. */
+  targetContractV2Sha256: "0176edae816d6d58541cc1c04150391cf76779851a117f79f3387f527bc53ed7",
+  /* Additive v3 (formatter 12 variantRaster): pre-rendered per-variant RGB565
+   * blits, asset cap 65536.  The module pins THIS identity. */
+  targetContractV3Sha256: "455e02819595f810909a11afdcda7eb5aa0b4d6e792b154d29711ebea906631b",
   // ID28 asset shape, enforced whether the assets come from the release or from
   // FRAMER_DIAG_ASSETS_DIR.  PHYSICAL_GENERATION / PHYSICAL_FRAME_BYTES /
   // FRAMER_TF_MAX_ASSET_BYTES in the module sources.
   generation: 19,
   baseFrameBytes: 62000,
-  maxFacadeAssetBytes: 4096,
+  maxFacadeAssetBytes: 65536,
   packageEvents: 14,
   packageKeys: 2,
   packageChords: 1,
@@ -267,7 +279,16 @@ if (!customAssetsDir) {
   "Released ID28 assets changed.");
 }
 invariant(TARGET_FACADE_CONTRACT_SHA256 === expected.targetContractSha256,
-  "F2TF contract identity changed.");
+  "F2TF v1 contract identity changed.");
+invariant(TARGET_FACADE_CONTRACT_V2_SHA256 === expected.targetContractV2Sha256,
+  "F2TF v2 contract identity changed.");
+invariant(TARGET_FACADE_CONTRACT_V3_SHA256 === expected.targetContractV3Sha256,
+  "F2TF v3 contract identity changed.");
+// The contract identity the MODULE pins.  The baked F2TF is resealed to
+// exactly this version below, and assets/target-contract.sha256.bin (what
+// assets.S embeds as framer_physical_target_contract_sha256) carries it.
+// Advance this single line when the facade contract gains a version.
+const TARGET_CONTRACT_SHA256 = TARGET_FACADE_CONTRACT_V3_SHA256;
 // Whatever the asset source, the module only boots if the base inflates to
 // exactly one 100x310 RGB565 frame and the facade admits against the exact
 // package digest it is bound to.  Prove both here rather than on the keyboard.
@@ -278,9 +299,35 @@ invariant(f2tf.length <= expected.maxFacadeAssetBytes,
   `F2TF is ${f2tf.length} B; FRAMER_TF_MAX_ASSET_BYTES is ${expected.maxFacadeAssetBytes}.`);
 const facadeBaseFrame = new Uint16Array(baseFrameBytes.buffer.slice(
   baseFrameBytes.byteOffset, baseFrameBytes.byteOffset + baseFrameBytes.length));
-const decodedFacade = decodeTargetFacadeAsset(f2tf, {
+/* The baked facade must carry the v2 contract identity (formatter 11,
+ * variantText) so the boot widget and every uploaded widget admit under ONE
+ * expected sha.  The producer's F2TF (the frozen release still embeds v1) is
+ * first decoded exactly as emitted, then bytes 160..192 are spliced to the v2
+ * sha and both CRC seals recomputed - payload CRC at 72 over bytes 192..end,
+ * header CRC at 76 over bytes 0..192 with its own field zeroed - exactly like
+ * the mixed v2 asset in ../mquickjs-target-facade/verify.mjs.  The base-raster
+ * CRC at 68 covers the RGB565 base, which the splice never touches.  Every
+ * byte outside the identity and the two seals stays identical. */
+const sourceContractSha = f2tf.subarray(160, 192).toString("hex");
+invariant(sourceContractSha === TARGET_FACADE_CONTRACT_SHA256 ||
+  sourceContractSha === TARGET_FACADE_CONTRACT_V2_SHA256 ||
+  sourceContractSha === TARGET_FACADE_CONTRACT_V3_SHA256,
+  `Source F2TF embeds an unknown contract identity ${sourceContractSha}.`);
+decodeTargetFacadeAsset(f2tf, {
   expectedGeneration: expected.generation, expectedF2jsSha256: assetSha.f2js,
-  expectedContractSha256: TARGET_FACADE_CONTRACT_SHA256, baseFrame: facadeBaseFrame });
+  expectedContractSha256: sourceContractSha, baseFrame: facadeBaseFrame });
+const f2tfBaked = Buffer.from(f2tf);
+Buffer.from(TARGET_CONTRACT_SHA256, "hex").copy(f2tfBaked, 160);
+f2tfBaked.writeUInt32LE(crc32(f2tfBaked.subarray(TARGET_FACADE_HEADER_BYTES)), 72);
+f2tfBaked.writeUInt32LE(crc32(f2tfBaked.subarray(0, TARGET_FACADE_HEADER_BYTES),
+  { zeroFrom: 76, zeroBytes: 4 }), 76);
+invariant(sourceContractSha !== TARGET_CONTRACT_SHA256 ||
+  f2tfBaked.equals(f2tf),
+  "Contract reseal must be a no-op on a target-version source F2TF.");
+const bakedF2tfSha256 = sha(f2tfBaked);
+const decodedFacade = decodeTargetFacadeAsset(f2tfBaked, {
+  expectedGeneration: expected.generation, expectedF2jsSha256: assetSha.f2js,
+  expectedContractSha256: TARGET_CONTRACT_SHA256, baseFrame: facadeBaseFrame });
 invariant(decodedFacade.targets.length === 16,
   "F2TF must declare exactly 16 targets.");
 let customPackage = null;
@@ -318,14 +365,17 @@ const runtimeStorageBytes = Number(
   /FRAMER_MQJS_RUNTIME_STORAGE_BYTES\s+(\d+)u/u.exec(header)[1]);
 const heapBytes = Number(/FRAMER_MQJS_MIN_HEAP_BYTES\s+(\d+)u/u.exec(header)[1]);
 
-// --- assets (embedded verbatim) ---------------------------------------------
+// --- assets (embedded verbatim, contract identity excepted) ------------------
 // buildAssets() only writes these five files for the module link: the three
 // payloads plus two 32-byte digests.  Re-encoding them here would be a second,
 // unpinned implementation of the package/LZSS builders, so the artifacts are
 // embedded exactly as their producer emitted them - the frozen release by
-// default, or FRAMER_DIAG_ASSETS_DIR when a restyled set is being tried.  The
-// embedded F2JS digest is always recomputed from the bytes actually embedded,
-// so `framer_tf_admit`'s package binding holds either way.
+// default, or FRAMER_DIAG_ASSETS_DIR when a restyled set is being tried - with
+// ONE exception: the F2TF is the v2-contract reseal validated above, so the
+// emitted framer_physical_target_contract_sha256 and the baked asset bytes
+// 160..192 always agree on the v2 identity.  The embedded F2JS digest is
+// always recomputed from the bytes actually embedded, so `framer_tf_admit`'s
+// package binding holds either way.
 const assetPaths = {
   f2js: path.join(assets, "weather-id28-gen19.f2js"),
   f2tf: path.join(assets, "weather-id28-gen19.f2tf"),
@@ -335,10 +385,10 @@ const assetPaths = {
   source: path.join(assets, "weather-id28-gen19.js"),
 };
 await Promise.all([
-  writeFile(assetPaths.f2js, f2js), writeFile(assetPaths.f2tf, f2tf),
+  writeFile(assetPaths.f2js, f2js), writeFile(assetPaths.f2tf, f2tfBaked),
   writeFile(assetPaths.compressed, lzss), writeFile(assetPaths.source, weatherSource),
   writeFile(assetPaths.f2jsSha, shaBytes(f2js)),
-  writeFile(assetPaths.contractSha, Buffer.from(TARGET_FACADE_CONTRACT_SHA256, "hex")),
+  writeFile(assetPaths.contractSha, Buffer.from(TARGET_CONTRACT_SHA256, "hex")),
 ]);
 
 // --- module link ------------------------------------------------------------
@@ -358,6 +408,13 @@ const sources = [
   [path.join(target, "target_facade.c"), "target.o", []],
   [path.join(runtimeProof, "runtime_proof.c"), "runtime-proof.o",
     ["-DFRAMER_RUNTIME_PROOF_EXACT_ABI_ACK=0x36317013u"]],
+  // Host-proven widget upload units (experiments/mquickjs-widget-upload
+  // verify.mjs); pure C, no stock addresses, referenced only by the psram
+  // module's upload/adopt path and gc-sectioned out of builds that don't.
+  [path.join(widgetUpload, "f2up_admission.c"), "f2up-admission.o", []],
+  [path.join(widgetUpload, "f2up_upload.c"), "f2up-upload.o", []],
+  [path.join(widgetUpload, "f2up_persist.c"), "f2up-persist.o", []],
+  [path.join(widgetUpload, "f2up_adopt.c"), "f2up-adopt.o", []],
   [path.join(here, "physical_integration.c"), "physical.o",
     ["-DFRAMER_RUNTIME_PROOF_EXACT_ABI_ACK=0x36317013u"]],
 ];
@@ -462,6 +519,12 @@ const blockLabels = [
   ["BLK_BOOT_STARTED_MS", "offsetof(physical_block, boot_started_ms)"],
   ["BLK_BOOT_FINISHED_MS", "offsetof(physical_block, boot_finished_ms)"],
   ["BLK_TASK_HANDLE", "offsetof(physical_block, task_handle)"],
+  /* One aligned word: target_admitted | heap_claimed<<8 |
+   * reserved_flags[0]<<16 | reserved_flags[1]<<24.  The boot default-scene
+   * adopt (psram-module-src) records its outcome and step in reserved_flags;
+   * a module without that path leaves them zero.  The offset exists in every
+   * physical_integration.c variant, so this probe never depends on it. */
+  ["BLK_ADOPT_FLAGS", "offsetof(physical_block, target_admitted)"],
   ["BLK_OWNER", "offsetof(physical_block, owner)"],
   ["BLK_OWNER_RUNTIME",
     "offsetof(physical_block, owner) + offsetof(framer_resident_owner, runtime)"],
@@ -508,6 +571,9 @@ invariant(blockBytes === expected.releaseBlockBytes,
   `${expected.releaseBlockBytes}: the instrumentation escaped the fixed runtime storage.`);
 invariant(blockProbe.BLK_OWNER_RUNTIME === blockProbe.BLK_OWNER,
   "framer_mqjs_runtime is no longer the first member of framer_resident_owner.");
+invariant((blockProbe.BLK_ADOPT_FLAGS & 3) === 0 &&
+  blockProbe.BLK_ADOPT_FLAGS + 4 <= blockProbe.sizeofBlock,
+`BLK_ADOPT_FLAGS=${blockProbe.BLK_ADOPT_FLAGS} is not an aligned in-block word.`);
 invariant(engineProbe.sizeofRuntimeState <= runtimeStorageBytes,
   `Instrumented runtime_state (${engineProbe.sizeofRuntimeState} B) overflows the ` +
   `${runtimeStorageBytes} B runtime storage.`);
@@ -719,11 +785,14 @@ const manifest = {
     customAssets: Boolean(customAssetsDir),
     embeddedVerbatimFrom: path.relative(repository, customAssetsDir ?? release),
     generation: expected.generation,
-    f2jsSha256: assetSha.f2js, f2tfSha256: assetSha.f2tf,
+    /* f2tfSha256 is the digest of the EMBEDDED (v2-contract-resealed) asset;
+     * f2tfSourceSha256 is the producer's file, which the release pins cover. */
+    f2jsSha256: assetSha.f2js, f2tfSha256: bakedF2tfSha256,
+    f2tfSourceSha256: assetSha.f2tf, f2tfSourceContractSha256: sourceContractSha,
     lzssSha256: assetSha.lzss, sourceSha256: assetSha.source,
     embeddedF2jsDigestSha256: assetSha.f2js,
-    targetContractSha256: TARGET_FACADE_CONTRACT_SHA256,
-    facade: { bytes: f2tf.length, maxBytes: expected.maxFacadeAssetBytes,
+    targetContractSha256: TARGET_CONTRACT_SHA256,
+    facade: { bytes: f2tfBaked.length, maxBytes: expected.maxFacadeAssetBytes,
       paletteEntries: decodedFacade.palette.length, glyphRecords: decodedFacade.glyphs.size,
       maxOverlayWrites: decodedFacade.header.maxOverlayWrites,
       baseSha256: sha(baseFrameBytes),
@@ -731,6 +800,8 @@ const manifest = {
         ({ id, format, x, y, width, height, scale })) },
     base: { compressedBytes: lzss.length, inflatedBytes: baseFrameBytes.length },
     package: customPackage,
+    /* Producer-level (source file) digests: the baked F2TF differs from the
+     * release file by exactly the v2 contract identity and its CRC seals. */
     releaseComparison: {
       f2jsSha256: expected.f2jsSha256, f2tfSha256: expected.f2tfSha256,
       lzssSha256: expected.lzssSha256, sourceSha256: expected.sourceSha256,
@@ -750,6 +821,8 @@ process.stdout.write(`${JSON.stringify({
   blockBytes, startupVaddr: hex(startupVaddr), keyWrapper: hex(keyWrapper),
   lastErrorOffset, customAssets: Boolean(customAssetsDir),
   assetSource: path.relative(repository, customAssetsDir ?? release),
-  f2jsSha256: assetSha.f2js, f2tfSha256: assetSha.f2tf, lzssSha256: assetSha.lzss,
+  f2jsSha256: assetSha.f2js, f2tfSha256: bakedF2tfSha256,
+  f2tfSourceSha256: assetSha.f2tf, lzssSha256: assetSha.lzss,
+  targetContractSha256: TARGET_CONTRACT_SHA256,
   out: output,
 }, null, 2)}\n`);

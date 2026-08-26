@@ -1,0 +1,4668 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   WIDGET DESIGNER DESIGN SYSTEM — "WD" v1.0 foundation
+   All colors flow through --wd-* custom properties. Light and dark are peers:
+   light palette on :root / [data-theme="light"], dark palette on
+   [data-theme="dark"] plus a prefers-color-scheme fallback for un-stamped
+   roots ("system" preference).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@layer base {
+  /* ── Theme-independent tokens ─────────────────────────────────────────── */
+  :root {
+    /* Typography */
+    --wd-font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI Variable",
+                    "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+    --wd-font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, "Cascadia Code",
+                    Consolas, "Liberation Mono", monospace;
+    --wd-text-2xs: 11px;
+    --wd-text-xs: 12px;
+    --wd-text-sm: 13px;
+    --wd-text-base: 14px;
+    --wd-text-lg: 16px;
+    --wd-text-xl: 20px;
+
+    /* Spacing (4px base). Documented half-step exceptions (2px grid): the
+       6px chip/status dot, 6px icon-to-label gaps, and 2px paddings INSIDE
+       badges and segmented controls. Everything else stays on 4px. */
+    --wd-space-1: 4px;
+    --wd-space-2: 8px;
+    --wd-space-3: 12px;
+    --wd-space-4: 16px;
+    --wd-space-5: 20px;
+    --wd-space-6: 24px;
+    --wd-space-8: 32px;
+    --wd-space-10: 40px;
+    --wd-space-12: 48px;
+
+    /* Radii */
+    --wd-radius-xs: 4px;
+    --wd-radius-sm: 6px;
+    --wd-radius-md: 8px;
+    --wd-radius-lg: 10px;
+    --wd-radius-xl: 12px;
+    --wd-radius-full: 999px;
+
+    /* Shared KV label column (§4.13): ONE fixed width for every key-value
+       grid, so value columns start at the same x across stacked cards —
+       auto-sized label columns jog card-to-card with their longest key.
+       140px = the longest key in use ("Running generation", 110px at 12px)
+       plus the 24px key→value gutter, with clearance. */
+    --wd-kv-label-w: 140px;
+
+    /* Motion */
+    --wd-dur-instant: 80ms;
+    --wd-dur-fast:    120ms;
+    --wd-dur-base:    160ms;
+    --wd-dur-slow:    200ms;
+    --wd-dur-overlay: 240ms;
+    --wd-ease:        cubic-bezier(0.2, 0, 0, 1);
+    --wd-ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+    --wd-ease-in:     cubic-bezier(0.7, 0, 0.84, 0);
+
+    color-scheme: light dark;
+  }
+
+  /* ── LIGHT palette ────────────────────────────────────────────────────── */
+  :root,
+  [data-theme="light"] {
+    /* Surfaces (layered, back to front) */
+    --wd-bg:               #F4F5F7;
+    --wd-surface-panel:    #FFFFFF;
+    --wd-surface-raised:   #FFFFFF;
+    --wd-surface-overlay:  #FFFFFF;
+    --wd-surface-inset:    #F0F1F4;
+    --wd-surface-hover:    rgba(23, 25, 29, 0.05);
+    --wd-surface-active:   rgba(23, 25, 29, 0.08);
+    --wd-scrim:            rgba(23, 25, 29, 0.40);
+
+    /* Text. Tertiary sits a step darker than the spec's original #6A7078 so
+       the smallest control type (11–12px segment labels, frame labels) clears
+       AA with margin: 6.2:1 on panel, 5.4:1 on inset, 5.6:1 on bg. */
+    --wd-text-primary:     #16181D;
+    --wd-text-secondary:   #4B5158;
+    --wd-text-tertiary:    #5C626B;
+    --wd-text-disabled:    #A0A6AF;
+    --wd-text-on-accent:   #FFFFFF;
+    --wd-text-inverse:     #F5F6F8;
+
+    /* Borders */
+    --wd-border-subtle:    #E3E5E9;
+    --wd-border-strong:    #C6CAD1;
+
+    /* Accent — Ember. One hue ramp (~25° orange) across both themes:
+       light uses the 700-weight step (#C2410C) so white button text clears
+       4.5:1; dark uses the 500-weight step (#F97316) so the same hue clears
+       4.5:1 against dark panels. Lightness is the ONLY thing that moves. */
+    --wd-accent:           #C2410C;
+    --wd-accent-hover:     #A83A0B;
+    --wd-accent-active:    #8F3009;
+    --wd-accent-strong:    #9A3412;
+    --wd-accent-subtle:    rgba(194, 65, 12, 0.08);
+    --wd-accent-border:    rgba(194, 65, 12, 0.32);
+
+    /* Semantic */
+    --wd-success:          #15803D;
+    --wd-success-subtle:   rgba(21, 128, 61, 0.09);
+    --wd-success-border:   rgba(21, 128, 61, 0.30);
+    --wd-warning:          #946300;
+    --wd-warning-subtle:   rgba(148, 99, 0, 0.10);
+    --wd-warning-border:   rgba(148, 99, 0, 0.32);
+    --wd-danger:           #DC2626;
+    --wd-danger-hover:     #C21F1F;
+    --wd-danger-subtle:    rgba(220, 38, 38, 0.08);
+    --wd-danger-border:    rgba(220, 38, 38, 0.32);
+    --wd-info:             #1D4ED8;
+    --wd-info-subtle:      rgba(29, 78, 216, 0.08);
+    --wd-info-border:      rgba(29, 78, 216, 0.30);
+
+    /* Focus */
+    --wd-ring:             #C2410C;
+    --wd-ring-offset:      var(--wd-surface-panel);
+
+    /* Device stage */
+    --wd-stage-inset:      12px; /* one shared edge line for every floating HUD cluster */
+    --wd-canvas-bg:        #EDEFF2;
+    --wd-canvas-dot:       #D6D9DF;
+    --wd-bezel-face:       #1B1E24;
+    --wd-bezel-edge:       #101318;
+    --wd-bezel-lip:        rgba(255, 255, 255, 0.07);
+    --wd-bezel-engrave:    rgba(255, 255, 255, 0.28);
+    --wd-bezel-ring:       transparent; /* silhouette hairline; dark theme only */
+    --wd-bezel-shadow:     0 20px 40px -16px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.25);
+    --wd-frame-halo:       transparent; /* soft glow behind the device; dark theme only */
+    --wd-stage-clip:       rgba(16, 18, 23, 0.16); /* scroll-shadow tint on clipped canvas edges */
+
+    /* Inverse (tooltips) */
+    --wd-surface-inverse:  #1A1E24;
+
+    /* Code / editor */
+    --wd-code-bg:          #F7F8FA;
+    --wd-code-text:        #16181D;
+    --wd-code-comment:     #6A7078;
+    --wd-code-keyword:     #9A3412;
+    --wd-code-string:      #15803D;
+    --wd-code-number:      #1D4ED8;
+    --wd-code-selection:   rgba(194, 65, 12, 0.14);
+    --wd-code-activeline:  rgba(23, 25, 29, 0.035);
+    --wd-code-gutter-text: #A0A6AF;
+
+    /* Fields (inputs/textareas): panel in light, inset in dark */
+    --wd-field-bg:         var(--wd-surface-panel);
+
+    /* F2UP section map — a CATEGORICAL data-viz ramp, not semantic states:
+       four clearly-separated hues so adjacent slices never read as one
+       artifact. Slate for the fixed header, blue for the F2JS runtime, brand
+       ember for the F2TF facade (the artifact the designer authors), violet
+       for the compressed base frame. */
+    --wd-sec-header:       #64748B;
+    --wd-sec-runtime:      #2563EB;
+    --wd-sec-facade:       #C2410C;
+    --wd-sec-frame:        #7C3AED;
+
+    /* Shadows (elevation) */
+    --wd-shadow-1: 0 1px 2px rgba(16, 18, 23, 0.05);
+    --wd-shadow-2: 0 2px 6px -1px rgba(16, 18, 23, 0.08), 0 1px 2px rgba(16, 18, 23, 0.05);
+    --wd-shadow-3: 0 12px 32px -8px rgba(16, 18, 23, 0.18), 0 4px 12px -4px rgba(16, 18, 23, 0.10);
+  }
+
+  [data-theme="light"] {
+    color-scheme: light;
+  }
+
+  /* ── DARK palette (explicit choice) ───────────────────────────────────── */
+  [data-theme="dark"] {
+    /* Dark accent = the same Ember hue at the 500-weight lightness step —
+       see the ramp note on the light palette. */
+    --wd-bg:               #0B0D10;
+    --wd-surface-panel:    #14171C;
+    --wd-surface-raised:   #1A1E24;
+    --wd-surface-overlay:  #21262E;
+    --wd-surface-inset:    #0F1216;
+    --wd-surface-hover:    rgba(255, 255, 255, 0.06);
+    --wd-surface-active:   rgba(255, 255, 255, 0.09);
+    --wd-scrim:            rgba(0, 0, 0, 0.60);
+
+    --wd-text-primary:     #EDEFF2;
+    --wd-text-secondary:   #A9B0B9;
+    /* Tertiary lifted a step (was #7E8691, 4.5:1 on raised) so 11–12px labels
+       clear AA with margin on every dark surface: 5.4:1 panel, 5.0:1 raised. */
+    --wd-text-tertiary:    #858D98;
+    --wd-text-disabled:    #565D66;
+    --wd-text-on-accent:   #1A1005;
+    --wd-text-inverse:     #16181D;
+
+    --wd-border-subtle:    #242A32;
+    --wd-border-strong:    #39414C;
+
+    --wd-accent:           #F97316;
+    --wd-accent-hover:     #FB8A3C;
+    --wd-accent-active:    #EA6A0D;
+    --wd-accent-strong:    #FDA65D;
+    --wd-accent-subtle:    rgba(249, 115, 22, 0.13);
+    --wd-accent-border:    rgba(249, 115, 22, 0.38);
+
+    --wd-success:          #4CC38A;
+    --wd-success-subtle:   rgba(76, 195, 138, 0.12);
+    --wd-success-border:   rgba(76, 195, 138, 0.35);
+    --wd-warning:          #E3B341;
+    --wd-warning-subtle:   rgba(227, 179, 65, 0.12);
+    --wd-warning-border:   rgba(227, 179, 65, 0.35);
+    --wd-danger:           #F87171;
+    --wd-danger-hover:     #FA8A8A;
+    --wd-danger-subtle:    rgba(248, 113, 113, 0.12);
+    --wd-danger-border:    rgba(248, 113, 113, 0.35);
+    --wd-info:             #6CA1F5;
+    --wd-info-subtle:      rgba(108, 161, 245, 0.12);
+    --wd-info-border:      rgba(108, 161, 245, 0.35);
+
+    --wd-ring:             #F97316;
+    --wd-ring-offset:      var(--wd-surface-panel);
+
+    /* Canvas sits a step ABOVE the near-black bezel edge so the module's
+       0.9-alpha ambient shadow has room to read below it; the 0.22 ring cuts
+       the charcoal silhouette off the canvas at a glance. */
+    --wd-canvas-bg:        #181B21;
+    --wd-canvas-dot:       #2B323C;
+    --wd-bezel-face:       #1B1E24;
+    --wd-bezel-edge:       #0A0C0F;
+    --wd-bezel-lip:        rgba(255, 255, 255, 0.09);
+    --wd-bezel-engrave:    rgba(255, 255, 255, 0.30);
+    --wd-bezel-ring:       rgba(255, 255, 255, 0.22);
+    --wd-bezel-shadow:     0 24px 48px -12px rgba(0, 0, 0, 0.90), 0 4px 16px rgba(0, 0, 0, 0.60);
+    --wd-frame-halo:       rgba(255, 255, 255, 0.045);
+    --wd-stage-clip:       rgba(0, 0, 0, 0.60);
+
+    --wd-surface-inverse:  #2A303A;
+
+    --wd-code-bg:          #0F1216;
+    --wd-code-text:        #EDEFF2;
+    --wd-code-comment:     #7E8691;
+    --wd-code-keyword:     #FDA65D;
+    --wd-code-string:      #4CC38A;
+    --wd-code-number:      #8AB4F8;  /* ~8.8:1 on code-bg — tag/number blue kept
+                                        in step with the keyword/string family */
+    --wd-code-selection:   rgba(110, 150, 255, 0.16);
+    --wd-code-activeline:  rgba(255, 255, 255, 0.04);
+    --wd-code-gutter-text: #565D66;
+
+    --wd-field-bg:         var(--wd-surface-inset);
+
+    --wd-sec-header:       #94A3B8;
+    --wd-sec-runtime:      #60A5FA;
+    --wd-sec-facade:       #F97316;
+    --wd-sec-frame:        #A78BFA;
+
+    --wd-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.40);
+    --wd-shadow-2: 0 2px 8px -2px rgba(0, 0, 0, 0.50), 0 1px 2px rgba(0, 0, 0, 0.40);
+    --wd-shadow-3: 0 16px 40px -8px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.04);
+
+    color-scheme: dark;
+  }
+
+  /* ── DARK palette ("system" preference, no explicit stamp) ────────────── */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --wd-bg:               #0B0D10;
+      --wd-surface-panel:    #14171C;
+      --wd-surface-raised:   #1A1E24;
+      --wd-surface-overlay:  #21262E;
+      --wd-surface-inset:    #0F1216;
+      --wd-surface-hover:    rgba(255, 255, 255, 0.06);
+      --wd-surface-active:   rgba(255, 255, 255, 0.09);
+      --wd-scrim:            rgba(0, 0, 0, 0.60);
+
+      --wd-text-primary:     #EDEFF2;
+      --wd-text-secondary:   #A9B0B9;
+      --wd-text-tertiary:    #858D98;
+      --wd-text-disabled:    #565D66;
+      --wd-text-on-accent:   #1A1005;
+      --wd-text-inverse:     #16181D;
+
+      --wd-border-subtle:    #242A32;
+      --wd-border-strong:    #39414C;
+
+      --wd-accent:           #F97316;
+      --wd-accent-hover:     #FB8A3C;
+      --wd-accent-active:    #EA6A0D;
+      --wd-accent-strong:    #FDA65D;
+      --wd-accent-subtle:    rgba(249, 115, 22, 0.13);
+      --wd-accent-border:    rgba(249, 115, 22, 0.38);
+
+      --wd-success:          #4CC38A;
+      --wd-success-subtle:   rgba(76, 195, 138, 0.12);
+      --wd-success-border:   rgba(76, 195, 138, 0.35);
+      --wd-warning:          #E3B341;
+      --wd-warning-subtle:   rgba(227, 179, 65, 0.12);
+      --wd-warning-border:   rgba(227, 179, 65, 0.35);
+      --wd-danger:           #F87171;
+      --wd-danger-hover:     #FA8A8A;
+      --wd-danger-subtle:    rgba(248, 113, 113, 0.12);
+      --wd-danger-border:    rgba(248, 113, 113, 0.35);
+      --wd-info:             #6CA1F5;
+      --wd-info-subtle:      rgba(108, 161, 245, 0.12);
+      --wd-info-border:      rgba(108, 161, 245, 0.35);
+
+      --wd-ring:             #F97316;
+      --wd-ring-offset:      var(--wd-surface-panel);
+
+      --wd-canvas-bg:        #181B21;
+      --wd-canvas-dot:       #2B323C;
+      --wd-bezel-face:       #1B1E24;
+      --wd-bezel-edge:       #0A0C0F;
+      --wd-bezel-lip:        rgba(255, 255, 255, 0.09);
+      --wd-bezel-engrave:    rgba(255, 255, 255, 0.30);
+      --wd-bezel-ring:       rgba(255, 255, 255, 0.22);
+      --wd-bezel-shadow:     0 24px 48px -12px rgba(0, 0, 0, 0.90), 0 4px 16px rgba(0, 0, 0, 0.60);
+      --wd-frame-halo:       rgba(255, 255, 255, 0.045);
+      --wd-stage-clip:       rgba(0, 0, 0, 0.60);
+
+      --wd-surface-inverse:  #2A303A;
+
+      --wd-code-bg:          #0F1216;
+      --wd-code-text:        #EDEFF2;
+      --wd-code-comment:     #7E8691;
+      --wd-code-keyword:     #FDA65D;
+      --wd-code-string:      #4CC38A;
+      --wd-code-number:      #8AB4F8;  /* ~8.8:1 on code-bg — tag/number blue kept
+                                        in step with the keyword/string family */
+      --wd-code-selection:   rgba(110, 150, 255, 0.16);
+      --wd-code-activeline:  rgba(255, 255, 255, 0.04);
+      --wd-code-gutter-text: #565D66;
+
+      --wd-field-bg:         var(--wd-surface-inset);
+
+      --wd-sec-header:       #94A3B8;
+      --wd-sec-runtime:      #60A5FA;
+      --wd-sec-facade:       #F97316;
+      --wd-sec-frame:        #A78BFA;
+
+      --wd-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.40);
+      --wd-shadow-2: 0 2px 8px -2px rgba(0, 0, 0, 0.50), 0 1px 2px rgba(0, 0, 0, 0.40);
+      --wd-shadow-3: 0 16px 40px -8px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.04);
+
+      color-scheme: dark;
+    }
+  }
+
+  /* ── Base element styles ──────────────────────────────────────────────── */
+  html, body, #root {
+    height: 100%;
+    margin: 0;
+  }
+  body {
+    background: var(--wd-bg);
+    color: var(--wd-text-primary);
+    font-family: var(--wd-font-sans);
+    font-size: var(--wd-text-sm);
+    line-height: 20px;
+    font-feature-settings: "cv11", "ss01";
+  }
+  /* Antialiased in dark only; keep subpixel rendering in light. */
+  [data-theme="dark"] body {
+    -webkit-font-smoothing: antialiased;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) body {
+      -webkit-font-smoothing: antialiased;
+    }
+  }
+
+  * { border-color: var(--wd-border-subtle); }
+
+  ::selection { background: var(--wd-code-selection); }
+
+  /* Universal focus ring */
+  :focus-visible {
+    outline: 2px solid var(--wd-ring);
+    outline-offset: 2px;
+  }
+  /* CodeMirror manages its own focus affordances */
+  .cm-editor :focus-visible,
+  .cm-content:focus-visible {
+    outline: none;
+  }
+
+  /* Scrollbars: quiet, token-driven */
+  html {
+    scrollbar-color: var(--wd-border-strong) transparent;
+    scrollbar-width: thin;
+  }
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--wd-border-strong);
+    border-radius: var(--wd-radius-full);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover { background-color: var(--wd-text-disabled); background-clip: padding-box; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-corner { background: transparent; }
+}
+
+@layer components {
+  /* ── App shell ────────────────────────────────────────────────────────── */
+  .f1-shell {
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr) auto;
+    background: var(--wd-bg);
+  }
+
+  /* The workspace row itself never scrolls — scrolling belongs to the panes
+     inside it. Document-style tabs (Source, Events, Export, …) get the one
+     .wd-scroller; the Design tab splits into two independent scroll regions
+     so the device stage and its HUD stay put while the rail scrolls. */
+  .wd-main {
+    position: relative;
+    min-height: 0;
+    /* clip, not hidden: a hidden box is still a programmatic scroll container,
+       and a stray scrollIntoView (diagnostics deep link) or focus scroll
+       would shift the fixed shell with no UI to put it back. */
+    overflow: clip;
+  }
+  .wd-scroller {
+    position: relative;
+    height: 100%;
+    overflow-y: auto;
+  }
+
+  /* ── Design tab: fixed-height stage + independently-scrolling rail ────── */
+  .wd-design-tab {
+    height: 100%;
+    padding: var(--wd-space-5) var(--wd-space-6);
+  }
+  .wd-design-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    /* minmax(0,1fr), never auto: an auto row max-content-sizes to the rail's
+       full accordion stack and silently overflows the clipped shell. */
+    grid-template-rows: minmax(0, 1fr);
+    gap: var(--wd-space-4);
+    height: 100%;
+    min-height: 0;
+    align-items: stretch;
+  }
+  .wd-design-stage-pane {
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+  }
+  .wd-design-rail {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    /* BOTH-edges gutter: reserving only the right lane left every card 11px
+       off-center in the rail. Symmetric gutters keep the cards optically
+       centered whether or not the content actually scrolls. */
+    scrollbar-gutter: stable both-edges;
+    /* Chromium honors the ::-webkit-scrollbar rules below only while
+       scrollbar-width/-color compute to auto on this element — scrollbar-color
+       is inherited from html, so both are reset here. The webkit thumb then
+       floats: a 4px core inset 3px from each lane edge (transparent border +
+       padding-box clip) over a fully transparent track, so in dark mode it
+       reads as a pill hovering in the gutter, never a gray bar pressed against
+       the card border. Firefox (no webkit pseudos) keeps its thin token thumb
+       via the @supports override. */
+    scrollbar-color: auto;
+    scrollbar-width: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--wd-space-4);
+    /* Breathing room so the last card's border + shadow never kiss the clip. */
+    padding-bottom: var(--wd-space-1);
+  }
+  .wd-design-rail::-webkit-scrollbar { width: 10px; }
+  .wd-design-rail::-webkit-scrollbar-thumb {
+    background: var(--wd-border-strong);
+    background-clip: padding-box;
+    border: 3px solid transparent;
+    border-radius: var(--wd-radius-full);
+  }
+  .wd-design-rail::-webkit-scrollbar-thumb:hover {
+    background-color: var(--wd-text-disabled);
+    background-clip: padding-box;
+  }
+  .wd-design-rail::-webkit-scrollbar-track { background: transparent; }
+  @supports (-moz-appearance: none) {
+    .wd-design-rail {
+      scrollbar-width: thin;
+      scrollbar-color: var(--wd-border-strong) transparent;
+    }
+  }
+  /* Rail cards must never flex-shrink into their content. */
+  .wd-design-rail > * { flex-shrink: 0; }
+  /* Narrow viewports: stack the panes and let the tab itself scroll — the
+     side-by-side split needs the width to earn its fixed height. */
+  @media (max-width: 1099px) {
+    .wd-design-tab { overflow-y: auto; }
+    .wd-design-grid { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; height: auto; }
+    .wd-design-stage-pane { overflow: visible; }
+    .wd-design-rail { overflow-y: visible; min-height: auto; }
+  }
+
+  /* Header block (topbar only — the tab row below owns scroll elevation). */
+  .wd-header {
+    position: relative;
+    z-index: 40;
+    background: var(--wd-surface-panel);
+  }
+
+  /* ── IDE body: sidebar | center (tab row + workspace) ─────────────────────
+     CRITICAL: .wd-ide and .wd-center must never carry transform, filter,
+     contain, or will-change — the parked off-screen Design tab inside the
+     workspace uses position:fixed geometry for push capture, and a
+     transformed ancestor would re-anchor it into view. */
+  .wd-ide {
+    display: grid;
+    grid-template-columns: var(--wd-sidebar-w, 264px) minmax(0, 1fr);
+    min-height: 0;
+    height: 100%;
+  }
+  .wd-ide[data-sidebar="collapsed"] { grid-template-columns: minmax(0, 1fr); }
+  .wd-ide[data-sidebar="collapsed"] .wd-sidebar { display: none; }
+  .wd-center {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+    min-height: 0;
+    min-width: 0;
+  }
+
+  /* IDE-style center tab row: 40px panel surface, hairline below, hosting the
+     sidebar toggle + the underline TabNav. Gains elevation once the workspace
+     scroller has actually scrolled (IntersectionObserver sentinel — the same
+     signal the header used to carry). */
+  .wd-tabrow {
+    position: relative;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-2);
+    height: 40px;
+    padding: 0 var(--wd-space-4) 0 var(--wd-space-3);
+    background: var(--wd-surface-panel);
+    box-shadow: inset 0 -1px 0 var(--wd-border-subtle);
+    transition: box-shadow var(--wd-dur-base) var(--wd-ease);
+  }
+  .wd-tabrow[data-scrolled="true"] {
+    box-shadow: inset 0 -1px 0 var(--wd-border-subtle), var(--wd-shadow-2);
+  }
+  .wd-tabrow .wd-tabs { height: 40px; }
+  .wd-tabrow .wd-tab::before { inset: 7px 4px; }
+  .wd-tabrow-toggle { flex-shrink: 0; }
+
+  /* One left rail: the brand, the Examples strip, the workspace cards, and
+     the footer all start at the same 24px gutter (--wd-space-6). Header-row
+     dividers are drawn INSIDE via inset shadows so 48 + 44 = 92px stays on
+     the 4px grid. */
+  .wd-topbar {
+    display: grid;
+    /* Brand left, flexible file-name center, actions right. minmax(0,1fr) on
+       the center so a long widget name truncates instead of pushing the
+       action cluster off the edge. */
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: var(--wd-space-4);
+    height: 48px;
+    padding: 0 var(--wd-space-6);
+    box-shadow: inset 0 -1px 0 var(--wd-border-subtle);
+  }
+  /* Figma-file-style center slot: the open widget's display name — quiet,
+     centered, truncating; informational only (the stage frame label mirrors
+     it, so this never needs to be a control). */
+  .wd-topbar-file {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    font-weight: 500;
+    color: var(--wd-text-tertiary);
+    user-select: none;
+  }
+  .wd-topbar-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--wd-space-2);
+    min-width: 0;
+    flex-wrap: nowrap;
+  }
+  /* Two compression stages keep the right cluster clear of the tabs at every
+     width (verified 1024/1152/1280): ≤1320px Download goes icon-only (its
+     tooltip + aria-label carry the name); ≤1180px the package pill collapses
+     to its short form ("740 B" / "Stale") — the footer readout always carries
+     the full state, so nothing is ever lost. */
+  .wd-pkg-mini { display: none; }
+  @media (max-width: 1320px) {
+    .wd-dl-label { display: none; }
+  }
+  @media (max-width: 1180px) {
+    .wd-pkg-full { display: none; }
+    .wd-pkg-mini { display: inline; }
+    .wd-pkg[data-empty="true"] { display: none; }
+  }
+  /* Two-segment artifact chip: when F2JS and F2UP both exist for the current
+     source, both render — F2JS first, the pipeline-terminal F2UP second —
+     divided by a quiet hairline. Which artifact is "current" must never
+     depend on which built last. Shared by the topbar pill and the footer
+     readout. */
+  .wd-pkg-seg:not([data-first]) {
+    margin-left: 2px;
+    padding-left: 8px;
+    box-shadow: inset 1px 0 0 color-mix(in srgb, currentColor 35%, transparent);
+  }
+  /* The TOPBAR pill compresses to the pipeline-terminal segment (F2UP) below
+     1520px so it can never crowd the center tablist; the footer readout keeps
+     both segments at every width, so nothing is ever lost. */
+  @media (max-width: 1520px) {
+    .wd-topbar .wd-pkg-seg[data-first] { display: none; }
+    .wd-topbar .wd-pkg-seg:not([data-first]) {
+      margin-left: 0;
+      padding-left: 0;
+      box-shadow: none;
+    }
+  }
+
+  /* Logo mark: primary-on-bg square, inverts naturally per theme. */
+  .wd-logo {
+    width: 24px;
+    height: 24px;
+    border-radius: var(--wd-radius-sm);
+    background: var(--wd-text-primary);
+    color: var(--wd-bg);
+    display: grid;
+    place-items: center;
+    font-size: var(--wd-text-2xs);
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+    user-select: none;
+  }
+
+  /* ── Primary navigation (underline tabs) ──────────────────────────────── */
+  .wd-tabs {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    height: 48px;
+  }
+  .wd-tab {
+    position: relative;
+    z-index: 0;
+    display: inline-flex;
+    align-items: center;
+    height: 100%;
+    padding: 0 var(--wd-space-3);
+    border: none;
+    background: transparent;
+    color: var(--wd-text-tertiary);
+    font-size: var(--wd-text-sm);
+    line-height: 20px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color var(--wd-dur-fast) var(--wd-ease);
+  }
+  /* Hover = visible pill wash + text step-up (Linear/Vercel top-nav recipe),
+     not a barely-there color nudge. The SELECTED tab never shows the hover
+     pill — one selection treatment at a time: the underline owns it. */
+  .wd-tab::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: 10px 4px;
+    border-radius: var(--wd-radius-sm);
+    background: transparent;
+    transition: background-color var(--wd-dur-fast) var(--wd-ease);
+  }
+  .wd-tab:hover { color: var(--wd-text-primary); }
+  .wd-tab:not([aria-selected="true"]):hover::before { background: var(--wd-surface-hover); }
+  .wd-tab[aria-selected="true"] { color: var(--wd-text-primary); }
+  /* Focus ring traces EXACTLY the hover pill's geometry: it is drawn as an
+     outline on the same ::before pseudo (inset 10px 4px, radius-sm), so hover
+     and focus share one inner shape. */
+  .wd-tab:focus-visible { outline: none; }
+  .wd-tab:focus-visible::before { outline: 2px solid var(--wd-ring); }
+  .wd-tab-indicator {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--wd-accent);
+    transition: transform var(--wd-dur-base) var(--wd-ease),
+                width var(--wd-dur-base) var(--wd-ease);
+    pointer-events: none;
+  }
+  @media (max-width: 1180px) {
+    .wd-tab { padding: 0 var(--wd-space-2); }
+  }
+  @media (max-width: 900px) {
+    .wd-tabs {
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
+              mask-image: linear-gradient(90deg, transparent 0, #000 16px, #000 calc(100% - 16px), transparent 100%);
+    }
+    .wd-tabs::-webkit-scrollbar { display: none; }
+  }
+
+  /* ── Sidebar example gallery ──────────────────────────────────────────────
+     The Examples strip, grown into a proper IDE sidebar: panel surface,
+     hairline right border, its own scroll (the .wd-design-rail scrollbar
+     recipe), one rich card per preset. */
+  .wd-sidebar {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--wd-surface-panel);
+    border-right: 1px solid var(--wd-border-subtle);
+    padding: var(--wd-space-4) var(--wd-space-3) var(--wd-space-4) var(--wd-space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--wd-space-1);
+    /* Same floating-thumb scrollbar recipe as .wd-design-rail. */
+    scrollbar-color: auto;
+    scrollbar-width: auto;
+  }
+  .wd-sidebar::-webkit-scrollbar { width: 10px; }
+  .wd-sidebar::-webkit-scrollbar-thumb {
+    background: var(--wd-border-strong);
+    background-clip: padding-box;
+    border: 3px solid transparent;
+    border-radius: var(--wd-radius-full);
+  }
+  .wd-sidebar::-webkit-scrollbar-thumb:hover {
+    background-color: var(--wd-text-disabled);
+    background-clip: padding-box;
+  }
+  .wd-sidebar::-webkit-scrollbar-track { background: transparent; }
+  @supports (-moz-appearance: none) {
+    .wd-sidebar {
+      scrollbar-width: thin;
+      scrollbar-color: var(--wd-border-strong) transparent;
+    }
+  }
+  .wd-sidebar > * { flex-shrink: 0; }
+  .wd-sidebar-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--wd-space-2) var(--wd-space-2);
+  }
+  /* One example card: name row (dot · label), the teaching tagline, then the
+     capability glyph row. The loaded example carries the tinted background,
+     accent border, ember dot, and a 2px accent inset rail. */
+  .wd-sidecard {
+    position: relative;
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: var(--wd-space-2) 10px;
+    border-radius: var(--wd-radius-md);
+    border: 1px solid transparent;
+    background: transparent;
+    cursor: pointer;
+    transition: background-color var(--wd-dur-fast) var(--wd-ease),
+                border-color var(--wd-dur-fast) var(--wd-ease);
+  }
+  .wd-sidecard:hover { background: var(--wd-surface-hover); }
+  .wd-sidecard:focus-visible {
+    outline: 2px solid var(--wd-ring);
+    outline-offset: 1px;
+  }
+  .wd-sidecard[data-active="true"] {
+    background: var(--wd-accent-subtle);
+    border-color: var(--wd-accent-border);
+  }
+  .wd-sidecard[data-active="true"]::before {
+    content: "";
+    position: absolute;
+    left: -1px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    border-radius: 1px;
+    background: var(--wd-accent);
+  }
+  .wd-sidecard-title {
+    display: flex;
+    align-items: center;
+    gap: 6px; /* documented half-step exception (icon/dot gap) */
+    min-width: 0;
+    font-size: 13px;
+    line-height: 20px;
+    font-weight: 500;
+    color: var(--wd-text-primary);
+  }
+  .wd-sidecard-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--wd-radius-full);
+    background: var(--wd-text-disabled);
+    flex-shrink: 0;
+    transition: background-color var(--wd-dur-fast) var(--wd-ease);
+  }
+  .wd-sidecard[data-active="true"] .wd-sidecard-dot { background: var(--wd-accent); }
+  .wd-sidecard-tagline {
+    /* Unclamped on purpose: the taglines are the sidebar's teaching text —
+       cards autosize so every word reads at the default sidebar width. */
+    display: block;
+    margin-top: 2px;
+    font-size: var(--wd-text-xs);
+    line-height: 16px;
+    color: var(--wd-text-secondary);
+  }
+  .wd-sidecard-caps {
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-1);
+    margin-top: 6px;
+    color: var(--wd-text-tertiary);
+  }
+  .wd-sidecard-cap {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: var(--wd-radius-sm);
+  }
+  .wd-sidecard-cap:hover { color: var(--wd-text-primary); }
+  .wd-sidecard-cap[data-push="true"] { color: var(--wd-success); }
+  /* The pinned "edited widget" location row: not a control — just where you
+     are. Dashed hairline instead of the tinted active treatment. */
+  .wd-sidecard[data-custom="true"] {
+    cursor: default;
+    border: 1px dashed var(--wd-border-strong);
+    margin-bottom: var(--wd-space-1);
+  }
+  .wd-sidecard[data-custom="true"]:hover { background: transparent; }
+  .wd-sidecard[data-custom="true"] .wd-sidecard-dot { background: var(--wd-accent); }
+
+  /* ── Status bar (footer) ──────────────────────────────────────────────────
+     One control grammar, one height: every interactive readout is a
+     .wd-statusbtn (22px subtle-filled pill — clickable at rest, not just on
+     hover); every passive readout is a .wd-statusitem (22px bare text,
+     clearly plainer). The top hairline is an inset shadow, not a border, so
+     the 32px content box centers children on whole pixels. */
+  .wd-statusbar {
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-3);
+    height: 32px;
+    padding: 0 var(--wd-space-6);
+    background: var(--wd-surface-panel);
+    box-shadow: inset 0 1px 0 var(--wd-border-subtle);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-tertiary);
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .wd-statusbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 22px;
+    padding: 0 var(--wd-space-2);
+    border: 1px solid transparent;
+    border-radius: var(--wd-radius-full);
+    background: var(--wd-surface-inset);
+    color: var(--wd-text-secondary);
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color var(--wd-dur-fast) var(--wd-ease),
+                color var(--wd-dur-fast) var(--wd-ease),
+                border-color var(--wd-dur-fast) var(--wd-ease);
+  }
+  .wd-statusbtn:hover {
+    background: var(--wd-surface-active);
+    border-color: var(--wd-border-subtle);
+    color: var(--wd-text-primary);
+  }
+  .wd-statusbtn:active { background: var(--wd-surface-active); }
+  .wd-statusbtn:focus-visible {
+    outline: 2px solid var(--wd-ring);
+    outline-offset: 1px;
+  }
+  .wd-statusbtn-fw {
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-2xs);
+    letter-spacing: 0;
+    color: var(--wd-text-tertiary);
+  }
+  .wd-statusbtn[data-tone="danger"],
+  .wd-statusbtn[data-tone="danger"]:hover { color: var(--wd-danger); background: var(--wd-danger-subtle); }
+  .wd-statusbtn[data-tone="danger"]:hover { border-color: var(--wd-danger-border); }
+  .wd-statusbtn[data-tone="warning"],
+  .wd-statusbtn[data-tone="warning"]:hover { color: var(--wd-warning); background: var(--wd-warning-subtle); }
+  .wd-statusbtn[data-tone="warning"]:hover { border-color: var(--wd-warning-border); }
+  .wd-statusbtn[data-tone="info"],
+  .wd-statusbtn[data-tone="info"]:hover { color: var(--wd-info); background: var(--wd-info-subtle); }
+  .wd-statusbtn[data-tone="info"]:hover { border-color: var(--wd-info-border); }
+  /* Passive readouts: same 22px line, no pill — plainly not clickable. */
+  .wd-statusitem {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 22px;
+    white-space: nowrap;
+  }
+
+  /* ── Dialog (confirm) ─────────────────────────────────────────────────── */
+  .wd-scrim-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    background: var(--wd-scrim);
+    display: grid;
+    place-items: center;
+    animation: wd-fade-in var(--wd-dur-base) var(--wd-ease-out);
+  }
+  .wd-dialog {
+    width: 400px;
+    max-width: calc(100vw - 32px);
+    background: var(--wd-surface-overlay);
+    border: 1px solid var(--wd-border-subtle);
+    border-radius: var(--wd-radius-xl);
+    box-shadow: var(--wd-shadow-3);
+    padding: var(--wd-space-5);
+    animation: wd-rise-in var(--wd-dur-overlay) var(--wd-ease-out);
+  }
+  .wd-dialog-title {
+    font-size: var(--wd-text-base);
+    line-height: 22px;
+    font-weight: 600;
+    letter-spacing: -0.006em;
+    color: var(--wd-text-primary);
+  }
+  .wd-dialog-body {
+    margin-top: var(--wd-space-2);
+    font-size: var(--wd-text-sm);
+    line-height: 20px;
+    color: var(--wd-text-secondary);
+  }
+  .wd-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--wd-space-2);
+    margin-top: var(--wd-space-5);
+  }
+
+  /* ── Toasts ───────────────────────────────────────────────────────────── */
+  .wd-toaster {
+    position: fixed;
+    right: var(--wd-space-4);
+    /* Clears the 32px status bar */
+    bottom: calc(32px + var(--wd-space-3));
+    z-index: 80;
+    display: flex;
+    flex-direction: column;
+    gap: var(--wd-space-2);
+    width: 360px;
+    max-width: calc(100vw - 32px);
+    pointer-events: none;
+  }
+  .wd-toast {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: var(--wd-space-3);
+    background: var(--wd-surface-raised);
+    border: 1px solid var(--wd-border-subtle);
+    border-radius: var(--wd-radius-lg);
+    box-shadow: var(--wd-shadow-3);
+    pointer-events: auto;
+    animation: wd-toast-in var(--wd-dur-slow) var(--wd-ease-out);
+  }
+  .wd-toast[data-leaving="true"] {
+    animation: wd-toast-out var(--wd-dur-base) var(--wd-ease-in) forwards;
+  }
+  .wd-toast-icon { flex-shrink: 0; margin-top: 2px; }
+  .wd-toast[data-tone="success"] .wd-toast-icon { color: var(--wd-success); }
+  .wd-toast[data-tone="info"]    .wd-toast-icon { color: var(--wd-info); }
+  .wd-toast[data-tone="warning"] .wd-toast-icon { color: var(--wd-warning); }
+  .wd-toast[data-tone="danger"]  .wd-toast-icon { color: var(--wd-danger); }
+  .wd-toast-title {
+    font-size: var(--wd-text-sm);
+    line-height: 20px;
+    font-weight: 600;
+    color: var(--wd-text-primary);
+  }
+  .wd-toast-body {
+    margin-top: 2px;
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-secondary);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .wd-toast-action {
+    margin-top: var(--wd-space-1);
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--wd-accent);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .wd-toast-action:hover { color: var(--wd-accent-hover); }
+  .wd-toast-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    margin: -2px -2px 0 0;
+    border: none;
+    border-radius: var(--wd-radius-sm);
+    background: transparent;
+    color: var(--wd-text-tertiary);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background-color var(--wd-dur-fast) var(--wd-ease),
+                color var(--wd-dur-fast) var(--wd-ease);
+  }
+  .wd-toast-close:hover {
+    background: var(--wd-surface-hover);
+    color: var(--wd-text-primary);
+  }
+
+  /* ── Overline (section label) ─────────────────────────────────────────── */
+  .wd-overline,
+  .f1-section-label {
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--wd-text-tertiary);
+  }
+
+  /* ── Card ─────────────────────────────────────────────────────────────── */
+  .wd-card {
+    background: var(--wd-surface-panel);
+    border: 1px solid var(--wd-border-subtle);
+    border-radius: var(--wd-radius-lg);
+    box-shadow: var(--wd-shadow-1);
+  }
+  /* Deep-link landing flash (e.g. footer error pill → Device build card):
+     the jump needs a visible destination — same recipe as the accordion
+     reveal flash. */
+  .wd-card[data-flash="true"] {
+    animation: wd-acc-flash 1.6s var(--wd-ease);
+  }
+  .wd-card-header {
+    min-height: 44px;
+    padding: var(--wd-space-3) var(--wd-space-4);
+    border-bottom: 1px solid var(--wd-border-subtle);
+  }
+  .wd-card-title {
+    font-size: var(--wd-text-base);
+    line-height: 22px;
+    font-weight: 600;
+    letter-spacing: -0.006em;
+    color: var(--wd-text-primary);
+  }
+  .wd-card-desc {
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-tertiary);
+    margin-top: 2px;
+  }
+  .wd-card-body {
+    padding: var(--wd-space-4);
+  }
+
+  /* ── Buttons ──────────────────────────────────────────────────────────── */
+  .wd-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 var(--wd-space-3);
+    border-radius: var(--wd-radius-sm);
+    border: 1px solid transparent;
+    font-size: var(--wd-text-sm);
+    line-height: 20px;
+    font-weight: 500;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    transition: background-color var(--wd-dur-fast) var(--wd-ease),
+                color var(--wd-dur-fast) var(--wd-ease),
+                border-color var(--wd-dur-fast) var(--wd-ease),
+                opacity var(--wd-dur-fast) var(--wd-ease);
+    /* Secondary is the default recipe */
+    background: var(--wd-surface-panel);
+    border-color: var(--wd-border-strong);
+    color: var(--wd-text-primary);
+  }
+  .wd-btn[data-size="sm"] { height: 28px; padding: 0 10px; }
+  .wd-btn:not(:disabled):hover { background: var(--wd-surface-hover); }
+  .wd-btn:not(:disabled):active { background: var(--wd-surface-active); }
+
+  .wd-btn[data-variant="primary"] {
+    background: var(--wd-accent);
+    border-color: transparent;
+    color: var(--wd-text-on-accent);
+  }
+  .wd-btn[data-variant="primary"]:not(:disabled):hover { background: var(--wd-accent-hover); }
+  .wd-btn[data-variant="primary"]:not(:disabled):active { background: var(--wd-accent-active); }
+
+  .wd-btn[data-variant="ghost"] {
+    background: transparent;
+    border-color: transparent;
+    color: var(--wd-text-secondary);
+  }
+  .wd-btn[data-variant="ghost"]:not(:disabled):hover {
+    background: var(--wd-surface-hover);
+    color: var(--wd-text-primary);
+  }
+  .wd-btn[data-variant="ghost"]:not(:disabled):active { background: var(--wd-surface-active); }
+
+  .wd-btn[data-variant="danger"] {
+    background: transparent;
+    border-color: var(--wd-danger-border);
+    color: var(--wd-danger);
+  }
+  .wd-btn[data-variant="danger"]:not(:disabled):hover { background: var(--wd-danger-subtle); }
+  .wd-btn[data-variant="danger"]:not(:disabled):active { background: var(--wd-danger-subtle); }
+
+  /* Disabled is a real token state, not a washed tint of the enabled fill:
+     every variant drops to the muted surface + disabled ink (a salmon-tinted
+     primary at 45% opacity read as a broken accent, not as "off"). Busy
+     buttons (aria-busy) and result flashes keep their variant recipe. */
+  .wd-btn:disabled { cursor: not-allowed; }
+  .wd-btn:disabled:not([aria-busy="true"]):not([data-flash]) {
+    background: var(--wd-surface-inset);
+    border-color: var(--wd-border-subtle);
+    color: var(--wd-text-disabled);
+  }
+  /* Ghosts stay ghosts when disabled — no sudden gray pill. */
+  .wd-btn[data-variant="ghost"]:disabled:not([aria-busy="true"]):not([data-flash]) {
+    background: transparent;
+    border-color: transparent;
+    color: var(--wd-text-disabled);
+  }
+
+  /* Result flash (compile feedback): brief success/danger tint on any variant.
+     Placed after the variant recipes so the flash wins the cascade. */
+  .wd-btn[data-flash="ok"],
+  .wd-btn[data-flash="ok"]:not(:disabled):hover,
+  .wd-btn[data-flash="ok"]:not(:disabled):active {
+    background: var(--wd-success);
+    border-color: transparent;
+    color: var(--wd-text-on-accent);
+  }
+  .wd-btn[data-flash="fail"],
+  .wd-btn[data-flash="fail"]:not(:disabled):hover,
+  .wd-btn[data-flash="fail"]:not(:disabled):active {
+    background: var(--wd-danger);
+    border-color: transparent;
+    color: var(--wd-text-on-accent);
+  }
+
+  /* Icon-only ghost button (theme toggle, toolbar actions). `appearance:none`
+     is load-bearing: with `color-scheme: light dark` active, any UA button
+     chrome that leaks through paints a LIGHT filled square in the dark theme
+     — the ghost treatment must be the only painter. */
+  .wd-iconbtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    appearance: none;
+    -webkit-appearance: none;
+    border-radius: var(--wd-radius-sm);
+    border: 1px solid transparent;
+    background: transparent;
+    color: var(--wd-text-secondary);
+    cursor: pointer;
+    transition: background-color var(--wd-dur-fast) var(--wd-ease),
+                color var(--wd-dur-fast) var(--wd-ease);
+  }
+  .wd-iconbtn:not(:disabled):hover {
+    background: var(--wd-surface-hover);
+    color: var(--wd-text-primary);
+  }
+  .wd-iconbtn:not(:disabled):active { background: var(--wd-surface-active); }
+  .wd-iconbtn:disabled { opacity: 0.45; cursor: not-allowed; }
+  /* lg = 32px: topbar controls (theme toggle) match the 32px button row. */
+  .wd-iconbtn[data-size="lg"] { width: 32px; height: 32px; }
+
+  /* ── Inputs ───────────────────────────────────────────────────────────── */
+  .wd-input {
+    width: 100%;
+    height: 32px;
+    padding: 0 10px;
+    border: 1px solid var(--wd-border-strong);
+    border-radius: var(--wd-radius-sm);
+    background: var(--wd-field-bg);
+    color: var(--wd-text-primary);
+    font-size: var(--wd-text-sm);
+    font-family: inherit;
+    transition: border-color var(--wd-dur-fast) var(--wd-ease),
+                background-color var(--wd-dur-fast) var(--wd-ease);
+  }
+  .wd-input::placeholder { color: var(--wd-text-disabled); }
+  .wd-input:focus { border-color: var(--wd-accent); }
+  .wd-input[aria-invalid="true"] { border-color: var(--wd-danger); }
+  .wd-input:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  /* Select: the Input recipe with an inline chevron — labeled enums pick by
+     name while the raw value stays in the caller's mono readout. */
+  .wd-selectwrap {
+    position: relative;
+    display: block;
+    min-width: 0;
+  }
+  .wd-select {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    height: 32px;
+    padding: 0 28px 0 10px;
+    border: 1px solid var(--wd-border-strong);
+    border-radius: var(--wd-radius-sm);
+    background: var(--wd-field-bg);
+    color: var(--wd-text-primary);
+    font-size: var(--wd-text-sm);
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color var(--wd-dur-fast) var(--wd-ease),
+                background-color var(--wd-dur-fast) var(--wd-ease);
+  }
+  .wd-select:focus { border-color: var(--wd-accent); }
+  .wd-select:disabled { opacity: 0.45; cursor: not-allowed; }
+  .wd-select-chevron {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: var(--wd-text-tertiary);
+  }
+
+  .wd-textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: var(--wd-space-2) 10px;
+    border: 1px solid var(--wd-border-strong);
+    border-radius: var(--wd-radius-sm);
+    background: var(--wd-field-bg);
+    color: var(--wd-text-primary);
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    resize: vertical;
+    tab-size: 2;
+    transition: border-color var(--wd-dur-fast) var(--wd-ease);
+  }
+  .wd-textarea::placeholder { color: var(--wd-text-disabled); }
+  .wd-textarea:focus { border-color: var(--wd-accent); }
+  .wd-textarea[aria-invalid="true"] { border-color: var(--wd-danger); }
+
+  .wd-label {
+    display: block;
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    font-weight: 500;
+    color: var(--wd-text-secondary);
+    margin-bottom: var(--wd-space-1);
+  }
+
+  /* ── Badges ───────────────────────────────────────────────────────────── */
+  .wd-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--wd-space-1);
+    box-sizing: border-box;
+    height: 20px;
+    /* Live counts (3 → 93 → 412) must not wander: a min-width floor plus
+       tabular numerals keeps a counting badge's left edge planted. */
+    min-width: 28px;
+    padding: 0 var(--wd-space-2);
+    border-radius: var(--wd-radius-full);
+    border: 1px solid transparent;
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .wd-badge[data-tone="neutral"] {
+    background: var(--wd-surface-inset);
+    color: var(--wd-text-secondary);
+  }
+  .wd-badge[data-tone="accent"] {
+    background: var(--wd-accent-subtle);
+    color: var(--wd-accent-strong);
+    border-color: var(--wd-accent-border);
+  }
+  .wd-badge[data-tone="success"] {
+    background: var(--wd-success-subtle);
+    color: var(--wd-success);
+    border-color: var(--wd-success-border);
+  }
+  .wd-badge[data-tone="warning"] {
+    background: var(--wd-warning-subtle);
+    color: var(--wd-warning);
+    border-color: var(--wd-warning-border);
+  }
+  .wd-badge[data-tone="danger"] {
+    background: var(--wd-danger-subtle);
+    color: var(--wd-danger);
+    border-color: var(--wd-danger-border);
+  }
+  .wd-badge[data-tone="info"] {
+    background: var(--wd-info-subtle);
+    color: var(--wd-info);
+    border-color: var(--wd-info-border);
+  }
+  /* Badge-sized dot (6px — half-step exception) for stateful pills. */
+  .wd-badge .wd-dot { width: 6px; height: 6px; }
+  /* Unit suffix inside a counting badge ("3 in use"): the NUMBER leads at
+     full weight, the unit dims in the badge's own hue — every accordion
+     badge scans value-first, no phrase pills. */
+  .wd-badge-suffix {
+    font-weight: 500;
+    letter-spacing: 0;
+    opacity: 0.72;
+  }
+  /* Metric-naming prefix ("peak 58%", "used 43%"): the word dims, the number
+     leads at full weight — a percentage never floats unexplained. */
+  .wd-badge-prefix {
+    font-weight: 500;
+    letter-spacing: 0;
+    opacity: 0.72;
+  }
+  /* A badge that ACTS (the stale-package pill triggers Compile): pointer +
+     border step-up on hover, same 20px geometry. */
+  button.wd-badge {
+    cursor: pointer;
+    font-family: inherit;
+    transition: background-color var(--wd-dur-fast) var(--wd-ease),
+                border-color var(--wd-dur-fast) var(--wd-ease),
+                color var(--wd-dur-fast) var(--wd-ease);
+  }
+  button.wd-badge:hover { border-color: currentColor; }
+  button.wd-badge:disabled { cursor: not-allowed; opacity: 0.6; }
+
+  /* ── Segmented control (pill-in-track) ────────────────────────────────────
+     ONE treatment for every in-card value picker (Source HTML/CSS/JS, the
+     filebar's Auto/Apply, the Events auto-tick, the Host-data schema picker):
+     a fully-rounded inset track — self-defined by an inner hairline so it
+     reads identically on card panels, toolbar bars, and wells alike — with a
+     raised full-radius active pill. Track color, active pill, and radius are
+     the same recipe at every site; only the floating stage HUD keeps its own
+     inverted [data-shape="pill"] weight below. */
+  .wd-seg {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 2px;
+    background: var(--wd-surface-inset);
+    border-radius: var(--wd-radius-full);
+    box-shadow: inset 0 0 0 1px var(--wd-border-subtle);
+  }
+  .wd-seg-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 24px;
+    padding: 0 var(--wd-space-3);
+    border-radius: var(--wd-radius-full);
+    border: none;
+    background: transparent;
+    color: var(--wd-text-tertiary);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color var(--wd-dur-base) var(--wd-ease),
+                color var(--wd-dur-base) var(--wd-ease);
+  }
+  /* Hover carries a real surface wash (matching .wd-btn), not a color-only
+     shift — the control must feel alive before it is selected. The selected
+     rules below share specificity and come later, so a selected segment keeps
+     its raised-pill background on hover. */
+  .wd-seg-item:hover {
+    background: var(--wd-surface-hover);
+    color: var(--wd-text-secondary);
+  }
+  .wd-seg-item[aria-selected="true"],
+  .wd-seg-item[aria-checked="true"] {
+    /* Raised = one surface step above the track in dark, white-on-mist in
+       light — the pill stays legible against the hairlined track on ANY
+       backdrop, which is what keeps the three sites visually identical. */
+    background: var(--wd-surface-raised);
+    color: var(--wd-text-primary);
+    box-shadow: var(--wd-shadow-1);
+  }
+  .wd-seg-item:focus-visible {
+    outline: 2px solid var(--wd-ring);
+    outline-offset: -2px;
+  }
+  /* Pill variant (floating stage toolbars): fully rounded track + segments,
+     and an INVERTED checked chip — text-primary fill carrying panel-colored
+     text reads at a glance in BOTH themes (light: near-black chip on white;
+     dark: near-white chip on charcoal). The subtle raised-key recipe above
+     stays for in-card pickers; floating pills need the extra weight. */
+  .wd-seg[data-shape="pill"] { border-radius: var(--wd-radius-full); }
+  .wd-seg[data-shape="pill"] .wd-seg-item { border-radius: var(--wd-radius-full); }
+  .wd-seg[data-shape="pill"] .wd-seg-item[aria-selected="true"],
+  .wd-seg[data-shape="pill"] .wd-seg-item[aria-checked="true"] {
+    background: var(--wd-text-primary);
+    color: var(--wd-surface-panel);
+    box-shadow: var(--wd-shadow-1);
+  }
+
+  /* ── Accordion ────────────────────────────────────────────────────────── */
+  .wd-acc {
+    border: 1px solid var(--wd-border-subtle);
+    border-radius: var(--wd-radius-md);
+    background: var(--wd-surface-panel);
+    overflow: hidden;
+  }
+  .wd-acc > * + * { border-top: 1px solid var(--wd-border-subtle); }
+  /* Header line: the toggle button plus optional sibling actions ("Clear").
+     Actions are NEVER nested inside the toggle — both stay real buttons.
+     The 4px inline inset + the row's 6px radius keep the hover wash a
+     floating rounded bar (the Linear pattern): a full-bleed square tint
+     collided with the card's 10px rounded corners on the last section. The
+     hairline dividers live on the ITEMS, so they still run full-bleed. */
+  .wd-acc-head {
+    display: flex;
+    align-items: center;
+    margin-inline: var(--wd-space-1);
+  }
+  .wd-acc-head > .wd-acc-row {
+    flex: 1;
+    min-width: 0;
+  }
+  .wd-acc-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-1);
+    flex-shrink: 0;
+    padding-right: var(--wd-space-1);
+  }
+  /* Count badges form a COLUMN: the badge is the head's last, fixed slot —
+     always flush right at the same inset — and any header action ("Send all",
+     "Clear") docks in the slot to its LEFT, so a group with actions never
+     drags its count out of the right-rail rhythm. Clicking the badge toggles
+     (same as the row), so the slot costs no hit area. */
+  .wd-acc-badge {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-shrink: 0;
+    align-self: stretch;
+    padding-right: var(--wd-space-3);
+    padding-left: var(--wd-space-2);
+    cursor: pointer;
+  }
+  /* Header actions stay quiet at 2xs — a utility, not a sibling title. */
+  .wd-acc-actions .wd-btn[data-size="sm"] {
+    height: 24px;
+    padding: 0 var(--wd-space-2);
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+  }
+  .wd-acc-row {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-2);
+    min-height: 32px;
+    padding: var(--wd-space-1) var(--wd-space-3);
+    background: transparent;
+    border: none;
+    border-radius: var(--wd-radius-sm);
+    text-align: left;
+    font-size: var(--wd-text-sm);
+    line-height: 20px;
+    font-weight: 500;
+    color: var(--wd-text-primary);
+    cursor: pointer;
+    transition: background-color var(--wd-dur-fast) var(--wd-ease);
+  }
+  .wd-acc-row:hover { background: var(--wd-surface-hover); }
+  /* Inset focus ring: the card clips at its rounded corners, so an OFFSET
+     outline on a full-width row renders as two stray horizontal bars. The
+     ring draws 2px INSIDE the row instead — fully visible, fully rounded. */
+  .wd-acc-row:focus-visible {
+    outline: 2px solid var(--wd-ring);
+    outline-offset: -2px;
+    border-radius: var(--wd-radius-sm);
+  }
+  .wd-acc-chevron {
+    flex-shrink: 0;
+    color: var(--wd-text-tertiary);
+    transition: transform var(--wd-dur-base) var(--wd-ease);
+  }
+  .wd-acc-row[aria-expanded="true"] .wd-acc-chevron { transform: rotate(90deg); }
+  /* Reveal flash: a deep link ("View diagnostics", footer issue button)
+     briefly highlights the row it just opened. */
+  .wd-acc-item[data-flash="true"] {
+    animation: wd-acc-flash 1.4s var(--wd-ease);
+  }
+  /* Open/close animates height via grid 0fr→1fr at the same 160ms the
+     chevron rotates — the content follows the affordance, never snaps. */
+  .wd-acc-collapse {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows var(--wd-dur-base) var(--wd-ease);
+  }
+  .wd-acc-collapse[data-open="true"] { grid-template-rows: 1fr; }
+  .wd-acc-collapse-inner {
+    overflow: hidden;
+    min-height: 0;
+  }
+  /* Animating content must never intercept a click: a closed (or closing)
+     body is inert to the pointer, and a section mid-transition (data-settling,
+     cleared ~220ms after toggle) drops pointer-events while everything under
+     it is still sliding into place. */
+  .wd-acc-collapse:not([data-open="true"]) .wd-acc-collapse-inner,
+  .wd-acc-collapse[data-settling="true"] {
+    pointer-events: none;
+  }
+  .wd-acc-body {
+    padding: var(--wd-space-3) var(--wd-space-3) var(--wd-space-3) var(--wd-space-6);
+    font-size: var(--wd-text-sm);
+    color: var(--wd-text-primary);
+  }
+  /* Flush variant: the accordion IS the card body — no inner frame (cards
+     never nest); hairline dividers run full-bleed to the card edge, and the
+     body indents to the section-title x (16px pad + 14px chevron + 8px gap). */
+  .wd-acc[data-flush="true"] {
+    border: none;
+    background: transparent;
+    border-radius: 0 0 calc(var(--wd-radius-lg) - 1px) calc(var(--wd-radius-lg) - 1px);
+  }
+  /* One header anatomy: EXACTLY 36px, one line, chevron · title · badge.
+     Subtitles are banned from headers (they belong in bodies), so headers
+     with and without badges or actions all land on the same 36px rule.
+     12px pad + the head's 4px inset = the same 16px optical title/badge x
+     the card header uses, while the hover wash stays a rounded island. */
+  .wd-acc[data-flush="true"] .wd-acc-row {
+    height: 36px;
+    min-height: 36px;
+    padding: 0 var(--wd-space-3);
+  }
+  .wd-acc[data-flush="true"] .wd-acc-head:has(.wd-acc-actions) .wd-acc-row {
+    padding-right: var(--wd-space-2);
+  }
+  .wd-acc[data-flush="true"] .wd-acc-body {
+    padding: var(--wd-space-1) var(--wd-space-4) var(--wd-space-4) 38px;
+  }
+  /* A void must not stretch a 1300px card — the well stays a readable width. */
+  .wd-acc[data-flush="true"] .wd-empty { max-width: 560px; }
+
+  /* ── Inspector rail (detected-config sections) ────────────────────────────
+     One data vocabulary for everything the designer inferred from the source:
+     an overline-headed slot table with LIVE values, mono handler/target rows
+     with dimmed kind namespaces, a live event log, and wired-kind dots. */
+
+  /* Slot table: overline header row (24px), 28px mono data rows, hairline
+     dividers; values sit NEXT to their keys — capped width, never flushed to
+     the far edge of a wide card. */
+  .wd-ins-table {
+    display: grid;
+    grid-template-columns: auto minmax(64px, 1fr) minmax(48px, auto);
+    max-width: 380px;
+  }
+  /* Column rhythm via cell padding, not gap — the hairlines stay continuous. */
+  .wd-ins-th:not(:last-child),
+  .wd-ins-td:not(:last-child) { padding-right: var(--wd-space-4); }
+  .wd-ins-tr { display: contents; }
+  .wd-ins-th {
+    display: flex;
+    align-items: center;
+    height: 24px;
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--wd-text-tertiary);
+    white-space: nowrap;
+  }
+  .wd-ins-td {
+    display: flex;
+    align-items: center;
+    min-height: 28px;
+    min-width: 0;
+    border-top: 1px solid var(--wd-border-subtle);
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-primary);
+  }
+  .wd-ins-th[data-num="true"],
+  .wd-ins-td[data-num="true"] {
+    justify-content: flex-end;
+    font-variant-numeric: tabular-nums;
+  }
+  /* Index cells ("[0]") match the Handlers "#0" gutter EXACTLY — same 11px
+     mono, same muted token: two sizes for one role at one alignment column
+     read as an accident, not a hierarchy. */
+  .wd-ins-td[data-dim="true"] {
+    color: var(--wd-text-tertiary);
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+  }
+
+  /* Mono record rows (handlers): 28px, index gutter, dimmed namespace. */
+  .wd-ins-rows {
+    display: flex;
+    flex-direction: column;
+    max-width: 560px;
+  }
+  .wd-ins-row {
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-2);
+    min-height: 28px;
+    min-width: 0;
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-primary);
+  }
+  .wd-ins-row + .wd-ins-row { border-top: 1px solid var(--wd-border-subtle); }
+  .wd-ins-idx {
+    flex-shrink: 0;
+    width: 24px;
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    color: var(--wd-text-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
+  /* Kind names truncate TAIL-ONLY: the dim family namespace ("input.") is
+     the semantic signal that routes the eye — front-truncating it down to
+     "…fn-bottom-knob" left the row's colored dot as the only family cue. The
+     prefix is therefore unshrinkable; under pressure the LEAF end-ellipsizes
+     ("input.fn-bottom-k…"), and title= on .wd-ins-kind keeps the full kind
+     recoverable on hover. */
+  .wd-ins-kind {
+    display: flex;
+    min-width: 0;
+    max-width: 100%;
+    white-space: nowrap;
+  }
+  .wd-ins-kindpre {
+    color: var(--wd-text-tertiary);
+    flex: 0 0 auto;
+  }
+  .wd-ins-kindleaf {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* Detail text (handler params, log payloads) gives way before the kind box
+     does — and the kind box, squeezed, spends the loss on its prefix first. */
+  .wd-ins-detail {
+    flex: 0 30 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--wd-text-tertiary);
+  }
+
+  /* DOM targets: id → write-method pairs; multi-column when the card is wide,
+     single column in the 340px rail (auto-fill handles both). */
+  .wd-ins-targets {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    column-gap: var(--wd-space-6);
+    max-width: 680px;
+  }
+  /* Uniform binding: the per-row method labels are gone (one summary line
+     under the list carries the type once), so id columns pack tighter. */
+  .wd-ins-targets[data-uniform="true"] {
+    grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+    column-gap: var(--wd-space-4);
+  }
+  .wd-ins-target {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--wd-space-2);
+    min-height: 26px;
+    min-width: 0;
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+  }
+  .wd-ins-target-id {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--wd-text-primary);
+  }
+  .wd-ins-hash { color: var(--wd-text-tertiary); }
+  .wd-ins-target-method {
+    flex-shrink: 0;
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    color: var(--wd-text-tertiary);
+  }
+
+  /* Live event log: newest first; a freshly-landed row flashes ember once.
+     Rows carry a family dot (tick = gray, input = ember, host = blue), a
+     signed delta chip for knob detents, and a ×N counter when consecutive
+     identical events coalesced into one row. */
+  .wd-ins-log {
+    display: flex;
+    flex-direction: column;
+    max-width: 640px;
+  }
+  .wd-ins-logrow {
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-2);
+    min-height: 28px;
+    min-width: 0;
+    width: 100%;
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+  }
+  .wd-ins-logitem { min-width: 0; }
+  .wd-ins-logitem + .wd-ins-logitem { border-top: 1px solid var(--wd-border-subtle); }
+  .wd-ins-logitem[data-new="true"] { animation: wd-log-in 800ms var(--wd-ease); }
+  /* Failed dispatches are disclosure BUTTONS: the row stays one line and a
+     click expands the full failure message below — never a native title=. */
+  button.wd-ins-logrow {
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    font: inherit;
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    cursor: pointer;
+    border-radius: var(--wd-radius-xs);
+  }
+  button.wd-ins-logrow:hover { background: var(--wd-surface-hover); }
+  .wd-ins-logchev {
+    flex-shrink: 0;
+    color: var(--wd-text-tertiary);
+    transition: transform var(--wd-dur-base) var(--wd-ease);
+  }
+  button.wd-ins-logrow[aria-expanded="true"] .wd-ins-logchev { transform: rotate(90deg); }
+  .wd-ins-logmsg {
+    margin: 0 0 var(--wd-space-2) 14px; /* aligns under the label, past the dot */
+    padding: var(--wd-space-2) 10px;
+    max-height: 120px;
+    overflow: auto;
+    overscroll-behavior: contain;
+    background: var(--wd-danger-subtle);
+    border-left: 2px solid var(--wd-danger-border);
+    border-radius: var(--wd-radius-xs);
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    color: var(--wd-text-primary);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  /* Session divider: a labeled rule marking a preset load — rows BELOW it
+     belong to the previous widget and can never read as current output. */
+  .wd-ins-logsession {
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-2);
+    min-height: 26px;
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    font-weight: 500;
+    color: var(--wd-text-tertiary);
+    white-space: nowrap;
+  }
+  .wd-ins-logsession::before,
+  .wd-ins-logsession::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--wd-border-strong);
+    min-width: var(--wd-space-3);
+  }
+  .wd-ins-logsession-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  /* The divider IS the boundary — suppress the plain hairline beside it. */
+  .wd-ins-logsession + .wd-ins-logitem { border-top: none; }
+  /* Log rows never truncate the event KIND — pressure squeezes the message
+     detail instead ("tick.1s" stays whole, the preview error ellipsizes). */
+  .wd-ins-logrow .wd-ins-kind { flex: 0 0 auto; }
+  .wd-ins-logdot {
+    flex-shrink: 0;
+    width: 6px; /* documented half-step exception (dot) */
+    height: 6px;
+    border-radius: var(--wd-radius-full);
+    background: var(--wd-text-disabled);
+  }
+  /* Family swatch colors key off data-family generically so the same rules
+     paint the log rows AND the footer legend chips — one source of truth. */
+  [data-family="input"] > .wd-ins-logdot { background: var(--wd-accent); }
+  [data-family="host"]  > .wd-ins-logdot { background: var(--wd-info); }
+  [data-family="error"] > .wd-ins-logdot { background: var(--wd-danger); }
+  [data-family="sys"]   > .wd-ins-logdot {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--wd-text-disabled);
+  }
+  .wd-ins-logrow[data-family="error"] .wd-ins-loglabel { color: var(--wd-danger); }
+  /* The label is a flex row, NOT one inline text run: the kind box and the
+     detail truncate independently, and the kind's dim family prefix never
+     truncates at all — pressure end-ellipsizes the leaf tail (see
+     .wd-ins-kindpre/.wd-ins-kindleaf) and then the detail, so "input." is
+     always on screen. title= carries the full untruncated label. */
+  .wd-ins-loglabel {
+    flex: 1;
+    display: flex;
+    align-items: baseline;
+    min-width: 0;
+    white-space: nowrap;
+    color: var(--wd-text-primary);
+  }
+  .wd-ins-logdetail {
+    flex: 0 30 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-left: 1ch;
+    color: var(--wd-text-tertiary);
+  }
+  /* Knob detents: a right-aligned signed chip — +1 ember, −1 muted red —
+     never the same ink as the kind name beside it. */
+  .wd-ins-logdelta {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 16px;
+    min-width: 20px;
+    padding: 0 5px;
+    border-radius: var(--wd-radius-full);
+    background: var(--wd-accent-subtle);
+    color: var(--wd-accent-strong);
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .wd-ins-logdelta[data-neg="true"] {
+    background: var(--wd-danger-subtle);
+    color: var(--wd-danger);
+  }
+  /* Coalesced-run counter: quiet neutral chip, live tabular count. */
+  .wd-ins-logcount {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 16px;
+    min-width: 20px;
+    padding: 0 5px;
+    border-radius: var(--wd-radius-full);
+    background: var(--wd-surface-inset);
+    color: var(--wd-text-secondary);
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+  .wd-ins-logtime {
+    flex-shrink: 0;
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    color: var(--wd-text-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Diagnostics rows: severity icon + human summary; raw compiler text stays
+     behind the shared "Show details" disclosure. */
+  .wd-ins-diag {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wd-space-2);
+    max-width: 760px;
+  }
+  .wd-ins-diagrow {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--wd-space-2);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-primary);
+  }
+  .wd-ins-diagicon { flex-shrink: 0; margin-top: 2px; }
+  /* Summary text: NEVER a mid-word character slice. Unclamped it wraps in
+     full; when a "Show details" disclosure exists, line-clamp caps it at
+     three RENDERED lines — clipping lands on a line boundary and reads as
+     deliberate, with the full message one click below. */
+  .wd-ins-diagtext { min-width: 0; overflow-wrap: anywhere; }
+  .wd-ins-diagtext[data-clamp="true"] {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+  .wd-ins-diagrow[data-sev="error"]   .wd-ins-diagicon { color: var(--wd-danger); }
+  .wd-ins-diagrow[data-sev="warning"] .wd-ins-diagicon { color: var(--wd-warning); }
+  .wd-ins-diagrow[data-sev="info"]    .wd-ins-diagicon { color: var(--wd-info); }
+  .wd-ins-diagsrc {
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    color: var(--wd-text-tertiary);
+    white-space: nowrap;
+  }
+  .wd-ins-okrow {
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-2);
+    min-height: 24px;
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-secondary);
+  }
+  .wd-ins-okrow svg { color: var(--wd-success); flex-shrink: 0; }
+  /* Preview-only MODE note: informational ink, never a counted diagnostic —
+     a deliberate preview-runtime widget is a mode, not a defect. */
+  .wd-ins-modenote {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--wd-space-2);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-secondary);
+    max-width: 760px;
+  }
+  .wd-ins-modenote svg { color: var(--wd-info); flex-shrink: 0; margin-top: 2px; }
+  .wd-ins-modenote code {
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-2xs);
+  }
+  .wd-ins-okrow + .wd-ins-modenote,
+  .wd-ins-diag + .wd-ins-modenote { margin-top: var(--wd-space-2); }
+
+  /* Supported kinds: the full device event surface; an ember dot marks kinds
+     the current script already handles. */
+  .wd-ins-kinds {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    column-gap: var(--wd-space-6);
+    max-width: 640px;
+  }
+  .wd-ins-kindrow {
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-2);
+    min-height: 26px;
+    min-width: 0;
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-tertiary);
+  }
+  .wd-ins-kindrow[data-on="true"] { color: var(--wd-text-primary); }
+  .wd-ins-kinddot {
+    flex-shrink: 0;
+    width: 6px; /* documented half-step exception (dot) */
+    height: 6px;
+    border-radius: var(--wd-radius-full);
+    background: var(--wd-text-disabled);
+  }
+  .wd-ins-kindrow[data-on="true"] .wd-ins-kinddot { background: var(--wd-accent); }
+
+  /* Footnote under a data body ("Showing the last 15 of 96", dot legend). */
+  .wd-ins-note {
+    margin-top: var(--wd-space-2);
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    color: var(--wd-text-tertiary);
+  }
+  /* Event-log footer legend: what each family dot means, in the families'
+     own swatches — the colors are load-bearing, so the key lives with the
+     data (mirroring the DOM-targets "All 9 × textContent." footer). */
+  .wd-ins-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: var(--wd-space-3);
+    row-gap: 2px;
+  }
+  .wd-ins-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: var(--wd-font-mono);
+  }
+  /* Budget meters inside the wide Inspect card: two columns, capped at a
+     readable measure. */
+  .wd-ins-meters { max-width: 940px; }
+
+  /* ── Inspect tab: two-column data sheet ──────────────────────────────────
+     The full Inspector is a grid, not a 1400px single column: State slots +
+     Handlers on the left, DOM targets + Event log on the right (split by one
+     vertical hairline), Diagnostics / budgets / supported kinds as full-width
+     rows below. Inside the grid every list, table, and divider spans its
+     full column — one consistent right edge, no ragged x-positions. */
+  .wd-ins-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+  .wd-ins-gridcol { min-width: 0; }
+  .wd-ins-gridcol + .wd-ins-gridcol { border-left: 1px solid var(--wd-border-subtle); }
+  .wd-ins-gridspan {
+    grid-column: 1 / -1;
+    min-width: 0;
+    border-top: 1px solid var(--wd-border-subtle);
+  }
+  @media (max-width: 1279px) {
+    .wd-ins-grid { grid-template-columns: minmax(0, 1fr); }
+    .wd-ins-gridcol + .wd-ins-gridcol {
+      border-left: none;
+      border-top: 1px solid var(--wd-border-subtle);
+    }
+    .wd-ins-gridspan { grid-column: auto; }
+  }
+  /* Full-column content: the width caps that keep the 340px rail tidy are
+     lifted inside the grid — rules and rows share the column's edge. */
+  .wd-ins-grid .wd-ins-table,
+  .wd-ins-grid .wd-ins-rows,
+  .wd-ins-grid .wd-ins-log,
+  .wd-ins-grid .wd-ins-targets,
+  .wd-ins-grid .wd-acc[data-flush="true"] .wd-empty { max-width: none; }
+  /* Prose-y bodies keep a readable measure (they carry no divider rules). */
+  .wd-ins-grid .wd-ins-diag { max-width: 880px; }
+  /* Rail meters: same fixed-column discipline in 284px of width — label 76px,
+     value 92px right-aligned at 11px, the track owns the remainder so all
+     four bars share one start and one end x. */
+  .wd-ins-meters-rail .wd-meter {
+    grid-template-columns: 76px minmax(32px, 1fr) 92px;
+    gap: var(--wd-space-2);
+  }
+  .wd-ins-meters-rail .wd-meter-label {
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+  }
+  .wd-ins-meters-rail .wd-meter-value {
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+  }
+
+  /* ── Empty state ──────────────────────────────────────────────────────── */
+  /* Solid recessed well, never dashed — dashed borders are reserved for drop
+     targets, and a tab with two empties side by side must not read as a
+     wireframe. The inset surface + a hairline is recess enough. */
+  .wd-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: var(--wd-space-2);
+    padding: var(--wd-space-8);
+    background: var(--wd-surface-inset);
+    border: 1px solid var(--wd-border-subtle);
+    border-radius: var(--wd-radius-md);
+  }
+  .wd-empty-icon { color: var(--wd-text-disabled); }
+  .wd-empty-title {
+    font-size: var(--wd-text-sm);
+    line-height: 20px;
+    font-weight: 600;
+    color: var(--wd-text-secondary);
+  }
+  .wd-empty-hint {
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-tertiary);
+    max-width: 340px;
+  }
+  .wd-empty-hint code {
+    font-family: var(--wd-font-mono);
+    font-size: 11px;
+    color: var(--wd-text-secondary);
+  }
+  /* sm: fits accordion bodies and the 340px rail. */
+  .wd-empty[data-size="sm"] {
+    padding: var(--wd-space-5) var(--wd-space-4);
+    gap: var(--wd-space-1);
+  }
+  .wd-empty[data-size="sm"] .wd-empty-icon { margin-bottom: var(--wd-space-1); }
+
+  /* ── Inline callout ───────────────────────────────────────────────────── */
+  .wd-callout {
+    display: flex;
+    gap: var(--wd-space-2);
+    align-items: flex-start;
+    padding: var(--wd-space-3);
+    border-radius: var(--wd-radius-md);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    border-left: 2px solid transparent;
+    /* Tone changes cross-fade — property-scoped like every other surface
+       (never `all`, which would animate layout on mount). */
+    transition: background-color var(--wd-dur-fast) var(--wd-ease),
+                border-color var(--wd-dur-fast) var(--wd-ease),
+                color var(--wd-dur-fast) var(--wd-ease);
+  }
+  .wd-callout[data-tone="info"] {
+    background: var(--wd-info-subtle);
+    border-left-color: var(--wd-info-border);
+    color: var(--wd-text-primary);
+  }
+  .wd-callout[data-tone="info"] .wd-callout-icon { color: var(--wd-info); }
+  .wd-callout[data-tone="success"] {
+    background: var(--wd-success-subtle);
+    border-left-color: var(--wd-success-border);
+    color: var(--wd-text-primary);
+  }
+  .wd-callout[data-tone="success"] .wd-callout-icon { color: var(--wd-success); }
+  .wd-callout[data-tone="warning"] {
+    background: var(--wd-warning-subtle);
+    border-left-color: var(--wd-warning-border);
+    color: var(--wd-text-primary);
+  }
+  .wd-callout[data-tone="warning"] .wd-callout-icon { color: var(--wd-warning); }
+  .wd-callout[data-tone="danger"] {
+    background: var(--wd-danger-subtle);
+    border-left-color: var(--wd-danger-border);
+    color: var(--wd-text-primary);
+  }
+  .wd-callout[data-tone="danger"] .wd-callout-icon { color: var(--wd-danger); }
+  .wd-callout-icon { flex-shrink: 0; margin-top: 1px; }
+  .wd-callout-link {
+    padding: 0;
+    border: none;
+    background: transparent;
+    font: inherit;
+    font-weight: 500;
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  .wd-callout-link:hover { opacity: 0.8; }
+
+  /* "Show details" disclosure inside an IssueBlock: the human summary leads;
+     the raw compiler text lives here, in a mono scroll area, never verbatim
+     in shell chrome. */
+  .wd-disclose {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 6px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    font-weight: 500;
+    color: inherit;
+    opacity: 0.85;
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  .wd-disclose:hover { opacity: 1; }
+  .wd-disclose-chevron { transition: transform var(--wd-dur-base) var(--wd-ease); }
+  .wd-disclose[aria-expanded="true"] .wd-disclose-chevron { transform: rotate(90deg); }
+  /* Link-flavored disclose ("Go to source"): accent ink, same anatomy. */
+  .wd-disclose[data-link] { color: var(--wd-accent); opacity: 1; }
+  .wd-disclose[data-link]:hover { color: var(--wd-accent-hover); }
+  /* Meta row under a diagnostic summary: [Go to source] [Show details]. */
+  .wd-ins-diagmeta {
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-4);
+  }
+  .wd-ins-diagmeta .wd-disclose { margin-top: 6px; }
+  /* Action row inside an IssueBlock: [Show details] [Copy error] — text
+     actions sharing one gap, same anatomy as every other disclose. */
+  .wd-issue-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-4);
+  }
+  .wd-issue-detail {
+    display: block;
+    margin: 6px 0 2px;
+    padding: var(--wd-space-2) 10px;
+    max-height: 160px;
+    overflow: auto;
+    overscroll-behavior: contain;
+    background: var(--wd-code-bg);
+    border: 1px solid var(--wd-border-subtle);
+    border-radius: var(--wd-radius-sm);
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    color: var(--wd-code-text);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  /* Position footer inside the detail block ("— line 12, column 8"). */
+  .wd-issue-detail-pos { color: var(--wd-text-tertiary); }
+
+  /* ── Tooltip (portal, fixed) ──────────────────────────────────────────── */
+  .wd-tooltip {
+    position: fixed;
+    z-index: 60;
+    pointer-events: none;
+    background: var(--wd-surface-inverse);
+    color: var(--wd-text-inverse);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    font-weight: 500;
+    border-radius: var(--wd-radius-sm);
+    padding: 6px var(--wd-space-2);
+    box-shadow: var(--wd-shadow-2);
+    max-width: 240px;
+  }
+  /* Secondary line in a tooltip (e.g. a preset chip's pipeline reach). */
+  .wd-tooltip-note {
+    display: block;
+    margin-top: 2px;
+    font-weight: 400;
+    opacity: 0.72;
+  }
+
+  /* ── Popover (portal, fixed — anchored menus/settings) ────────────────── */
+  .wd-popover {
+    position: fixed;
+    z-index: 60;
+    background: var(--wd-surface-raised);
+    border: 1px solid var(--wd-border-subtle);
+    border-radius: var(--wd-radius-md);
+    box-shadow: var(--wd-shadow-3);
+    padding: var(--wd-space-1);
+    min-width: 240px;
+  }
+  .wd-menu { display: flex; flex-direction: column; }
+  /* A menu row that IS a switch: label + caption left, the track right. */
+  .wd-menurow {
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-3);
+    width: 100%;
+    text-align: left;
+    padding: var(--wd-space-2) var(--wd-space-2);
+    border: none;
+    border-radius: var(--wd-radius-sm);
+    background: transparent;
+    cursor: pointer;
+    transition: background-color var(--wd-dur-fast) var(--wd-ease);
+  }
+  .wd-menurow:hover { background: var(--wd-surface-hover); }
+  .wd-menurow:focus-visible {
+    outline: 2px solid var(--wd-ring);
+    outline-offset: -2px;
+  }
+  .wd-menurow-main { min-width: 0; flex: 1; }
+  .wd-menurow-label {
+    display: block;
+    font-size: var(--wd-text-sm);
+    line-height: 20px;
+    font-weight: 500;
+    color: var(--wd-text-primary);
+  }
+  .wd-menurow-caption {
+    display: block;
+    font-size: var(--wd-text-xs);
+    line-height: 16px;
+    color: var(--wd-text-tertiary);
+  }
+  /* Switch track + thumb — accent when on, neutral when off. */
+  .wd-switch {
+    position: relative;
+    flex-shrink: 0;
+    width: 28px;
+    height: 16px;
+    border-radius: var(--wd-radius-full);
+    background: var(--wd-border-strong);
+    transition: background-color var(--wd-dur-base) var(--wd-ease);
+  }
+  .wd-switch[data-on="true"] { background: var(--wd-accent); }
+  .wd-switch-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 12px;
+    height: 12px;
+    border-radius: var(--wd-radius-full);
+    background: var(--wd-surface-panel);
+    box-shadow: var(--wd-shadow-1);
+    transition: transform var(--wd-dur-base) var(--wd-ease);
+  }
+  .wd-switch[data-on="true"] .wd-switch-thumb { transform: translateX(12px); }
+
+  /* Disabled buttons that still need their tooltip: the wrapper span carries
+     the hover handlers, so the button itself must stop eating the pointer. */
+  .wd-btn-tippable:disabled { pointer-events: none; }
+
+  /* ── Status dot ───────────────────────────────────────────────────────── */
+  .wd-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: var(--wd-radius-full);
+    flex-shrink: 0;
+  }
+  .wd-dot[data-state="idle"]  { background: var(--wd-text-disabled); }
+  .wd-dot[data-state="busy"]  { background: var(--wd-accent); animation: wd-pulse 1.6s ease-in-out infinite; }
+  .wd-dot[data-state="ok"]    { background: var(--wd-success); }
+  .wd-dot[data-state="warn"]  { background: var(--wd-warning); }
+  .wd-dot[data-state="error"] { background: var(--wd-danger); }
+  .wd-dot[data-state="info"]  { background: var(--wd-info); }
+
+  /* ── Spinner ──────────────────────────────────────────────────────────── */
+  .wd-spinner {
+    animation: wd-spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+
+  /* ── Divider ──────────────────────────────────────────────────────────── */
+  .wd-divider {
+    height: 1px;
+    background: var(--wd-border-subtle);
+    width: 100%;
+  }
+  .wd-divider-v {
+    width: 1px;
+    height: 16px;
+    background: var(--wd-border-subtle);
+  }
+
+  /* ── Budget meters (§4.14) ────────────────────────────────────────────── */
+  .wd-meters {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--wd-space-12);
+    row-gap: var(--wd-space-1);
+  }
+  @media (max-width: 900px) {
+    .wd-meters { grid-template-columns: minmax(0, 1fr); }
+  }
+  /* Fixed label and value columns: every track in a stack starts AND ends on
+     the same x — the value's width ("— / 98,304" vs "56,599 / 98,304") must
+     never decide where a bar stops. 112px seats the widest realistic value
+     ("98,304 / 98,304") at 12px tabular, and the whole recipe fits a 336px
+     grid column (80 + 8 + 88 + 8 + 112 = 296) so a two-column meter stack
+     can never overflow its cell and shear the shared value edge. */
+  .wd-meter {
+    display: grid;
+    grid-template-columns: 80px minmax(88px, 1fr) 112px;
+    align-items: center;
+    gap: var(--wd-space-2);
+    height: 28px;
+  }
+  .wd-meter-label {
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-secondary);
+    white-space: nowrap;
+  }
+  .wd-meter-track {
+    position: relative;
+    display: block;
+    height: 4px;
+    border-radius: var(--wd-radius-full);
+    background: var(--wd-surface-inset);
+  }
+  /* No end tick: the track's own right edge IS the cap — a 1px proud hair
+     read as a stray pixel, never as a datum. */
+  .wd-meter-fill {
+    position: relative;
+    z-index: 1;
+    display: block;
+    height: 100%;
+    border-radius: var(--wd-radius-full);
+    background: var(--wd-accent);
+    transition: width var(--wd-dur-slow) var(--wd-ease);
+  }
+  /* Utilization thresholds (see budgetTone in ui.tsx — the ONE mapping):
+     ember < 70%, amber 70–90%, red ≥ 90% — the same warning/danger tokens
+     the diagnostics badges use, so escalation reads system-wide. */
+  .wd-meter-fill[data-tone="warning"] { background: var(--wd-warning); }
+  .wd-meter-fill[data-tone="danger"]  { background: var(--wd-danger); }
+  /* Any measured non-zero value shows at least a 3px pip (the component also
+     floors width at 2% of track) — a near-empty budget must read as
+     deliberately near-empty, never as a sub-pixel rendering artifact. */
+  .wd-meter-fill[data-nonzero="true"] { min-width: 3px; }
+  .wd-meter-value {
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-primary);
+    white-space: nowrap;
+    text-align: right;
+  }
+  .wd-meter-value [data-empty] { color: var(--wd-text-tertiary); }
+  .wd-meter-sep {
+    color: var(--wd-text-disabled);
+    margin: 0 3px;
+  }
+
+  /* ── Code block (byte dumps) ──────────────────────────────────────────── */
+  .wd-codeblock {
+    border: 1px solid var(--wd-border-subtle);
+    border-radius: var(--wd-radius-md);
+    background: var(--wd-code-bg);
+    overflow: hidden;
+  }
+  .wd-codeblock-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--wd-space-2);
+    height: 28px;
+    padding: 0 var(--wd-space-1) 0 var(--wd-space-3);
+    box-shadow: inset 0 -1px 0 var(--wd-border-subtle);
+  }
+  /* Fold math: max-height = 12px top padding + N whole 18px lines, so the
+     at-rest cut lands EXACTLY on a line boundary — never mid-glyph. The 12px
+     bottom padding scrolls into view with the last line, so the frame border
+     never sits on it either. */
+  .wd-codeblock-body {
+    display: block;
+    margin: 0;
+    padding: var(--wd-space-3);
+    max-height: calc(6 * 18px + var(--wd-space-3));
+    overflow: auto;
+    overscroll-behavior: contain;
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-code-text);
+    white-space: pre-wrap;
+    word-break: break-all;
+    user-select: all;
+  }
+  /* Measured overflow while collapsed (the F2UP dump): the fold clips — no
+     half-scrolled in-between — and the last ~1.5 lines fade into the code
+     background, so the truncation reads as deliberate, never as a layout
+     accident. "Show all" is the path to the rest. */
+  .wd-codeblock-body[data-clipped] {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(180deg, #000 calc(100% - 26px), transparent 100%);
+    mask-image: linear-gradient(180deg, #000 calc(100% - 26px), transparent 100%);
+  }
+  .wd-codeblock-body[data-expanded="true"] {
+    max-height: calc(25 * 18px + var(--wd-space-3));
+  }
+  /* The head-bar fold toggle shares the wd-disclose anatomy (text + rotating
+     chevron) and KEEPS it in both states — the control never changes class,
+     weight, or fill between "Show all" and "Collapse". */
+  .wd-codeblock-head .wd-disclose { margin-top: 0; }
+  /* Fit variant (Host data): the block sizes to its content — the expected-
+     response JSON renders whole at rest. Only a genuinely long dump
+     (data-collapsible) folds, at a 16-line boundary, and Expand takes it to a
+     32-line scroll area. */
+  .wd-codeblock-body[data-fit="true"] { max-height: none; }
+  .wd-codeblock-body[data-fit="true"][data-collapsible="true"] {
+    max-height: calc(32 * 18px + var(--wd-space-3));
+  }
+  .wd-codeblock-body[data-fit="true"][data-collapsible="true"]:not([data-expanded="true"]) {
+    max-height: calc(16 * 18px + var(--wd-space-3));
+  }
+  /* Auto-hiding overlay scrollbars on every code surface: thin, transparent
+     track, thumb only under the pointer — chrome never parks over content. */
+  .wd-codeblock-body,
+  .wd-hd-serverlog,
+  .wd-issue-detail,
+  .wd-textarea {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+  .wd-codeblock-body:hover,
+  .wd-hd-serverlog:hover,
+  .wd-issue-detail:hover,
+  .wd-textarea:hover {
+    scrollbar-color: var(--wd-border-strong) transparent;
+  }
+
+  /* ═══ Device stage (§5) — the signature moment ═══════════════════════════
+     A Figma-style dotted canvas with a charcoal hardware bezel resting on it.
+     Everything here wraps AROUND the untouched preview iframe. */
+  .wd-stage {
+    position: relative;
+    background: var(--wd-surface-panel);
+    border: 1px solid var(--wd-border-subtle);
+    border-radius: var(--wd-radius-lg);
+    box-shadow: var(--wd-shadow-1);
+    overflow: hidden;
+  }
+  /* The Design-tab stage fills its pane (the fixed-height left column of
+     .wd-design-grid) — the canvas itself scrolls at 3×/4× zoom, the page
+     never grows sideways, and on short viewports the PANE scrolls while the
+     app shell stays fixed. Narrow (stacked) layouts fall back to a viewport-
+     derived height: 92px header + 32px footer + 2 × 20px padding = 164. */
+  .wd-stage:not([data-embedded="true"]) {
+    height: 100%;
+    min-height: 560px;
+  }
+  @media (max-width: 1099px) {
+    .wd-stage:not([data-embedded="true"]) { height: calc(100vh - 160px); }
+  }
+  /* The canvas is a Figma-style infinite surface: the frame stays centered
+     (justify/align center keep it centered even while it overflows BOTH
+     edges), there are no scrollbars — you pan (drag / scroll-wheel) and zoom
+     (⌘/Ctrl+scroll, presets, Fit) instead. overflow:clip (not hidden): a
+     hidden box is still a scroll container, and a stray native scrollTop
+     (focus scroll, engine quirk) would silently un-center the frame with no
+     UI to ever put it back — clip forbids the offset outright. */
+  .wd-stage-canvas {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 560px;
+    overflow: clip;
+    overscroll-behavior: contain;
+    padding: var(--wd-space-6);
+    background: var(--wd-canvas-bg);
+    /* The grid lives in CANVAS-space, not wallpaper-space: it translates
+       with the pan (--wd-grid-x/y mirror the pan transform) and scales with
+       the zoom (--wd-grid-size, clamped to an 8–32px pitch in octaves by the
+       stage), so dragging at 4× slides the dots WITH the device. */
+    background-image: radial-gradient(var(--wd-canvas-dot) 1px, transparent 1px);
+    background-size: var(--wd-grid-size, 16px) var(--wd-grid-size, 16px);
+    background-position: calc(50% + var(--wd-grid-x, 0px)) calc(50% + var(--wd-grid-y, 0px));
+  }
+  /* Scroll shadows: when the frame overflows a canvas edge, that edge casts a
+     soft inset gradient — the affordance that more device exists off-screen
+     and the canvas pans. Sits above the canvas, below the HUD pills. */
+  .wd-stage-clip {
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--wd-dur-slow) var(--wd-ease);
+  }
+  .wd-stage-clip[data-on="true"] { opacity: 1; }
+  .wd-stage-clip[data-edge="top"] {
+    inset: 0 0 auto 0;
+    height: 20px;
+    background: linear-gradient(180deg, var(--wd-stage-clip), transparent);
+  }
+  .wd-stage-clip[data-edge="bottom"] {
+    inset: auto 0 0 0;
+    height: 20px;
+    background: linear-gradient(0deg, var(--wd-stage-clip), transparent);
+  }
+  .wd-stage-clip[data-edge="left"] {
+    inset: 0 auto 0 0;
+    width: 20px;
+    background: linear-gradient(90deg, var(--wd-stage-clip), transparent);
+  }
+  .wd-stage-clip[data-edge="right"] {
+    inset: 0 0 0 auto;
+    width: 20px;
+    background: linear-gradient(270deg, var(--wd-stage-clip), transparent);
+  }
+  /* The hand tool exists only on the interactive Design-tab stage; the
+     embedded Source-tab preview keeps normal scroll behavior. */
+  .wd-stage:not([data-embedded="true"]) .wd-stage-canvas {
+    touch-action: none;
+    cursor: grab;
+  }
+  .wd-stage-canvas[data-panning="true"] { cursor: grabbing; }
+  /* Pan offset lives on this wrapper as a translate transform — the zoom
+     math inside the aperture is untouched. */
+  .wd-stage-pan { display: flex; flex-shrink: 0; }
+  /* Embedded (Source tab): no floating HUD — the sim status lives in a real
+     toolbar ROW above the canvas, on the panel surface, so nothing ever
+     straddles the card border or collides with its rounded corner. */
+  .wd-stage[data-embedded="true"] {
+    display: flex;
+    flex-direction: column;
+  }
+  .wd-stage-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--wd-space-2);
+    height: 40px;
+    flex-shrink: 0;
+    padding: 0 var(--wd-space-3) 0 var(--wd-space-2);
+    background: var(--wd-surface-panel);
+    border-bottom: 1px solid var(--wd-border-subtle);
+  }
+  .wd-stage-topbar-note {
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    font-weight: 500;
+    color: var(--wd-text-tertiary);
+    white-space: nowrap;
+  }
+  .wd-stage[data-embedded="true"] .wd-stage-canvas {
+    flex: 1;
+    min-height: 420px;
+    padding: var(--wd-space-6) var(--wd-space-4) var(--wd-space-8);
+  }
+
+  /* Frame = Figma-style label + the hardware bezel. Width is set by the
+     bezel; the label uses the width:0/min-width:100% trick so a long name
+     truncates instead of widening the frame. z-index:0 makes the frame a
+     stacking context so the halo's negative z-index stays INSIDE it (above
+     the dot grid, below the device). */
+  .wd-frame {
+    position: relative;
+    z-index: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .wd-frame::before {
+    /* Ambient halo: a faintly lighter pool of canvas behind the device so the
+       charcoal module visibly floats in dark theme (transparent in light). */
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: -72px -96px -96px;
+    border-radius: 50%;
+    background: radial-gradient(closest-side, var(--wd-frame-halo), transparent 74%);
+    pointer-events: none;
+  }
+  .wd-frame-label {
+    width: 0;
+    min-width: 100%;
+    margin-bottom: var(--wd-space-2);
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--wd-text-tertiary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    user-select: none;
+  }
+
+  /* Keyboard bezel: a matte-charcoal hardware module, always dark in both
+     themes — it is a physical object, not app chrome. All chrome dimensions
+     are expressed in 1×-scale units × var(--wd-dz) (set inline from the zoom
+     state) so the hardware keeps its proportions at every zoom level:
+     radius 11u, side padding 8u, and a symmetric 8u of deck above the glass
+     and between glass and chin (one vertical rhythm, on the 4px grid at 2×:
+     16px / 16px). */
+  .wd-bezel {
+    --wd-dz: 2;
+    border-radius: calc(11px * var(--wd-dz));
+    padding: calc(8px * var(--wd-dz)) calc(8px * var(--wd-dz)) 0;
+    background: linear-gradient(180deg, var(--wd-bezel-face), var(--wd-bezel-edge));
+    box-shadow:
+      inset 0 1px 0 var(--wd-bezel-lip),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.5),
+      0 0 0 1px var(--wd-bezel-ring),
+      var(--wd-bezel-shadow);
+  }
+  /* Screen aperture: glass sitting 1px below the bezel face, concentric with
+     the shell (3u + 8u gap = 11u outer). The inline width/height/scale math
+     on the box and iframe is protected — this class only paints the glass. */
+  .wd-aperture {
+    position: relative; /* anchors the empty-render overlay */
+    border-radius: calc(3px * var(--wd-dz));
+    background: #000;
+    overflow: hidden;
+    flex-shrink: 0;
+    box-shadow:
+      inset 0 0 0 1px #000,
+      inset 0 2px 6px rgba(0, 0, 0, 0.8);
+  }
+  /* Empty-render hint: app chrome OVER the glass (never injected into the
+     iframe). Quiet by design — a dashed empty-frame outline and two lines of
+     small text; unscaled, since it is a designer readout, not device pixels. */
+  .wd-aperture-empty {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: var(--wd-space-2);
+    text-align: center;
+    pointer-events: none;
+    color: rgba(255, 255, 255, 0.62);
+    background: rgba(0, 0, 0, 0.20);
+  }
+  .wd-aperture-empty::before {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    border: 1px dashed rgba(255, 255, 255, 0.18);
+    border-radius: 4px;
+  }
+  .wd-aperture-empty-title {
+    font-size: 10px;
+    line-height: 14px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .wd-aperture-empty-hint {
+    font-size: 9px;
+    line-height: 12px;
+    opacity: 0.75;
+  }
+
+  /* ── Device frame (oracle raster) ─────────────────────────────────────────
+     A view layered OVER the design iframe inside the same glass aperture. The
+     canvas paints raw device pixels (never themed); only its surrounding
+     states are app chrome. */
+  .wd-device-view {
+    position: absolute;
+    inset: 0;
+    z-index: 2; /* over the iframe; the empty-render hint sits at z-index 1 */
+    overflow: hidden;
+  }
+  .wd-device-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: block;
+    /* Crisp device pixels at every zoom — never smoothed into the panel. */
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+  }
+  /* Empty / assembling / decode-error state, centered on the black glass. */
+  .wd-device-state {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--wd-space-2);
+    padding: var(--wd-space-4);
+    text-align: center;
+    color: rgba(255, 255, 255, 0.86);
+    background: #000;
+  }
+  .wd-device-state > svg { color: rgba(255, 255, 255, 0.5); }
+  .wd-device-state[data-tone="error"] > svg { color: var(--wd-danger); }
+  .wd-device-state-title {
+    font-size: var(--wd-text-sm);
+    line-height: 18px;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+  .wd-device-state-hint {
+    max-width: 34ch;
+    font-size: var(--wd-text-xs);
+    line-height: 16px;
+    color: rgba(255, 255, 255, 0.6);
+    word-break: break-word;
+  }
+  .wd-device-state .wd-btn { margin-top: var(--wd-space-1); }
+  /* Non-ok oracle result: a small chip at the foot of the glass naming the
+     facade result (torn / generation / format / overflow / …). */
+  .wd-device-chip {
+    position: absolute;
+    z-index: 3;
+    left: 50%;
+    bottom: 8px;
+    transform: translateX(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border-radius: var(--wd-radius-full);
+    background: rgba(0, 0, 0, 0.72);
+    border: 1px solid var(--wd-warning-border);
+    color: #fff;
+    font-size: var(--wd-text-2xs);
+    line-height: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .wd-device-chip > svg { color: var(--wd-warning); }
+
+  /* "Pixel-exact" reassurance, inside the view-toggle toolbar. The short sha is
+     the same value CompilerPanel's #f2up-base64 shows as data-sha256. */
+  .wd-device-verify {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 var(--wd-space-2) 0 6px;
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    font-weight: 500;
+    color: var(--wd-text-secondary);
+    white-space: nowrap;
+  }
+  .wd-device-verify > svg { color: var(--wd-success); flex-shrink: 0; }
+  .wd-device-verify-label { color: var(--wd-text-secondary); }
+  .wd-device-verify-sha {
+    font-family: var(--wd-font-mono);
+    color: var(--wd-text-tertiary);
+    letter-spacing: 0;
+  }
+  /* Chin: a real-height deck (28u, laid out — not an overflow accident) that
+     owns the F1 silhouette: engraved mark, the rotary knob, and the status
+     LED. The top edge is a machined seam line between glass deck and knob
+     deck. */
+  .wd-bezel-foot {
+    height: calc(28px * var(--wd-dz));
+    margin-top: calc(8px * var(--wd-dz));
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    border-top: 1px solid rgba(0, 0, 0, 0.45);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+  .wd-bezel-mark {
+    justify-self: end;
+    font-size: max(7px, calc(5px * var(--wd-dz)));
+    line-height: 1;
+    font-weight: 600;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--wd-bezel-engrave);
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.6);
+    user-select: none;
+    /* Optically re-center: letter-spacing pads the right of the last glyph */
+    margin-right: calc(7px * var(--wd-dz) - 0.24em);
+  }
+  /* The rotary knob — the F1's defining control, pure CSS: brushed cap with
+     a lathed edge and a position tick. It is a real <button>: click/scroll/
+     arrow keys dispatch input.fn-bottom-knob detents into the simulator, and
+     the tick rotates 30° per detent (--wd-knob-turn, set inline) around the
+     cap's center. The cap itself never rotates — its top-light shading is a
+     lighting effect, not a surface feature. */
+  .wd-knob {
+    position: relative;
+    display: block;
+    appearance: none;
+    padding: 0;
+    border: none;
+    width: calc(18px * var(--wd-dz));
+    height: calc(18px * var(--wd-dz));
+    border-radius: var(--wd-radius-full);
+    background: radial-gradient(circle at 50% 30%, #2A2F38, #14171C 62%, #0B0D11);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      inset 0 -1px 1px rgba(0, 0, 0, 0.65),
+      0 0 0 1px rgba(0, 0, 0, 0.55),
+      0 1px 3px rgba(0, 0, 0, 0.50);
+    cursor: pointer;
+    transition: box-shadow var(--wd-dur-fast) var(--wd-ease),
+                filter var(--wd-dur-fast) var(--wd-ease);
+  }
+  /* Hover advertises the interaction the tooltip promises: the cap face
+     brightens ~8%, a soft halo ring appears, and the position tick lights
+     up (rule below) — the knob visibly answers the pointer before any click. */
+  .wd-knob:hover {
+    filter: brightness(1.08);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      inset 0 -1px 1px rgba(0, 0, 0, 0.65),
+      0 0 0 1px rgba(0, 0, 0, 0.55),
+      0 0 0 3px rgba(255, 255, 255, 0.12),
+      0 1px 3px rgba(0, 0, 0, 0.50);
+  }
+  .wd-knob:active {
+    filter: brightness(1.12);
+    background: radial-gradient(circle at 50% 30%, #333945, #171B21 62%, #0B0D11);
+  }
+  .wd-knob::after {
+    content: "";
+    position: absolute;
+    left: calc(50% - max(1.5px, 1.5px * var(--wd-dz)) / 2);
+    top: calc(2.5px * var(--wd-dz));
+    width: max(1.5px, calc(1.5px * var(--wd-dz)));
+    height: calc(4px * var(--wd-dz));
+    border-radius: var(--wd-radius-full);
+    background: rgba(255, 255, 255, 0.28);
+    transform: rotate(var(--wd-knob-turn, 0deg));
+    /* Pivot at the cap's center: the tick sits 2.5u down, cap center at 9u,
+       so the pivot is 6.5u below the tick's own top edge. */
+    transform-origin: 50% calc(6.5px * var(--wd-dz));
+    /* Detents snap with a quick 120ms ease-out — mechanical, not floaty. */
+    transition: transform 120ms var(--wd-ease-out),
+                background-color var(--wd-dur-fast) var(--wd-ease);
+  }
+  .wd-knob:hover::after { background: rgba(255, 255, 255, 0.55); }
+  .wd-knob:active::after { background: rgba(255, 255, 255, 0.70); }
+  .wd-led {
+    justify-self: start;
+    margin-left: calc(7px * var(--wd-dz));
+    width: max(3px, calc(2px * var(--wd-dz)));
+    height: max(3px, calc(2px * var(--wd-dz)));
+    border-radius: var(--wd-radius-full);
+    background: #3A3F47;
+    flex-shrink: 0;
+    transition: background-color var(--wd-dur-fast) var(--wd-ease),
+                box-shadow var(--wd-dur-fast) var(--wd-ease);
+  }
+  .wd-led[data-state="ready"] { background: var(--wd-success); }
+  .wd-led[data-state="running"] {
+    background: var(--wd-accent);
+    box-shadow: 0 0 6px 1px var(--wd-accent-border);
+    animation: wd-pulse 1.6s ease-in-out infinite;
+  }
+  /* Knob detent acknowledgement: the LED blips ember for a beat on every
+     turn, whatever the sim state — the hardware answers the input. */
+  .wd-led[data-flash="true"] {
+    background: var(--wd-accent);
+    box-shadow: 0 0 8px 2px var(--wd-accent-border);
+    animation: none;
+  }
+
+  /* Stage HUD: floats over the canvas corners, never over the device. */
+  .wd-stage-hud {
+    position: absolute;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-2);
+  }
+  /* Every floating cluster sits exactly --wd-stage-inset (12px) off the
+     canvas edge — one shared edge line on all four corners — and every
+     cluster is the SAME 40px elevated toolbar (one chrome grammar per corner
+     tier; readouts and controls differ by content, not by weight). */
+  .wd-stage-hud[data-corner="tl"] { top: var(--wd-stage-inset); left: var(--wd-stage-inset); }
+  .wd-stage-hud[data-corner="tr"] { top: var(--wd-stage-inset); right: var(--wd-stage-inset); }
+  /* Top-center: the Design/Device view toggle. Same edge line as the corners;
+     centered on the canvas and clear of the tl/tr toolbars. */
+  .wd-stage-hud[data-corner="tc"] {
+    top: var(--wd-stage-inset);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  /* Passive readout item inside a stage toolbar (sim status, last event). */
+  .wd-stage-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 var(--wd-space-2);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    font-weight: 500;
+    color: var(--wd-text-secondary);
+    white-space: nowrap;
+  }
+  /* Fixed slot for the sim-state word: sized to the longest label
+     ("Running") so state changes never resize the pill. */
+  .wd-hud-sim-label {
+    display: inline-block;
+    min-width: 52px;
+  }
+  /* Last-event ticker: a labeled readout ("Last event · knob.cw") in the
+     status toolbar, same grammar as the sim-status item beside it. */
+  .wd-hud-ticker-key {
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    font-weight: 500;
+    color: var(--wd-text-tertiary);
+  }
+  .wd-hud-ticker-val {
+    /* Fixed-width slot: the pill's footprint must not jump between "—",
+       tick.100ms and input.fn-bottom-knob (19ch fits the longest built-in;
+       longer custom kinds ellipsize, full value in the title tooltip). */
+    display: inline-block;
+    width: 19ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    letter-spacing: 0;
+    color: var(--wd-text-secondary);
+    animation: wd-ticker-flash 300ms var(--wd-ease);
+  }
+  /* Explicitly-empty readout: reads as "no events yet", not as broken. */
+  .wd-hud-ticker-val[data-empty="true"] {
+    opacity: 0.5;
+    animation: none;
+  }
+
+  /* The one floating-toolbar recipe: status readouts (top-left), sim controls
+     (top-right), and the zoom pill (bottom-right) all share it. Fixed 40px
+     row on the 4px grid; 4px end padding; contents (28px items) center. */
+  .wd-stage-toolbar {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--wd-space-1);
+    height: 40px;
+    padding: 0 var(--wd-space-1);
+    border-radius: var(--wd-radius-full);
+    /* Frosted: at high zoom live widget pixels pass beneath the pills — the
+       blur + 90% wash softens them instead of colliding with the pill edge.
+       Solid fallback first for engines without backdrop-filter. */
+    background: var(--wd-surface-raised);
+    background: color-mix(in srgb, var(--wd-surface-raised) 90%, transparent);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--wd-border-subtle);
+    box-shadow: var(--wd-shadow-3);
+  }
+  /* Auto-tick control: the ONE label treatment (overline) in every host —
+     stage HUD pill and Events drive card render the identical anatomy. */
+  .wd-autotick {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--wd-space-2);
+    min-width: 0;
+  }
+  .wd-autotick-label { white-space: nowrap; user-select: none; }
+  .wd-stage-toolbar .wd-autotick { padding-left: var(--wd-space-1); gap: var(--wd-space-1); }
+  .wd-stage-toolbar-divider {
+    width: 1px;
+    height: 16px;
+    background: var(--wd-border-subtle);
+    flex-shrink: 0;
+  }
+  /* Round the ghost reset so it sits naturally inside the pill. */
+  .wd-stage-toolbar .wd-btn { border-radius: var(--wd-radius-full); }
+
+  /* Floating zoom pill — the Figma-style zoom control. Bottom-RIGHT, because
+     the HUD must never sit over the device and the 620px-tall bezel owns the
+     bottom-center of the canvas. Same 40px toolbar recipe as the top row. */
+  .wd-stage-zoom {
+    position: absolute;
+    z-index: 2;
+    bottom: var(--wd-stage-inset);
+    right: var(--wd-stage-inset);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--wd-space-1);
+    height: 40px;
+    padding: 0 var(--wd-space-1);
+    border-radius: var(--wd-radius-full);
+    /* Same frosted recipe as .wd-stage-toolbar — one chrome grammar. */
+    background: var(--wd-surface-raised);
+    background: color-mix(in srgb, var(--wd-surface-raised) 90%, transparent);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--wd-border-subtle);
+    box-shadow: var(--wd-shadow-3);
+  }
+  /* Live zoom FIELD (Figma-style): shows the exact scale (⌘/Ctrl+scroll can
+     land between presets), and typing a number commits it. Fixed width +
+     tabular numerals so 75% → 400% never shifts the pill's layout. */
+  .wd-zoom-readout {
+    width: 52px;
+    height: 28px;
+    padding: 0 var(--wd-space-2) 0 var(--wd-space-1);
+    border: none;
+    background: transparent;
+    text-align: right;
+    font-family: var(--wd-font-sans);
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    font-weight: 500;
+    color: var(--wd-text-secondary);
+    border-radius: var(--wd-radius-full);
+    transition: color var(--wd-dur-fast) var(--wd-ease);
+  }
+  .wd-zoom-readout:hover { color: var(--wd-text-primary); }
+  .wd-zoom-readout:focus,
+  .wd-zoom-readout:focus-visible {
+    outline: 2px solid var(--wd-ring);
+    outline-offset: -2px;
+    color: var(--wd-text-primary);
+  }
+  .wd-zoom-readout::selection {
+    background: var(--wd-accent-subtle);
+  }
+
+  /* First-run knob hint: a floating micro-pill at the canvas foot (near the
+     bezel's knob chin) — the same frosted chrome grammar as the stage
+     toolbars, one size down. Shown once ever; ViewportShell dismisses it on
+     the first detent or a 6s visible timeout. */
+  .wd-stage-hint {
+    position: absolute;
+    z-index: 2;
+    bottom: var(--wd-stage-inset);
+    left: var(--wd-stage-inset);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--wd-space-2);
+    height: 32px;
+    padding: 0 var(--wd-space-3);
+    border-radius: var(--wd-radius-full);
+    background: var(--wd-surface-raised);
+    background: color-mix(in srgb, var(--wd-surface-raised) 92%, transparent);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--wd-border-subtle);
+    box-shadow: var(--wd-shadow-3);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    font-weight: 500;
+    color: var(--wd-text-secondary);
+    white-space: nowrap;
+    pointer-events: none;
+    animation: wd-hint-in 300ms var(--wd-ease);
+  }
+  .wd-stage-hint svg { color: var(--wd-accent); flex-shrink: 0; }
+  @keyframes wd-hint-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Inset well ───────────────────────────────────────────────────────────
+     The one inner-grouping surface (§3): cards never nest, so sub-sections
+     inside a card body sit on an inset well — radius md, no border, no
+     shadow. Used by the Host-data run/connect sections. */
+  .wd-well {
+    background: var(--wd-surface-inset);
+    border-radius: var(--wd-radius-md);
+    padding: var(--wd-space-3);
+  }
+
+  /* ── Field-level validation message ──────────────────────────────────────
+     12px danger line under the offending input — errors name themselves at
+     the field, never a silent Number()||0 coercion. */
+  .wd-field-error {
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-1);
+    margin-top: var(--wd-space-1);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-danger);
+  }
+  .wd-field-error svg { flex-shrink: 0; }
+
+  /* ── Source tab: editor frame ─────────────────────────────────────────────
+     One frame owns the editing surface: a 40px in-frame toolbar (buffer
+     facts left, recompile mode right), then the CodeMirror surface filling a
+     viewport-derived height. The frame clips the editor's own corners. */
+  .wd-editor {
+    border: 1px solid var(--wd-border-subtle);
+    border-radius: var(--wd-radius-md);
+    background: var(--wd-code-bg);
+    overflow: hidden;
+  }
+  .wd-editor-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--wd-space-3);
+    flex-wrap: wrap;
+    min-height: 40px;
+    padding: var(--wd-space-1) var(--wd-space-2) var(--wd-space-1) var(--wd-space-3);
+    background: var(--wd-surface-panel);
+    box-shadow: inset 0 -1px 0 var(--wd-border-subtle);
+  }
+  .wd-editor-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-2);
+    min-width: 0;
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-tertiary);
+    white-space: nowrap;
+  }
+  .wd-editor-meta .font-mono { color: var(--wd-text-secondary); }
+  .wd-editor-sep {
+    width: 1px;
+    height: 12px;
+    background: var(--wd-border-subtle);
+    flex-shrink: 0;
+  }
+  /* 380 = 48 topbar + 44 presets + card chrome + paddings; the editor keeps
+     400–720px of surface and scrolls internally past that. The height then
+     SNAPS to the line grid (12px top padding + N × 22px lines) so the frame's
+     bottom border always lands exactly on a line boundary — the viewport can
+     fold the document, but it never amputates a glyph. */
+  .wd-editor-body {
+    height: clamp(400px, calc(100vh - 380px), 720px);
+    height: calc(round(down, clamp(400px, calc(100vh - 380px), 720px) - 12px, 22px) + 12px);
+  }
+  .cm-host { height: 100%; }
+  /* Schema editor (Host data): the same CodeMirror chrome at a fixed
+     14-line surface — 12px pad + 14 × 22px, line-snapped like the Source
+     frame. */
+  .wd-hd-editorbody { height: calc(12px + 14 * 22px); }
+
+  /* Dirty dot on a language segment: this buffer differs from what the
+     simulator is running (visible in Apply mode). */
+  .wd-src-dirty {
+    width: 6px; /* documented half-step exception (dot) */
+    height: 6px;
+    border-radius: var(--wd-radius-full);
+    background: var(--wd-accent);
+  }
+
+  /* Buffer rail: per-language byte rows under the combined meter. */
+  .wd-src-bytes { margin-top: var(--wd-space-2); max-width: 260px; }
+  .wd-src-bytesrow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 26px;
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-primary);
+  }
+  .wd-src-bytesrow + .wd-src-bytesrow { border-top: 1px solid var(--wd-border-subtle); }
+  .wd-src-byteslang {
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    color: var(--wd-text-tertiary);
+  }
+  .wd-src-bytesrow[data-active="true"] .wd-src-byteslang { color: var(--wd-text-primary); }
+
+  /* ── Source tab: editor split + event-reference rail ─────────────────────
+     The editor frame's lower region is a flex pair: the CodeMirror body
+     (flex:1, its viewport-derived height unchanged) and the reference rail
+     docked at the right edge as a 300px sibling behind a hairline. The rail
+     scrolls INSIDE an absolutely-positioned inner well, so long content can
+     never stretch the frame past the editor's line-snapped height. Below
+     1280px it overlays the editor's right edge as a drawer instead of
+     collapsing the code surface under ~480px. */
+  .wd-editor-split {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    min-width: 0;
+  }
+  .wd-editor-split > .wd-editor-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .wd-ref-rail {
+    position: relative;
+    width: 300px;
+    flex: none;
+    border-left: 1px solid var(--wd-border-subtle);
+    background: var(--wd-surface-panel);
+  }
+  .wd-ref-scroll {
+    position: absolute;
+    inset: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+    padding-bottom: var(--wd-space-2);
+  }
+  .wd-ref-rail:hover .wd-ref-scroll { scrollbar-color: var(--wd-border-strong) transparent; }
+  @media (max-width: 1279px) {
+    .wd-ref-rail {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 5;
+      box-shadow: var(--wd-shadow-3);
+    }
+  }
+  .wd-ref-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--wd-space-2);
+    min-height: 32px;
+    padding: var(--wd-space-2) var(--wd-space-3) 0;
+  }
+  .wd-ref-count {
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    color: var(--wd-text-tertiary);
+  }
+  .wd-ref-intro {
+    padding: 0 var(--wd-space-3) var(--wd-space-2);
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    color: var(--wd-text-tertiary);
+  }
+  .wd-ref-item { border-top: 1px solid var(--wd-border-subtle); }
+  .wd-ref-row {
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-2);
+    width: 100%;
+    min-height: 32px;
+    padding: 5px var(--wd-space-3);
+    border: none;
+    background: transparent;
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-primary);
+    text-align: left;
+    cursor: pointer;
+    transition: background-color var(--wd-dur-fast) var(--wd-ease);
+  }
+  .wd-ref-row:hover { background: var(--wd-surface-hover); }
+  .wd-ref-row:focus-visible {
+    outline: 2px solid var(--wd-ring);
+    outline-offset: -2px;
+  }
+  .wd-ref-chevron {
+    flex-shrink: 0;
+    color: var(--wd-text-tertiary);
+    transition: transform var(--wd-dur-base) var(--wd-ease);
+  }
+  .wd-ref-row[aria-expanded="true"] .wd-ref-chevron { transform: rotate(90deg); }
+  .wd-ref-commonlabel {
+    font-family: var(--wd-font-sans);
+    font-size: var(--wd-text-xs);
+    color: var(--wd-text-tertiary);
+  }
+  .wd-ref-body { padding: 0 var(--wd-space-3) var(--wd-space-3) 30px; }
+  .wd-ref-blurb {
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-secondary);
+  }
+  .wd-ref-fields {
+    margin: var(--wd-space-2) 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .wd-ref-fieldname {
+    font-family: var(--wd-font-mono);
+    font-size: 11px;
+    line-height: 16px;
+    color: var(--wd-text-primary);
+  }
+  .wd-ref-fielddoc {
+    margin: 0 0 var(--wd-space-1);
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    color: var(--wd-text-tertiary);
+  }
+  .wd-ref-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-2);
+    margin-top: var(--wd-space-2);
+    flex-wrap: wrap;
+  }
+  /* Reference toggle (editor head): the pressed state reads as "docked". */
+  .wd-btn[data-active="true"] {
+    background: var(--wd-surface-active);
+    color: var(--wd-text-primary);
+  }
+
+  /* ── Host data: derived feed wells ───────────────────────────────────────
+     One well per feed (inner grouping = inset well, never a nested card):
+     editable friendly name + the handler jump chip on the head line, then a
+     packed grid — labeled value input · labeled auxiliary input · Send. The
+     field labels are THEMSELVES the user's plain-language names, editable in
+     place: label-recipe text with a dashed affordance on hover/focus. */
+  .wd-feed + .wd-feed { margin-top: var(--wd-space-3); }
+  .wd-feed-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--wd-space-2);
+    margin-bottom: var(--wd-space-2);
+  }
+  .wd-feed-name {
+    flex: 1;
+    min-width: 0;
+    padding: 2px 6px;
+    margin-left: -6px;
+    border: 1px dashed transparent;
+    border-radius: var(--wd-radius-sm);
+    background: transparent;
+    font-family: var(--wd-font-sans);
+    font-size: var(--wd-text-sm);
+    font-weight: 600;
+    line-height: 20px;
+    color: var(--wd-text-primary);
+  }
+  .wd-feed-name::placeholder { color: var(--wd-text-tertiary); font-weight: 500; }
+  .wd-feed-name:hover { border-color: var(--wd-border-strong); }
+  .wd-feed-name:focus {
+    outline: none;
+    border-style: solid;
+    border-color: var(--wd-accent);
+    background: var(--wd-field-bg);
+  }
+  .wd-feed-chip {
+    flex-shrink: 0;
+    padding: 2px 8px;
+    border: 1px solid var(--wd-border-subtle);
+    border-radius: var(--wd-radius-full);
+    background: var(--wd-surface-panel);
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    color: var(--wd-text-secondary);
+    cursor: pointer;
+    transition: color var(--wd-dur-fast) var(--wd-ease),
+                border-color var(--wd-dur-fast) var(--wd-ease);
+  }
+  .wd-feed-chip:hover { color: var(--wd-accent); border-color: var(--wd-accent-border); }
+  .wd-feed-chip:focus-visible { outline: 2px solid var(--wd-ring); outline-offset: 1px; }
+  .wd-feed-grid {
+    display: grid;
+    grid-template-columns: minmax(140px, 1fr) minmax(140px, 1fr) auto;
+    gap: var(--wd-space-3);
+    align-items: start;
+  }
+  /* 18px label + 4px gap: the Send button tops align with the inputs. */
+  .wd-feed-send { padding-top: 22px; }
+  @media (max-width: 720px) {
+    .wd-feed-grid { grid-template-columns: minmax(0, 1fr); }
+    .wd-feed-send { padding-top: 0; }
+  }
+  .wd-feed-fieldlabel {
+    display: block;
+    width: 100%;
+    margin-bottom: 4px;
+    padding: 1px 4px;
+    margin-left: -4px;
+    border: 1px dashed transparent;
+    border-radius: var(--wd-radius-sm);
+    background: transparent;
+    font-family: var(--wd-font-sans);
+    font-size: var(--wd-text-xs);
+    line-height: 16px;
+    color: var(--wd-text-secondary);
+  }
+  .wd-feed-fieldlabel::placeholder { color: var(--wd-text-tertiary); }
+  .wd-feed-fieldlabel:hover { border-color: var(--wd-border-strong); }
+  .wd-feed-fieldlabel:focus {
+    outline: none;
+    border-style: solid;
+    border-color: var(--wd-accent);
+    background: var(--wd-field-bg);
+  }
+
+  /* ── Simulator card: rail-compact custom-RPC grid ────────────────────────
+     The 380px rail can't afford the Events tab's side-by-side recipe, so the
+     two labeled fields stack on a fluid grid instead. */
+  .wd-sim-rpcgrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: var(--wd-space-2);
+    align-items: start;
+  }
+
+  /* ── Events tab ───────────────────────────────────────────────────────────
+     Sample rows are a MATRIX: a <ul> of <li>-wrapped dispatch buttons (list
+     semantics on the li, button semantics on the control) sharing one column
+     grammar — family dot · mono kind+payload · description · action. The
+     kind column is a FIXED track, so every description starts at the same x
+     across every group (key.down and chord.up baselines align), and the
+     description owns the remaining width, wrapping to two lines before it
+     ever truncates — no native title tooltips. */
+  .wd-ev-groupdesc {
+    margin-bottom: var(--wd-space-1);
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    color: var(--wd-text-tertiary);
+  }
+  .wd-ev-list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    max-width: 920px;
+  }
+  .wd-ev-li { list-style: none; }
+  .wd-ev-li + .wd-ev-li { border-top: 1px solid var(--wd-border-subtle); }
+  .wd-evrow {
+    display: grid;
+    /* dot · fixed kind track (the description start column) · desc · action */
+    grid-template-columns: auto 232px minmax(0, 1fr) 20px;
+    column-gap: var(--wd-space-2);
+    align-items: center;
+    width: 100%;
+    min-height: 32px;
+    min-width: 0;
+    padding: 5px var(--wd-space-2);
+    border: none;
+    background: transparent;
+    border-radius: var(--wd-radius-sm);
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-primary);
+    text-align: left;
+    cursor: pointer;
+    transition: background-color var(--wd-dur-fast) var(--wd-ease);
+  }
+  .wd-evrow:hover { background: var(--wd-surface-hover); }
+  .wd-evrow:active { background: var(--wd-surface-active); }
+  .wd-evrow:focus-visible {
+    outline: 2px solid var(--wd-ring);
+    outline-offset: -2px;
+  }
+  .wd-evrow[data-sent="true"] { animation: wd-log-in 800ms var(--wd-ease); }
+  .wd-evrow-kind {
+    display: flex;
+    align-items: baseline;
+    gap: 1ch;
+    min-width: 0;
+  }
+  .wd-evrow-kind .wd-ins-logdelta { align-self: center; }
+  .wd-evrow-detail {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--wd-text-tertiary);
+  }
+  .wd-evrow-desc {
+    min-width: 0;
+    font-family: var(--wd-font-sans);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-tertiary);
+    /* Fill the column, wrap up to two lines, only then ellipsize — a row
+       never truncates while it still has width to spend. */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+  }
+  /* Narrow fallback: the fixed kind track yields and the description drops
+     to a second, full-width line under it. */
+  @media (max-width: 860px) {
+    .wd-evrow { grid-template-columns: auto minmax(0, 1fr) 20px; }
+    .wd-evrow-desc { grid-column: 2 / 3; grid-row: 2; }
+  }
+  .wd-evrow-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    border-radius: var(--wd-radius-full);
+    color: var(--wd-text-disabled);
+    transition: color var(--wd-dur-fast) var(--wd-ease),
+                background-color var(--wd-dur-fast) var(--wd-ease);
+  }
+  .wd-evrow:hover .wd-evrow-action {
+    color: var(--wd-accent);
+    background: var(--wd-accent-subtle);
+  }
+  .wd-evrow[data-sent="true"] .wd-evrow-action {
+    color: var(--wd-success);
+    background: var(--wd-success-subtle);
+  }
+
+  /* Auto-tick live readout at the drive row's end. */
+  .wd-ev-tickstate {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-tertiary);
+    white-space: nowrap;
+  }
+  .wd-ev-tickstate[data-on="true"] { color: var(--wd-text-secondary); }
+
+  /* Custom RPC form: two labeled fields + the send action on one baseline —
+     the SAME 2-column recipe the Host-data test bench uses (240px minimum
+     inputs, label above, send inline at the row's end). */
+  .wd-ev-rpcgrid {
+    display: grid;
+    grid-template-columns: minmax(240px, 320px) minmax(240px, 320px) auto;
+    gap: var(--wd-space-3);
+    align-items: start;
+  }
+  /* 18px label + 4px gap: the button tops align with the inputs. */
+  .wd-ev-rpcsend { padding-top: 22px; }
+  @media (max-width: 720px) {
+    .wd-ev-rpcgrid { grid-template-columns: minmax(0, 1fr); }
+    .wd-ev-rpcsend { padding-top: 0; }
+  }
+
+  /* Event-log rail: on the two-column layout the log card is a sticky,
+     viewport-height rail — rows stream inside it, the legend pins to its
+     foot, and the right column never dangles a short card over bare page.
+     (164 = 92px header + 32px footer + 2 × 20px gutter, the same viewport
+     math the Design stage uses.) */
+  @media (min-width: 1280px) {
+    .wd-ev-logcol {
+      position: sticky;
+      top: var(--wd-space-5);
+      align-self: start;
+      min-width: 0;
+    }
+    .wd-ev-logcol .wd-card {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 160px);
+    }
+    .wd-ev-logcol .wd-card-body {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .wd-ev-logcol .wd-card-body > div {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .wd-ev-logcol .wd-ins-log {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+      scrollbar-color: transparent transparent;
+    }
+    .wd-ev-logcol .wd-ins-log:hover { scrollbar-color: var(--wd-border-strong) transparent; }
+    /* The empty state fills the rail and centers its message. */
+    .wd-ev-logcol .wd-empty {
+      flex: 1;
+      justify-content: center;
+      max-width: none;
+    }
+  }
+
+  /* ── Host data tab ────────────────────────────────────────────────────────
+     The same frame as the Source tab: work column left, the live device
+     preview riding shotgun in a fixed right rail — test values and RPC sends
+     visibly land on the widget without a tab switch, and the page frame stays
+     identical from tab to tab. The rail is sticky so the preview never
+     scrolls away mid-form. */
+  .wd-hd-stack { min-width: 0; }
+  @media (min-width: 1280px) {
+    .wd-hd-previewcol {
+      position: sticky;
+      top: var(--wd-space-5);
+      align-self: start;
+      min-width: 0;
+    }
+  }
+  /* Schema layout: ONE packed grid (field · bits@offset · range · labels),
+     record headers spanning the row. The grid spans the full card body, so
+     every record rule runs edge-to-edge — one consistent right edge. */
+  .wd-hd-table {
+    display: grid;
+    grid-template-columns: minmax(110px, max-content) max-content max-content minmax(0, 1fr);
+    column-gap: var(--wd-space-6);
+  }
+  .wd-hd-tr,
+  .wd-hd-rec { display: contents; }
+  .wd-hd-th {
+    display: flex;
+    align-items: center;
+    height: 24px;
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--wd-text-tertiary);
+    white-space: nowrap;
+  }
+  .wd-hd-recname {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-2);
+    min-height: 36px;
+    border-top: 1px solid var(--wd-border-subtle);
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    font-weight: 600;
+    color: var(--wd-text-primary);
+  }
+  .wd-hd-td {
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-1);
+    min-height: 26px;
+    min-width: 0;
+    padding: var(--wd-space-1) 0;
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-secondary);
+    white-space: nowrap;
+  }
+  .wd-hd-td[data-strong="true"] {
+    padding-left: var(--wd-space-3);
+    color: var(--wd-text-primary);
+  }
+  .wd-hd-dim { color: var(--wd-text-tertiary); }
+  /* Explicit empty cell: a worded "none", not a bare dash that reads as a
+     rendering casualty. */
+  .wd-hd-none {
+    color: var(--wd-text-disabled);
+    font-family: var(--wd-font-sans);
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+  }
+  /* Record group header (test bench): the SAME voice as the schema table's
+     record rows — mono name + hex badge — so the tab speaks exactly two label
+     tiers: card titles, and one uppercase overline recipe (subsections and
+     table headers alike). */
+  .wd-hd-rechead {
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-2);
+    margin-bottom: var(--wd-space-2);
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    font-weight: 600;
+    color: var(--wd-text-primary);
+  }
+  /* Enum labels as quiet value chips, index-led, wrapping in place. */
+  .wd-hd-labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--wd-space-1);
+    min-width: 0;
+    white-space: normal;
+  }
+  .wd-hd-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 18px;
+    padding: 0 6px;
+    border-radius: var(--wd-radius-xs);
+    background: var(--wd-surface-inset);
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    color: var(--wd-text-secondary);
+    white-space: nowrap;
+  }
+
+  /* Test-bench field grid: label-above fields on a fluid grid that spans the
+     FULL card width — 3–4 columns at desktop widths, collapsing gracefully.
+     The Send action lives in the card's form footer, never in a grid cell. */
+  .wd-hd-fieldgrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: var(--wd-space-3) var(--wd-space-4);
+    align-items: start;
+  }
+  .wd-hd-hint {
+    margin-top: var(--wd-space-1);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-tertiary);
+  }
+  /* The one form-footer recipe: full-bleed hairline, right-aligned action —
+     the same rhythm every form card on this tab closes with. */
+  .wd-form-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--wd-space-2);
+    margin-left: calc(-1 * var(--wd-space-4));
+    margin-right: calc(-1 * var(--wd-space-4));
+    padding: var(--wd-space-3) var(--wd-space-4) 0;
+    border-top: 1px solid var(--wd-border-subtle);
+  }
+
+  /* `node widget-host.mjs` command chip. */
+  .wd-hd-cmd {
+    display: inline-flex;
+    align-items: center;
+    height: 28px;
+    padding: 0 var(--wd-space-2);
+    border-radius: var(--wd-radius-sm);
+    background: var(--wd-surface-inset);
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-secondary);
+    white-space: nowrap;
+  }
+
+  /* Run-state readout pinned to the row's end. */
+  .wd-hd-runstate {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    font-weight: 500;
+    color: var(--wd-text-secondary);
+    white-space: nowrap;
+  }
+
+  /* Server stdout/stderr tail. */
+  .wd-hd-serverlog {
+    margin: 0;
+    padding: var(--wd-space-2) 10px;
+    max-height: 112px;
+    overflow: auto;
+    overscroll-behavior: contain;
+    background: var(--wd-code-bg);
+    border: 1px solid var(--wd-border-subtle);
+    border-radius: var(--wd-radius-sm);
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    color: var(--wd-code-text);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* Endpoint URL + fetch action. */
+  .wd-hd-connect {
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-2);
+    flex-wrap: wrap;
+  }
+  .wd-hd-connect .wd-input {
+    width: auto;
+    flex: 1 1 240px;
+    min-width: 200px;
+    max-width: 440px;
+  }
+  .wd-hd-connect .wd-btn { flex-shrink: 0; }
+
+  /* ── Stage nodes (§4.15) — the one staged-flow vocabulary ─────────────────
+     Shared node recipe: 20px circle whose state is the ONLY thing that moves.
+     UNNUMBERED on purpose — stages carry independent status, and a 1-2-3
+     rail would assert an order the flows don't enforce (Compile and Assemble
+     are separate build paths). pending = hollow dot · active = ember ring +
+     core + pulse halo · busy = ember fill + spinner · done = success fill +
+     check · failed = danger fill + x · warning = gold fill + !. Used by the
+     Device build→push flow AND the Export pipeline's stage rail, so progress
+     reads identically on both tabs. */
+  .wd-stepnode {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    border-radius: var(--wd-radius-full);
+    border: 1px solid var(--wd-border-strong);
+    background: var(--wd-surface-panel);
+    color: var(--wd-text-tertiary);
+    line-height: 1;
+    user-select: none;
+    transition: background-color var(--wd-dur-base) var(--wd-ease),
+                border-color var(--wd-dur-base) var(--wd-ease),
+                color var(--wd-dur-base) var(--wd-ease);
+  }
+  .wd-stepnode-core {
+    width: 6px;
+    height: 6px;
+    border-radius: var(--wd-radius-full);
+    background: var(--wd-border-strong);
+    transition: background-color var(--wd-dur-base) var(--wd-ease);
+  }
+  .wd-stepnode[data-state="active"] {
+    border-color: var(--wd-accent);
+    animation: wd-node-halo 1.6s var(--wd-ease) infinite;
+  }
+  .wd-stepnode[data-state="active"] .wd-stepnode-core { background: var(--wd-accent); }
+  .wd-stepnode[data-state="busy"] {
+    background: var(--wd-accent);
+    border-color: transparent;
+    color: var(--wd-text-on-accent);
+  }
+  .wd-stepnode[data-state="done"] {
+    background: var(--wd-success);
+    border-color: transparent;
+    color: #ffffff;
+  }
+  .wd-stepnode[data-state="failed"] {
+    background: var(--wd-danger);
+    border-color: transparent;
+    color: #ffffff;
+  }
+  /* Attention, not local failure: a RELATED surface (e.g. the Device tab's
+     build) is blocking this stage. text-inverse keeps contrast on the gold in
+     both themes (near-white on the light gold-brown, near-black on the dark
+     gold). */
+  .wd-stepnode[data-state="warning"] {
+    background: var(--wd-warning);
+    border-color: transparent;
+    color: var(--wd-text-inverse);
+  }
+
+  /* In-card vertical stepper (Device tab build → push). */
+  .wd-stepper {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .wd-step {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    column-gap: var(--wd-space-3);
+  }
+  .wd-step-rail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Node centers on the 20px label line. */
+    padding-top: 0;
+  }
+  .wd-step-line {
+    flex: 1;
+    width: 1px;
+    min-height: 12px;
+    margin: var(--wd-space-1) 0;
+    background: var(--wd-border-subtle);
+    /* Recolors on step completion — property-scoped, same as the stepnode. */
+    transition: background-color var(--wd-dur-base) var(--wd-ease);
+  }
+  .wd-step:last-child .wd-step-line { display: none; }
+  .wd-step[data-state="done"] .wd-step-line { background: var(--wd-success-border); }
+  .wd-step-main { min-width: 0; }
+  .wd-step-label {
+    font-size: var(--wd-text-sm);
+    line-height: 20px;
+    font-weight: 600;
+    color: var(--wd-text-primary);
+  }
+  .wd-step[data-state="pending"] .wd-step-label { color: var(--wd-text-tertiary); }
+  .wd-step-detail {
+    margin-top: 2px;
+    max-width: 640px;
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-tertiary);
+  }
+  .wd-step-body {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--wd-space-3);
+    margin-top: var(--wd-space-3);
+  }
+  /* One spacer between steps — on the main column, so detail-only steps and
+     steps with bodies breathe identically. */
+  .wd-step:not(:last-child) > .wd-step-main { padding-bottom: var(--wd-space-5); }
+  /* Full-width members (callouts, artifact cards) stretch; button rows don't. */
+  .wd-step-body > .wd-callout,
+  .wd-step-body > .wd-artifact,
+  .wd-step-body > .wd-well { align-self: stretch; }
+
+  /* ── Export pipeline: stage rail wrapping full cards ──────────────────────
+     The compile → assemble → push flow reads as ONE connected pipeline: a
+     stepnode rail runs down the left of the stage cards, the connector
+     carrying success color as stages complete. */
+  .wd-export {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--wd-space-4);
+    align-items: start;
+  }
+  @media (min-width: 1240px) {
+    .wd-export { grid-template-columns: minmax(0, 1fr) 340px; }
+    .wd-export-rail {
+      position: sticky;
+      top: var(--wd-space-5);
+    }
+    /* Only while the rail is actually a 340px rail: its meters stack
+       single-column. Below the breakpoint the card runs full width and the
+       standard two-column meter recipe applies. */
+    .wd-export-rail .wd-meters { grid-template-columns: minmax(0, 1fr); }
+  }
+  .wd-export-rail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wd-space-4);
+    min-width: 0;
+  }
+  .wd-pipe {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .wd-pipe-stage {
+    display: grid;
+    grid-template-columns: 20px minmax(0, 1fr);
+    column-gap: var(--wd-space-3);
+  }
+  .wd-pipe-rail {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  /* Card header: 1px border + 12px padding + 22px title line → title center
+     at 24px from card top; 14px puts the 20px node's center exactly there. */
+  .wd-pipe-rail .wd-stepnode { margin-top: 14px; }
+  .wd-pipe-line {
+    flex: 1;
+    width: 1px;
+    margin-top: var(--wd-space-1);
+    background: var(--wd-border-subtle);
+    /* Recolors when a stage completes — same property-scoped motion recipe
+       as the stepnode, never `all`. */
+    transition: background-color var(--wd-dur-base) var(--wd-ease);
+  }
+  .wd-pipe-stage:last-child .wd-pipe-line { display: none; }
+  .wd-pipe-stage[data-state="done"] .wd-pipe-line { background: var(--wd-success-border); }
+  .wd-pipe-body { min-width: 0; }
+  /* The rail line bridges the 16px gap between stage cards. */
+  .wd-pipe-stage:not(:last-child) .wd-pipe-body { padding-bottom: var(--wd-space-4); }
+  /* Stage header: title cluster left, status badge docked right. */
+  .wd-stagehead {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--wd-space-3);
+  }
+  .wd-stagehead-badges {
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-2);
+    flex-shrink: 0;
+    /* Optically centers the 20px badge on the 22px title line. */
+    margin-top: 1px;
+  }
+  @media (max-width: 719px) {
+    /* Narrow: the rail costs 32px the cards need — the stepnodes remain in
+       the stage headers' badges via the status pills, so drop the rail. */
+    .wd-pipe-stage { grid-template-columns: minmax(0, 1fr); }
+    .wd-pipe-rail { display: none; }
+  }
+
+  /* ── Key-value table (§4.13) ──────────────────────────────────────────────
+     Values sit NEXT to keys on hairline rows — never flushed a panel-width
+     away. Mono variant for hex/ids/shas. The label column is a FIXED shared
+     width (token above), so every KV grid's value column starts at the same
+     x — two stacked artifact cards must never jog by the width difference of
+     their longest keys. */
+  .wd-kv {
+    display: grid;
+    grid-template-columns: var(--wd-kv-label-w) minmax(0, 1fr);
+    margin: 0;
+  }
+  .wd-kv-tr { display: contents; }
+  .wd-kv-key {
+    display: flex;
+    align-items: center;
+    min-height: 28px;
+    padding-right: var(--wd-space-6);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-tertiary);
+    white-space: nowrap;
+  }
+  .wd-kv-val {
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-2);
+    min-height: 28px;
+    min-width: 0;
+    margin: 0;
+    font-size: var(--wd-text-sm);
+    line-height: 20px;
+    color: var(--wd-text-primary);
+    font-variant-numeric: tabular-nums;
+  }
+  .wd-kv-tr + .wd-kv-tr > * { border-top: 1px solid var(--wd-border-subtle); }
+  .wd-kv-val[data-mono] {
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-xs);
+  }
+  .wd-kv-dim { color: var(--wd-text-tertiary); }
+
+  /* ── Artifact card (Export pipeline outputs) ──────────────────────────────
+     A build artifact presented like a CI artifact row: format chip + byte
+     count in an inset head bar, then KV facts and a section map. */
+  .wd-artifact {
+    border: 1px solid var(--wd-border-subtle);
+    border-radius: var(--wd-radius-md);
+    background: var(--wd-surface-panel);
+    overflow: hidden;
+  }
+  .wd-artifact-head {
+    display: flex;
+    align-items: center;
+    gap: var(--wd-space-2);
+    min-height: 32px;
+    padding: 0 var(--wd-space-3);
+    background: var(--wd-surface-inset);
+    box-shadow: inset 0 -1px 0 var(--wd-border-subtle);
+  }
+  .wd-artifact-format {
+    display: inline-flex;
+    align-items: center;
+    height: 18px;
+    padding: 0 6px;
+    border-radius: var(--wd-radius-xs);
+    border: 1px solid var(--wd-border-subtle);
+    background: var(--wd-surface-panel);
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: var(--wd-text-primary);
+    white-space: nowrap;
+  }
+  .wd-artifact-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    font-weight: 500;
+    color: var(--wd-text-secondary);
+  }
+  .wd-artifact-size {
+    margin-left: auto;
+    flex-shrink: 0;
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    color: var(--wd-text-secondary);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .wd-artifact-body { padding: var(--wd-space-1) var(--wd-space-3); }
+  /* sha row value: mono, truncated from the end, copy sits beside it. */
+  .wd-artifact-sha {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* Section map: proportional stacked bar + legend rows. */
+  .wd-secmap { padding: var(--wd-space-2) 0 var(--wd-space-3); }
+  .wd-secmap-bar {
+    display: flex;
+    height: 6px;
+    border-radius: var(--wd-radius-full);
+    overflow: hidden;
+    background: var(--wd-surface-inset);
+  }
+  /* Every nonzero slice keeps a visible 5px minimum with a 1px hairline gap:
+     a legend swatch must ALWAYS have a findable counterpart in the bar — a
+     130 B header inside a 56 KB container renders as a deliberate tick, never
+     a sliver that vanishes against the track. */
+  .wd-secmap-bar > span { min-width: 5px; }
+  .wd-secmap-bar > span + span { margin-left: 1px; }
+  .wd-secmap-legend {
+    display: flex;
+    flex-direction: column;
+    margin-top: var(--wd-space-2);
+  }
+  .wd-secmap-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: var(--wd-space-2);
+    min-height: 26px;
+  }
+  .wd-secmap-row + .wd-secmap-row { border-top: 1px solid var(--wd-border-subtle); }
+  .wd-secmap-swatch {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+  /* Legend row anatomy: name · annotation as IDENTICAL flex tokens sharing
+     ONE 6px gap — the middot is always its own token, so the dot rhythm is
+     the same in every row (never a spaced dot in one row and an inline dot
+     in the next). */
+  .wd-secmap-label {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    min-width: 0;
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    color: var(--wd-text-secondary);
+  }
+  .wd-secmap-name { white-space: nowrap; }
+  .wd-secmap-sep { color: var(--wd-text-disabled); flex-shrink: 0; }
+  .wd-secmap-meta {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--wd-text-tertiary);
+  }
+  .wd-secmap-bytes {
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-2xs);
+    line-height: 16px;
+    color: var(--wd-text-secondary);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  /* Section hues: the categorical --wd-sec-* ramp (defined per theme in the
+     token blocks). Four SEPARATED hues on purpose — three adjacent orange-
+     family tones were indistinguishable at 6px tall — with the one brand
+     ember reserved for the facade, the artifact the designer authors. */
+  .wd-secmap [data-sec="header"] { background: var(--wd-sec-header); }
+  .wd-secmap [data-sec="f2js"]   { background: var(--wd-sec-runtime); }
+  .wd-secmap [data-sec="f2tf"]   { background: var(--wd-sec-facade); }
+  .wd-secmap [data-sec="lzss"]   { background: var(--wd-sec-frame); }
+
+  /* ── Device tab ───────────────────────────────────────────────────────────
+     Work column left, session log riding shotgun in a sticky right rail —
+     push progress streams beside the controls that caused it. */
+  .wd-dev {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--wd-space-4);
+    align-items: start;
+  }
+  .wd-dev-main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wd-space-4);
+    min-width: 0;
+  }
+  @media (min-width: 1280px) {
+    .wd-dev { grid-template-columns: minmax(0, 1fr) 380px; }
+    /* The work column matches the log rail's height and its last card takes
+       up the slack, so both columns land on ONE bottom edge — no dead canvas
+       strip under the left cards while the rail runs full height. (The last
+       child is the Build & push card's reveal-scroll wrapper, so the stretch
+       passes through it to the card.) */
+    .wd-dev-main { min-height: calc(100vh - 160px); }
+    .wd-dev-main > :last-child {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .wd-dev-main > :last-child > .wd-card { flex: 1; }
+    .wd-dev-logcol {
+      position: sticky;
+      top: var(--wd-space-5);
+      align-self: start;
+      min-width: 0;
+    }
+    /* The rail card fills its column in EVERY state — an empty log renders as
+       a full-height card with the empty state floating centered, so the right
+       third of the tab never dies at one-third height while the work column
+       runs on. */
+    .wd-dev-logcol .wd-card {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 160px);
+    }
+    .wd-dev-logcol .wd-card-body {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    .wd-dev-logcol .wd-empty {
+      flex: 1;
+      justify-content: center;
+      max-width: none;
+    }
+  }
+  /* Screen roster chips: mono selectable keys with the accent-active recipe
+     the preset chips use — one selected-state vocabulary. */
+  .wd-screenchip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 28px;
+    padding: 0 10px;
+    border-radius: var(--wd-radius-sm);
+    border: 1px solid var(--wd-border-strong);
+    background: var(--wd-surface-panel);
+    color: var(--wd-text-secondary);
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background-color var(--wd-dur-fast) var(--wd-ease),
+                color var(--wd-dur-fast) var(--wd-ease),
+                border-color var(--wd-dur-fast) var(--wd-ease);
+  }
+  .wd-screenchip:hover { background: var(--wd-surface-hover); color: var(--wd-text-primary); }
+  .wd-screenchip[aria-pressed="true"] {
+    background: var(--wd-accent-subtle);
+    border-color: var(--wd-accent-border);
+    color: var(--wd-text-primary);
+  }
+  /* Session log: terminal-voiced rows with a quiet index gutter. */
+  .wd-dev-log {
+    flex: 1;
+    min-height: 0;
+    margin: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-xs);
+    line-height: 18px;
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+  .wd-dev-log:hover { scrollbar-color: var(--wd-border-strong) transparent; }
+  .wd-dev-logline {
+    display: grid;
+    grid-template-columns: 24px minmax(0, 1fr);
+    column-gap: var(--wd-space-2);
+    padding: 2px 0;
+  }
+  .wd-dev-logidx {
+    color: var(--wd-text-disabled);
+    text-align: right;
+    user-select: none;
+    font-variant-numeric: tabular-nums;
+  }
+  .wd-dev-logtext {
+    color: var(--wd-text-secondary);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .wd-dev-logline[data-kind="error"] .wd-dev-logtext { color: var(--wd-danger); }
+  .wd-dev-logline[data-kind="ok"] .wd-dev-logtext { color: var(--wd-success); }
+
+  /* ── Screens: widget slot bank (docs/17) ─────────────────────────────────
+     Dense slot cards — one live, the rest cold storage. Same card grammar as
+     the rest of the app (surface, hairline, radius); the ACTIVE slot is
+     ember-tinted, EMPTY slots dashed and inviting. Every color is a --wd-*
+     token, so light and dark are peers with no per-theme overrides. */
+  .wd-slotbank { display: flex; flex-direction: column; gap: var(--wd-space-4); }
+  .wd-slotbank-meta {
+    display: flex; align-items: center; gap: 6px;
+    font-size: var(--wd-text-xs);
+    color: var(--wd-text-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
+  .wd-slotgrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--wd-space-3);
+  }
+  .wd-slotcard {
+    display: flex;
+    flex-direction: column;
+    gap: var(--wd-space-3);
+    min-height: 152px;
+    padding: var(--wd-space-3) var(--wd-space-4) var(--wd-space-4);
+    border-radius: var(--wd-radius-lg);
+    border: 1px solid var(--wd-border-subtle);
+    background: var(--wd-surface-panel);
+    transition: border-color var(--wd-dur-fast) var(--wd-ease),
+                box-shadow var(--wd-dur-fast) var(--wd-ease);
+  }
+  .wd-slotcard[data-state="active"] {
+    border-color: var(--wd-accent-border);
+    background: var(--wd-accent-subtle);
+    box-shadow: inset 0 0 0 1px var(--wd-accent-border);
+  }
+  .wd-slotcard[data-state="empty"] {
+    border-style: dashed;
+    border-color: var(--wd-border-strong);
+    background: transparent;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+  }
+  .wd-slotcard[data-state="unknown"] {
+    border-color: var(--wd-warning-border);
+    background: var(--wd-warning-subtle);
+  }
+  .wd-slotcard[data-state="skeleton"] { pointer-events: none; }
+  .wd-slotcard-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--wd-space-2);
+  }
+  .wd-slotcard-idx {
+    font-family: var(--wd-font-mono);
+    font-size: var(--wd-text-2xs);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--wd-text-tertiary);
+  }
+  .wd-slotcard-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+  }
+  .wd-slotcard-name {
+    font-size: var(--wd-text-sm);
+    font-weight: 600;
+    color: var(--wd-text-primary);
+    line-height: 18px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .wd-slotcard-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--wd-text-xs);
+    color: var(--wd-text-secondary);
+  }
+  .wd-slotcard-dot { color: var(--wd-text-disabled); }
+  .wd-slotcard-sha { color: var(--wd-text-tertiary); }
+  .wd-slotcard-live {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 2px;
+    font-size: var(--wd-text-xs);
+    font-weight: 500;
+    color: var(--wd-accent);
+  }
+  .wd-slotcard-unnamed {
+    font-size: var(--wd-text-2xs);
+    color: var(--wd-text-tertiary);
+  }
+  .wd-slotcard-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    justify-content: center;
+  }
+  .wd-slotcard-plus {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px; height: 34px;
+    margin-bottom: 2px;
+    border-radius: var(--wd-radius-full);
+    border: 1px dashed var(--wd-border-strong);
+    color: var(--wd-text-tertiary);
+  }
+  .wd-slotcard-emptyhint {
+    font-size: var(--wd-text-xs);
+    color: var(--wd-text-tertiary);
+    max-width: 22ch;
+  }
+  .wd-slotcard-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--wd-space-2);
+    margin-top: auto;
+  }
+  .wd-slotcard[data-state="empty"] .wd-slotcard-actions { justify-content: center; }
+  /* Status pill in the card head — tone by slot state. */
+  .wd-slotpill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    height: 20px;
+    padding: 0 8px;
+    border-radius: var(--wd-radius-full);
+    font-size: var(--wd-text-2xs);
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+  }
+  .wd-slotpill[data-state="active"] {
+    color: var(--wd-accent);
+    background: var(--wd-accent-subtle);
+    box-shadow: inset 0 0 0 1px var(--wd-accent-border);
+  }
+  .wd-slotpill[data-state="occupied"] {
+    color: var(--wd-text-secondary);
+    background: var(--wd-surface-inset);
+  }
+  .wd-slotpill[data-state="empty"] {
+    color: var(--wd-text-tertiary);
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--wd-border-subtle);
+  }
+  .wd-slotpill[data-state="unknown"] {
+    color: var(--wd-warning);
+    background: var(--wd-warning-subtle);
+  }
+  /* Legend — swatches match the card states. */
+  .wd-slotlegend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--wd-space-4);
+    padding-top: var(--wd-space-1);
+    font-size: var(--wd-text-2xs);
+    color: var(--wd-text-tertiary);
+  }
+  .wd-slotlegend-item { display: inline-flex; align-items: center; gap: 6px; }
+  .wd-slotlegend-swatch {
+    width: 12px; height: 12px;
+    border-radius: var(--wd-radius-xs);
+    flex: none;
+  }
+  .wd-slotlegend-swatch[data-state="active"] {
+    background: var(--wd-accent-subtle);
+    box-shadow: inset 0 0 0 1px var(--wd-accent-border);
+  }
+  .wd-slotlegend-swatch[data-state="occupied"] {
+    background: var(--wd-surface-inset);
+    box-shadow: inset 0 0 0 1px var(--wd-border-strong);
+  }
+  .wd-slotlegend-swatch[data-state="empty"] {
+    background: transparent;
+    border: 1px dashed var(--wd-border-strong);
+  }
+  /* Skeleton shimmer for the scanning grid. */
+  .wd-skeleton {
+    display: block;
+    border-radius: var(--wd-radius-sm);
+    background: linear-gradient(90deg,
+      var(--wd-surface-inset) 25%,
+      var(--wd-surface-hover) 37%,
+      var(--wd-surface-inset) 63%);
+    background-size: 400% 100%;
+    animation: wd-shimmer 1.4s ease infinite;
+  }
+}
+
+@layer utilities {
+  /* Tabular numerals for all numeric data */
+  .wd-nums { font-variant-numeric: tabular-nums; }
+}
+
+/* ── Keyframes (outside layers so they always survive) ───────────────────── */
+@keyframes wd-pulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.45; }
+}
+@keyframes wd-spin {
+  to { transform: rotate(360deg); }
+}
+/* Slot-scan skeleton shimmer (Screens panel). */
+@keyframes wd-shimmer {
+  from { background-position: 100% 0; }
+  to   { background-position: 0 0; }
+}
+/* Active stepnode: a soft ember halo breathing outward (opacity, not scale). */
+@keyframes wd-node-halo {
+  0%, 100% { box-shadow: 0 0 0 0 var(--wd-accent-subtle); }
+  50%      { box-shadow: 0 0 0 4px var(--wd-accent-subtle); }
+}
+@keyframes wd-fade-in {
+  from { opacity: 0; }
+}
+@keyframes wd-rise-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+}
+@keyframes wd-toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+}
+@keyframes wd-toast-out {
+  to { opacity: 0; }
+}
+@keyframes wd-acc-flash {
+  0%   { background-color: var(--wd-accent-subtle); box-shadow: inset 0 0 0 1px var(--wd-accent-border); }
+  60%  { background-color: var(--wd-accent-subtle); box-shadow: inset 0 0 0 1px var(--wd-accent-border); }
+  100% { background-color: transparent; box-shadow: inset 0 0 0 1px transparent; }
+}
+@keyframes wd-ticker-flash {
+  0%   { color: var(--wd-text-primary); }
+  100% { color: var(--wd-text-secondary); }
+}
+@keyframes wd-log-in {
+  0%   { background-color: var(--wd-accent-subtle); }
+  100% { background-color: transparent; }
+}
+
+/* ── Theme cross-fade (added to <html> for ~200ms on toggle) ─────────────── */
+.wd-theming * {
+  transition: background-color var(--wd-dur-slow) var(--wd-ease),
+              color var(--wd-dur-slow) var(--wd-ease),
+              border-color var(--wd-dur-slow) var(--wd-ease),
+              fill var(--wd-dur-slow) var(--wd-ease) !important;
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .wd-theming * { transition: none !important; }
+}
+
+/* ═══ Tailwind token-utility definitions ═══════════════════════════════════
+   Authoritative var(--wd-*) definitions for every color/size/radius utility
+   the app uses. Deliberately UN-layered and last in the file so they win the
+   cascade over any generated utility of the same name — the WD tokens are the
+   only source of truth for these class names, in both themes. */
+.text-2xs { font-size: var(--wd-text-2xs); line-height: 16px; }
+.text-xs { font-size: var(--wd-text-xs); line-height: 18px; }
+.text-sm { font-size: var(--wd-text-sm); line-height: 20px; }
+.text-base { font-size: var(--wd-text-base); line-height: 22px; }
+
+.text-fg, .text-foreground { color: var(--wd-text-primary); }
+.text-secondary, .text-muted-fg, .text-muted-foreground { color: var(--wd-text-secondary); }
+.text-tertiary { color: var(--wd-text-tertiary); }
+.text-disabled { color: var(--wd-text-disabled); }
+.text-destructive, .text-danger { color: var(--wd-danger); }
+.text-warning { color: var(--wd-warning); }
+.text-success { color: var(--wd-success); }
+.text-info { color: var(--wd-info); }
+.text-accent { color: var(--wd-accent); }
+.text-on-accent { color: var(--wd-text-on-accent); }
+.text-inverse { color: var(--wd-text-inverse); }
+
+.bg-background, .bg-bg { background-color: var(--wd-bg); }
+.bg-card, .bg-panel { background-color: var(--wd-surface-panel); }
+.bg-raised { background-color: var(--wd-surface-raised); }
+.bg-muted, .bg-inset { background-color: var(--wd-surface-inset); }
+
+.border-border, .border-subtle { border-color: var(--wd-border-subtle); }
+.border-strong { border-color: var(--wd-border-strong); }
+.divide-border > :not([hidden]) ~ :not([hidden]) { border-color: var(--wd-border-subtle); }
+.ring-border { --tw-ring-color: var(--wd-border-subtle); }
+
+.rounded-xs { border-radius: var(--wd-radius-xs); }
+.rounded-sm { border-radius: var(--wd-radius-sm); }
+.rounded-md { border-radius: var(--wd-radius-md); }
+.rounded-lg { border-radius: var(--wd-radius-lg); }
+.rounded-xl { border-radius: var(--wd-radius-xl); }
+
+.font-sans { font-family: var(--wd-font-sans); }
+.font-mono { font-family: var(--wd-font-mono); }

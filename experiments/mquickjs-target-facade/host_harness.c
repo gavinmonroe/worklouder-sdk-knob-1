@@ -104,12 +104,41 @@ int main(int argc, char **argv)
         mutated[FRAMER_TF_HEADER_BYTES + 20u] = 2u; reseal(mutated, asset_bytes);
         assert(framer_tf_admit(&rejected, mutated, asset_bytes, (const uint16_t *)base_raw,
                               FRAMER_TF_CANVAS_PIXELS, 18u, f2js, contract, 1u) == FRAMER_TF_ERR_MALFORMED);
-        memcpy(mutated, asset, asset_bytes); write_u32(mutated + 32u, 1u); reseal(mutated, asset_bytes);
-        assert(framer_tf_admit(&rejected, mutated, asset_bytes, (const uint16_t *)base_raw,
-                              FRAMER_TF_CANVAS_PIXELS, 18u, f2js, contract, 1u) == FRAMER_TF_OK);
-        memcpy(&mailbox, cases + 8u + 72u, 72u);
-        assert(framer_tf_render(&rejected, &mailbox, frame, FRAMER_TF_CANVAS_PIXELS, 1u, NULL) ==
-               FRAMER_TF_ERR_OVERFLOW && memcmp(frame, base_raw, base_bytes) == 0);
+        /* Budget=1 splits by asset class under the v3 admit rule: an asset
+         * with variantRaster targets is REFUSED at admit (their exact write
+         * requirement no longer fits - the black-screen class is now caught
+         * before render), while a glyph-only asset still admits and then
+         * overflows at render exactly as before. */
+        {
+            uint32_t raster_writes = 0u;
+            unsigned int record_index;
+            for (record_index = 0u; record_index < 16u; ++record_index) {
+                const uint8_t *record =
+                    asset + FRAMER_TF_HEADER_BYTES + record_index * 40u;
+                if (record[25] == 12u)
+                    raster_writes +=
+                        (uint32_t)(record[20] | (record[21] << 8)) *
+                        (uint32_t)(record[22] | (record[23] << 8));
+            }
+            memcpy(mutated, asset, asset_bytes);
+            write_u32(mutated + 32u, 1u); reseal(mutated, asset_bytes);
+            if (raster_writes > 0u) {
+                assert(framer_tf_admit(&rejected, mutated, asset_bytes,
+                                      (const uint16_t *)base_raw,
+                                      FRAMER_TF_CANVAS_PIXELS, 18u, f2js,
+                                      contract, 1u) == FRAMER_TF_ERR_MALFORMED);
+            } else {
+                assert(framer_tf_admit(&rejected, mutated, asset_bytes,
+                                      (const uint16_t *)base_raw,
+                                      FRAMER_TF_CANVAS_PIXELS, 18u, f2js,
+                                      contract, 1u) == FRAMER_TF_OK);
+                memcpy(&mailbox, cases + 8u + 72u, 72u);
+                assert(framer_tf_render(&rejected, &mailbox, frame,
+                                        FRAMER_TF_CANVAS_PIXELS, 1u, NULL) ==
+                       FRAMER_TF_ERR_OVERFLOW &&
+                       memcmp(frame, base_raw, base_bytes) == 0);
+            }
+        }
         free(mutated);
     }
     printf("],\"torn\":\"PASS\",\"malformed\":\"PASS\",\"overflow\":\"PASS\"}\n");

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { defaultFirmwareId, firmwareCatalog } from "../src/data/firmware.js";
-import { assertRegionPlan } from "../src/lib/firmware.js";
+import { ALLOWED_REGION_ADDRESSES, assertRegionPlan } from "../src/lib/firmware.js";
 
 const byId = Object.fromEntries(firmwareCatalog.map((firmware) => [firmware.id, firmware]));
 
@@ -70,10 +70,21 @@ describe("widget catalog policy", () => {
       chunks: 32,
       actionLabel: "Enable clock & timer",
     });
-    expect(byId["weather-mquickjs"].scenePackage).toBe(byId["clock-timer"].scenePackage);
+    // The Weather firmware persists clock+timer to flash itself, so its card
+    // gets a distinct, fallback-labeled push descriptor for the same
+    // underlying RAM-only package (same bytes/sha/generation).
+    expect(byId["weather-mquickjs"].scenePackage).not.toBe(byId["clock-timer"].scenePackage);
+    expect(byId["weather-mquickjs"].scenePackage).toMatchObject({
+      bytes: 95_535,
+      sha256: "5b1b9a068e33b8b09f0596b49df0b7f79e22f05ee1f21ce7939b6c6965753ac7",
+      expectedGeneration: 1,
+      generation: 2,
+      chunks: 32,
+      actionLabel: "Push clock & timer again (normally not needed — firmware restores it at boot)",
+    });
   });
 
-  it("declares the weather canary as an ordered three-region write", () => {
+  it("declares the weather canary as an ordered four-region write", () => {
     const weather = byId["weather-mquickjs"];
     expect(weather.evidence).toBe("Live tested canary");
     expect(weather.evidenceTone).toBe("caution");
@@ -82,30 +93,47 @@ describe("widget catalog policy", () => {
     expect(weather.notice).toMatch(/not go through the audited release pipeline/u);
     expect(weather.notice).toMatch(/host companion/u);
     expect(weather.notice).toMatch(/Includes everything from Clock \+ Timer/u);
+    expect(weather.notice).toMatch(/persists the pushed clock\+timer render-v2 package to flash slot B/u);
+    expect(weather.notice).toMatch(/boot-adopt \+ persist-on-push/u);
+    expect(weather.notice).toMatch(/Bluetooth reconnect patch/u);
+    expect(weather.notice).toMatch(/does not fix the Mac reconnect issue yet/u);
 
     expect(weather.regions.map(({ address, kind, bytes, sha256 }) => ({ address, kind, bytes, sha256 }))).toEqual([
+      {
+        address: 0x240000,
+        kind: "page",
+        bytes: 95_599,
+        sha256: "599be673ca9aba43a1fc64ec73324137919df70d9475ff8477100aa57cf0008f",
+      },
       {
         address: 0x210000,
         kind: "page",
         bytes: 131_072,
-        sha256: "bc1e3b57fb82cc067fc57b30671d4381cd45730e376a5d42298536e0dbc1726f",
+        sha256: "f69859e052a8b209faea91ba57e332e5b0ef9698c2431ecf5bd9c832a7433477",
       },
       {
         address: 0x230000,
         kind: "page",
         bytes: 65_536,
-        sha256: "818d4620a388f24d6c14f23de40f41fb33af55f0f4ebbe608306959b6c52df64",
+        sha256: "6a11369374da2d1ce51a62b7bc05ee517e15746feb97c8c5cb4d2c5f1178ede7",
       },
       {
         address: 0x10000,
         kind: "app",
         bytes: 2_062_912,
-        sha256: "4736206f7bd3aa0e16ecda7f97412a24838d7060b8e25ea7aa54c2516a855ee1",
+        sha256: "5413d4b8735b437048a731b231cd874ae7d261c218dce50710722a9d7e8565dd",
       },
     ]);
+    // The slot-B page is 95,599 bytes -- not a multiple of the 4 KiB flash
+    // sector size -- and region validation accepts it unpadded.
+    expect(weather.regions[0].bytes % 4096).not.toBe(0);
     expect(() => assertRegionPlan(weather.regions)).not.toThrow();
     expect(weather.sha256).toBe(weather.regions.at(-1).sha256);
     expect(weather.bytes).toBe(weather.regions.at(-1).bytes);
+  });
+
+  it("keeps the write-scope allowlist minimal and includes the new slot-B address", () => {
+    expect(ALLOWED_REGION_ADDRESSES).toEqual([0x10000, 0x210000, 0x230000, 0x240000]);
   });
 
   it("links the weather host companion without importing the archive", () => {

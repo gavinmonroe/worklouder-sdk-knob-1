@@ -35,10 +35,25 @@ function bytes(value, label) {
 
 function sha256(value) { return createHash("sha256").update(value).digest("hex"); }
 
+// Rebuilding at generation 1 or 2 must still land on the exact frozen,
+// catalog-pinned bytes: those two generations are the canonical identity
+// every consumer (the web flasher's descriptor, the weather host companion
+// zip, and this module's own upload pin) trusts without a live device
+// round-trip. Any other generation is produced by the same deterministic
+// rewrite -- same frozen F1WB/F2EP/LZSS inputs, only the F1WB generation
+// word changes -- so status-derived callers can rebuild "whatever the
+// device says it has, plus one" without a second frozen-hash table.
+const CANONICAL_BUNDLE_SHA_BY_GENERATION = new Map([
+  [1, "generationOneF1wbSha256"], [2, "generationTwoF1wbSha256"],
+]);
+const CANONICAL_PACKAGE_SHA_BY_GENERATION = new Map([
+  [1, "generationOnePackageSha256"], [2, "generationTwoPackageSha256"],
+]);
+
 export function buildFocusTimerPackage({ focusF1wb, focusF2ep, timerF2ep, timerBaseLzss,
   generation = FOCUS_TIMER_PACKAGE.generation } = {}) {
-  invariant(generation === 1 || generation === 2,
-    "Focus-timer package generation must be the boot template 1 or one-shot live generation 2.");
+  invariant(Number.isInteger(generation) && generation >= 1 && generation <= 0xffffffff,
+    "Focus-timer package generation must be a nonzero uint32.");
   const template = bytes(focusF1wb, "Focus F1WB");
   const focusProgram = bytes(focusF2ep, "Focus F2EP");
   const timerProgram = bytes(timerF2ep, "Timer F2EP");
@@ -63,38 +78,56 @@ export function buildFocusTimerPackage({ focusF1wb, focusF2ep, timerF2ep, timerB
     encodeWidgetBundle({ generation, activeSlot: decoded.activeSlot,
       slots: decoded.slots.map((slot) => ({ name: slot.name, kind: slot.kind,
         animationBinary: slot.animationBinary })) });
-  const expectedBundleSha = generation === 1 ? FOCUS_TIMER_PACKAGE.generationOneF1wbSha256 :
-    FOCUS_TIMER_PACKAGE.generationTwoF1wbSha256;
+  const canonicalBundleShaKey = CANONICAL_BUNDLE_SHA_BY_GENERATION.get(generation);
+  if (canonicalBundleShaKey) {
+    invariant(bundle.sha256 === FOCUS_TIMER_PACKAGE[canonicalBundleShaKey],
+      "Focus-timer generation rewrite changed immutable F1WB payload bytes.");
+  }
   invariant(bundle.binary.length === FOCUS_TIMER_PACKAGE.f1wbBytes &&
-    bundle.sha256 === expectedBundleSha &&
     bundle.binary.subarray(332).equals(template.subarray(332)),
   "Focus-timer generation rewrite changed immutable F1WB payload bytes.");
   const binary = Buffer.concat([bundle.binary, focusProgram, timerProgram, timerBase]);
-  const expectedPackageSha = generation === 1 ? FOCUS_TIMER_PACKAGE.generationOnePackageSha256 :
-    FOCUS_TIMER_PACKAGE.generationTwoPackageSha256;
-  invariant(binary.length === FOCUS_TIMER_PACKAGE.packageBytes && sha256(binary) === expectedPackageSha,
+  invariant(binary.length === FOCUS_TIMER_PACKAGE.packageBytes,
     "Focus-timer composite package bytes changed.");
+  const packageSha = sha256(binary);
+  const canonicalPackageShaKey = CANONICAL_PACKAGE_SHA_BY_GENERATION.get(generation);
+  if (canonicalPackageShaKey) {
+    invariant(packageSha === FOCUS_TIMER_PACKAGE[canonicalPackageShaKey],
+      "Focus-timer composite package bytes changed.");
+  }
   return Object.freeze({ format: FOCUS_TIMER_PACKAGE.format, generation,
     f1wb: Buffer.from(bundle.binary), focusF2ep: Buffer.from(focusProgram),
     timerF2ep: Buffer.from(timerProgram), timerBaseLzss: Buffer.from(timerBase),
-    binary, sha256: expectedPackageSha });
+    binary, sha256: packageSha });
 }
 
-export function createFocusTimerPackageUpload(packageValue) {
+export function createFocusTimerPackageUpload(packageValue,
+  { expectedGeneration = FOCUS_TIMER_PACKAGE.expectedGeneration } = {}) {
+  invariant(Number.isInteger(expectedGeneration) && expectedGeneration >= 0 &&
+    expectedGeneration < 0xffffffff,
+  "Focus-timer expected generation must be a uint32 below its maximum.");
   invariant(packageValue?.format === FOCUS_TIMER_PACKAGE.format &&
-    packageValue.generation === FOCUS_TIMER_PACKAGE.generation &&
+    packageValue.generation === expectedGeneration + 1 &&
     packageValue.binary instanceof Uint8Array &&
-    packageValue.binary.length === FOCUS_TIMER_PACKAGE.packageBytes &&
-    sha256(packageValue.binary) === FOCUS_TIMER_PACKAGE.generationTwoPackageSha256,
-  "Focus-timer live upload requires the exact generation-two composite.");
+    packageValue.binary.length === FOCUS_TIMER_PACKAGE.packageBytes,
+  "Focus-timer live upload requires one composite package that advances the given expected generation by exactly one.");
+  if (expectedGeneration === FOCUS_TIMER_PACKAGE.expectedGeneration) {
+    // Canonical case: the boot-template generation 1 advancing straight to
+    // the frozen, catalog-pinned generation-2 composite. Pin the exact sha
+    // here too so this well-trodden path can never silently drift.
+    invariant(sha256(packageValue.binary) === FOCUS_TIMER_PACKAGE.generationTwoPackageSha256,
+      "Focus-timer live upload requires the exact generation-two composite.");
+  } else {
+    invariant(sha256(packageValue.binary) === packageValue.sha256,
+      "Focus-timer package sha256 does not match its own bytes.");
+  }
   const totalChunks = Math.ceil(packageValue.binary.length / WIDGET_SCENE_RPC_LIMITS.chunkRawBytes);
   invariant(packageValue.binary.length <= WIDGET_SCENE_RPC_LIMITS.maxBundleBytes &&
     totalChunks === FOCUS_TIMER_PACKAGE.chunks && totalChunks <= WIDGET_SCENE_RPC_LIMITS.maxChunks,
   "Focus-timer composite exceeds the exact scene-store transport bounds.");
-  const transactionId = `f2pt-00000002-${packageValue.sha256.slice(0, 16)}`;
+  const transactionId = `f2pt-${packageValue.generation.toString(16).padStart(8, "0")}-${packageValue.sha256.slice(0, 16)}`;
   const common = Object.freeze({ protocol: WIDGET_SCENE_RPC_PROTOCOL, transactionId,
-    expectedGeneration: FOCUS_TIMER_PACKAGE.expectedGeneration,
-    generation: FOCUS_TIMER_PACKAGE.generation, totalBytes: packageValue.binary.length,
+    expectedGeneration, generation: packageValue.generation, totalBytes: packageValue.binary.length,
     totalChunks, chunkRawBytes: WIDGET_SCENE_RPC_LIMITS.chunkRawBytes,
     sha256: packageValue.sha256 });
   const chunks = Object.freeze(Array.from({ length: totalChunks }, (_, index) => {
@@ -102,12 +135,11 @@ export function createFocusTimerPackageUpload(packageValue) {
     const chunk = Buffer.from(packageValue.binary.subarray(offset,
       Math.min(packageValue.binary.length, offset + WIDGET_SCENE_RPC_LIMITS.chunkRawBytes)));
     return Object.freeze({ protocol: WIDGET_SCENE_RPC_PROTOCOL, transactionId,
-      generation: FOCUS_TIMER_PACKAGE.generation, index, offset, bytes: chunk.length,
+      generation: packageValue.generation, index, offset, bytes: chunk.length,
       chunkSha256: sha256(chunk), data: chunk.toString("base64") });
   }));
   const commit = Object.freeze({ protocol: WIDGET_SCENE_RPC_PROTOCOL, transactionId,
-    expectedGeneration: FOCUS_TIMER_PACKAGE.expectedGeneration,
-    generation: FOCUS_TIMER_PACKAGE.generation, totalBytes: packageValue.binary.length,
+    expectedGeneration, generation: packageValue.generation, totalBytes: packageValue.binary.length,
     totalChunks, sha256: packageValue.sha256 });
   return Object.freeze({ manifest: common, chunks, commit });
 }
@@ -126,11 +158,11 @@ function statusOnly(response, operation) {
 }
 
 export async function publishFocusTimerPackageSmoke({ package: packageValue, rpc,
-  onProgress = null } = {}) {
+  expectedGeneration = FOCUS_TIMER_PACKAGE.expectedGeneration, onProgress = null } = {}) {
   invariant(typeof rpc === "function", "Focus-timer publisher requires rpc().");
   invariant(onProgress === null || typeof onProgress === "function",
     "Focus-timer progress callback must be a function.");
-  const upload = createFocusTimerPackageUpload(packageValue);
+  const upload = createFocusTimerPackageUpload(packageValue, { expectedGeneration });
   let begun = false;
   try {
     statusOnly(await rpc(WIDGET_SCENE_RPC_METHODS.begin, upload.manifest), "begin");
@@ -152,6 +184,150 @@ export async function publishFocusTimerPackageSmoke({ package: packageValue, rpc
       await rpc(WIDGET_SCENE_RPC_METHODS.abort, { protocol: WIDGET_SCENE_RPC_PROTOCOL,
         transactionId: upload.manifest.transactionId,
         generation: upload.manifest.generation }).catch(() => {});
+    }
+    throw error;
+  }
+}
+
+// --- Status-derived, idempotent publish -----------------------------------
+//
+// The keyboard firmware is gaining (a) boot adoption of the frozen clock+
+// timer package straight from flash (ID26/27 come up already running it)
+// and (b) reporting of that adopted/committed package on
+// widget.scene.capabilities / widget.scene.status as `committedGeneration`
+// (a canonical u32, decimal string or number depending on which RPC
+// answers) plus, where available, a package identity (`committedSha256` /
+// `packageSha256`). Both are best-effort: today's flashed firmware answers
+// widget.scene.status with a bare {status:"ok"} and neither field, and that
+// is expected, not a failure.
+//
+// Idempotency rule implemented by probeFocusTimerCommittedPackage() and
+// publishFocusTimerPackageIfNeeded():
+//
+//  1. Probe widget.scene.capabilities, then widget.scene.status, for a
+//     canonical committedGeneration. The first response that parses one
+//     wins; an unreachable/legacy/malformed response is skipped, not fatal.
+//  2. If the probe also finds a package identity (committedSha256 or
+//     packageSha256) AND rebuilding this package at that exact committed
+//     generation reproduces that identity byte-for-byte, the device already
+//     holds this exact package: report "already enabled by firmware
+//     (generation N)" and perform no begin/write/commit at all.
+//  3. Otherwise push with expectedGeneration = N (the probed
+//     committedGeneration, or the legacy pinned default of 1 when the probe
+//     found nothing) and generation = N+1, rebuilding the composite at that
+//     generation from the same frozen focus/timer inputs
+//     (buildFocusTimerPackage is this format's equivalent of
+//     renderV2PackageAtGeneration: same frozen bytes, only the F1WB
+//     generation word changes).
+//  4. If that push is rejected (begin, a chunk write, or commit -- any
+//     FOCUS_TIMER_RPC_REJECTED) AND the probe found a real committedGeneration
+//     N that is >= FOCUS_TIMER_MINIMUM_BOOT_ADOPTED_GENERATION (2, the
+//     generation baked into the flashed clock+timer image today), classify
+//     the rejection as "already enabled by firmware (generation N)" instead
+//     of an error. A push attempted at the device's own reported generation
+//     that still gets refused is far more likely to mean the frozen package
+//     is already committed than a genuine transport fault, and N >= 2 means
+//     the probe read a real boot-adopted/committed generation rather than
+//     the boot-template default.
+//  5. If the probe found nothing at all (no capabilities/status support --
+//     today's real firmware) AND the push's `begin` step specifically is
+//     rejected, classify it the same way. This preserves, byte for byte,
+//     the historical behavior every host pusher already relied on before
+//     this generation-derivation work landed ("the device only accepts one
+//     live push per boot; a rejected begin means it is already applied this
+//     boot, which is expected, not an error") for firmware that has not yet
+//     shipped the status/capabilities follow-up. A rejected write or commit
+//     with no generation reading is NOT swallowed here -- some bytes were
+//     already accepted, so a failure past `begin` is a genuine fault.
+export const FOCUS_TIMER_MINIMUM_BOOT_ADOPTED_GENERATION = FOCUS_TIMER_PACKAGE.generation;
+
+function parseCanonicalGeneration(value) {
+  const text = typeof value === "number" && Number.isInteger(value) ? String(value) : value;
+  if (typeof text !== "string" || !/^(?:0|[1-9][0-9]*)$/u.test(text)) return null;
+  const parsed = Number(text);
+  return Number.isSafeInteger(parsed) && parsed >= 0 && parsed < 0xffffffff ? parsed : null;
+}
+
+function parseCommittedSha256(value) {
+  return typeof value === "string" && /^[0-9a-f]{64}$/u.test(value) ? value : null;
+}
+
+/**
+ * Best-effort read of the device's committed render-v2 generation (and,
+ * where advertised, package identity) before a focus-timer push. See the
+ * idempotency rule documented above.
+ */
+export async function probeFocusTimerCommittedPackage({ rpc }) {
+  invariant(typeof rpc === "function", "Focus-timer status probe requires rpc().");
+  for (const method of [WIDGET_SCENE_RPC_METHODS.capabilities, WIDGET_SCENE_RPC_METHODS.status]) {
+    let response;
+    try { response = await rpc(method, { protocol: WIDGET_SCENE_RPC_PROTOCOL }); }
+    catch { continue; }
+    if (!response || typeof response !== "object" || Array.isArray(response) || response.status === "error") continue;
+    const generation = parseCanonicalGeneration(response.committedGeneration);
+    if (generation === null) continue;
+    return Object.freeze({ source: method, generation,
+      sha256: parseCommittedSha256(response.committedSha256 ?? response.packageSha256) });
+  }
+  return Object.freeze({ source: "unavailable", generation: null, sha256: null });
+}
+
+function alreadyEnabledResult(generation, reason) {
+  return Object.freeze({ status: "FOCUS_TIMER_PACKAGE_ALREADY_ENABLED", alreadyEnabled: true,
+    generation, reason, hostClockSync: false });
+}
+
+/**
+ * Status-derived, idempotent publish. Probes the device's committed
+ * generation, skips the push entirely when the reported package identity
+ * already matches, and otherwise pushes expectedGeneration -> +1,
+ * classifying an expected rejection as "already enabled" rather than an
+ * error per the rule documented above.
+ */
+export async function publishFocusTimerPackageIfNeeded({ rpc, sourceParts, onProgress = null,
+  onStatus = null, buildPackage = buildFocusTimerPackage,
+  probe = probeFocusTimerCommittedPackage } = {}) {
+  invariant(typeof rpc === "function", "Focus-timer publisher requires rpc().");
+  invariant(sourceParts && typeof sourceParts === "object",
+    "Focus-timer publisher requires its frozen source parts.");
+  invariant(onStatus === null || typeof onStatus === "function",
+    "Focus-timer status callback must be a function.");
+  const status = await probe({ rpc });
+  onStatus?.({ stage: "status-probe", source: status.source, committedGeneration: status.generation });
+
+  if (status.generation !== null && status.sha256) {
+    const committedCandidate = buildPackage({ ...sourceParts, generation: status.generation });
+    if (committedCandidate.sha256 === status.sha256) {
+      const result = alreadyEnabledResult(status.generation, "committed-sha-match");
+      onStatus?.({ stage: "already-enabled", ...result });
+      return result;
+    }
+  }
+
+  const expectedGeneration = status.generation ?? FOCUS_TIMER_PACKAGE.expectedGeneration;
+  const targetGeneration = expectedGeneration + 1;
+  const packageValue = buildPackage({ ...sourceParts, generation: targetGeneration });
+  onStatus?.({ stage: "target-selected", expectedGeneration, generation: targetGeneration,
+    bytes: packageValue.binary.length, sha256: packageValue.sha256 });
+
+  try {
+    const result = await publishFocusTimerPackageSmoke({ package: packageValue, rpc,
+      expectedGeneration, onProgress });
+    return Object.freeze({ ...result, alreadyEnabled: false });
+  } catch (error) {
+    if (error.code !== "FOCUS_TIMER_RPC_REJECTED") throw error;
+    const knownBootAdopted = status.generation !== null &&
+      status.generation >= FOCUS_TIMER_MINIMUM_BOOT_ADOPTED_GENERATION;
+    const beginRejected = /\bbegin\b/i.test(error.message ?? "");
+    if (knownBootAdopted) {
+      const result = alreadyEnabledResult(status.generation, "rejected-at-known-boot-adopted-generation");
+      onStatus?.({ stage: "already-enabled", ...result });
+      return result;
+    }
+    if (status.generation === null && beginRejected) {
+      const result = alreadyEnabledResult(expectedGeneration, "begin-rejected-generation-unknown-legacy");
+      onStatus?.({ stage: "already-enabled", ...result });
+      return result;
     }
     throw error;
   }

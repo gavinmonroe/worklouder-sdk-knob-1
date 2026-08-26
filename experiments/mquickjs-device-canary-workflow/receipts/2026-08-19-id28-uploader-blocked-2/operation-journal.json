@@ -1,0 +1,58 @@
+{
+  "format": "framer-f1-mquickjs-app-only-receipt-v1",
+  "status": "FAILED_STOPPED",
+  "mode": "fast-diff",
+  "startedAt": "2026-08-19T17:39:18.216Z",
+  "app": {
+    "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/framer-0.4.1-mqjs-id28-PSRAM-module-app.bin",
+    "bytes": 2062912,
+    "sha256": "52b1061d19d99141fa841bfa336f8f102a36efb45c0f9135f6ceb6b4c8dcf7d4",
+    "offset": 65536
+  },
+  "expectLiveSha256": "38c0821d3e9f0b4bc8bb73b1dd25b8283d11fd89b87c6ae0f717d3bbe0ceabf0",
+  "phases": [
+    {
+      "phase": "identity",
+      "status": "PASS_READ_ONLY",
+      "mac": "a4:cb:8f:af:32:10"
+    }
+  ],
+  "ranges": [
+    {
+      "offset": 0,
+      "bytes": 4096,
+      "end": 4096
+    },
+    {
+      "offset": 515728,
+      "bytes": 4096,
+      "end": 519824
+    },
+    {
+      "offset": 1031456,
+      "bytes": 4096,
+      "end": 1035552
+    },
+    {
+      "offset": 1547184,
+      "bytes": 4096,
+      "end": 1551280
+    },
+    {
+      "offset": 1929413,
+      "bytes": 1,
+      "end": 1929414
+    },
+    {
+      "offset": 1935312,
+      "bytes": 28704,
+      "end": 1964016
+    },
+    {
+      "offset": 2058816,
+      "bytes": 4096,
+      "end": 2062912
+    }
+  ],
+  "error": "Live app is not the expected image at range 0x1d70c5..0x1d70c6; refusing to write."
+}

@@ -17,11 +17,11 @@
   "app": {
     "file": "framer-0.4.1-input-lab-renderer-v2-generic-id26-app.bin",
     "bytes": 2062912,
-    "sha256": "371ee26ebb74c37fde96213ace9f4c506ac98d5293ff09ffe3f863ced9c98f06"
+    "sha256": "4e045ec270462754e8415c1e2d30181f500791db9d55cbeb98b8650621a78d1d"
   },
   "approval": {
     "file": "combined-renderer-v2-generic-input-lab-device-approval.json",
-    "sha256": "8e8b795f3fb45bcee2456ff0a9291b16ff2f2128eba8d37f1aa2a668cf17a6fa"
+    "sha256": "ee1d4dbd162b47eb69d7407950842df389a06b9b650bc1c9f7234ce2b976fb2d"
   },
   "rollback": {
     "bytes": 2062912,

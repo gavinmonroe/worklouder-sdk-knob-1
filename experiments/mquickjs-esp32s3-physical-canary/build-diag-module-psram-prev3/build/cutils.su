@@ -1,0 +1,7 @@
+/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-canary/vendor/mquickjs/cutils.c:32:6:pstrcpy	32	static
+/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-canary/vendor/mquickjs/cutils.c:50:7:pstrcat	32	static
+/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-canary/vendor/mquickjs/cutils.c:59:5:strstart	32	static
+/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-canary/vendor/mquickjs/cutils.c:75:5:has_suffix	32	static
+/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-canary/vendor/mquickjs/cutils.c:82:8:__unicode_to_utf8	32	static
+/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-canary/vendor/mquickjs/cutils.c:105:5:__unicode_from_utf8	32	static
+/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-canary/vendor/mquickjs/cutils.c:156:5:__utf8_get	32	static

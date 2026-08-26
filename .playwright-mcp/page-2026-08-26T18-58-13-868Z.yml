@@ -1,0 +1,321 @@
+- generic [ref=f11e3]:
+  - banner [ref=f11e4]:
+    - generic [ref=f11e5]:
+      - generic [ref=f11e6]:
+        - generic [ref=f11e7]: F1
+        - heading "Widget Designer" [level=1] [ref=f11e8]
+        - generic [ref=f11e9]: v0.1.0
+      - generic [ref=f11e10]: Weather (device DSL)
+      - generic [ref=f11e12]:
+        - generic [ref=f11e13]: Not assembled
+        - button "Assemble F2UP" [ref=f11e15] [cursor=pointer]
+        - button "Settings" [ref=f11e20] [cursor=pointer]
+        - button "Toggle theme" [ref=f11e28] [cursor=pointer]
+  - generic [ref=f11e31]:
+    - complementary "Example gallery" [ref=f11e32]:
+      - generic [ref=f11e33]:
+        - generic [ref=f11e34]: Examples
+        - generic [ref=f11e35]: "5"
+      - 'button "Tally Start here: keys, chords, the Fn knob and live digits() - the hello-world of the device DSL Fn knob input Keys & chords Tick heartbeat digits() display Device-pushable example" [ref=f11e36] [cursor=pointer]':
+        - generic [ref=f11e37]: Tally
+        - 'generic "Start here: keys, chords, the Fn knob and live digits() - the hello-world of the device DSL" [ref=f11e40]'
+        - generic [ref=f11e41]:
+          - generic [ref=f11e42]: Fn knob input
+          - generic [ref=f11e50]: Keys & chords
+          - generic [ref=f11e55]: Tick heartbeat
+          - generic [ref=f11e61]: digits() display
+          - generic [ref=f11e66]: Device-pushable example
+      - button "Clock Host-fed time over host.rpc, a blinking colon via el.hidden, knob trims the minutes Fn knob input Tick heartbeat Host RPC data digits() display Device-pushable example" [ref=f11e71] [cursor=pointer]:
+        - generic [ref=f11e72]: Clock
+        - generic "Host-fed time over host.rpc, a blinking colon via el.hidden, knob trims the minutes" [ref=f11e75]
+        - generic [ref=f11e76]:
+          - generic [ref=f11e77]: Fn knob input
+          - generic [ref=f11e85]: Tick heartbeat
+          - generic [ref=f11e91]: Host RPC data
+          - generic [ref=f11e97]: digits() display
+          - generic [ref=f11e102]: Device-pushable example
+      - 'button "Focus timer A real pomodoro: tick.1s countdown, lockstep class states, knob sets the duration Fn knob input Keys & chords Tick heartbeat digits() display Device-pushable example" [ref=f11e107] [cursor=pointer]':
+        - generic [ref=f11e108]: Focus timer
+        - 'generic "A real pomodoro: tick.1s countdown, lockstep class states, knob sets the duration" [ref=f11e111]'
+        - generic [ref=f11e112]:
+          - generic [ref=f11e113]: Fn knob input
+          - generic [ref=f11e121]: Keys & chords
+          - generic [ref=f11e126]: Tick heartbeat
+          - generic [ref=f11e132]: digits() display
+          - generic [ref=f11e137]: Device-pushable example
+      - button "Metronome widget.animate() samples the CSS pendulum into a device flipbook; digits + states Fn knob input Keys & chords Tick heartbeat Animation capture (widget.animate) digits() display Device-pushable example" [ref=f11e142] [cursor=pointer]:
+        - generic [ref=f11e143]: Metronome
+        - generic "widget.animate() samples the CSS pendulum into a device flipbook; digits + states" [ref=f11e146]
+        - generic [ref=f11e147]:
+          - generic [ref=f11e148]: Fn knob input
+          - generic [ref=f11e156]: Keys & chords
+          - generic [ref=f11e161]: Tick heartbeat
+          - generic [ref=f11e167]: Animation capture (widget.animate)
+          - generic [ref=f11e172]: digits() display
+          - generic [ref=f11e177]: Device-pushable example
+      - 'button "Weather Live open-meteo data end-to-end: shared-slot digits, condition marks, two forecast rows Fn knob input Tick heartbeat Host RPC data digits() display Device-pushable example" [pressed] [ref=f11e182] [cursor=pointer]':
+        - generic [ref=f11e183]: Weather
+        - 'generic "Live open-meteo data end-to-end: shared-slot digits, condition marks, two forecast rows" [ref=f11e186]'
+        - generic [ref=f11e187]:
+          - generic [ref=f11e188]: Fn knob input
+          - generic [ref=f11e196]: Tick heartbeat
+          - generic [ref=f11e202]: Host RPC data
+          - generic [ref=f11e208]: digits() display
+          - generic [ref=f11e213]: Device-pushable example
+    - generic [ref=f11e218]:
+      - generic [ref=f11e219]:
+        - button "Hide the example gallery" [expanded] [ref=f11e221] [cursor=pointer]
+        - tablist "Workspace" [ref=f11e224]:
+          - tab "Design" [selected] [ref=f11e225] [cursor=pointer]
+          - tab "Source" [ref=f11e226] [cursor=pointer]
+          - tab "Export" [ref=f11e227] [cursor=pointer]
+          - tab "Device" [ref=f11e228] [cursor=pointer]
+      - main [ref=f11e229]:
+        - generic [ref=f11e231]:
+          - region "Device stage" [ref=f11e232]:
+            - generic [ref=f11e233]:
+              - generic [ref=f11e236]:
+                - generic "Weather (device DSL)" [ref=f11e237]
+                - generic [ref=f11e238]:
+                  - img "100x310 device viewport at 170%" [ref=f11e239]:
+                    - iframe [ref=f11e240]:
+                      - generic "Weather" [ref=f12e2]:
+                        - generic [ref=f12e6]: ZIP 98304
+                        - generic [ref=f12e7]: Today
+                        - generic [ref=f12e8]:
+                          - strong [ref=f12e9]:
+                            - generic [ref=f12e10]: "72"
+                            - generic [ref=f12e11]: °
+                          - generic [ref=f12e12]: Cloudy
+                        - generic [ref=f12e13]:
+                          - generic [ref=f12e14]:
+                            - generic [ref=f12e15]: Mon
+                            - generic [ref=f12e16]: "00"
+                            - generic [ref=f12e17]: →
+                            - generic [ref=f12e18]: "00"
+                          - generic [ref=f12e19]:
+                            - generic [ref=f12e20]: Tue
+                            - generic [ref=f12e21]: "00"
+                            - generic [ref=f12e22]: →
+                            - generic [ref=f12e23]: "00"
+                  - generic [ref=f11e241]:
+                    - generic [ref=f11e242]: F1
+                    - button "Fn bottom knob — click for one detent clockwise, Shift-click for counter-clockwise, scroll or arrow keys to turn" [ref=f11e244] [cursor=pointer]
+              - status "Simulator state" [ref=f11e247]:
+                - generic [ref=f11e248]: Ready
+                - generic [ref=f11e252]:
+                  - generic [ref=f11e253]: Last event
+                  - generic [ref=f11e254]: —
+              - group "Simulator controls" [ref=f11e256]:
+                - generic [ref=f11e257]:
+                  - generic [ref=f11e258]: Auto-tick
+                  - radiogroup "Auto-tick rate" [ref=f11e259]:
+                    - radio "Off" [checked] [ref=f11e260] [cursor=pointer]
+                    - radio "1s" [ref=f11e261] [cursor=pointer]
+                    - radio "100ms" [ref=f11e262] [cursor=pointer]
+                - button "Reset sim" [ref=f11e265] [cursor=pointer]
+              - group "Zoom" [ref=f11e269]:
+                - radiogroup "Zoom level" [ref=f11e270]:
+                  - radio "Fit" [checked] [ref=f11e271] [cursor=pointer]
+                  - radio "1×" [ref=f11e272] [cursor=pointer]
+                  - radio "2×" [ref=f11e273] [cursor=pointer]
+                  - radio "3×" [ref=f11e274] [cursor=pointer]
+                  - radio "4×" [ref=f11e275] [cursor=pointer]
+                - textbox "Zoom percentage" [ref=f11e277]: 170%
+          - complementary "Widget inspector rail" [ref=f11e278]:
+            - generic [ref=f11e279]:
+              - generic [ref=f11e280]:
+                - heading "Widget" [level=2] [ref=f11e281]
+                - generic [ref=f11e282]: Everything else is detected from your source.
+              - generic [ref=f11e283]:
+                - generic [ref=f11e284]:
+                  - generic [ref=f11e285]: Display name
+                  - textbox "Display name" [ref=f11e286]: Weather (device DSL)
+                - generic [ref=f11e287]:
+                  - generic [ref=f11e288]: Root class
+                  - textbox "Root class" [ref=f11e289]: weather-v2
+            - generic [ref=f11e290]:
+              - generic [ref=f11e291]:
+                - heading "Inspector" [level=2] [ref=f11e292]
+                - generic [ref=f11e293]: Detected from your widget source.
+              - generic [ref=f11e295]:
+                - generic [ref=f11e296]:
+                  - generic [ref=f11e297]:
+                    - button "State slots" [expanded] [ref=f11e298] [cursor=pointer]
+                    - generic [ref=f11e303] [cursor=pointer]: "2"
+                  - table "State slots" [ref=f11e308]:
+                    - row [ref=f11e309]:
+                      - columnheader "Slot" [ref=f11e310]
+                      - columnheader "Name" [ref=f11e311]
+                      - columnheader "Init" [ref=f11e312]
+                    - row [ref=f11e313]:
+                      - cell "[0]" [ref=f11e314]
+                      - cell "temp" [ref=f11e315]
+                      - cell "72" [ref=f11e317]
+                    - row [ref=f11e318]:
+                      - cell "[1]" [ref=f11e319]
+                      - cell "cond" [ref=f11e320]
+                      - cell "0" [ref=f11e322]
+                - generic [ref=f11e323]:
+                  - generic [ref=f11e324]:
+                    - button "Handlers" [expanded] [ref=f11e325] [cursor=pointer]
+                    - generic [ref=f11e330] [cursor=pointer]: "5"
+                  - generic [ref=f11e335]:
+                    - generic [ref=f11e336]:
+                      - generic [ref=f11e337]: "#0"
+                      - generic "input.fn-bottom-knob" [ref=f11e338]:
+                        - generic [ref=f11e339]: input.
+                        - generic [ref=f11e340]: fn-bottom-knob
+                    - generic [ref=f11e341]:
+                      - generic [ref=f11e342]: "#1"
+                      - generic "host.rpc:0xB241" [ref=f11e343]:
+                        - generic [ref=f11e344]: host.
+                        - generic [ref=f11e345]: rpc:0xB241
+                    - generic [ref=f11e346]:
+                      - generic [ref=f11e347]: "#2"
+                      - generic "host.rpc:0xB242" [ref=f11e348]:
+                        - generic [ref=f11e349]: host.
+                        - generic [ref=f11e350]: rpc:0xB242
+                    - generic [ref=f11e351]:
+                      - generic [ref=f11e352]: "#3"
+                      - generic "host.rpc:0xB243" [ref=f11e353]:
+                        - generic [ref=f11e354]: host.
+                        - generic [ref=f11e355]: rpc:0xB243
+                    - generic [ref=f11e356]:
+                      - generic [ref=f11e357]: "#4"
+                      - generic "tick.1s" [ref=f11e358]:
+                        - generic [ref=f11e359]: tick.
+                        - generic [ref=f11e360]: 1s
+                - generic [ref=f11e361]:
+                  - generic [ref=f11e362]:
+                    - button "DOM targets" [ref=f11e363] [cursor=pointer]
+                    - generic [ref=f11e368] [cursor=pointer]: "9"
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic "#temp-num"
+                            - generic:
+                              - generic "#condition"
+                            - generic:
+                              - generic "#mark"
+                            - generic:
+                              - generic "#day-1"
+                            - generic:
+                              - generic "#high-1"
+                            - generic:
+                              - generic "#low-1"
+                            - generic:
+                              - generic "#day-2"
+                            - generic:
+                              - generic "#high-2"
+                            - generic:
+                              - generic "#low-2"
+                          - generic: All 9 × textContent.
+                - generic [ref=f11e370]:
+                  - generic [ref=f11e371]:
+                    - button "Event log" [expanded] [ref=f11e372] [cursor=pointer]
+                    - generic [ref=f11e377] [cursor=pointer]: "0"
+                  - generic [ref=f11e382]:
+                    - generic [ref=f11e385]: No events yet
+                    - generic [ref=f11e386]: Turn the stage knob, fire a sample from the Source view's reference rail, or start auto-tick — every event the simulator handles lands here.
+                - generic [ref=f11e387]:
+                  - generic [ref=f11e388]:
+                    - button "Diagnostics" [ref=f11e389] [cursor=pointer]
+                    - generic [ref=f11e394] [cursor=pointer]: OK
+                  - generic: The source compiled cleanly.
+                - generic [ref=f11e396]:
+                  - generic [ref=f11e397]:
+                    - button "Runtime budgets" [ref=f11e398] [cursor=pointer]
+                    - generic "Peak utilization — the fullest of the budget meters below" [ref=f11e404] [cursor=pointer]:
+                      - generic [ref=f11e405]: peak
+                      - text: 57%
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic: Package
+                              - meter "Package"
+                              - generic: —/98,304
+                            - generic:
+                              - generic: Source
+                              - meter "Source"
+                              - generic: 4,645/8,192
+                            - generic:
+                              - generic: Events
+                              - meter "Events"
+                              - generic: 5/32
+                            - generic:
+                              - generic: DOM targets
+                              - meter "DOM targets"
+                              - generic: 9/16
+                          - generic: Package is unmeasured — run Assemble F2UP on the Export tab.
+                - generic [ref=f11e406]:
+                  - generic [ref=f11e407]:
+                    - button "Supported event kinds" [ref=f11e408] [cursor=pointer]
+                    - generic [ref=f11e414] [cursor=pointer]:
+                      - text: "3"
+                      - generic [ref=f11e415]: in use
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - generic:
+                            - generic:
+                              - generic "tick.100ms":
+                                - generic: tick.
+                                - generic: 100ms
+                              - generic: — not handled
+                            - generic:
+                              - generic "tick.1s":
+                                - generic: tick.
+                                - generic: 1s
+                              - generic: — handled
+                            - generic:
+                              - generic "input.fn-bottom-knob":
+                                - generic: input.
+                                - generic: fn-bottom-knob
+                              - generic: — handled
+                            - generic:
+                              - generic "host.rpc":
+                                - generic: host.
+                                - generic: rpc
+                              - generic: — handled
+                            - generic:
+                              - generic "input.key.down":
+                                - generic: input.key.
+                                - generic: down
+                              - generic: — not handled
+                            - generic:
+                              - generic "input.key.up":
+                                - generic: input.key.
+                                - generic: up
+                              - generic: — not handled
+                            - generic:
+                              - generic "input.key.hold":
+                                - generic: input.key.
+                                - generic: hold
+                              - generic: — not handled
+                            - generic:
+                              - generic "input.chord.down":
+                                - generic: input.chord.
+                                - generic: down
+                              - generic: — not handled
+                            - generic:
+                              - generic "input.chord.up":
+                                - generic: input.chord.
+                                - generic: up
+                              - generic: — not handled
+                          - generic: Highlighted kinds already have a handler in this script — any of them works inside widget.on(…).
+  - contentinfo [ref=f11e416]:
+    - button "No device connected — open Device tab to connect" [ref=f11e418] [cursor=pointer]:
+      - generic [ref=f11e420]: Disconnected
+    - generic [ref=f11e422]: Sim ready
+    - button "View diagnostics — no issues" [ref=f11e426] [cursor=pointer]:
+      - generic [ref=f11e428]: No issues
+    - button "Not assembled — open Export tab" [ref=f11e430] [cursor=pointer]:
+      - generic [ref=f11e431]: Not assembled

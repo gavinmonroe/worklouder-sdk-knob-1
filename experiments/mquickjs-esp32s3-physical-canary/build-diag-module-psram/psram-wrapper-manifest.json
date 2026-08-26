@@ -3,14 +3,16 @@
   "hardwareTouched": false,
   "generatedFrom": {
     "script": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module.mjs",
-    "sha256": "01b0b68d6829ec645fa57e54320fe1f95a838639c6a191a4c2f0ff9ed0e8c493",
+    "sha256": "485191d48327e67abf86296da499f1306ece2076ecf516b6968f12d76bb6690b",
     "generatedScript": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram.generated.mjs",
-    "generatedSha256": "cd6b7971094298b6c52d2de64e7798b87cb3ec263ddceba798d985ca1438cd1f",
+    "generatedSha256": "cef6187425a8ce7dc8adc08384c4d21bd6fe202b2c147edef947daab27a38010",
     "substitutions": [
       "output directory",
       "module translation unit",
       "include search path",
       "block-size invariant",
+      "persist offset probes",
+      "persist offset invariant",
       "text page name",
       "rodata page name",
       "slot name",
@@ -25,9 +27,38 @@
   },
   "moduleSource": {
     "file": "experiments/mquickjs-esp32s3-physical-canary/psram-module-src/physical_integration.c",
-    "sha256": "40e7cf98e5858fb08d3b21200ef3b8de649d36b1370d2ac7aac23f129193a764",
+    "sha256": "55484fa4211ff3905c48f19e39fce20ee55835c07bc0f27e3425d061ddc9292f",
     "baseline": "experiments/mquickjs-esp32s3-physical-canary/physical_integration.c",
     "baselineSha256": "6b79962ae0b38e441eb14de10d2162f02c6d741a29acb4b467e50040b85e9a40"
+  },
+  "diagnosticExtension": {
+    "methods": {
+      "widget.mquickjs.diag5": {
+        "format": "v5;a=<packed adopt word>;m=<block magic>;b=<boot_state>",
+        "packedAdoptWord": "target_admitted | heap_claimed<<8 | adopt outcome<<16 | first failing step<<24 (bit 0x80 of the step additionally means esp_mmu_unmap reported an error)"
+      },
+      "widget.mquickjs.diag6": {
+        "format": "v6;p=<packed persist word>;g=<generation now in slot B>;c=<committed generation in the scene-RPC core>",
+        "packedPersistWord": "persist state | step<<8 | renderer-v2 re-arm<<16 | started<<24",
+        "states": "0 idle, 1 armed, 2 erasing, 3 writing payload, 4 verifying payload, 5 writing header, 6 done, 7 failed",
+        "rearm": "0 not attempted, 1 waiting for RV2_SWITCH_ACTIVE, 2 switch returned to EMPTY, 3 no sidecar"
+      }
+    },
+    "reader": "experiments/mquickjs-esp32s3-physical-canary/diag-read.mjs"
+  },
+  "bootScenePersistence": {
+    "slot": "flash paddr 0x240000..0x270000 (slot B), 64-byte header + payload",
+    "record": "build-scene-slot-b.mjs layout; generation >= 2 with expected_generation == generation - 1",
+    "onBoot": "boot_adopt_default_scene republishes the record and advances the scene-RPC committed_generation to the adopted generation, then the owner task returns the renderer-v2 switch word to EMPTY once the package is ACTIVE so the host can push generation N+1",
+    "onCommit": "the owner task re-seals slot B payload-first, header LAST, one 4 KiB sector erase / 1 KiB write / 256 B verify read per tick",
+    "flashApi": {
+      "esp_flash_erase_region": "0x4037f0f0",
+      "esp_flash_write": "0x4037f460",
+      "esp_flash_read": "0x4037f31c",
+      "chip": "NULL -> esp_flash_default_chip via chip_check 0x4037edf0",
+      "regionProtectionEscape": "app_func_arg_t::no_protect (os_func_data+4) raised for exactly one stock call, because slot B is inside the factory APP partition and esp_partition_main_flash_region_safe (0x420c2b44) refuses it"
+    },
+    "proof": "experiments/mquickjs-esp32s3-physical-canary/scene-slot-b-host-proof.mjs"
   },
   "telemetryExtension": {
     "method": "widget.mquickjs.telemetry",
@@ -52,21 +83,23 @@
   },
   "build": {
     "status": "PASS_PSRAM_MODULE_BUILT_NO_HARDWARE",
-    "textSha256": "bc1e3b57fb82cc067fc57b30671d4381cd45730e376a5d42298536e0dbc1726f",
-    "rodataSha256": "818d4620a388f24d6c14f23de40f41fb33af55f0f4ebbe608306959b6c52df64",
-    "slotSha256": "9111725192043f7b40d980408a25e9dbf71d7b89fd43891932b7ddfc026f063e",
-    "appSha256": "4736206f7bd3aa0e16ecda7f97412a24838d7060b8e25ea7aa54c2516a855ee1",
-    "loaderBytes": 4732,
-    "loaderSha256": "10257634ed32263f42dbdc60b545e66d82a3977dcdedea1b1f22439b623009cd",
-    "blockBytes": 30048,
-    "startupVaddr": "0x423e391c",
-    "keyWrapper": "0x4211e650",
-    "lastErrorOffset": 6312,
+    "textSha256": "b4b8d70890b073786e2deb4006378bacf5bfe9c64e4e0bc30d261cb87a157643",
+    "rodataSha256": "849407dfb82dc8974c91a3daa9270cd15ce80a29765da47ec403f08926e33024",
+    "slotSha256": "88ae69b9901f424c53a1d6f625c679ca6a722aaf6664be863448488daa81b183",
+    "appSha256": "ad41b8b180096885947109e9c479d2dfc0919965c8a76e1d704ef691c7d207f9",
+    "loaderBytes": 5008,
+    "loaderSha256": "c7bb7e7390df4a8ef5816a50bb3de0840602e1c852c52333fdbafb9c933394c3",
+    "blockBytes": 31008,
+    "startupVaddr": "0x423e5678",
+    "keyWrapper": "0x4211e64c",
+    "lastErrorOffset": 7272,
     "customAssets": true,
     "assetSource": "experiments/mquickjs-weather3-zip/build",
     "f2jsSha256": "8858060d9e9bea7c9a0d1e92bebcbeb8395def19479beb178602238db133ecad",
-    "f2tfSha256": "aecbb419e759e44957275f3a6fd551aa0ee7fc014c8cc09af103411256c90627",
+    "f2tfSha256": "c7071962c52247408949bad0aa0887dc6e59359ba75817081e36c3cb74ab7344",
+    "f2tfSourceSha256": "aecbb419e759e44957275f3a6fd551aa0ee7fc014c8cc09af103411256c90627",
     "lzssSha256": "90d4751938f2a790b5ded7e97a162b2122962f1d8f182cf2d1465a79d8223e37",
+    "targetContractSha256": "455e02819595f810909a11afdcda7eb5aa0b4d6e792b154d29711ebea906631b",
     "out": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram"
   },
   "flashPlan": [

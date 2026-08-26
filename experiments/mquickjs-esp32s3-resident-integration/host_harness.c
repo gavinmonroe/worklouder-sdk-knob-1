@@ -1062,6 +1062,107 @@ static void test_callback_crossing_shutdown(uint8_t *package,
     mock_control_destroy(&control);
 }
 
+static void test_keyless_focus(uint8_t *package, size_t package_bytes)
+{
+    mock_control control;
+    framer_resident_owner *owner;
+    unsigned int attempts;
+    int i;
+    mock_control_init(&control);
+    owner = boot_owner(&control, package, package_bytes);
+    require(owner->admission.key_count == 0u, "keyless package admits with no keys");
+    /* The live engine refuses input_drain on a keyless runtime, so a stray
+     * input latch (a focus resync, a spurious notify) must never select the
+     * owner's drain leg: the regression that permanently disabled the first
+     * zero-key widget on hardware. fail_next_drain arms the same -negative
+     * result the real engine would return if the guard ever regressed. */
+    control.fail_next_drain = 1u;
+    framer_resident_owner_notify_input(owner, owner->admission.generation);
+    for (i = 0; i < 8; i++)
+        (void)framer_resident_owner_step(owner);
+    require(owner->capability.state == FRAMER_RESIDENT_CAP_ADVERTISED &&
+            __atomic_load_n(&owner->telemetry.permanently_disabled,
+                            __ATOMIC_ACQUIRE) == 0u &&
+            __atomic_load_n(&control.drain_calls, __ATOMIC_ACQUIRE) == 0u,
+            "keyless owner clears stray input latches without draining or faulting");
+    require(framer_resident_owner_enqueue_host_rpc(
+                owner, owner->admission.generation, 0xb241u, 5, 6) &&
+            framer_resident_owner_step(owner) >= 0 &&
+            control.dispatch_calls == 1u,
+            "keyless owner still dispatches host rpc after the stray latch");
+    require(framer_resident_owner_begin_quiesce(
+                owner, 9000u, FRAMER_MQJS_INPUT_REASON_DISCONNECT),
+            "keyless owner begins quiesce");
+    for (attempts = 0u; attempts < 64u &&
+         !framer_resident_owner_stop_on_task(owner); ++attempts)
+        sched_yield();
+    require(attempts < 64u, "keyless owner teardown drains boundedly");
+    free(owner);
+    mock_control_destroy(&control);
+}
+
+static void test_slot_switch(uint8_t *package_a, size_t bytes_a,
+                             uint8_t *package_b, size_t bytes_b)
+{
+    mock_control control;
+    framer_resident_owner *owner;
+    unsigned int attempts;
+    uint32_t generation_a;
+    mock_control_init(&control);
+    owner = boot_owner(&control, package_a, bytes_a);
+    generation_a = owner->admission.generation;
+    require(framer_resident_owner_enqueue_host_rpc(
+                owner, generation_a, 0xb201u, 3, 4) &&
+            framer_resident_owner_step(owner) >= 0 &&
+            control.dispatch_calls == 1u,
+            "slot switch: first widget dispatches");
+    /* The activation sequence the module will run: quiesce, drain the stop,
+     * recycle the SAME owner memory around its live task stack, boot the
+     * next slot's package. */
+    require(framer_resident_owner_begin_quiesce(
+                owner, 5000u, FRAMER_MQJS_INPUT_REASON_DISCONNECT),
+            "slot switch: quiesce first widget");
+    for (attempts = 0u; attempts < 64u &&
+         !framer_resident_owner_stop_on_task(owner); ++attempts)
+        sched_yield();
+    require(attempts < 64u, "slot switch: bounded stop");
+    {
+        framer_resident_engine_api engine = engine_api();
+        framer_resident_platform platform = platform_api(&control);
+        uint8_t stack_probe = owner->task_stack[7];
+        owner->task_stack[7] = (uint8_t)(stack_probe ^ 0x5au);
+        framer_resident_owner_reinit_shell(owner, &engine, &platform);
+        require(owner->task_stack[7] == (uint8_t)(stack_probe ^ 0x5au),
+                "slot switch: reinit preserves the task stack bytes");
+        require(owner->telemetry.booted == 0u &&
+                owner->active_generation == 0u &&
+                owner->capability.advertised == 0u,
+                "slot switch: reinit rewinds every non-stack field");
+    }
+    require(framer_resident_owner_mark_module_mapped(owner),
+            "slot switch: remap after reinit");
+    require(framer_resident_owner_boot_on_task(owner, package_b, bytes_b) ==
+                FRAMER_F2JS_ADMIT_OK,
+            "slot switch: second widget boots in recycled owner");
+    require(owner->capability.advertised == 1u &&
+            owner->admission.generation != 0u,
+            "slot switch: second widget advertised");
+    require(framer_resident_owner_enqueue_host_rpc(
+                owner, owner->admission.generation, 0xb241u, 8, 9) &&
+            framer_resident_owner_step(owner) >= 0 &&
+            control.dispatch_calls == 2u,
+            "slot switch: second widget dispatches");
+    require(framer_resident_owner_begin_quiesce(
+                owner, 9000u, FRAMER_MQJS_INPUT_REASON_DISCONNECT),
+            "slot switch: quiesce second widget");
+    for (attempts = 0u; attempts < 64u &&
+         !framer_resident_owner_stop_on_task(owner); ++attempts)
+        sched_yield();
+    require(attempts < 64u, "slot switch: bounded final stop");
+    free(owner);
+    mock_control_destroy(&control);
+}
+
 int main(int argc, char **argv)
 {
     uint32_t cases;
@@ -1069,7 +1170,8 @@ int main(int argc, char **argv)
     uint8_t *rich;
     size_t plain_bytes;
     size_t rich_bytes;
-    require(argc == 4, "usage: host_harness corpus plain.f2js rich.f2js");
+    require(argc == 5,
+            "usage: host_harness corpus plain.f2js rich.f2js keyless.f2js");
     cases = test_parity_corpus(argv[1]);
     plain = read_file(argv[2], &plain_bytes);
     rich = read_file(argv[3], &rich_bytes);
@@ -1080,12 +1182,19 @@ int main(int argc, char **argv)
     test_raster_transport(rich, rich_bytes);
     test_concurrent_teardown(plain, plain_bytes);
     test_callback_crossing_shutdown(plain, plain_bytes);
+    {
+        size_t keyless_bytes;
+        uint8_t *keyless = read_file(argv[4], &keyless_bytes);
+        test_keyless_focus(keyless, keyless_bytes);
+        test_slot_switch(plain, plain_bytes, keyless, keyless_bytes);
+        free(keyless);
+    }
     free(plain);
     free(rich);
     printf("resident_integration parity=%u mailbox=pass owner=pass "
            "recovery_bound=pass teardown=pass teardown_race=pass "
            "second_boot=pass input_poll=pass raster=pass "
-           "event_retirement=pass callback_shutdown=pass "
+           "event_retirement=pass callback_shutdown=pass keyless=pass slot_switch=pass "
            "tagged_interleave=pass "
            "mailbox_bytes=%zu admission_bytes=%zu owner_bytes=%zu "
            "task_stack_bytes=%u\n",

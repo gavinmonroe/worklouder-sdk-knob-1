@@ -3,3 +3,7 @@
 recovery/backups/
 *.log
 custom-firmware/build/
+
+# Widget designer (web-flasher/widget-designer)
+web-flasher/widget-designer/node_modules/
+web-flasher/widget-designer/dist/

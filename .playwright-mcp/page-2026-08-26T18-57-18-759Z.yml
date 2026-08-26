@@ -1,0 +1,119 @@
+- generic [ref=f8e3]:
+  - banner [ref=f8e4]:
+    - generic [ref=f8e5]:
+      - generic [ref=f8e6]:
+        - generic [ref=f8e7]: F1
+        - heading "Widget Designer" [level=1] [ref=f8e8]
+        - generic [ref=f8e9]: v0.1.0
+      - generic [ref=f8e10]: Weather (device DSL)
+      - generic [ref=f8e12]:
+        - generic [ref=f8e13]: Not assembled
+        - button "Assemble F2UP" [ref=f8e15] [cursor=pointer]
+        - button "Settings" [ref=f8e20] [cursor=pointer]
+        - button "Toggle theme" [ref=f8e28] [cursor=pointer]
+  - generic [ref=f8e31]:
+    - complementary "Example gallery" [ref=f8e32]:
+      - generic [ref=f8e33]:
+        - generic [ref=f8e34]: Examples
+        - generic [ref=f8e35]: "5"
+      - 'button "Tally Start here: keys, chords, the Fn knob and live digits() - the hello-world of the device DSL Fn knob input Keys & chords Tick heartbeat digits() display Device-pushable example" [ref=f8e36] [cursor=pointer]':
+        - generic [ref=f8e37]: Tally
+        - 'generic "Start here: keys, chords, the Fn knob and live digits() - the hello-world of the device DSL" [ref=f8e40]'
+        - generic [ref=f8e41]:
+          - generic [ref=f8e42]: Fn knob input
+          - generic [ref=f8e50]: Keys & chords
+          - generic [ref=f8e55]: Tick heartbeat
+          - generic [ref=f8e61]: digits() display
+          - generic [ref=f8e66]: Device-pushable example
+      - button "Clock Host-fed time over host.rpc, a blinking colon via el.hidden, knob trims the minutes Fn knob input Tick heartbeat Host RPC data digits() display Device-pushable example" [ref=f8e71] [cursor=pointer]:
+        - generic [ref=f8e72]: Clock
+        - generic "Host-fed time over host.rpc, a blinking colon via el.hidden, knob trims the minutes" [ref=f8e75]
+        - generic [ref=f8e76]:
+          - generic [ref=f8e77]: Fn knob input
+          - generic [ref=f8e85]: Tick heartbeat
+          - generic [ref=f8e91]: Host RPC data
+          - generic [ref=f8e97]: digits() display
+          - generic [ref=f8e102]: Device-pushable example
+      - 'button "Focus timer A real pomodoro: tick.1s countdown, lockstep class states, knob sets the duration Fn knob input Keys & chords Tick heartbeat digits() display Device-pushable example" [ref=f8e107] [cursor=pointer]':
+        - generic [ref=f8e108]: Focus timer
+        - 'generic "A real pomodoro: tick.1s countdown, lockstep class states, knob sets the duration" [ref=f8e111]'
+        - generic [ref=f8e112]:
+          - generic [ref=f8e113]: Fn knob input
+          - generic [ref=f8e121]: Keys & chords
+          - generic [ref=f8e126]: Tick heartbeat
+          - generic [ref=f8e132]: digits() display
+          - generic [ref=f8e137]: Device-pushable example
+      - button "Metronome widget.animate() samples the CSS pendulum into a device flipbook; digits + states Fn knob input Keys & chords Tick heartbeat Animation capture (widget.animate) digits() display Device-pushable example" [ref=f8e142] [cursor=pointer]:
+        - generic [ref=f8e143]: Metronome
+        - generic "widget.animate() samples the CSS pendulum into a device flipbook; digits + states" [ref=f8e146]
+        - generic [ref=f8e147]:
+          - generic [ref=f8e148]: Fn knob input
+          - generic [ref=f8e156]: Keys & chords
+          - generic [ref=f8e161]: Tick heartbeat
+          - generic [ref=f8e167]: Animation capture (widget.animate)
+          - generic [ref=f8e172]: digits() display
+          - generic [ref=f8e177]: Device-pushable example
+      - 'button "Weather Live open-meteo data end-to-end: shared-slot digits, condition marks, two forecast rows Fn knob input Tick heartbeat Host RPC data digits() display Device-pushable example" [pressed] [ref=f8e182] [cursor=pointer]':
+        - generic [ref=f8e183]: Weather
+        - 'generic "Live open-meteo data end-to-end: shared-slot digits, condition marks, two forecast rows" [ref=f8e186]'
+        - generic [ref=f8e187]:
+          - generic [ref=f8e188]: Fn knob input
+          - generic [ref=f8e196]: Tick heartbeat
+          - generic [ref=f8e202]: Host RPC data
+          - generic [ref=f8e208]: digits() display
+          - generic [ref=f8e213]: Device-pushable example
+    - generic [ref=f8e218]:
+      - generic [ref=f8e219]:
+        - button "Hide the example gallery" [expanded] [ref=f8e221] [cursor=pointer]
+        - tablist "Workspace" [ref=f8e224]:
+          - tab "Design" [ref=f8e225] [cursor=pointer]
+          - tab "Source" [ref=f8e226] [cursor=pointer]
+          - tab "Export" [ref=f8e227] [cursor=pointer]
+          - tab "Device" [active] [selected] [ref=f8e228] [cursor=pointer]
+      - main [ref=f8e229]:
+        - generic [ref=f8e435]:
+          - generic [ref=f8e436]:
+            - generic [ref=f8e437]:
+              - generic [ref=f8e439]:
+                - generic [ref=f8e440]:
+                  - heading "Connection" [level=2] [ref=f8e441]
+                  - generic [ref=f8e442]: Framer F1 over WebHID — detect and connect, then identify firmware and screens.
+                - generic [ref=f8e443]: Disconnected
+              - generic [ref=f8e449]:
+                - generic [ref=f8e452]: No keyboard connected
+                - generic [ref=f8e453]: Plug in a Framer F1 and connect over WebHID (Chrome or Edge). Identification reads the advertised capabilities — nothing is written.
+                - button "Connect keyboard" [ref=f8e455] [cursor=pointer]
+            - generic [ref=f8e459]:
+              - generic [ref=f8e462]:
+                - heading "Screens" [level=2] [ref=f8e463]
+                - generic [ref=f8e464]: The keyboard's widget slot bank — one live at a time, the rest cold storage.
+              - generic [ref=f8e466]:
+                - generic [ref=f8e469]: No keyboard connected
+                - generic [ref=f8e470]: Connect and identify a keyboard to see and manage its widget slots.
+            - generic [ref=f8e472]:
+              - generic [ref=f8e475]:
+                - heading "Push" [level=2] [ref=f8e476]
+                - generic [ref=f8e477]: Assemble the widget from the live preview and persist it over the mquickjs uploader.
+              - list [ref=f8e479]:
+                - listitem [ref=f8e480]:
+                  - generic [ref=f8e484]:
+                    - heading "Push to keyboard , pending" [level=3] [ref=f8e485]:
+                      - text: Push to keyboard
+                      - generic [ref=f8e486]: ", pending"
+                    - generic [ref=f8e487]: Connect and identify to check the push gate — the device advertises what it admits.
+                    - button "Push widget (mquickjs)" [disabled] [ref=f8e490]
+          - generic [ref=f8e494]:
+            - generic [ref=f8e497]:
+              - heading "Session log" [level=2] [ref=f8e498]
+              - generic [ref=f8e499]: Connection, identification and push milestones.
+            - generic [ref=f8e501]:
+              - generic [ref=f8e504]: Nothing logged yet
+              - generic [ref=f8e505]: Connect a keyboard and push a widget — every RPC milestone lands here.
+  - contentinfo [ref=f8e416]:
+    - button "No device connected — open Device tab to connect" [ref=f8e418] [cursor=pointer]:
+      - generic [ref=f8e420]: Disconnected
+    - generic [ref=f8e422]: Sim ready
+    - button "View diagnostics — no issues" [ref=f8e426] [cursor=pointer]:
+      - generic [ref=f8e428]: No issues
+    - button "Not assembled — open Export tab" [ref=f8e430] [cursor=pointer]:
+      - generic [ref=f8e431]: Not assembled

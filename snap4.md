@@ -1,0 +1,250 @@
+- generic [ref=f183e3]:
+  - banner [ref=f183e4]:
+    - generic [ref=f183e5]:
+      - generic [ref=f183e6]:
+        - generic [ref=f183e7]: F1
+        - generic [ref=f183e8]: Widget Designer
+        - generic [ref=f183e9]: v0.1.0
+      - tablist "Workspace" [ref=f183e10]:
+        - tab "Design" [selected] [ref=f183e11] [cursor=pointer]
+        - tab "Source" [ref=f183e12] [cursor=pointer]
+        - tab "Events" [ref=f183e13] [cursor=pointer]
+        - tab "Host data" [ref=f183e14] [cursor=pointer]
+        - tab "Inspect" [ref=f183e15] [cursor=pointer]
+        - tab "Export" [ref=f183e16] [cursor=pointer]
+        - tab "Device" [ref=f183e17] [cursor=pointer]
+      - generic [ref=f183e18]:
+        - generic [ref=f183e407]: F2UP · 56,599 B
+        - button "Compile" [ref=f183e20] [cursor=pointer]
+        - button "Download package" [disabled] [ref=f183e24]:
+          - generic [ref=f183e27]: Download
+        - button "Toggle theme" [ref=f183e29] [cursor=pointer]
+    - generic [ref=f183e33]:
+      - generic [ref=f183e34]: Examples
+      - generic [ref=f183e35]:
+        - button "V2 events" [ref=f183e37] [cursor=pointer]
+        - button "Focus dial" [ref=f183e40] [cursor=pointer]
+        - button "Weather" [ref=f183e43] [cursor=pointer]
+        - button "Weather (device)" [pressed] [ref=f183e46] [cursor=pointer]
+        - button "Pulse" [ref=f183e49] [cursor=pointer]
+        - button "Pomodoro" [ref=f183e52] [cursor=pointer]
+  - main [ref=f183e54]:
+    - generic [ref=f183e58]:
+      - generic [ref=f183e59]:
+        - generic [ref=f183e62]:
+          - generic "Weather (device DSL)" [ref=f183e63]
+          - generic [ref=f183e64]:
+            - img "100x310 device viewport at 169%" [ref=f183e65]:
+              - iframe [ref=f183e66]:
+                - generic "Weather" [ref=f184e2]:
+                  - generic [ref=f184e6]: ZIP 98304
+                  - generic [ref=f184e7]: Today
+                  - generic [ref=f184e8]:
+                    - strong [ref=f184e9]:
+                      - generic [ref=f184e10]: "72"
+                      - generic [ref=f184e11]: °
+                    - generic [ref=f184e12]: Cloudy
+                  - generic [ref=f184e13]:
+                    - generic [ref=f184e14]:
+                      - generic [ref=f184e15]: Mon
+                      - generic [ref=f184e16]: "00"
+                      - generic [ref=f184e17]: →
+                      - generic [ref=f184e18]: "00"
+                    - generic [ref=f184e19]:
+                      - generic [ref=f184e20]: Tue
+                      - generic [ref=f184e21]: "00"
+                      - generic [ref=f184e22]: →
+                      - generic [ref=f184e23]: "00"
+            - generic [ref=f183e67]:
+              - generic [ref=f183e68]: F1
+              - button "Fn bottom knob — click for one detent clockwise, Shift-click for counter-clockwise, scroll or arrow keys to turn" [ref=f183e70] [cursor=pointer]
+        - status "Simulator state" [ref=f183e73]:
+          - generic [ref=f183e74]: Ready
+          - generic [ref=f183e78]:
+            - generic [ref=f183e79]: Last event
+            - generic "input.fn-bottom-knob" [ref=f183e272]
+        - group "Simulator controls" [ref=f183e82]:
+          - generic [ref=f183e83]: Auto-tick
+          - radiogroup "Auto-tick rate" [ref=f183e84]:
+            - radio "Off" [checked] [ref=f183e85] [cursor=pointer]
+            - radio "1s" [ref=f183e86] [cursor=pointer]
+            - radio "100ms" [ref=f183e87] [cursor=pointer]
+          - button "Reset sim" [ref=f183e90] [cursor=pointer]
+        - group "Zoom" [ref=f183e94]:
+          - radiogroup "Zoom level" [ref=f183e95]:
+            - radio "Fit" [checked] [ref=f183e96] [cursor=pointer]
+            - radio "1×" [ref=f183e97] [cursor=pointer]
+            - radio "2×" [ref=f183e98] [cursor=pointer]
+            - radio "3×" [ref=f183e99] [cursor=pointer]
+            - radio "4×" [ref=f183e100] [cursor=pointer]
+          - textbox "Zoom percentage" [ref=f183e102]: 169%
+      - generic [ref=f183e103]:
+        - generic [ref=f183e104]:
+          - generic [ref=f183e105]:
+            - generic [ref=f183e106]: Widget
+            - generic [ref=f183e107]: The display name and the root CSS class. Everything else is detected from your source.
+          - generic [ref=f183e108]:
+            - generic [ref=f183e109]:
+              - generic [ref=f183e110]: Display name
+              - textbox "Display name" [ref=f183e111]: Weather (device DSL)
+            - generic [ref=f183e112]:
+              - generic [ref=f183e113]: Root class
+              - textbox "Root class" [ref=f183e114]: weather-v2
+        - generic [ref=f183e115]:
+          - generic [ref=f183e116]:
+            - generic [ref=f183e117]: Inspector
+            - generic [ref=f183e118]: Detected from your widget source.
+          - generic [ref=f183e120]:
+            - generic [ref=f183e121]:
+              - button "State slots 2" [expanded] [ref=f183e122] [cursor=pointer]:
+                - generic [ref=f183e125]: State slots
+                - generic [ref=f183e127]: "2"
+              - table "State slots" [ref=f183e130]:
+                - row [ref=f183e131]:
+                  - columnheader "Slot" [ref=f183e132]
+                  - columnheader "Name" [ref=f183e133]
+                  - columnheader "Init" [ref=f183e134]
+                - row [ref=f183e135]:
+                  - cell "[0]" [ref=f183e136]
+                  - cell "temp" [ref=f183e137]
+                  - cell "72" [ref=f183e139]
+                - row [ref=f183e140]:
+                  - cell "[1]" [ref=f183e141]
+                  - cell "cond" [ref=f183e142]
+                  - cell "0" [ref=f183e144]
+            - generic [ref=f183e145]:
+              - button "Handlers 5" [expanded] [ref=f183e146] [cursor=pointer]:
+                - generic [ref=f183e149]: Handlers
+                - generic [ref=f183e151]: "5"
+              - generic [ref=f183e154]:
+                - generic [ref=f183e155]:
+                  - generic [ref=f183e156]: "#0"
+                  - generic "input.fn-bottom-knob" [ref=f183e157]
+                - generic [ref=f183e158]:
+                  - generic [ref=f183e159]: "#1"
+                  - generic "host.rpc:0xB241" [ref=f183e160]
+                - generic [ref=f183e161]:
+                  - generic [ref=f183e162]: "#2"
+                  - generic "host.rpc:0xB242" [ref=f183e163]
+                - generic [ref=f183e164]:
+                  - generic [ref=f183e165]: "#3"
+                  - generic "host.rpc:0xB243" [ref=f183e166]
+                - generic [ref=f183e167]:
+                  - generic [ref=f183e168]: "#4"
+                  - generic "tick.1s" [ref=f183e169]
+            - generic [ref=f183e170]:
+              - button "DOM targets 9" [expanded] [ref=f183e171] [cursor=pointer]:
+                - generic [ref=f183e174]: DOM targets
+                - generic [ref=f183e176]: "9"
+              - generic [ref=f183e226]:
+                - generic [ref=f183e227]:
+                  - generic "#temp-num" [ref=f183e228]
+                  - generic [ref=f183e229]: textContent
+                - generic [ref=f183e230]:
+                  - generic "#condition" [ref=f183e231]
+                  - generic [ref=f183e232]: textContent
+                - generic [ref=f183e233]:
+                  - generic "#mark" [ref=f183e234]
+                  - generic [ref=f183e235]: textContent
+                - generic [ref=f183e236]:
+                  - generic "#day-1" [ref=f183e237]
+                  - generic [ref=f183e238]: textContent
+                - generic [ref=f183e239]:
+                  - generic "#high-1" [ref=f183e240]
+                  - generic [ref=f183e241]: textContent
+                - generic [ref=f183e242]:
+                  - generic "#low-1" [ref=f183e243]
+                  - generic [ref=f183e244]: textContent
+                - generic [ref=f183e245]:
+                  - generic "#day-2" [ref=f183e246]
+                  - generic [ref=f183e247]: textContent
+                - generic [ref=f183e248]:
+                  - generic "#high-2" [ref=f183e249]
+                  - generic [ref=f183e250]: textContent
+                - generic [ref=f183e251]:
+                  - generic "#low-2" [ref=f183e252]
+                  - generic [ref=f183e253]: textContent
+            - generic [ref=f183e178]:
+              - button "Event log 3" [expanded] [ref=f183e273] [cursor=pointer]:
+                - generic [ref=f183e182]: Event log
+                - generic [ref=f183e184]: "3"
+              - log "Simulator event log" [ref=f183e263]:
+                - generic [ref=f183e274]:
+                  - generic "input.fn-bottom-knob -1" [ref=f183e275]
+                  - generic [ref=f183e276]: 03:12:13
+                - generic [ref=f183e269]:
+                  - generic "input.fn-bottom-knob +1" [ref=f183e270]
+                  - generic [ref=f183e271]: 03:12:10
+                - generic [ref=f183e264]:
+                  - generic "input.fn-bottom-knob +1" [ref=f183e265]
+                  - generic [ref=f183e266]: 03:12:06
+            - generic [ref=f183e186]:
+              - button "Diagnostics No issues OK" [expanded] [active] [ref=f183e187] [cursor=pointer]:
+                - generic [ref=f183e190]:
+                  - generic [ref=f183e191]: Diagnostics
+                  - generic [ref=f183e192]: No issues
+                - generic [ref=f183e193]: OK
+              - generic [ref=f183e426]: The source compiled cleanly.
+            - generic [ref=f183e195]:
+              - button "mquickjs budgets" [expanded] [ref=f183e196] [cursor=pointer]
+              - generic [ref=f183e278]:
+                - generic [ref=f183e279]:
+                  - generic [ref=f183e280]:
+                    - generic [ref=f183e281]: Package
+                    - meter "Package" [ref=f183e282]
+                    - generic [ref=f183e283]: —/98,304
+                  - generic [ref=f183e284]:
+                    - generic [ref=f183e285]: Source
+                    - meter "Source" [ref=f183e286]
+                    - generic [ref=f183e288]: 4,645/8,192
+                  - generic [ref=f183e289]:
+                    - generic [ref=f183e290]: Events
+                    - meter "Events" [ref=f183e291]
+                    - generic [ref=f183e293]: 5/32
+                  - generic [ref=f183e294]:
+                    - generic [ref=f183e295]: DOM targets
+                    - meter "DOM targets" [ref=f183e296]
+                    - generic [ref=f183e298]: 9/16
+                - generic [ref=f183e299]: Package shows — until a fresh F2JS build exists for this exact source.
+            - generic [ref=f183e201]:
+              - button "Supported event kinds 3 in use" [expanded] [ref=f183e202] [cursor=pointer]:
+                - generic [ref=f183e205]: Supported event kinds
+                - generic [ref=f183e207]: 3 in use
+              - generic [ref=f183e301]:
+                - generic [ref=f183e302]:
+                  - generic [ref=f183e303]:
+                    - generic "tick.100ms" [ref=f183e305]
+                    - generic [ref=f183e306]: — not handled
+                  - generic [ref=f183e307]:
+                    - generic "tick.1s" [ref=f183e309]
+                    - generic [ref=f183e310]: — handled
+                  - generic [ref=f183e311]:
+                    - generic "input.fn-bottom-knob" [ref=f183e313]
+                    - generic [ref=f183e314]: — handled
+                  - generic [ref=f183e315]:
+                    - generic "host.rpc" [ref=f183e317]
+                    - generic [ref=f183e318]: — handled
+                  - generic [ref=f183e319]:
+                    - generic "input.key.down" [ref=f183e321]
+                    - generic [ref=f183e322]: — not handled
+                  - generic [ref=f183e323]:
+                    - generic "input.key.up" [ref=f183e325]
+                    - generic [ref=f183e326]: — not handled
+                  - generic [ref=f183e327]:
+                    - generic "input.key.hold" [ref=f183e329]
+                    - generic [ref=f183e330]: — not handled
+                  - generic [ref=f183e331]:
+                    - generic "input.chord.down" [ref=f183e333]
+                    - generic [ref=f183e334]: — not handled
+                  - generic [ref=f183e335]:
+                    - generic "input.chord.up" [ref=f183e337]
+                    - generic [ref=f183e338]: — not handled
+                - generic [ref=f183e339]: Highlighted kinds already have a handler in this script.
+  - contentinfo [ref=f183e209]:
+    - button "No device connected — open Device tab to connect" [ref=f183e211] [cursor=pointer]:
+      - generic [ref=f183e213]: Disconnected
+    - generic [ref=f183e215]: Sim ready
+    - button "View diagnostics — no issues" [ref=f183e219] [cursor=pointer]:
+      - generic [ref=f183e221]: No issues
+    - button "F2UP · 56,599 B — open Export tab" [ref=f183e425] [cursor=pointer]:
+      - generic [ref=f183e224]: F2UP · 56,599 B

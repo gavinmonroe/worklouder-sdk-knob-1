@@ -4,9 +4,10 @@ import htmlCssPreviewUrl from "../../../f1-widget-sdk/build/combined-renderer-id
 import rendererManifest from "../../../f1-widget-sdk/build/combined-renderer-id26/combined-renderer-id26-manifest.json";
 import clockTimerUrl from "../../../f1-widget-sdk/build/combined-renderer-v2-clock-blue-timer/framer-0.4.1-music-id1-wpm-id7-renderer-id26-clock-id27-blue-timer-app.bin?url";
 import focusClockTimerPackageUrl from "../../../f1-widget-sdk/build/combined-renderer-v2-clock-blue-timer/focus-clock-timer.generation-2.package.bin?url";
-import weatherAppUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-18-id28-zip-settings-psram/framer-0.4.1-mqjs-id28-weather-zip-psram-app.bin?url";
-import weatherTextPageUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-18-id28-zip-settings-psram/mqjs-id28-text-page.bin?url";
-import weatherRodataPageUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-18-id28-zip-settings-psram/mqjs-id28-rodata-page.bin?url";
+import weatherAppUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-18-id28-persist-btp1/framer-0.4.1-mqjs-id28-weather-zip-persist-btp1-app.bin?url";
+import weatherTextPageUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-18-id28-persist-btp1/mqjs-id28-text-page.bin?url";
+import weatherRodataPageUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-18-id28-persist-btp1/mqjs-id28-rodata-page.bin?url";
+import weatherSceneSlotBUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-18-id28-persist-btp1/scene-slot-b.bin?url";
 import inputLabGenericUrl from "../../../f1-widget-sdk/build/combined-renderer-v2-generic-input-lab/framer-0.4.1-input-lab-renderer-v2-generic-id26-app.bin?url";
 import inputLabGenericManifest from "../../../f1-widget-sdk/build/combined-renderer-v2-generic-input-lab/combined-renderer-v2-generic-input-lab-manifest.json";
 
@@ -56,6 +57,20 @@ const focusClockTimerPackage = Object.freeze({
   title: "Clock and timer must be pushed after every boot",
   description:
     "The orange focus clock and dark sky-blue timer live in RAM, not flash. Keep the keyboard on screen ID 26, then push the pinned 95,535-byte package over USB. Repeat this after every power cycle.",
+});
+
+// The Weather build (release 2026-08-18-id28-persist-btp1) persists whatever
+// clock+timer package was last pushed into flash slot B (0x240000, written as
+// a flash region alongside the app) and re-adopts it on every boot, so this
+// push is a manual fallback for that card, not the primary path. It is the
+// exact same RAM-only HID push as focusClockTimerPackage; only the button
+// copy differs.
+const weatherClockTimerFallbackPackage = Object.freeze({
+  ...focusClockTimerPackage,
+  actionLabel: "Push clock & timer again (normally not needed — firmware restores it at boot)",
+  title: "Firmware restores the clock and timer at every boot",
+  description:
+    "This build persists the pushed clock+timer package to flash slot B (0x240000) and re-adopts it at every boot (boot-adopt + persist-on-push), live-verified on 2026-08-18. Clock and timer survive reboots and crashes with no host required. Use this action only as a manual fallback if the keyboard is ever missing them.",
 });
 
 export const firmwareCatalog = Object.freeze([
@@ -136,16 +151,25 @@ export const firmwareCatalog = Object.freeze([
     evidenceTone: "caution",
     flashable: true,
     notice:
-      "Diag-track build (PSRAM VM heap, ZIP settings assets, telemetry pages). It was live-tested on one unit on 2026-08-18 and did not go through the audited release pipeline. Live weather and keyboard ZIP editing need the macOS host companion (Node.js 22+ and the Work Louder Input app). Includes everything from Clock + Timer.",
-    // Two MicroQuickJS module pages first, then the app that loads them.
+      "Diag-track build (PSRAM VM heap, ZIP settings assets, telemetry pages, BT P1 diagnostic patch). It was live-tested on one unit on 2026-08-18 and did not go through the audited release pipeline. The firmware persists the pushed clock+timer render-v2 package to flash slot B (0x240000) and re-adopts it at every boot (boot-adopt + persist-on-push), live-verified on 2026-08-18, so clock and timer survive reboots and crashes with no host needed. It also includes a 5-byte Bluetooth reconnect patch (release_adv_hold); that does not fix the Mac reconnect issue yet and is still under investigation. Live weather and keyboard ZIP editing need the macOS host companion (Node.js 22+ and the Work Louder Input app). Includes everything from Clock + Timer.",
+    // The persisted clock+timer scene slot first, then the two MicroQuickJS
+    // module pages, then the app that loads them, written last.
     regions: Object.freeze([
+      Object.freeze({
+        address: 0x240000,
+        kind: "page",
+        label: "Clock + Timer scene slot B (persisted)",
+        url: weatherSceneSlotBUrl,
+        bytes: 95_599,
+        sha256: "599be673ca9aba43a1fc64ec73324137919df70d9475ff8477100aa57cf0008f",
+      }),
       Object.freeze({
         address: 0x210000,
         kind: "page",
         label: "MicroQuickJS text page",
         url: weatherTextPageUrl,
         bytes: 131_072,
-        sha256: "bc1e3b57fb82cc067fc57b30671d4381cd45730e376a5d42298536e0dbc1726f",
+        sha256: "f69859e052a8b209faea91ba57e332e5b0ef9698c2431ecf5bd9c832a7433477",
       }),
       Object.freeze({
         address: 0x230000,
@@ -153,7 +177,7 @@ export const firmwareCatalog = Object.freeze([
         label: "MicroQuickJS rodata page",
         url: weatherRodataPageUrl,
         bytes: 65_536,
-        sha256: "818d4620a388f24d6c14f23de40f41fb33af55f0f4ebbe608306959b6c52df64",
+        sha256: "6a11369374da2d1ce51a62b7bc05ee517e15746feb97c8c5cb4d2c5f1178ede7",
       }),
       Object.freeze({
         address: 0x10000,
@@ -161,14 +185,14 @@ export const firmwareCatalog = Object.freeze([
         label: "Weather app",
         url: weatherAppUrl,
         bytes: 2_062_912,
-        sha256: "4736206f7bd3aa0e16ecda7f97412a24838d7060b8e25ea7aa54c2516a855ee1",
+        sha256: "5413d4b8735b437048a731b231cd874ae7d261c218dce50710722a9d7e8565dd",
       }),
     ]),
     url: weatherAppUrl,
     bytes: 2_062_912,
-    sha256: "4736206f7bd3aa0e16ecda7f97412a24838d7060b8e25ea7aa54c2516a855ee1",
+    sha256: "5413d4b8735b437048a731b231cd874ae7d261c218dce50710722a9d7e8565dd",
     accent: "green",
-    scenePackage: focusClockTimerPackage,
+    scenePackage: weatherClockTimerFallbackPackage,
     hostCompanion: weatherHostCompanion,
   }),
   Object.freeze({

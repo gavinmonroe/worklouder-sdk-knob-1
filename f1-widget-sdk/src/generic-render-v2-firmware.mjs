@@ -505,7 +505,7 @@ export async function buildGenericRenderV2Firmware({
       borrowedFramebufferBytes: 62_000, extraFramebufferBytes: 0,
       rendererControllerAllocationBytes: 62_164,
       sidecarAllocationBytes: 692, ownedBundleAllocationBytes: 98_304,
-      ownedProgramAllocationBytes: 29_824, sceneRpcAllocationBytes: 98_624,
+      ownedProgramAllocationBytes: 29_824, sceneRpcAllocationBytes: 99_136,
       eventRpcAllocationBytes: 40,
       integratedIromModuleBytes: moduleAudit.bytes,
       integratedIromModuleSha256: moduleAudit.sha256,

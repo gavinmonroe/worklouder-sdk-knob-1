@@ -199,8 +199,11 @@ export function ScenePackageNotice({ firmware, scene, supported, onEnable }) {
         </p>
         {scene.result && (
           <p className="scene-status" role="status">
-            {scene.result.status} · generation {scene.result.generation} · {scene.result.chunks} chunks
-            accepted. It stays live until the keyboard is power-cycled.
+            {scene.result.alreadyEnabled
+              ? `Already enabled by firmware (generation ${scene.result.generation}). No push was needed.`
+              : `Enabled (generation ${scene.result.generation}) · ${scene.result.chunks} chunks accepted.`}
+            {" "}It stays live until the keyboard is power-cycled, unless this firmware build persists the push
+            to flash.
           </p>
         )}
         {scene.error && <p className="scene-error" role="alert">{scene.error}</p>}

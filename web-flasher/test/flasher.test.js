@@ -50,9 +50,14 @@ describe("Web Serial bootloader access", () => {
 
 describe("write-scope guard", () => {
   it("accepts module pages followed by the app image", () => {
-    const plan = [page(0x210000, 32), page(0x230000, 16), app()];
+    const plan = [page(0x240000, 32), page(0x210000, 32), page(0x230000, 16), app()];
     expect(assertWritableRegions(plan)).toBe(plan);
-    expect(plan.map(({ address }) => address)).toEqual([0x210000, 0x230000, 0x10000]);
+    expect(plan.map(({ address }) => address)).toEqual([0x240000, 0x210000, 0x230000, 0x10000]);
+  });
+
+  it("accepts a non-4KiB-aligned scene-slot-B page length at 0x240000", () => {
+    const plan = [page(0x240000, 95_599), app()];
+    expect(assertWritableRegions(plan)).toBe(plan);
   });
 
   it("accepts the unchanged single-app plan", () => {

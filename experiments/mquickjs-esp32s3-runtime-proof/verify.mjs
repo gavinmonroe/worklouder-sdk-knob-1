@@ -223,7 +223,7 @@ async function buildXtensa(temporary) {
 
 function capabilityPages() {
   return [
-    "v1;p=0;profile=framer-f1-render-v2-mquickjs-v1;screen=28;physical=1;proven=0;uploader=0",
+    "v1;p=0;profile=framer-f1-render-v2-mquickjs-v1;screen=28;physical=1;proven=0;uploader=<0|1>",
     "v1;p=1;baseApp=<accepted-base-sha256>;boot=<u64hex>",
     "v1;p=2;module=<sha256>;slotBytes=00030000",
     "v1;p=3;package=<sha256>;g=<u32hex>",

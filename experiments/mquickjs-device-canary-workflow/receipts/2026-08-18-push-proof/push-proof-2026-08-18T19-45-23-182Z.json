@@ -1,0 +1,32 @@
+{
+  "format": "render-v2-push-proof-v1",
+  "startedAt": "2026-08-18T19:45:23.182Z",
+  "steps": [
+    {
+      "name": "detect",
+      "sceneAlive": true
+    },
+    {
+      "name": "build",
+      "frames": 1,
+      "bytes": 62404,
+      "chunks": 21,
+      "sha256": "c3244ca6e59a4c160cb1e816cafb82834824d584f3b2116259a966895535ca22"
+    },
+    {
+      "name": "begin",
+      "status": "ok"
+    },
+    {
+      "name": "write",
+      "chunks": 21,
+      "status": "ok"
+    },
+    {
+      "name": "commit",
+      "status": "ok"
+    }
+  ],
+  "result": "PASS_PUSH_COMMITTED",
+  "finishedAt": "2026-08-18T19:45:29.977Z"
+}

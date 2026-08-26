@@ -1,0 +1,42 @@
+[
+  {
+    "file": "valid.f2up",
+    "expect": "ok"
+  },
+  {
+    "file": "magic.f2up",
+    "expect": "magic"
+  },
+  {
+    "file": "version.f2up",
+    "expect": "version"
+  },
+  {
+    "file": "size.f2up",
+    "expect": "size"
+  },
+  {
+    "file": "generation.f2up",
+    "expect": "generation"
+  },
+  {
+    "file": "section.f2up",
+    "expect": "section"
+  },
+  {
+    "file": "reserved.f2up",
+    "expect": "reserved"
+  },
+  {
+    "file": "header-crc.f2up",
+    "expect": "header-crc"
+  },
+  {
+    "file": "payload-sha.f2up",
+    "expect": "payload-sha"
+  },
+  {
+    "file": "f2js-sha.f2up",
+    "expect": "f2js-sha"
+  }
+]

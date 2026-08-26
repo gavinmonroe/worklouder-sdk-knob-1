@@ -44,27 +44,27 @@ const EXPECTED_KEY = Object.freeze({
   packageSha256: "68a53cd4300cdfe5f8c22071f0488046f6e21a11ee9054e162bfd74b0ae8fdb9",
 });
 const EXPECTED_LOADER = Object.freeze({
-  manifestSha256: "a11894abc016838a975da3492935d2ddc7d953c72f44a1efda4ccf86cf155282",
-  publicAbiSha256: "ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb",
+  manifestSha256: "5839a2625014cddf6b05822236027e702cc14d8e4c40a02c5f9103ecca09c0f1",
+  publicAbiSha256: "105640d38d427fddae0617dbc3bcc7fdd00ba750d27c1edc156a1aea454b8948",
 });
 const EXPECTED_RESIDENT = Object.freeze({
   format: "framer-mquickjs-resident-integration-static-proof-v3",
-  manifestSha256: "6fb1a0782973ceb51d0853816a173dda4b02ec2b64036a55f74a7f9558b71d28",
-  coreSha256: "426c21185c418b758427335a5743c96415c06d68ed3a7112b8b30a9b73fccd21",
-  coreBytes: 52_384,
+  manifestSha256: "5b084c3a1c3959f547fb65a2f3698627a7167ed084bf7b1d4507bc6045660445",
+  coreSha256: "5cbe985192134c17ec211d8848907dd6d8b78a98d5b2d0e469f60a2ce768e5f4",
+  coreBytes: 53_436,
 });
 const EXPECTED_TARGET = Object.freeze({
-  manifestSha256: "f46ae66db44bdfbf6718127b76d59d1581e11c45fe9ea5d8c712c746a47de5f1",
+  manifestSha256: "d38a5dee4417e9387e6bfe5b2e2aff5f4520173e8dc50b859dc1bf42987cebe8",
   assetSha256: "d9e2ce701755423dc9d843eace93f51f982d1f5cb7c231c6fb9a5f1f1dc9bc94",
   assetBytes: 1_375,
   baseSha256: "2f8263490c50631c3cdb7f992efde976ac794d8a3e599cc785a1e81bfa0e5c68",
   casesSha256: "2de18b1208df8beb7d0b3e00a4081318199625296090d97d5f9618306acc1a9b",
   casesBytes: 800,
   contractSha256: "8220152a09348da34cdd70dd7d370197f2f3fc46a9f45e50d7fb7015bdb8579a",
-  objectSha256: "99f3d9c3c8bb81a7472856e3664220d5d92520c89533d8d672bad66fdf530521",
-  objectBytes: 21_552,
-  textBytes: 4_364,
-  rodataBytes: 72,
+  objectSha256: "8f66f46205a687a6339dfa6c6b1f604b5bc0deeefd0d273e1bcb48b40e380978",
+  objectBytes: 24_840,
+  textBytes: 5_289,
+  rodataBytes: 90,
   pixelExactCases: 11,
 });
 const EXPECTED_STOCK = Object.freeze({

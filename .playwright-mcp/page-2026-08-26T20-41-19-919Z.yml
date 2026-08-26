@@ -1,0 +1,13 @@
+- generic [ref=f9e3]:
+  - generic [ref=f9e4]: "[plugin:vite:import-analysis] Failed to resolve import \"@sdk/render-v2/compiler.mjs\" from \"src/components/deviceBuild.ts\". Does the file exist?"
+  - generic [ref=f9e5]: /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/web-flasher/widget-designer/src/components/deviceBuild.ts:234:34
+  - generic [ref=f9e6]: "112| if (preflightCache.has(key)) return; 113| let alive = true; 114| sdkCompilerPromise ??= import(\"@sdk/render-v2/compiler.mjs\"); | ^ 115| sdkCompilerPromise.then((mod) => { 116| if (!alive || preflightCache.has(key)) return;"
+  - generic [ref=f9e7]: at TransformPluginContext._formatError (file:///Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/web-flasher/widget-designer/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49258:41) at TransformPluginContext.error (file:///Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/web-flasher/widget-designer/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49253:16) at normalizeUrl (file:///Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/web-flasher/widget-designer/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64307:23) at process.processTicksAndRejections (node:internal/process/task_queues:103:5) at async file:///Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/web-flasher/widget-designer/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64439:39 at async Promise.all (index 2) at async TransformPluginContext.transform (file:///Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/web-flasher/widget-designer/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:64366:7) at async PluginContainer.transform (file:///Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/web-flasher/widget-designer/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:49099:18) at async loadAndTransform (file:///Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/web-flasher/widget-designer/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:51978:27) at async viteTransformMiddleware (file:///Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/web-flasher/widget-designer/node_modules/vite/dist/node/chunks/dep-BK3b2jBa.js:62106:24
+  - generic [ref=f9e8]:
+    - text: Click outside, press Esc key, or fix the code to dismiss.You can also disable this overlay by setting
+    - code [ref=f9e9]: server.hmr.overlay
+    - text: to
+    - code [ref=f9e10]: "false"
+    - text: in
+    - code [ref=f9e11]: vite.config.js
+    - text: .

@@ -283,15 +283,21 @@ async function main() {
   try {
     const plain = buildRenderV2MQuickJsPackage(packageOptions()).binary;
     const rich = buildRenderV2MQuickJsPackage(packageOptions({ rasterBase: rasterBase() })).binary;
+    // A weather-v2-shaped admission: knob + host.rpc only, zero keys/chords.
+    const keyless = buildRenderV2MQuickJsPackage(packageOptions({
+      events: { "input.fn-bottom-knob": true, hostRpcIds: [0xb241], keys: [], chords: [] },
+      input: { debounceMs: 0, holdDelayMs: 0, holdCadenceMs: 0 },
+    })).binary;
     const cases = buildParityCases(plain, rich);
     const corpus = encodeCorpus(cases);
     const plainPath = path.join(temporary, "plain.f2js");
     const richPath = path.join(temporary, "rich.f2js");
+    const keylessPath = path.join(temporary, "keyless.f2js");
     const corpusPath = path.join(temporary, "parity.bin");
     await Promise.all([writeFile(plainPath, plain), writeFile(richPath, rich),
-      writeFile(corpusPath, corpus)]);
+      writeFile(keylessPath, keyless), writeFile(corpusPath, corpus)]);
     const harness = await buildNativeHarness(temporary);
-    const harnessArgs = [corpusPath, plainPath, richPath];
+    const harnessArgs = [corpusPath, plainPath, richPath, keylessPath];
     const host = await run(harness, harnessArgs);
     invariant(host.stdout.includes(`parity=${cases.length}`) &&
       host.stdout.includes("recovery_bound=pass") &&
@@ -299,6 +305,8 @@ async function main() {
       host.stdout.includes("event_retirement=pass") &&
       host.stdout.includes("callback_shutdown=pass") &&
       host.stdout.includes("second_boot=pass") &&
+      host.stdout.includes("keyless=pass") &&
+      host.stdout.includes("slot_switch=pass") &&
       host.stdout.includes("mailbox_bytes=72"), "Host harness proof is incomplete.");
     const [sanitizer, threadSanitizer] = await Promise.all([
       runSanitizers(temporary, harnessArgs),

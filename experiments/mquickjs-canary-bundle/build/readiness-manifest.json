@@ -13,8 +13,8 @@
   },
   "engine": {
     "status": "PASS_MQUICKJS_HOST_AND_XTENSA_STATIC_CANARY",
-    "sourceSha256": "f634d62094e6c3d08f7d6cf1975edf9afa5b9f53799599014a9a2ac3d09e1c19",
-    "targetRawSha256": "74a4416f9ceced9e5f5785637dc839d010f0dde58856330ec747803c55e18c1c",
+    "sourceSha256": "98b92de03542d6fc382a6a293d9041ece7051c5bf4febda5c69f7635f5564e55",
+    "targetRawSha256": "581e8f6cfbaa1b6cc2e77b7c1ec29506f4d8bbab83a2559d577191c555d095ef",
     "fixedHeapBytes": 65536,
     "runtimeStorageBytes": 4096,
     "movingGcAsan": "PASS",
@@ -69,17 +69,17 @@
     "manifest": {
       "file": "experiments/mquickjs-esp32s3-module-loader/build/module-loader-manifest.json",
       "bytes": 10750,
-      "sha256": "a11894abc016838a975da3492935d2ddc7d953c72f44a1efda4ccf86cf155282"
+      "sha256": "5839a2625014cddf6b05822236027e702cc14d8e4c40a02c5f9103ecca09c0f1"
     },
-    "publicAbiSha256": "ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb",
+    "publicAbiSha256": "105640d38d427fddae0617dbc3bcc7fdd00ba750d27c1edc156a1aea454b8948",
     "text": {
       "paddr": "0x210000",
       "vaddr": "0x423d0000",
-      "usedBytes": 68172,
+      "usedBytes": 68212,
       "capacityBytes": 131072,
-      "prefetchGuardBytes": 62900,
+      "prefetchGuardBytes": 62860,
       "guardFill": "zero",
-      "paddedSha256": "7b1f55fc50f1de913a27d533aef63adb6f9fee8e12be083661ccd8f40e7f34ca",
+      "paddedSha256": "d43e90189f5a2de793bf234e3db180809024959c12af3bbbaa498c5653b5c003",
       "residentSha256Admission": true
     },
     "rodata": {
@@ -89,20 +89,20 @@
       "capacityBytes": 65536,
       "guardBytes": 54760,
       "guardFill": "zero",
-      "paddedSha256": "a9ece5ee4915cab62970d448d83f11ebb81d850c289ad9b76e28bc7b9fb02953",
+      "paddedSha256": "ef6727f34e888fa166744c5d261e5bf568efaa0306679b2e43e22855f5bf2270",
       "residentSha256Admission": true
     },
     "slotA": {
       "file": "experiments/mquickjs-esp32s3-module-loader/build/module-slot-a.bin",
       "bytes": 196608,
-      "sha256": "19af5c69abec631aecc2868624d629ad1230061052fda0b3d63e1d2ab1241d72"
+      "sha256": "e80c3d9cf61bd293032275a6b285720828b7152905ced39201a42634fdd50737"
     },
     "residentLoader": {
       "vaddr": "0x4211e460",
       "usedBytes": 1956,
       "capacityBytes": 6840,
       "remainingBridgeBytes": 4884,
-      "sha256": "c62464094b5a5e60905c0179c598d476d4286789323bcc88d2a1f3d9e55ced7a",
+      "sha256": "8ebbd51ea4d36ae2356ee0427d7fe9dab94fbb5c7bbdc8fc662baeb67fe24c40",
       "relocations": 0,
       "undefinedSymbols": 0,
       "rodataBytes": 0,
@@ -119,14 +119,14 @@
   "resident": {
     "manifest": {
       "file": "experiments/mquickjs-esp32s3-resident-integration/build/resident-integration-manifest.json",
-      "bytes": 8246,
-      "sha256": "6fb1a0782973ceb51d0853816a173dda4b02ec2b64036a55f74a7f9558b71d28"
+      "bytes": 8336,
+      "sha256": "5b084c3a1c3959f547fb65a2f3698627a7167ed084bf7b1d4507bc6045660445"
     },
     "status": "PASS_HOST_XTENSA_RESIDENT_CORE_NO_GO_PHYSICAL_STOCK_BRIDGE",
     "xtensaCore": {
       "file": "experiments/mquickjs-esp32s3-resident-integration/build/resident-integration-core.o",
-      "bytes": 52384,
-      "sha256": "426c21185c418b758427335a5743c96415c06d68ed3a7112b8b30a9b73fccd21"
+      "bytes": 53436,
+      "sha256": "5cbe985192134c17ec211d8848907dd6d8b78a98d5b2d0e469f60a2ce768e5f4"
     },
     "admission": {
       "result": "PASS",
@@ -169,8 +169,8 @@
   "targetFacade": {
     "manifest": {
       "file": "experiments/mquickjs-target-facade/build/manifest.json",
-      "bytes": 4270,
-      "sha256": "f46ae66db44bdfbf6718127b76d59d1581e11c45fe9ea5d8c712c746a47de5f1"
+      "bytes": 8676,
+      "sha256": "d38a5dee4417e9387e6bfe5b2e2aff5f4520173e8dc50b859dc1bf42987cebe8"
     },
     "status": "STATIC_ONLY_NOT_INTEGRATED",
     "asset": {
@@ -190,14 +190,14 @@
     },
     "xtensa": {
       "compiler": "xtensa-esp-elf-gcc (crosstool-NG esp-13.2.0_20240530) 13.2.0",
-      "objectBytes": 21552,
-      "objectSha256": "99f3d9c3c8bb81a7472856e3664220d5d92520c89533d8d672bad66fdf530521",
-      "textBytes": 4364,
-      "rodataBytes": 72,
+      "objectBytes": 24840,
+      "objectSha256": "8f66f46205a687a6339dfa6c6b1f604b5bc0deeefd0d273e1bcb48b40e380978",
+      "textBytes": 5289,
+      "rodataBytes": 90,
       "writableGlobalBytes": 0,
       "undefinedSymbols": 0,
-      "maxCompilerReportedFrameBytes": 576,
-      "conservativeAllStaticFramesBytes": 1296
+      "maxCompilerReportedFrameBytes": 592,
+      "conservativeAllStaticFramesBytes": 1376
     },
     "timingEvidence": "analytic-not-device-measured",
     "integratedIntoStockUi": false,

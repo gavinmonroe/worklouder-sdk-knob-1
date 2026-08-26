@@ -1068,6 +1068,11 @@ framer_mqjs_result framer_mqjs_input_request_focus_release(
         state->telemetry.last_result = FRAMER_MQJS_ERR_WRONG_THREAD;
         return FRAMER_MQJS_ERR_WRONG_THREAD;
     }
+    /* A keyless runtime has no held bitmap and no drain: queueing a resync
+     * here would hand the owner work that input_drain must refuse (its
+     * key_count gate), which the adapter then books as an engine failure. */
+    if (state->config.input.key_count == 0u)
+        return FRAMER_MQJS_OK;
     if (__atomic_load_n(&state->input_ingress_enabled, __ATOMIC_ACQUIRE) == 0u)
         return FRAMER_MQJS_ERR_DISABLED;
     /* The physical owner closes its wrapper gate before this call. A producer

@@ -4,12 +4,24 @@
 #define TF_PROP_TEXT 1u
 #define TF_PROP_COLOR 2u
 #define TF_PROP_HIDDEN 4u
+/* Mirrors the host contract's -1 dispatch sentinels: the marked format's
+ * properties byte and literal count are range-checked inline (variantText
+ * admits text or text|color and 1..16 literals) instead of one fixed value. */
+#define TF_INLINE 254u
+/* Mirrors the host contract's -2 sentinel: the marked format's table is the
+ * v3 raster KIND (raw RGB565 pixels, u16 byte length at record offsets
+ * 38..39) validated by validate_raster_table instead of validate_table. */
+#define TF_RASTER 253u
+/* Digit raster KIND: same pixel encoding, count fixed at exactly 10, record
+ * divisor (u32le@30, power of ten 1..1000) picks (slot/divisor) % 10. */
+#define TF_DIGIT 252u
 
 typedef struct {
     uint8_t bytes[FRAMER_TF_MAX_TEXT_BYTES];
     uint8_t length;
     uint8_t palette;
     uint8_t hidden;
+    uint8_t raster; /* variantRaster: clamped variant pick (0..15) */
 } tf_text;
 
 typedef struct {
@@ -138,6 +150,9 @@ static uint8_t expected_properties(uint8_t format)
     case 8u: return TF_PROP_TEXT | TF_PROP_COLOR;
     case 9u: return TF_PROP_TEXT;
     case 10u: return TF_PROP_TEXT | TF_PROP_COLOR | TF_PROP_HIDDEN;
+    case 11u: return TF_INLINE;
+    case 12u: return TF_PROP_TEXT; /* value slot only; pixels carry colour */
+    case 13u: return TF_PROP_TEXT; /* digitRaster: one slot, divisor metadata */
     default: return 0u;
     }
 }
@@ -146,8 +161,11 @@ static uint8_t used_slots(uint8_t format)
 {
     switch (format) {
     case 1u: case 2u: return format == 1u ? 1u : 0u;
-    case 3u: case 4u: case 5u: case 6u: case 7u: case 8u: case 10u: return 2u;
+    case 3u: case 4u: case 5u: case 6u: case 7u: case 8u: case 10u:
+    case 11u: return 2u;
     case 9u: return 3u;
+    case 12u: return 1u;
+    case 13u: return 1u;
     default: return 0xffu;
     }
 }
@@ -165,8 +183,28 @@ static uint8_t expected_table_count(uint8_t format)
     case 8u: return 17u;
     case 9u: return 1u;
     case 10u: return 1u;
+    case 11u: return TF_INLINE;
+    case 12u: return TF_RASTER;
+    case 13u: return TF_DIGIT;
     default: return 0xffu;
     }
+}
+
+/* v3 raster tables: the range must sit inside the trailing table region and
+ * its byte length must be EXACTLY count*rect.w*rect.h*2 for a count of 1..16
+ * variants — enforced as "a whole 1..16 multiple of one variant's bytes". */
+static int validate_raster_table(const framer_tf_context *context,
+                                 const uint8_t *record)
+{
+    uint32_t relative = read_u16(record + 36u);
+    uint32_t table_bytes = read_u16(record + 38u);
+    uint32_t variant_bytes = (uint32_t)read_u16(record + 20u) *
+                             (uint32_t)read_u16(record + 22u) * 2u;
+    if (relative > context->literal_bytes ||
+        table_bytes > context->literal_bytes - relative)
+        return 0;
+    return table_bytes >= variant_bytes && table_bytes % variant_bytes == 0u &&
+           table_bytes <= variant_bytes * 16u;
 }
 
 static int table_entry(const framer_tf_context *context,
@@ -215,6 +253,14 @@ static int validate_table(const framer_tf_context *context,
     uint32_t cursor;
     uint8_t count;
     uint8_t index;
+    if (expected == TF_RASTER)
+        return validate_raster_table(context, record);
+    if (expected == TF_DIGIT) {
+        uint32_t variant_bytes = (uint32_t)read_u16(record + 20u) *
+                                 (uint32_t)read_u16(record + 22u) * 2u;
+        return validate_raster_table(context, record) &&
+               read_u16(record + 38u) == variant_bytes * 10u;
+    }
     if (record[39] != 0u || relative > context->literal_bytes ||
         count_bytes > context->literal_bytes - relative)
         return 0;
@@ -224,7 +270,7 @@ static int validate_table(const framer_tf_context *context,
         return 0;
     table = context->asset + context->literals_at + relative;
     count = table[0];
-    if (count != expected)
+    if (expected == TF_INLINE ? (count == 0u || count > 16u) : count != expected)
         return 0;
     cursor = 1u;
     for (index = 0u; index < count; ++index) {
@@ -255,8 +301,12 @@ static int target_valid(const framer_tf_context *context,
     uint8_t format = record[25];
     uint8_t slots;
     unsigned int index;
-    if (!target_id_valid(record) || format < 1u || format > 10u ||
-        record[24] != expected_properties(format) || width == 0u || height == 0u ||
+    if (!target_id_valid(record) || format < 1u || format > 13u ||
+        (expected_properties(format) == TF_INLINE
+             ? record[24] != TF_PROP_TEXT &&
+                   record[24] != (TF_PROP_TEXT | TF_PROP_COLOR)
+             : record[24] != expected_properties(format)) ||
+        width == 0u || height == 0u ||
         x >= FRAMER_TF_CANVAS_WIDTH || y >= FRAMER_TF_CANVAS_HEIGHT ||
         width > FRAMER_TF_CANVAS_WIDTH - x ||
         height > FRAMER_TF_CANVAS_HEIGHT - y)
@@ -269,15 +319,28 @@ static int target_valid(const framer_tf_context *context,
     slots = used_slots(format);
     if (slots == 0xffu)
         return 0;
+    /* variantText's second binding is its colour slot, which the contract
+     * allows to stay unbound (TF_UNUSED) so palette0 keeps painting. */
     for (index = 0u; index < 4u; ++index) {
-        if ((index < slots && record[26u + index] >= FRAMER_TF_MAILBOX_SLOTS) ||
+        if ((index < slots && record[26u + index] >= FRAMER_TF_MAILBOX_SLOTS &&
+             !(format == 11u && index == 1u && record[26u + index] == TF_UNUSED)) ||
             (index >= slots && record[26u + index] != TF_UNUSED))
             return 0;
     }
-    if (format == 1u) {
+    if (format == 1u || format == 12u) {
+        /* rootVisibility and variantRaster carry no text metadata: raster
+         * pixels arrive pre-coloured, so palette/font/align/chars/scale must
+         * all stay at their unused encodings. */
         if (record[30] != TF_UNUSED || record[31] != TF_UNUSED ||
             record[32] != TF_UNUSED || record[33] != 0u || record[34] != 0u ||
             record[35] != 0u)
+            return 0;
+    } else if (format == 13u) {
+        /* digitRaster repurposes bytes 30..33 as the little-endian divisor,
+         * which must be a power of ten the %10 extraction can use. */
+        uint32_t divisor = read_u32(record + 30u);
+        if ((divisor != 1u && divisor != 10u && divisor != 100u &&
+             divisor != 1000u) || record[34] != 0u || record[35] != 0u)
             return 0;
     } else if (record[30] >= context->palette_count ||
                record[31] >= context->palette_count || record[32] != 0u ||
@@ -373,6 +436,22 @@ framer_tf_result framer_tf_admit(framer_tf_context *context,
     }
     for (i = 0u; i < FRAMER_TF_TARGET_COUNT; ++i) {
         if (!target_valid(&candidate, asset + targets_at + i * FRAMER_TF_TARGET_BYTES, i))
+            return FRAMER_TF_ERR_MALFORMED;
+    }
+    /* Renderability: formatter-12 blits write exactly rect.w*rect.h pixels
+     * per render, so their sum must fit the declared overlay budget or the
+     * asset would admit and then overflow every render (the black-screen
+     * class).  Mirrors the JS decoder's invariant exactly. */
+    {
+        uint32_t raster_writes = 0u;
+        for (i = 0u; i < FRAMER_TF_TARGET_COUNT; ++i) {
+            const uint8_t *record = asset + targets_at +
+                                    i * FRAMER_TF_TARGET_BYTES;
+            if (record[25] == 12u || record[25] == 13u)
+                raster_writes += (uint32_t)read_u16(record + 20u) *
+                                 (uint32_t)read_u16(record + 22u);
+        }
+        if (raster_writes > candidate.max_overlay_writes)
             return FRAMER_TF_ERR_MALFORMED;
     }
     candidate.admitted = 1u;
@@ -547,8 +626,8 @@ static int prepare_target(const framer_tf_context *context,
     }
     if (format == 9u)
         flags = (uint32_t)slots[record[28]];
-    else if (format == 2u)
-        flags = (uint32_t)slots[15];
+    else if (format == 2u || format == 11u || format == 12u || format == 13u)
+        flags = (uint32_t)slots[15]; /* none of these bind the flags slot */
     else
         flags = (uint32_t)slots[record[27]];
     if ((flags & ~7u) != 0u)
@@ -616,6 +695,47 @@ static int prepare_target(const framer_tf_context *context,
         text->hidden = (uint8_t)(retry == 0);
         if (!text->hidden && (!copy_table(context, record, 0u, text) ||
             !append_i32(text, retry) || !append_byte(text, (uint8_t)'S'))) return 0;
+    } else if (format == 11u) {
+        /* variantText: the value slot clamps into this target's variable-count
+         * literal table and an optionally bound colour slot clamps into the
+         * palette; has_good stays unused on purpose so generic widgets carry
+         * no weather flags coupling. */
+        const uint8_t *table = context->asset + context->literals_at +
+                               read_u16(record + 36u);
+        int32_t pick = slots[record[26]];
+        int32_t colour;
+        if (pick < 0) pick = 0;
+        if (pick >= (int32_t)table[0]) pick = (int32_t)table[0] - 1;
+        if (!copy_table(context, record, (uint8_t)pick, text)) return 0;
+        if (record[27] != TF_UNUSED) {
+            colour = slots[record[27]];
+            if (colour < 0) colour = 0;
+            if (colour >= (int32_t)context->palette_count)
+                colour = (int32_t)context->palette_count - 1;
+            text->palette = (uint8_t)colour;
+        }
+    } else if (format == 12u) {
+        /* variantRaster: clamp the bound value slot into the admitted variant
+         * count (derived exactly as byte length / rect bytes); the blit itself
+         * happens in target_pixels. Pixels carry colour, so text/palette stay
+         * empty, and has_good stays unused like variantText. */
+        uint32_t variant_bytes = (uint32_t)read_u16(record + 20u) *
+                                 (uint32_t)read_u16(record + 22u) * 2u;
+        uint32_t count = read_u16(record + 38u) / variant_bytes;
+        int32_t pick = slots[record[26]];
+        if (pick < 0)
+            pick = 0;
+        if ((uint32_t)pick >= count)
+            pick = (int32_t)(count - 1u);
+        text->raster = (uint8_t)pick;
+    } else if (format == 13u) {
+        /* digitRaster: negatives floor at zero, then the record divisor
+         * extracts one decimal digit - a multi-digit number costs one slot
+         * across its per-digit subtargets. */
+        uint32_t divisor = read_u32(record + 30u);
+        int32_t value = slots[record[26]];
+        uint32_t unsigned_value = value < 0 ? 0u : (uint32_t)value;
+        text->raster = (uint8_t)((unsigned_value / divisor) % 10u);
     } else {
         return 0;
     }
@@ -646,6 +766,29 @@ static uint32_t target_pixels(const framer_tf_context *context,
     uint8_t character;
     if (text->hidden || record[25] == 1u)
         return 0u;
+    if (record[25] == 12u || record[25] == 13u) {
+        /* Full-rect variantRaster blit. Admission proved the rect lies inside
+         * the canvas and the picked variant is exactly rect.w*rect.h RGB565LE
+         * pixels, so every rect pixel is written unconditionally — the counted
+         * cost is the whole rect and no base pixel survives inside it. */
+        const uint8_t *raster = context->asset + context->literals_at +
+                                read_u16(record + 36u) +
+                                (uint32_t)text->raster * (uint32_t)target_width *
+                                (uint32_t)target_height * 2u;
+        int32_t row;
+        int32_t column;
+        if (draw) {
+            for (row = 0; row < target_height; ++row) {
+                for (column = 0; column < target_width; ++column) {
+                    framebuffer[(uint32_t)(target_y + row) * FRAMER_TF_CANVAS_WIDTH +
+                                (uint32_t)(target_x + column)] =
+                        read_u16(raster + ((uint32_t)row * (uint32_t)target_width +
+                                           (uint32_t)column) * 2u);
+                }
+            }
+        }
+        return (uint32_t)target_width * (uint32_t)target_height;
+    }
     if (record[33] == 1u)
         x += (target_width - text_width) / 2;
     else if (record[33] == 2u)

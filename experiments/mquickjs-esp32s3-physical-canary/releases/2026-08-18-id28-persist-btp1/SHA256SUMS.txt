@@ -1,0 +1,4 @@
+5413d4b8735b437048a731b231cd874ae7d261c218dce50710722a9d7e8565dd  framer-0.4.1-mqjs-id28-weather-zip-persist-btp1-app.bin
+6a11369374da2d1ce51a62b7bc05ee517e15746feb97c8c5cb4d2c5f1178ede7  mqjs-id28-rodata-page.bin
+f69859e052a8b209faea91ba57e332e5b0ef9698c2431ecf5bd9c832a7433477  mqjs-id28-text-page.bin
+599be673ca9aba43a1fc64ec73324137919df70d9475ff8477100aa57cf0008f  scene-slot-b.bin

@@ -10,7 +10,7 @@
   },
   "engineAbi": {
     "source": "experiments/mquickjs-esp32s3-canary/framer_mquickjs_canary.h",
-    "headerSha256": "24124da2fa0e6b5f32d7dcf905231f88d312f92d25e533f2f8af4b5c5b6a1f47",
+    "headerSha256": "c2bf8c086fd3fb873b8ebe4092ae320289cf6a9592ec40b95a1f337c82e2f99a",
     "runtimeStorageBytes": 4096,
     "heapBytes": 65536,
     "callbackDeadlineUs": 2000,
@@ -54,22 +54,22 @@
     "faultTeardown": "parser, boot, and runtime faults can quiesce, unmap, then permit flash"
   },
   "tests": {
-    "host": "resident_integration parity=1205 mailbox=pass owner=pass recovery_bound=pass teardown=pass teardown_race=pass second_boot=pass input_poll=pass raster=pass event_retirement=pass callback_shutdown=pass tagged_interleave=pass mailbox_bytes=72 admission_bytes=8992 owner_bytes=27104 task_stack_bytes=12288",
+    "host": "resident_integration parity=1205 mailbox=pass owner=pass recovery_bound=pass teardown=pass teardown_race=pass second_boot=pass input_poll=pass raster=pass event_retirement=pass callback_shutdown=pass keyless=pass slot_switch=pass tagged_interleave=pass mailbox_bytes=72 admission_bytes=8992 owner_bytes=27104 task_stack_bytes=12288",
     "sanitizer": {
       "status": "PASS",
-      "output": "resident_integration parity=1205 mailbox=pass owner=pass recovery_bound=pass teardown=pass teardown_race=pass second_boot=pass input_poll=pass raster=pass event_retirement=pass callback_shutdown=pass tagged_interleave=pass mailbox_bytes=72 admission_bytes=8992 owner_bytes=27104 task_stack_bytes=12288"
+      "output": "resident_integration parity=1205 mailbox=pass owner=pass recovery_bound=pass teardown=pass teardown_race=pass second_boot=pass input_poll=pass raster=pass event_retirement=pass callback_shutdown=pass keyless=pass slot_switch=pass tagged_interleave=pass mailbox_bytes=72 admission_bytes=8992 owner_bytes=27104 task_stack_bytes=12288"
     },
     "threadSanitizer": {
       "status": "PASS",
-      "output": "resident_integration parity=1205 mailbox=pass owner=pass recovery_bound=pass teardown=pass teardown_race=pass second_boot=pass input_poll=pass raster=pass event_retirement=pass callback_shutdown=pass tagged_interleave=pass mailbox_bytes=72 admission_bytes=8992 owner_bytes=27104 task_stack_bytes=12288"
+      "output": "resident_integration parity=1205 mailbox=pass owner=pass recovery_bound=pass teardown=pass teardown_race=pass second_boot=pass input_poll=pass raster=pass event_retirement=pass callback_shutdown=pass keyless=pass slot_switch=pass tagged_interleave=pass mailbox_bytes=72 admission_bytes=8992 owner_bytes=27104 task_stack_bytes=12288"
     },
     "deterministicXtensaBuilds": 2,
     "physicalGate": "PASS_FAIL_CLOSED"
   },
   "xtensa": {
     "compiler": "xtensa-esp-elf-gcc (crosstool-NG esp-13.2.0_20240530) 13.2.0",
-    "objectBytes": 52384,
-    "objectSha256": "426c21185c418b758427335a5743c96415c06d68ed3a7112b8b30a9b73fccd21",
+    "objectBytes": 53436,
+    "objectSha256": "5cbe985192134c17ec211d8848907dd6d8b78a98d5b2d0e469f60a2ce768e5f4",
     "undefinedSymbols": 0,
     "writableGlobalDataBytes": 0
   },
@@ -135,18 +135,18 @@
     },
     {
       "name": "resident_integration.h",
-      "bytes": 12943,
-      "sha256": "b6b623e6ccba95811815d89e01788335f5963fcae94454a16fedc785ae597413"
+      "bytes": 13635,
+      "sha256": "2fb180bde5299cbcb009bf3dd377e96ec9fdd4b7295303d4da3730133abe730d"
     },
     {
       "name": "resident_integration.c",
-      "bytes": 59281,
-      "sha256": "b2a2cabd01be41bb1964d924fbaa8e98c7ad00386554ee6e7d38282e9a0752e9"
+      "bytes": 60675,
+      "sha256": "f68254554d6c51c8fbacbab67a81e5319b65af45da9a39d3f7c76950f66d95da"
     },
     {
       "name": "host_harness.c",
-      "bytes": 44118,
-      "sha256": "c896298563304a09f3646fddc74330c28378ae891d9f88dc00e5eb3722122995"
+      "bytes": 49406,
+      "sha256": "3a4b68b6beffa3f1e81a1be620773ec83802641c95b874e39d6c5b1d5b181666"
     },
     {
       "name": "physical_stock_bridge.c",
@@ -155,8 +155,8 @@
     },
     {
       "name": "verify.mjs",
-      "bytes": 19992,
-      "sha256": "1e64d7439256e84a9420c8fd1fd5f9b49afa02993fa45529b5b5fc23e9432a32"
+      "bytes": 20514,
+      "sha256": "e78c16e2045d2c916d673d6c51e844f67b0b19063817682a0cfb0177f892563e"
     }
   ]
 }

@@ -186,9 +186,9 @@
   },
   "xtensa": {
     "file": "experiments/mquickjs-esp32s3-runtime-proof/build/runtime-proof-core.o",
-    "bytes": 31744,
-    "sha256": "fa372a35c3a4196b5d89155be8728465bd94ca1309b830be40a160335e964676",
-    "textBytes": 6194,
+    "bytes": 31852,
+    "sha256": "b4dab8dd144fb9ce3e2b51edc8a461dd28ce18e493bf7e89bf6f6385a8fdf38e",
+    "textBytes": 6233,
     "dataBytes": 0,
     "bssBytes": 0,
     "deterministicBuilds": 2,
@@ -261,7 +261,7 @@
   "capability": {
     "method": "widget.mquickjs.cap",
     "pages": [
-      "v1;p=0;profile=framer-f1-render-v2-mquickjs-v1;screen=28;physical=1;proven=0;uploader=0",
+      "v1;p=0;profile=framer-f1-render-v2-mquickjs-v1;screen=28;physical=1;proven=0;uploader=<0|1>",
       "v1;p=1;baseApp=<accepted-base-sha256>;boot=<u64hex>",
       "v1;p=2;module=<sha256>;slotBytes=00030000",
       "v1;p=3;package=<sha256>;g=<u32hex>",
@@ -360,18 +360,18 @@
   "sources": [
     {
       "file": "runtime_proof.h",
-      "bytes": 12026,
-      "sha256": "3ce2f4b00e434c223bedb9f93182a47f0699843ba42fbe26ca995c11aa99fe35"
+      "bytes": 12274,
+      "sha256": "cfd92dbc9cf1d134980ba1014b6517c3581b272ab57f064f7e38c84cdfb19e6c"
     },
     {
       "file": "runtime_proof.c",
-      "bytes": 27274,
-      "sha256": "513aeb257c027d6852db8fa56d4b840626cf56d808e3cfb7b4650165ec037093"
+      "bytes": 27389,
+      "sha256": "466973fa194a31554b1d62113d30e136261628767699a987c66a8396251e7a29"
     },
     {
       "file": "host_harness.c",
-      "bytes": 14971,
-      "sha256": "9ab238d051a1596f8c4690343f9a0e123b41c3dd80137f4ea258bc5af8dc8a37"
+      "bytes": 15579,
+      "sha256": "fa8a84972881027d609ea3060e1e009dfda114893a51305218bffa5548a349d2"
     },
     {
       "file": "concurrency_harness.c",
@@ -380,8 +380,8 @@
     },
     {
       "file": "verify.mjs",
-      "bytes": 22335,
-      "sha256": "6afe1a9ae4c56e55dce3a3cc0e22044951aeeed50b6728b05160b4566a4dfe69"
+      "bytes": 22339,
+      "sha256": "9df777008a00615891f6e518bd4ca04e4cbc2892d6e946bb14f6af4f84cff082"
     }
   ],
   "remainingPhysicalGates": [

@@ -1,0 +1,131 @@
+- generic [ref=f13e3]:
+  - banner [ref=f13e4]:
+    - generic [ref=f13e5]:
+      - generic [ref=f13e6]:
+        - generic [ref=f13e7]: F1
+        - heading "Widget Designer" [level=1] [ref=f13e8]
+        - generic [ref=f13e9]: v0.1.0
+      - generic [ref=f13e10]: Weather (device DSL)
+      - generic [ref=f13e12]:
+        - generic [ref=f13e13]: Not assembled
+        - button "Assemble F2UP" [ref=f13e15] [cursor=pointer]
+        - button "Settings" [ref=f13e20] [cursor=pointer]
+        - button "Toggle theme" [ref=f13e28] [cursor=pointer]
+  - generic [ref=f13e31]:
+    - complementary "Example gallery" [ref=f13e32]:
+      - generic [ref=f13e33]:
+        - generic [ref=f13e34]: Examples
+        - generic [ref=f13e35]: "5"
+      - 'button "Tally Start here: keys, chords, the Fn knob and live digits() - the hello-world of the device DSL Fn knob input Keys & chords Tick heartbeat digits() display Device-pushable example" [ref=f13e36] [cursor=pointer]':
+        - generic [ref=f13e37]: Tally
+        - 'generic "Start here: keys, chords, the Fn knob and live digits() - the hello-world of the device DSL" [ref=f13e40]'
+        - generic [ref=f13e41]:
+          - generic [ref=f13e42]: Fn knob input
+          - generic [ref=f13e50]: Keys & chords
+          - generic [ref=f13e55]: Tick heartbeat
+          - generic [ref=f13e61]: digits() display
+          - generic [ref=f13e66]: Device-pushable example
+      - button "Clock Host-fed time over host.rpc, a blinking colon via el.hidden, knob trims the minutes Fn knob input Tick heartbeat Host RPC data digits() display Device-pushable example" [ref=f13e71] [cursor=pointer]:
+        - generic [ref=f13e72]: Clock
+        - generic "Host-fed time over host.rpc, a blinking colon via el.hidden, knob trims the minutes" [ref=f13e75]
+        - generic [ref=f13e76]:
+          - generic [ref=f13e77]: Fn knob input
+          - generic [ref=f13e85]: Tick heartbeat
+          - generic [ref=f13e91]: Host RPC data
+          - generic [ref=f13e97]: digits() display
+          - generic [ref=f13e102]: Device-pushable example
+      - 'button "Focus timer A real pomodoro: tick.1s countdown, lockstep class states, knob sets the duration Fn knob input Keys & chords Tick heartbeat digits() display Device-pushable example" [ref=f13e107] [cursor=pointer]':
+        - generic [ref=f13e108]: Focus timer
+        - 'generic "A real pomodoro: tick.1s countdown, lockstep class states, knob sets the duration" [ref=f13e111]'
+        - generic [ref=f13e112]:
+          - generic [ref=f13e113]: Fn knob input
+          - generic [ref=f13e121]: Keys & chords
+          - generic [ref=f13e126]: Tick heartbeat
+          - generic [ref=f13e132]: digits() display
+          - generic [ref=f13e137]: Device-pushable example
+      - button "Metronome widget.animate() samples the CSS pendulum into a device flipbook; digits + states Fn knob input Keys & chords Tick heartbeat Animation capture (widget.animate) digits() display Device-pushable example" [ref=f13e142] [cursor=pointer]:
+        - generic [ref=f13e143]: Metronome
+        - generic "widget.animate() samples the CSS pendulum into a device flipbook; digits + states" [ref=f13e146]
+        - generic [ref=f13e147]:
+          - generic [ref=f13e148]: Fn knob input
+          - generic [ref=f13e156]: Keys & chords
+          - generic [ref=f13e161]: Tick heartbeat
+          - generic [ref=f13e167]: Animation capture (widget.animate)
+          - generic [ref=f13e172]: digits() display
+          - generic [ref=f13e177]: Device-pushable example
+      - 'button "Weather Live open-meteo data end-to-end: shared-slot digits, condition marks, two forecast rows Fn knob input Tick heartbeat Host RPC data digits() display Device-pushable example" [pressed] [ref=f13e182] [cursor=pointer]':
+        - generic [ref=f13e183]: Weather
+        - 'generic "Live open-meteo data end-to-end: shared-slot digits, condition marks, two forecast rows" [ref=f13e186]'
+        - generic [ref=f13e187]:
+          - generic [ref=f13e188]: Fn knob input
+          - generic [ref=f13e196]: Tick heartbeat
+          - generic [ref=f13e202]: Host RPC data
+          - generic [ref=f13e208]: digits() display
+          - generic [ref=f13e213]: Device-pushable example
+    - generic [ref=f13e218]:
+      - generic [ref=f13e219]:
+        - button "Hide the example gallery" [expanded] [ref=f13e221] [cursor=pointer]
+        - tablist "Workspace" [ref=f13e224]:
+          - tab "Design" [ref=f13e225] [cursor=pointer]
+          - tab "Source" [ref=f13e226] [cursor=pointer]
+          - tab "Export" [active] [selected] [ref=f13e227] [cursor=pointer]
+          - tab "Device" [ref=f13e228] [cursor=pointer]
+      - main [ref=f13e229]:
+        - generic [ref=f13e435]:
+          - generic [ref=f13e436]:
+            - generic [ref=f13e443]:
+              - generic [ref=f13e446]:
+                - heading "Assemble" [level=2] [ref=f13e447]
+                - generic [ref=f13e448]: Wraps the runtime, facade and base frame into the F2UP container that the device push uploads — assembled from the live preview, no keyboard needed.
+              - generic [ref=f13e450]:
+                - button "Assemble F2UP" [ref=f13e451] [cursor=pointer]
+                - generic [ref=f13e454]:
+                  - generic [ref=f13e455]: Generation pinned · 99
+                  - button "Unpin generation 99" [ref=f13e457] [cursor=pointer]: Unpin
+            - generic [ref=f13e463]:
+              - generic [ref=f13e465]:
+                - generic [ref=f13e466]:
+                  - heading "Push" [level=2] [ref=f13e467]
+                  - generic [ref=f13e468]: Hand the widget to a Framer F1 over WebHID. The device names the target generation; the push re-assembles from the live preview so all three artifacts agree.
+                - button "No device connected — open Device tab to connect" [ref=f13e471] [cursor=pointer]:
+                  - generic [ref=f13e473]: Disconnected
+              - generic [ref=f13e474]:
+                - button "Open Device tab" [ref=f13e476] [cursor=pointer]
+                - paragraph [ref=f13e479]: No keyboard connected yet — the pipeline ends at a Framer F1 over WebHID. Connect and identify on the Device tab; this stage lights up when the device admits pushes.
+          - complementary "Budgets and pipeline notes" [ref=f13e480]:
+            - generic [ref=f13e481]:
+              - generic [ref=f13e482]:
+                - heading "Budget" [level=2] [ref=f13e483]
+                - generic [ref=f13e484]: The engine's hard caps plus the F2UP upload ceiling.
+              - generic [ref=f13e486]:
+                - generic [ref=f13e487]:
+                  - generic [ref=f13e488]: F2UP upload
+                  - meter "F2UP upload" [ref=f13e489]
+                  - generic [ref=f13e490]: —/98,304
+                - generic [ref=f13e491]:
+                  - generic [ref=f13e492]: Source
+                  - meter "Source" [ref=f13e493]
+                  - generic [ref=f13e495]: 4,645/8,192
+                - generic [ref=f13e496]:
+                  - generic [ref=f13e497]: Events
+                  - meter "Events" [ref=f13e498]
+                  - generic [ref=f13e500]: 5/32
+                - generic [ref=f13e501]:
+                  - generic [ref=f13e502]: DOM targets
+                  - meter "DOM targets" [ref=f13e503]
+                  - generic [ref=f13e505]: 9/16
+            - generic [ref=f13e506]:
+              - heading "What this does" [level=2] [ref=f13e508]
+              - list [ref=f13e510]:
+                - listitem [ref=f13e511]: Transpiles the widget DSL (widget.on / getInt / setInt / commit) for the on-device MicroQuickJS engine.
+                - listitem [ref=f13e512]: Captures the live preview into an F2TF facade with its pre-rendered pixels.
+                - listitem [ref=f13e513]: Wraps runtime, facade, and the compressed base frame into one F2UP container.
+                - listitem [ref=f13e514]: The device push streams that container over the mquickjs uploader and persists it to the widget flash slot.
+  - contentinfo [ref=f13e416]:
+    - button "No device connected — open Device tab to connect" [ref=f13e418] [cursor=pointer]:
+      - generic [ref=f13e420]: Disconnected
+    - generic [ref=f13e422]: Sim ready
+    - button "View diagnostics — no issues" [ref=f13e426] [cursor=pointer]:
+      - generic [ref=f13e428]: No issues
+    - button "Not assembled — open Export tab" [ref=f13e430] [cursor=pointer]:
+      - generic [ref=f13e431]: Not assembled

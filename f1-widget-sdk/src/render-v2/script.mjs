@@ -216,6 +216,13 @@ export function parseRenderV2Script(input) {
   const stateByName = new Map();
   const handlers = [];
   let cursor = 0; let handlersStarted = false;
+  // The Widget Designer's canonical device sources open with the strict-mode
+  // directive ("use strict";) so one text satisfies both the mquickjs
+  // simulator — which REQUIRES that exact prologue — and this grammar. The
+  // directive is an inert JS prologue that produces no state and no handler,
+  // so tolerate exactly one at the very top and parse the rest unchanged.
+  const directive = /^\s*"use strict"\s*;/u.exec(source);
+  if (directive) cursor = directive[0].length;
   const whitespace = () => { while (/\s/u.test(source[cursor] ?? "")) cursor += 1; };
   while (cursor < source.length) {
     whitespace();

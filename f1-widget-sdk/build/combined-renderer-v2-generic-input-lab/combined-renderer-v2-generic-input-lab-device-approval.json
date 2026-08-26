@@ -16,7 +16,7 @@
   "app": {
     "file": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/f1-widget-sdk/build/combined-renderer-v2-generic-input-lab/framer-0.4.1-input-lab-renderer-v2-generic-id26-app.bin",
     "bytes": 2062912,
-    "sha256": "371ee26ebb74c37fde96213ace9f4c506ac98d5293ff09ffe3f863ced9c98f06"
+    "sha256": "4e045ec270462754e8415c1e2d30181f500791db9d55cbeb98b8650621a78d1d"
   },
   "rollback": {
     "mode": "accepted-live-receipt-v1",
@@ -56,17 +56,17 @@
     "sidecarAllocationBytes": 692,
     "ownedBundleAllocationBytes": 98304,
     "ownedProgramAllocationBytes": 29824,
-    "sceneRpcAllocationBytes": 98624,
+    "sceneRpcAllocationBytes": 99136,
     "eventRpcAllocationBytes": 40,
-    "integratedIromModuleBytes": 22740,
-    "integratedIromModuleSha256": "4fd8a7b848705f22eb96463ae915caa41aedbd04147e0ece0b7b9a201cd2c1a4",
+    "integratedIromModuleBytes": 22728,
+    "integratedIromModuleSha256": "46d1636c2bac5777d7a90e1edce5868708953502326720c6ee85402079571f0d",
     "integratedIromModuleAddress": "0x421187cc",
     "integratedIromCavityBytes": 30540,
-    "integratedIromEntryAddress": "0x42118c3c",
+    "integratedIromEntryAddress": "0x42118c74",
     "wrapperCall": {
       "address": "0x421170c5",
       "acceptedBytes": "25ba01",
-      "candidateBytes": "65b701"
+      "candidateBytes": "e5ba01"
     },
     "renderV2Profile": "framer-f1-render-v2-structural-v1",
     "packageFormat": "framer-render-v2-package-v1",

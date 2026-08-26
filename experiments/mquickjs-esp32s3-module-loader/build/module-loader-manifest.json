@@ -26,7 +26,7 @@
     }
   },
   "companionCoreCanary": {
-    "sourceSha256": "ea0e19d73f927c8540c901b1845bf664542a96527fdd00ac172bcc8fde8ac9d6",
+    "sourceSha256": "98b92de03542d6fc382a6a293d9041ece7051c5bf4febda5c69f7635f5564e55",
     "targetRawSha256": "581e8f6cfbaa1b6cc2e77b7c1ec29506f4d8bbab83a2559d577191c555d095ef",
     "runtimeStorageBytes": 4096,
     "minimumHeapBytes": 65536,
@@ -160,11 +160,11 @@
     "text": {
       "paddr": "0x210000",
       "vaddr": "0x423d0000",
-      "usedBytes": 68204,
+      "usedBytes": 68212,
       "capacityBytes": 131072,
-      "prefetchGuardBytes": 62868,
+      "prefetchGuardBytes": 62860,
       "guardFill": "zero",
-      "paddedSha256": "f506a3337d3b9d104d20f195b2f8319cf75f6838553d1193f51afc73a002b78b",
+      "paddedSha256": "d43e90189f5a2de793bf234e3db180809024959c12af3bbbaa498c5653b5c003",
       "residentSha256Admission": true
     },
     "rodata": {
@@ -174,7 +174,7 @@
       "capacityBytes": 65536,
       "guardBytes": 54760,
       "guardFill": "zero",
-      "paddedSha256": "5db52260bc78b680d698833d999ba27e4ca373b2c0f5c0353fcc7793c8af0365",
+      "paddedSha256": "ef6727f34e888fa166744c5d261e5bf568efaa0306679b2e43e22855f5bf2270",
       "residentSha256Admission": true
     },
     "relocations": 0,
@@ -187,7 +187,7 @@
     "usedBytes": 1956,
     "capacityBytes": 6840,
     "remainingBridgeBytes": 4884,
-    "sha256": "d1eb716db54280f89a2d80b1ad387faf955684a43834be824898454a7d94a01d",
+    "sha256": "8ebbd51ea4d36ae2356ee0427d7fe9dab94fbb5c7bbdc8fc662baeb67fe24c40",
     "relocations": 0,
     "undefinedSymbols": 0,
     "rodataBytes": 0,

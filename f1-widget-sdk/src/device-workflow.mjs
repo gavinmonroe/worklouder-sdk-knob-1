@@ -722,9 +722,13 @@ function validateRendererV2GenericStructuralReuse(approval, appBytes, rollbackBy
     approval.recovery.bytes === 16_777_216 && approval.recovery.sha256 ===
       "aa6042310d075c9cbd3b992044511c064bb4b84713d0740a3adafcbdb3028fdd",
   "Generic Render-v2 approval changed its exact document shape or artifact paths.");
+  // Re-pinned 2026-08-18 to 4e045ec2. Every capability key/value now lives in
+  // persistent RAM (scene allocation 98_624 -> 99_136, store unchanged at
+  // 98_304), which is the rebuild the blacklist below asks for. reply_status
+  // also carries the core status code instead of flattening it to a boolean.
   assert(approval.deployable === true && approval.app?.bytes === 2_062_912 &&
     approval.app.sha256 ===
-      "371ee26ebb74c37fde96213ace9f4c506ac98d5293ff09ffe3f863ced9c98f06" &&
+      "4e045ec270462754e8415c1e2d30181f500791db9d55cbeb98b8650621a78d1d" &&
     approval.rollback?.bytes === 2_062_912 && approval.rollback.sha256 ===
       "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
   "Generic Render-v2 approval is not pinned to the frozen candidate and accepted 363 rollback.");
@@ -739,7 +743,7 @@ function validateRendererV2GenericStructuralReuse(approval, appBytes, rollbackBy
     runtime.rendererControllerAllocationBytes === 62_164 &&
     runtime.sidecarAllocationBytes === 692 && runtime.ownedBundleAllocationBytes === 98_304 &&
     runtime.ownedProgramAllocationBytes === 29_824 &&
-    runtime.sceneRpcAllocationBytes === 98_624 && runtime.eventRpcAllocationBytes === 40 &&
+    runtime.sceneRpcAllocationBytes === 99_136 && runtime.eventRpcAllocationBytes === 40 &&
     runtime.renderV2Profile === "framer-f1-render-v2-structural-v1" &&
     runtime.packageFormat === "framer-render-v2-package-v1" &&
     runtime.v1Packages === true && runtime.maxTransportBytes === 98_304 &&
@@ -762,14 +766,14 @@ function validateRendererV2GenericStructuralReuse(approval, appBytes, rollbackBy
     runtime.manualScreenAcceptancePending[0] === 26,
   "Generic Render-v2 approval lost its exact event or ID26 screen contract.");
   assert(runtime.integratedIromModuleAddress === "0x421187cc" &&
-    runtime.integratedIromEntryAddress === "0x42118c3c" &&
-    runtime.integratedIromModuleBytes === 22_740 &&
+    runtime.integratedIromEntryAddress === "0x42118c74" &&
+    runtime.integratedIromModuleBytes === 22_728 &&
     runtime.integratedIromCavityBytes === 30_540 &&
     runtime.integratedIromModuleSha256 ===
-      "4fd8a7b848705f22eb96463ae915caa41aedbd04147e0ece0b7b9a201cd2c1a4" &&
+      "46d1636c2bac5777d7a90e1edce5868708953502326720c6ee85402079571f0d" &&
     exactObjectKeys(wrapper, ["address", "acceptedBytes", "candidateBytes"]) &&
     wrapper.address === "0x421170c5" && wrapper.acceptedBytes === "25ba01" &&
-    wrapper.candidateBytes === "65b701",
+    wrapper.candidateBytes === "e5ba01",
   "Generic Render-v2 approval lost its exact audited module, entry, cavity, or wrapper pin.");
 
   const candidate = inspectEsp32AppImage(appBytes);
@@ -808,7 +812,7 @@ function validateRendererV2GenericStructuralReuse(approval, appBytes, rollbackBy
   const candidateIrom = candidate.segments[PINNED.iromSegmentIndex];
   const liveIrom = live.segments[PINNED.iromSegmentIndex];
   assert(sha256(candidateIrom.data) ===
-    "e2e19f389acfd642269ed605bdde00e16fc715fd5bf5649d364743c370fd68b9",
+    "59a539406707384c2ef35cbceafc182d7a8aa91e5e7e4e20ed3e43fa734df531",
   "Generic Render-v2 candidate IROM differs from the frozen audited segment.");
   const wrapperOffset = Number.parseInt(wrapper.address, 16) - liveIrom.loadAddress;
   const moduleAddress = Number.parseInt(runtime.integratedIromModuleAddress, 16);

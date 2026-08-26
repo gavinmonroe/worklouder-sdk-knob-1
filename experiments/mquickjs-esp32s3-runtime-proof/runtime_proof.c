@@ -256,7 +256,9 @@ int framer_runtime_capability_format(
     case 0u:
         append_text(output, &offset,
             ";profile=" FRAMER_RUNTIME_PROFILE_ID
-            ";screen=28;physical=1;proven=0;uploader=0");
+            ";screen=28;physical=1;proven=0;uploader=");
+        append_character(output, &offset,
+                         capability->runtime_uploader != 0u ? '1' : '0');
         break;
     case 1u:
         append_text(output, &offset, ";baseApp=");

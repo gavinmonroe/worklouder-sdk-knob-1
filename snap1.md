@@ -1,0 +1,157 @@
+- generic [ref=f183e3] [box=0,0,1440,900]:
+  - banner [ref=f183e4] [box=0,0,1440,92]:
+    - generic [ref=f183e5] [box=0,0,1440,48]:
+      - generic [ref=f183e6] [box=24,12,438,24]:
+        - generic [ref=f183e7] [box=24,12,24,24]: F1
+        - generic [ref=f183e8] [box=58,14,101,20]: Widget Designer
+        - generic [ref=f183e9] [box=169,16,34,16]: v0.1.0
+      - tablist "Workspace" [ref=f183e10] [box=478,0,485,48]:
+        - tab "Design" [selected] [ref=f183e11] [cursor=pointer] [box=478,0,67,48]
+        - tab "Source" [ref=f183e12] [cursor=pointer] [box=544,0,68,48]
+        - tab "Events" [ref=f183e13] [cursor=pointer] [box=612,0,66,48]
+        - tab "Host data" [ref=f183e14] [cursor=pointer] [box=678,0,84,48]
+        - tab "Inspect" [ref=f183e15] [cursor=pointer] [box=762,0,70,48]
+        - tab "Export" [ref=f183e16] [cursor=pointer] [box=832,0,65,48]
+        - tab "Device" [ref=f183e17] [cursor=pointer] [box=896,0,66,48]
+      - generic [ref=f183e18] [box=978,8,438,32]:
+        - generic [ref=f183e19] [box=1039,14,97,20]: No F2JS build
+        - button "Compile" [ref=f183e20] [cursor=pointer] [box=1144,8,108,32]
+        - button "Download package" [disabled] [ref=f183e24] [box=1260,8,107,32]:
+          - generic [ref=f183e27] [box=1293,14,61,20]: Download
+        - button "Toggle theme" [ref=f183e29] [cursor=pointer] [box=1384,8,32,32]
+    - generic [ref=f183e33] [box=0,48,1440,44]:
+      - generic [ref=f183e34] [box=24,62,66,16]: Examples
+      - generic [ref=f183e35] [box=78,52,670,36]:
+        - button "V2 events" [ref=f183e37] [cursor=pointer] [box=102,56,95,28]
+        - button "Focus dial" [ref=f183e40] [cursor=pointer] [box=205,56,97,28]
+        - button "Weather" [ref=f183e43] [cursor=pointer] [box=310,56,86,28]
+        - button "Weather (device)" [pressed] [ref=f183e46] [cursor=pointer] [box=404,56,137,28]
+        - button "Pulse" [ref=f183e49] [cursor=pointer] [box=549,56,70,28]
+        - button "Pomodoro" [ref=f183e52] [cursor=pointer] [box=627,56,97,28]
+  - main [ref=f183e54] [box=0,92,1440,776]:
+    - generic [ref=f183e58] [box=24,112,1377,795]:
+      - generic [ref=f183e59] [box=24,112,1021,736]:
+        - generic [ref=f183e62] [box=437,169,196,622]:
+          - generic "Weather (device DSL)" [ref=f183e63] [box=437,169,196,16]
+          - generic [ref=f183e64] [box=437,193,196,598]:
+            - img "100x310 device viewport at 169%" [ref=f183e65] [box=450,207,169,524]:
+              - iframe [ref=f183e66] [box=450,207,169,524]:
+                - generic "Weather" [ref=f184e2] [box=0,0,100,310]:
+                  - generic [ref=f184e6] [box=8,39,84,12]: ZIP 98304
+                  - generic [ref=f184e7] [box=8,57,84,30]: Today
+                  - generic [ref=f184e8] [box=8,99,84,74]:
+                    - strong [ref=f184e9] [box=8,113,84,28]:
+                      - generic [ref=f184e10] [box=24,113,40,28]: "72"
+                      - generic [ref=f184e11] [box=64,113,11,28]: °
+                    - generic [ref=f184e12] [box=22,143,56,16]: Cloudy
+                  - generic [ref=f184e13] [box=8,198,84,76]:
+                    - generic [ref=f184e14] [box=8,198,84,38]:
+                      - generic [ref=f184e15] [box=8,210,26,14]: Mon
+                      - generic [ref=f184e16] [box=35,210,18,14]: "00"
+                      - generic [ref=f184e17] [box=54,210,12,14]: →
+                      - generic [ref=f184e18] [box=67,210,18,14]: "00"
+                    - generic [ref=f184e19] [box=8,236,84,38]:
+                      - generic [ref=f184e20] [box=8,248,26,14]: Tue
+                      - generic [ref=f184e21] [box=35,248,18,14]: "00"
+                      - generic [ref=f184e22] [box=54,248,12,14]: →
+                      - generic [ref=f184e23] [box=67,248,18,14]: "00"
+            - generic [ref=f183e67] [box=450,744,169,47]:
+              - generic [ref=f183e68] [box=496,764,14,8]: F1
+              - button "Fn bottom knob — click for one detent clockwise, Shift-click for counter-clockwise, scroll or arrow keys to turn" [ref=f183e70] [cursor=pointer] [box=519,753,30,30]
+        - status "Simulator state" [ref=f183e73] [box=37,125,304,40]:
+          - generic [ref=f183e74] [box=42,131,82,28]: Ready
+          - generic [ref=f183e78] [box=133,131,203,28]:
+            - generic [ref=f183e79] [box=141,137,56,16]: Last event
+            - generic [ref=f183e80] [box=203,137,126,16]: —
+        - group "Simulator controls" [ref=f183e82] [box=696,125,336,40]:
+          - generic [ref=f183e83] [box=701,137,62,16]: Auto-tick
+          - radiogroup "Auto-tick rate" [ref=f183e84] [box=767,131,149,28]:
+            - radio "Off" [checked] [ref=f183e85] [cursor=pointer] [box=769,133,42,24]
+            - radio "1s" [ref=f183e86] [cursor=pointer] [box=813,133,36,24]
+            - radio "100ms" [ref=f183e87] [cursor=pointer] [box=851,133,62,24]
+          - button "Reset sim" [ref=f183e90] [cursor=pointer] [box=925,131,102,28]
+        - group "Zoom" [ref=f183e94] [box=755,795,277,40]:
+          - radiogroup "Zoom level" [ref=f183e95] [box=760,801,206,28]:
+            - radio "Fit" [checked] [ref=f183e96] [cursor=pointer] [box=762,803,39,24]
+            - radio "1×" [ref=f183e97] [cursor=pointer] [box=802,803,37,24]
+            - radio "2×" [ref=f183e98] [cursor=pointer] [box=842,803,39,24]
+            - radio "3×" [ref=f183e99] [cursor=pointer] [box=883,803,39,24]
+            - radio "4×" [ref=f183e100] [cursor=pointer] [box=924,803,40,24]
+          - textbox "Zoom percentage" [ref=f183e102] [box=975,801,52,28]: 169%
+      - generic [ref=f183e103] [box=1061,112,340,795]:
+        - generic [ref=f183e104] [box=1061,112,340,173]:
+          - generic [ref=f183e105] [box=1062,113,338,85]:
+            - generic [ref=f183e106] [box=1078,125,306,22]: Widget
+            - generic [ref=f183e107] [box=1078,149,306,36]: The display name and the root CSS class. Everything else is detected from your source.
+          - generic [ref=f183e108] [box=1062,198,338,86]:
+            - generic [ref=f183e109] [box=1078,214,176,54]:
+              - generic [ref=f183e110] [box=1078,214,176,18]: Display name
+              - textbox "Display name" [ref=f183e111] [box=1078,236,176,32]: Weather (device DSL)
+            - generic [ref=f183e112] [box=1266,214,118,54]:
+              - generic [ref=f183e113] [box=1266,214,118,18]: Root class
+              - textbox "Root class" [ref=f183e114] [box=1266,236,118,32]: weather-v2
+        - generic [ref=f183e115] [box=1061,301,340,606]:
+          - generic [ref=f183e116] [box=1062,302,338,67]:
+            - generic [ref=f183e117] [box=1078,314,306,22]: Inspector
+            - generic [ref=f183e118] [box=1078,338,306,18]: Detected from your widget source.
+          - generic [ref=f183e120] [box=1062,369,338,537]:
+            - generic [ref=f183e121] [box=1062,369,338,135]:
+              - button "State slots 2" [expanded] [ref=f183e122] [cursor=pointer] [box=1062,369,338,37]:
+                - generic [ref=f183e125] [box=1100,378,251,20]: State slots
+                - generic [ref=f183e127] [box=1359,377,25,21]: "2"
+              - table "State slots" [ref=f183e130] [box=1100,408,284,80]:
+                - row [ref=f183e131] [box=0,0,0,0]:
+                  - columnheader "Slot" [ref=f183e132] [box=1100,408,48,24]
+                  - columnheader "Name" [ref=f183e133] [box=1148,408,188,24]
+                  - columnheader "Init" [ref=f183e134] [box=1336,408,48,24]
+                - row [ref=f183e135] [box=0,0,0,0]:
+                  - cell "[0]" [ref=f183e136] [box=1100,432,48,28]
+                  - cell "temp" [ref=f183e137] [box=1148,432,188,28]
+                  - cell "72" [ref=f183e139] [box=1336,432,48,28]
+                - row [ref=f183e140] [box=0,0,0,0]:
+                  - cell "[1]" [ref=f183e141] [box=1100,460,48,28]
+                  - cell "cond" [ref=f183e142] [box=1148,460,188,28]
+                  - cell "0" [ref=f183e144] [box=1336,460,48,28]
+            - generic [ref=f183e145] [box=1062,504,338,196]:
+              - button "Handlers 5" [expanded] [ref=f183e146] [cursor=pointer] [box=1062,505,338,37]:
+                - generic [ref=f183e149] [box=1100,514,251,20]: Handlers
+                - generic [ref=f183e151] [box=1359,513,25,21]: "5"
+              - generic [ref=f183e154] [box=1100,544,284,140]:
+                - generic [ref=f183e155] [box=1100,544,284,28]:
+                  - generic [ref=f183e156] [box=1100,550,24,16]: "#0"
+                  - generic "input.fn-bottom-knob" [ref=f183e157] [box=1132,549,145,18]
+                - generic [ref=f183e158] [box=1100,572,284,28]:
+                  - generic [ref=f183e159] [box=1100,579,24,16]: "#1"
+                  - generic "host.rpc:0xB241" [ref=f183e160] [box=1132,578,108,18]
+                - generic [ref=f183e161] [box=1100,600,284,28]:
+                  - generic [ref=f183e162] [box=1100,607,24,16]: "#2"
+                  - generic "host.rpc:0xB242" [ref=f183e163] [box=1132,606,108,18]
+                - generic [ref=f183e164] [box=1100,628,284,28]:
+                  - generic [ref=f183e165] [box=1100,635,24,16]: "#3"
+                  - generic "host.rpc:0xB243" [ref=f183e166] [box=1132,634,108,18]
+                - generic [ref=f183e167] [box=1100,656,284,28]:
+                  - generic [ref=f183e168] [box=1100,663,24,16]: "#4"
+                  - generic "tick.1s" [ref=f183e169] [box=1132,662,51,18]
+            - button "DOM targets 9" [ref=f183e171] [cursor=pointer] [box=1062,701,338,37]:
+              - generic [ref=f183e174] [box=1100,710,250,20]: DOM targets
+              - generic [ref=f183e176] [box=1358,709,26,21]: "9"
+            - button "Event log 0" [ref=f183e179] [cursor=pointer] [box=1062,739,338,37]:
+              - generic [ref=f183e182] [box=1100,748,250,20]: Event log
+              - generic [ref=f183e184] [box=1358,747,26,21]: "0"
+            - button "Diagnostics No issues OK" [ref=f183e187] [cursor=pointer] [box=1062,777,338,54]:
+              - generic [ref=f183e190] [box=1100,785,241,38]:
+                - generic [ref=f183e191] [box=1100,785,241,20]: Diagnostics
+                - generic [ref=f183e192] [box=1100,805,241,18]: No issues
+              - generic [ref=f183e193] [box=1349,794,35,21]: OK
+            - button "mquickjs budgets" [ref=f183e196] [cursor=pointer] [box=1062,832,338,36]
+            - button "Supported event kinds 3 in use" [ref=f183e202] [cursor=pointer] [box=1062,869,338,37]:
+              - generic [ref=f183e205] [box=1100,878,214,20]: Supported event kinds
+              - generic [ref=f183e207] [box=1322,877,62,21]: 3 in use
+  - contentinfo [ref=f183e209] [box=0,868,1440,32]:
+    - button "No device connected — open Device tab to connect" [ref=f183e211] [cursor=pointer] [box=24,873,112,22]:
+      - generic [ref=f183e213] [box=47,875,80,18]: Disconnected
+    - generic [ref=f183e215] [box=161,873,70,22]: Sim ready
+    - button "View diagnostics — no issues" [ref=f183e219] [cursor=pointer] [box=1217,873,88,22]:
+      - generic [ref=f183e221] [box=1240,875,56,18]: No issues
+    - button "No F2JS build — open Export tab" [ref=f183e223] [cursor=pointer] [box=1317,873,99,22]:
+      - generic [ref=f183e224] [box=1326,875,81,18]: No F2JS build
