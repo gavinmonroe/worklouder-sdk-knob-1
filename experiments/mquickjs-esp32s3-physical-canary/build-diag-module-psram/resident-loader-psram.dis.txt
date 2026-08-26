@@ -10,19 +10,19 @@ Disassembly of section .text:
 4211e465:	f01d      	retw.n
 4211e467:	f7bc00        	ee.stf.64.xp	f11, f15, a0, a12
 4211e46a:	ff4211        	l32r	a1, 4211e174 <esp_mmu_unmap+0x28a00>
-4211e46d:	e000008f 	ee.src.q.ld.ip	q0, a8, 0, q4, q0
-4211e471:	000786        	j	4211e493 <framer_physical_loader_start+0x3>
+4211e46d:	a000008f 	ee.fft.ams.s16.st.incp	q0, q0, a8, a0, q0, q4, q0, 0
+4211e471:	000783        	lsi	f8, a7, 0
 4211e474:	00          	.byte	00
 4211e475:	420c82        	l8ui	a8, a12, 66
-4211e478:	0001092f 	ee.vmulas.s16.accx.ld.ip.qup	q0, a2, 144, q4, q0, q0, q1
+4211e478:	00010c6f 	ee.vmulas.s16.accx.ld.ip.qup	q0, a6, 192, q4, q0, q0, q1
 4211e47c:	e028      	l32i.n	a2, a0, 56
 4211e47e:	c44037        	ball	a0, a3, 4211e446 <esp_mmu_unmap+0x28cd2>
 4211e481:	420c82        	l8ui	a8, a12, 66
 4211e484:	e55c      	movi.n	a5, 94
 4211e486:	504037        	ball	a0, a3, 4211e4da <framer_physical_loader_start+0x4a>
 4211e489:	e2          	.byte	0xe2
-4211e48a:	784037        	ball	a0, a3, 4211e506 <framer_physical_loader_start+0x76>
-4211e48d:	423e56        	bnez	a14, 4211e8b4 <diag_render_gates+0x7c>
+4211e48a:	9c4037        	ball	a0, a3, 4211e42a <esp_mmu_unmap+0x28cb6>
+4211e48d:	423e57        	bltu	a14, a5, 4211e4d3 <framer_physical_loader_start+0x43>
 
 4211e490 <framer_physical_loader_start>:
 4211e490:	010136        	entry	a1, 128
@@ -38,641 +38,641 @@ Disassembly of section .text:
 4211e4a7:	5189      	s32i.n	a8, a1, 20
 4211e4a9:	6189      	s32i.n	a8, a1, 24
 4211e4ab:	7189      	s32i.n	a8, a1, 28
-4211e4ad:	8189      	s32i.n	a8, a1, 32
-4211e4af:	00a965        	call8	4211ef44 <diag_pool_create>
-4211e4b2:	0a7d      	mov.n	a7, a10
-4211e4b4:	1a9c      	beqz.n	a10, 4211e4c9 <framer_physical_loader_start+0x39>
-4211e4b6:	01bd      	mov.n	a11, a1
-4211e4b8:	008f65        	call8	4211edb0 <diag_publish>
-4211e4bb:	07ad      	mov.n	a10, a7
-4211e4bd:	009865        	call8	4211ee44 <diag_register>
-4211e4c0:	81a9      	s32i.n	a10, a1, 32
-4211e4c2:	01bd      	mov.n	a11, a1
-4211e4c4:	07ad      	mov.n	a10, a7
-4211e4c6:	008ea5        	call8	4211edb0 <diag_publish>
-4211e4c9:	20a220        	or	a10, a2, a2
-4211e4cc:	00ac65        	call8	4211ef94 <framer_physical_backend_validate>
-4211e4cf:	01a082        	movi	a8, 1
-4211e4d2:	144a16        	beqz	a10, 4211e61a <framer_physical_loader_start+0x18a>
-4211e4d5:	ffe731        	l32r	a3, 4211e474 <framer_physical_tail_trampoline+0x14> (420c8200 <esp_mmu_map-0x2d19c>)
-4211e4d8:	4a0c      	movi.n	a10, 4
-4211e4da:	08daa2        	addmi	a10, a10, 0x800
-4211e4dd:	0003e0        	callx8	a3
-4211e4e0:	11a9      	s32i.n	a10, a1, 4
-4211e4e2:	0a6d      	mov.n	a6, a10
-4211e4e4:	4a0c      	movi.n	a10, 4
-4211e4e6:	08daa2        	addmi	a10, a10, 0x800
-4211e4e9:	ffe581        	l32r	a8, 4211e480 <framer_physical_tail_trampoline+0x20> (420c82c4 <esp_mmu_map-0x2d0d8>)
-4211e4ec:	0008e0        	callx8	a8
-4211e4ef:	ffe281        	l32r	a8, 4211e478 <framer_physical_tail_trampoline+0x18> (1092f <esp_mmu_map-0x420e4a6d>)
-4211e4f2:	21a9      	s32i.n	a10, a1, 8
-4211e4f4:	023867        	bltu	a8, a6, 4211e4fa <framer_physical_loader_start+0x6a>
-4211e4f7:	004746        	j	4211e618 <framer_physical_loader_start+0x188>
-4211e4fa:	f82c      	movi.n	a8, 47
-4211e4fc:	79d882        	addmi	a8, a8, 0x7900
-4211e4ff:	0238a7        	bltu	a8, a10, 4211e505 <framer_physical_loader_start+0x75>
-4211e502:	004486        	j	4211e618 <framer_physical_loader_start+0x188>
-4211e505:	4b0c      	movi.n	a11, 4
-4211e507:	0a3c      	movi.n	a10, 48
-4211e509:	08dbb2        	addmi	a11, a11, 0x800
-4211e50c:	79daa2        	addmi	a10, a10, 0x7900
-4211e50f:	ffdd81        	l32r	a8, 4211e484 <framer_physical_tail_trampoline+0x24> (4037e55c <esp_mmu_map-0x1d76e40>)
-4211e512:	0008e0        	callx8	a8
-4211e515:	5afb      	addi.n	a5, a10, 15
-4211e517:	087c      	movi.n	a8, -16
-4211e519:	31a9      	s32i.n	a10, a1, 12
-4211e51b:	0a6d      	mov.n	a6, a10
-4211e51d:	105580        	and	a5, a5, a8
-4211e520:	054a16        	beqz	a10, 4211e578 <framer_physical_loader_start+0xe8>
-4211e523:	4935a7        	bltu	a5, a10, 4211e570 <framer_physical_loader_start+0xe0>
-4211e526:	c085a0        	sub	a8, a5, a10
-4211e529:	091c      	movi.n	a9, 16
-4211e52b:	413987        	bltu	a9, a8, 4211e570 <framer_physical_loader_start+0xe0>
-4211e52e:	07a882        	movi	a8, 0xfffff807
-4211e531:	0188d0        	slli	a8, a8, 19
-4211e534:	ffcf91        	l32r	a9, 4211e470 <framer_physical_tail_trampoline+0x10> (786e0 <esp_mmu_map-0x4207ccbc>)
-4211e537:	858a      	add.n	a8, a5, a8
-4211e539:	333987        	bltu	a9, a8, 4211e570 <framer_physical_loader_start+0xe0>
-4211e53c:	4a0c      	movi.n	a10, 4
-4211e53e:	08daa2        	addmi	a10, a10, 0x800
-4211e541:	0003e0        	callx8	a3
-4211e544:	41a9      	s32i.n	a10, a1, 16
-4211e546:	0a3d      	mov.n	a3, a10
-4211e548:	4a0c      	movi.n	a10, 4
-4211e54a:	08daa2        	addmi	a10, a10, 0x800
-4211e54d:	ffcc81        	l32r	a8, 4211e480 <framer_physical_tail_trampoline+0x20> (420c82c4 <esp_mmu_map-0x2d0d8>)
-4211e550:	0008e0        	callx8	a8
-4211e553:	f87c      	movi.n	a8, -1
-4211e555:	51a9      	s32i.n	a10, a1, 20
-4211e557:	b58480        	extui	a8, a8, 20, 12
-4211e55a:	1fb8a7        	bgeu	a8, a10, 4211e57d <framer_physical_loader_start+0xed>
-4211e55d:	ffc381        	l32r	a8, 4211e46c <framer_physical_tail_trampoline+0xc> (8fff <esp_mmu_map-0x420ec39d>)
-4211e560:	19b837        	bgeu	a8, a3, 4211e57d <framer_physical_loader_start+0xed>
-4211e563:	44c1a2        	addi	a10, a1, 68
-4211e566:	00fa65        	call8	4211f50c <framer_mqjs_map_canary>
-4211e569:	61a9      	s32i.n	a10, a1, 24
-4211e56b:	9aac      	beqz.n	a10, 4211e598 <framer_physical_loader_start+0x108>
-4211e56d:	000646        	j	4211e58a <framer_physical_loader_start+0xfa>
-4211e570:	06ad      	mov.n	a10, a6
-4211e572:	ffc581        	l32r	a8, 4211e488 <framer_physical_tail_trampoline+0x28> (4037e250 <esp_mmu_map-0x1d7714c>)
-4211e575:	0008e0        	callx8	a8
-4211e578:	380c      	movi.n	a8, 3
-4211e57a:	002706        	j	4211e61a <framer_physical_loader_start+0x18a>
-4211e57d:	06ad      	mov.n	a10, a6
-4211e57f:	ffc281        	l32r	a8, 4211e488 <framer_physical_tail_trampoline+0x28> (4037e250 <esp_mmu_map-0x1d7714c>)
-4211e582:	0008e0        	callx8	a8
-4211e585:	480c      	movi.n	a8, 4
-4211e587:	0023c6        	j	4211e61a <framer_physical_loader_start+0x18a>
-4211e58a:	06ad      	mov.n	a10, a6
-4211e58c:	ffbf81        	l32r	a8, 4211e488 <framer_physical_tail_trampoline+0x28> (4037e250 <esp_mmu_map-0x1d7714c>)
-4211e58f:	0008e0        	callx8	a8
-4211e592:	580c      	movi.n	a8, 5
-4211e594:	002086        	j	4211e61a <framer_physical_loader_start+0x18a>
-4211e597:	071600        	ee.stf.64.xp	f1, f0, a0, a6
-4211e59a:	b11001        	l32r	a0, 4210a9dc <esp_mmu_unmap+0x15268>
-4211e59d:	07ad20        	ee.stf.64.xp	f10, f0, a2, a13
-4211e5a0:	0080e5        	call8	4211edb0 <diag_publish>
-4211e5a3:	05cd      	mov.n	a12, a5
-4211e5a5:	cb0c      	movi.n	a11, 12
-4211e5a7:	07ad      	mov.n	a10, a7
-4211e5a9:	008665        	call8	4211ee10 <diag_broadcast>
-4211e5ac:	ffafc1        	l32r	a12, 4211e468 <framer_physical_tail_trampoline+0x8> (4211f7bc <framer_physical_module_sha256>)
-4211e5af:	080c      	movi.n	a8, 0
-4211e5b1:	890c      	movi.n	a9, 8
-4211e5b3:	118976        	loop	a9, 4211e5c8 <framer_physical_loader_start+0x138>
-4211e5b6:	a8ca      	add.n	a10, a8, a12
-4211e5b8:	0020c0        	memw
-4211e5bb:	002ab2        	l32i	a11, a10, 0
-4211e5be:	24c1d2        	addi	a13, a1, 36
-4211e5c1:	80ad80        	add	a10, a13, a8
-4211e5c4:	0ab9      	s32i.n	a11, a10, 0
-4211e5c6:	884b      	addi.n	a8, a8, 4
-4211e5c8:	0d2c      	movi.n	a13, 32
-4211e5ca:	05cd      	mov.n	a12, a5
-4211e5cc:	79ddd2        	addmi	a13, a13, 0x7900
-4211e5cf:	24c1b2        	addi	a11, a1, 36
-4211e5d2:	02ad      	mov.n	a10, a2
-4211e5d4:	ffae81        	l32r	a8, 4211e48c <framer_physical_tail_trampoline+0x2c> (423e5678 <__bswapsi2+0x2c5e9c>)
-4211e5d7:	0008e0        	callx8	a8
-4211e5da:	71a9      	s32i.n	a10, a1, 28
-4211e5dc:	0a5d      	mov.n	a5, a10
-4211e5de:	04a716        	beqz	a7, 4211e62c <framer_physical_loader_start+0x19c>
-4211e5e1:	ffa681        	l32r	a8, 4211e47c <framer_physical_tail_trampoline+0x1c> (4037e028 <esp_mmu_map-0x1d77374>)
-4211e5e4:	0008e0        	callx8	a8
-4211e5e7:	c0ca40        	sub	a12, a10, a4
-4211e5ea:	0b1c      	movi.n	a11, 16
-4211e5ec:	07ad      	mov.n	a10, a7
-4211e5ee:	008225        	call8	4211ee10 <diag_broadcast>
-4211e5f1:	d5dc      	bnez.n	a5, 4211e612 <framer_physical_loader_start+0x182>
-4211e5f3:	0c0c      	movi.n	a12, 0
-4211e5f5:	cb0c      	movi.n	a11, 12
-4211e5f7:	07ad      	mov.n	a10, a7
-4211e5f9:	008165        	call8	4211ee10 <diag_broadcast>
-4211e5fc:	44c1a2        	addi	a10, a1, 68
-4211e5ff:	00e7a5        	call8	4211f478 <framer_mqjs_unmap_canary>
-4211e602:	06ad      	mov.n	a10, a6
-4211e604:	ffa181        	l32r	a8, 4211e488 <framer_physical_tail_trampoline+0x28> (4037e250 <esp_mmu_map-0x1d7714c>)
-4211e607:	0008e0        	callx8	a8
-4211e60a:	680c      	movi.n	a8, 6
-4211e60c:	000286        	j	4211e61a <framer_physical_loader_start+0x18a>
-4211e60f:	000000        	ill
-4211e612:	780c      	movi.n	a8, 7
-4211e614:	000086        	j	4211e61a <framer_physical_loader_start+0x18a>
-4211e617:	00          	.byte	00
-4211e618:	280c      	movi.n	a8, 2
-4211e61a:	006182        	s32i	a8, a1, 0
-4211e61d:	011716        	beqz	a7, 4211e632 <framer_physical_loader_start+0x1a2>
-4211e620:	20b110        	or	a11, a1, a1
-4211e623:	07ad      	mov.n	a10, a7
-4211e625:	0078a5        	call8	4211edb0 <diag_publish>
-4211e628:	000186        	j	4211e632 <framer_physical_loader_start+0x1a2>
-4211e62b:	ca1600        	float.s	f1, a6, 0
-4211e62e:	c6fc      	bnez.n	a6, 4211e66e <framer_physical_key_wrapper+0x22>
-4211e630:	1dfff7        	bbsi	a15, 31, 4211e651 <framer_physical_key_wrapper+0x5>
-4211e633:	f0          	.byte	0xf0
-4211e634:	2ebc      	beqz.n	a14, 4211e66a <framer_physical_key_wrapper+0x1e>
-4211e636:	3e          	.byte	0x3e
-4211e637:	eae042        	s32c1i	a4, a0, 0x3a8
-4211e63a:	1c4206        	j	42125746 <__bswapsi2+0x5f6a>
-4211e63d:	9c42004e 	ee.stf.128.xp	f8, f4, f0, f4, a4, a0
-4211e641:	ad          	.byte	0xad
-4211e642:	484210        	ssx	f4, a2, a1
-4211e645:	d84210af 	ee.fft.ams.s16.ld.r32.decp	q0, a10, q2, q0, q4, q4, q2, 0
-4211e649:	423e54        	ee.st.accx.ip	a5, 0xfffffdf0
+4211e4ad:	086182        	s32i	a8, a1, 32
+4211e4b0:	00a925        	call8	4211ef44 <diag_pool_create>
+4211e4b3:	0a7d      	mov.n	a7, a10
+4211e4b5:	1a9c      	beqz.n	a10, 4211e4ca <framer_physical_loader_start+0x3a>
+4211e4b7:	01bd      	mov.n	a11, a1
+4211e4b9:	008f65        	call8	4211edb0 <diag_publish>
+4211e4bc:	07ad      	mov.n	a10, a7
+4211e4be:	009865        	call8	4211ee44 <diag_register>
+4211e4c1:	81a9      	s32i.n	a10, a1, 32
+4211e4c3:	01bd      	mov.n	a11, a1
+4211e4c5:	07ad      	mov.n	a10, a7
+4211e4c7:	008ea5        	call8	4211edb0 <diag_publish>
+4211e4ca:	20a220        	or	a10, a2, a2
+4211e4cd:	00ac65        	call8	4211ef94 <framer_physical_backend_validate>
+4211e4d0:	01a082        	movi	a8, 1
+4211e4d3:	147a16        	beqz	a10, 4211e61e <framer_physical_loader_start+0x18e>
+4211e4d6:	ffe731        	l32r	a3, 4211e474 <framer_physical_tail_trampoline+0x14> (420c8200 <esp_mmu_map-0x2d19c>)
+4211e4d9:	4a0c      	movi.n	a10, 4
+4211e4db:	08daa2        	addmi	a10, a10, 0x800
+4211e4de:	0003e0        	callx8	a3
+4211e4e1:	11a9      	s32i.n	a10, a1, 4
+4211e4e3:	0a6d      	mov.n	a6, a10
+4211e4e5:	4a0c      	movi.n	a10, 4
+4211e4e7:	08daa2        	addmi	a10, a10, 0x800
+4211e4ea:	ffe581        	l32r	a8, 4211e480 <framer_physical_tail_trampoline+0x20> (420c82c4 <esp_mmu_map-0x2d0d8>)
+4211e4ed:	0008e0        	callx8	a8
+4211e4f0:	ffe281        	l32r	a8, 4211e478 <framer_physical_tail_trampoline+0x18> (10c6f <esp_mmu_map-0x420e472d>)
+4211e4f3:	21a9      	s32i.n	a10, a1, 8
+4211e4f5:	023867        	bltu	a8, a6, 4211e4fb <framer_physical_loader_start+0x6b>
+4211e4f8:	004806        	j	4211e61c <framer_physical_loader_start+0x18c>
+4211e4fb:	6fa082        	movi	a8, 111
+4211e4fe:	7cd882        	addmi	a8, a8, 0x7c00
+4211e501:	0238a7        	bltu	a8, a10, 4211e507 <framer_physical_loader_start+0x77>
+4211e504:	004506        	j	4211e61c <framer_physical_loader_start+0x18c>
+4211e507:	4b0c      	movi.n	a11, 4
+4211e509:	70a0a2        	movi	a10, 112
+4211e50c:	08dbb2        	addmi	a11, a11, 0x800
+4211e50f:	7cdaa2        	addmi	a10, a10, 0x7c00
+4211e512:	ffdc81        	l32r	a8, 4211e484 <framer_physical_tail_trampoline+0x24> (4037e55c <esp_mmu_map-0x1d76e40>)
+4211e515:	0008e0        	callx8	a8
+4211e518:	5afb      	addi.n	a5, a10, 15
+4211e51a:	087c      	movi.n	a8, -16
+4211e51c:	31a9      	s32i.n	a10, a1, 12
+4211e51e:	0a6d      	mov.n	a6, a10
+4211e520:	105580        	and	a5, a5, a8
+4211e523:	055a16        	beqz	a10, 4211e57c <framer_physical_loader_start+0xec>
+4211e526:	4a35a7        	bltu	a5, a10, 4211e574 <framer_physical_loader_start+0xe4>
+4211e529:	c085a0        	sub	a8, a5, a10
+4211e52c:	091c      	movi.n	a9, 16
+4211e52e:	423987        	bltu	a9, a8, 4211e574 <framer_physical_loader_start+0xe4>
+4211e531:	07a882        	movi	a8, 0xfffff807
+4211e534:	0188d0        	slli	a8, a8, 19
+4211e537:	ffce91        	l32r	a9, 4211e470 <framer_physical_tail_trampoline+0x10> (783a0 <esp_mmu_map-0x4207cffc>)
+4211e53a:	858a      	add.n	a8, a5, a8
+4211e53c:	343987        	bltu	a9, a8, 4211e574 <framer_physical_loader_start+0xe4>
+4211e53f:	04a0a2        	movi	a10, 4
+4211e542:	08daa2        	addmi	a10, a10, 0x800
+4211e545:	0003e0        	callx8	a3
+4211e548:	41a9      	s32i.n	a10, a1, 16
+4211e54a:	0a3d      	mov.n	a3, a10
+4211e54c:	4a0c      	movi.n	a10, 4
+4211e54e:	08daa2        	addmi	a10, a10, 0x800
+4211e551:	ffcb81        	l32r	a8, 4211e480 <framer_physical_tail_trampoline+0x20> (420c82c4 <esp_mmu_map-0x2d0d8>)
+4211e554:	0008e0        	callx8	a8
+4211e557:	f87c      	movi.n	a8, -1
+4211e559:	51a9      	s32i.n	a10, a1, 20
+4211e55b:	b58480        	extui	a8, a8, 20, 12
+4211e55e:	1fb8a7        	bgeu	a8, a10, 4211e581 <framer_physical_loader_start+0xf1>
+4211e561:	ffc281        	l32r	a8, 4211e46c <framer_physical_tail_trampoline+0xc> (8fff <esp_mmu_map-0x420ec39d>)
+4211e564:	19b837        	bgeu	a8, a3, 4211e581 <framer_physical_loader_start+0xf1>
+4211e567:	44c1a2        	addi	a10, a1, 68
+4211e56a:	00fa25        	call8	4211f50c <framer_mqjs_map_canary>
+4211e56d:	61a9      	s32i.n	a10, a1, 24
+4211e56f:	9aac      	beqz.n	a10, 4211e59c <framer_physical_loader_start+0x10c>
+4211e571:	000646        	j	4211e58e <framer_physical_loader_start+0xfe>
+4211e574:	06ad      	mov.n	a10, a6
+4211e576:	ffc481        	l32r	a8, 4211e488 <framer_physical_tail_trampoline+0x28> (4037e250 <esp_mmu_map-0x1d7714c>)
+4211e579:	0008e0        	callx8	a8
+4211e57c:	380c      	movi.n	a8, 3
+4211e57e:	002706        	j	4211e61e <framer_physical_loader_start+0x18e>
+4211e581:	06ad      	mov.n	a10, a6
+4211e583:	ffc181        	l32r	a8, 4211e488 <framer_physical_tail_trampoline+0x28> (4037e250 <esp_mmu_map-0x1d7714c>)
+4211e586:	0008e0        	callx8	a8
+4211e589:	480c      	movi.n	a8, 4
+4211e58b:	0023c6        	j	4211e61e <framer_physical_loader_start+0x18e>
+4211e58e:	06ad      	mov.n	a10, a6
+4211e590:	ffbe81        	l32r	a8, 4211e488 <framer_physical_tail_trampoline+0x28> (4037e250 <esp_mmu_map-0x1d7714c>)
+4211e593:	0008e0        	callx8	a8
+4211e596:	580c      	movi.n	a8, 5
+4211e598:	002086        	j	4211e61e <framer_physical_loader_start+0x18e>
+4211e59b:	071600        	ee.stf.64.xp	f1, f0, a0, a6
+4211e59e:	b11001        	l32r	a0, 4210a9e0 <esp_mmu_unmap+0x1526c>
+4211e5a1:	07ad20        	ee.stf.64.xp	f10, f0, a2, a13
+4211e5a4:	0080a5        	call8	4211edb0 <diag_publish>
+4211e5a7:	05cd      	mov.n	a12, a5
+4211e5a9:	cb0c      	movi.n	a11, 12
+4211e5ab:	07ad      	mov.n	a10, a7
+4211e5ad:	008625        	call8	4211ee10 <diag_broadcast>
+4211e5b0:	ffaec1        	l32r	a12, 4211e468 <framer_physical_tail_trampoline+0x8> (4211f7bc <framer_physical_module_sha256>)
+4211e5b3:	080c      	movi.n	a8, 0
+4211e5b5:	890c      	movi.n	a9, 8
+4211e5b7:	0f8976        	loop	a9, 4211e5ca <framer_physical_loader_start+0x13a>
+4211e5ba:	a8ca      	add.n	a10, a8, a12
+4211e5bc:	0020c0        	memw
+4211e5bf:	0ab8      	l32i.n	a11, a10, 0
+4211e5c1:	24c1d2        	addi	a13, a1, 36
+4211e5c4:	ad8a      	add.n	a10, a13, a8
+4211e5c6:	0ab9      	s32i.n	a11, a10, 0
+4211e5c8:	884b      	addi.n	a8, a8, 4
+4211e5ca:	60a0d2        	movi	a13, 96
+4211e5cd:	05cd      	mov.n	a12, a5
+4211e5cf:	7cddd2        	addmi	a13, a13, 0x7c00
+4211e5d2:	24c1b2        	addi	a11, a1, 36
+4211e5d5:	02ad      	mov.n	a10, a2
+4211e5d7:	ffad81        	l32r	a8, 4211e48c <framer_physical_tail_trampoline+0x2c> (423e579c <__bswapsi2+0x2c5fc0>)
+4211e5da:	0008e0        	callx8	a8
+4211e5dd:	71a9      	s32i.n	a10, a1, 28
+4211e5df:	205aa0        	or	a5, a10, a10
+4211e5e2:	04a716        	beqz	a7, 4211e630 <framer_physical_loader_start+0x1a0>
+4211e5e5:	ffa581        	l32r	a8, 4211e47c <framer_physical_tail_trampoline+0x1c> (4037e028 <esp_mmu_map-0x1d77374>)
+4211e5e8:	0008e0        	callx8	a8
+4211e5eb:	c0ca40        	sub	a12, a10, a4
+4211e5ee:	0b1c      	movi.n	a11, 16
+4211e5f0:	07ad      	mov.n	a10, a7
+4211e5f2:	0081e5        	call8	4211ee10 <diag_broadcast>
+4211e5f5:	d5dc      	bnez.n	a5, 4211e616 <framer_physical_loader_start+0x186>
+4211e5f7:	0c0c      	movi.n	a12, 0
+4211e5f9:	cb0c      	movi.n	a11, 12
+4211e5fb:	07ad      	mov.n	a10, a7
+4211e5fd:	008125        	call8	4211ee10 <diag_broadcast>
+4211e600:	44c1a2        	addi	a10, a1, 68
+4211e603:	00e765        	call8	4211f478 <framer_mqjs_unmap_canary>
+4211e606:	06ad      	mov.n	a10, a6
+4211e608:	ffa081        	l32r	a8, 4211e488 <framer_physical_tail_trampoline+0x28> (4037e250 <esp_mmu_map-0x1d7714c>)
+4211e60b:	0008e0        	callx8	a8
+4211e60e:	680c      	movi.n	a8, 6
+4211e610:	000286        	j	4211e61e <framer_physical_loader_start+0x18e>
+4211e613:	000000        	ill
+4211e616:	780c      	movi.n	a8, 7
+4211e618:	000086        	j	4211e61e <framer_physical_loader_start+0x18e>
+4211e61b:	00          	.byte	00
+4211e61c:	280c      	movi.n	a8, 2
+4211e61e:	006182        	s32i	a8, a1, 0
+4211e621:	011716        	beqz	a7, 4211e636 <framer_physical_loader_start+0x1a6>
+4211e624:	20b110        	or	a11, a1, a1
+4211e627:	07ad      	mov.n	a10, a7
+4211e629:	007865        	call8	4211edb0 <diag_publish>
+4211e62c:	000186        	j	4211e636 <framer_physical_loader_start+0x1a6>
+4211e62f:	ca1600        	float.s	f1, a6, 0
+4211e632:	c6fc      	bnez.n	a6, 4211e672 <framer_physical_key_wrapper+0x22>
+4211e634:	1dfff7        	bbsi	a15, 31, 4211e655 <framer_physical_key_wrapper+0x5>
+4211e637:	f0          	.byte	0xf0
+4211e638:	2fdc      	bnez.n	a15, 4211e64e <framer_physical_loader_start+0x1be>
+4211e63a:	3e          	.byte	0x3e
+4211e63b:	eae042        	s32c1i	a4, a0, 0x3a8
+4211e63e:	1c4206        	j	4212574a <__bswapsi2+0x5f6e>
+4211e641:	9c42004e 	ee.stf.128.xp	f8, f4, f0, f4, a4, a0
+4211e645:	ad          	.byte	0xad
+4211e646:	484210        	ssx	f4, a2, a1
+4211e649:	344210af 	ee.vmulas.s8.qacc.ld.ip.qup	q0, a10, 0x100, q4, q2, q4, q2
+4211e64d:	423e56        	bnez	a14, 4211ea74 <diag_render_admit+0x38>
 
-4211e64c <framer_physical_key_wrapper>:
-4211e64c:	004136        	entry	a1, 32
-4211e64f:	02ad      	mov.n	a10, a2
-4211e651:	04cd      	mov.n	a12, a4
-4211e653:	03bd      	mov.n	a11, a3
-4211e655:	fff881        	l32r	a8, 4211e638 <framer_physical_loader_start+0x1a8> (4206eae0 <esp_mmu_map-0x868bc>)
-4211e658:	0008e0        	callx8	a8
-4211e65b:	0a2d      	mov.n	a2, a10
-4211e65d:	4c0c      	movi.n	a12, 4
-4211e65f:	4b0c      	movi.n	a11, 4
-4211e661:	03ad      	mov.n	a10, a3
-4211e663:	009e25        	call8	4211f044 <readable_data>
-4211e666:	056a16        	beqz	a10, 4211e6c0 <framer_physical_key_wrapper+0x74>
-4211e669:	1c0c      	movi.n	a12, 1
-4211e66b:	1b0c      	movi.n	a11, 1
-4211e66d:	04ad      	mov.n	a10, a4
-4211e66f:	009d65        	call8	4211f044 <readable_data>
-4211e672:	04aa16        	beqz	a10, 4211e6c0 <framer_physical_key_wrapper+0x74>
-4211e675:	fff181        	l32r	a8, 4211e63c <framer_physical_loader_start+0x1ac> (42004e1c <esp_mmu_map-0xf0580>)
-4211e678:	0008e0        	callx8	a8
-4211e67b:	041a16        	beqz	a10, 4211e6c0 <framer_physical_key_wrapper+0x74>
-4211e67e:	fff081        	l32r	a8, 4211e640 <framer_physical_loader_start+0x1b0> (4210ad9c <esp_mmu_unmap+0x15628>)
-4211e681:	0008e0        	callx8	a8
-4211e684:	8abc      	beqz.n	a10, 4211e6c0 <framer_physical_key_wrapper+0x74>
-4211e686:	ffef81        	l32r	a8, 4211e644 <framer_physical_loader_start+0x1b4> (4210af48 <esp_mmu_unmap+0x157d4>)
-4211e689:	0008e0        	callx8	a8
-4211e68c:	4c0c      	movi.n	a12, 4
-4211e68e:	4b0c      	movi.n	a11, 4
-4211e690:	0a7d      	mov.n	a7, a10
-4211e692:	009b25        	call8	4211f044 <readable_data>
-4211e695:	7aac      	beqz.n	a10, 4211e6c0 <framer_physical_key_wrapper+0x74>
-4211e697:	0768      	l32i.n	a6, a7, 0
-4211e699:	4c0c      	movi.n	a12, 4
-4211e69b:	cb2c      	movi.n	a11, 44
-4211e69d:	06ad      	mov.n	a10, a6
-4211e69f:	009a65        	call8	4211f044 <readable_data>
-4211e6a2:	aa9c      	beqz.n	a10, 4211e6c0 <framer_physical_key_wrapper+0x74>
-4211e6a4:	ffe481        	l32r	a8, 4211e634 <framer_physical_loader_start+0x1a4> (423e2ebc <__bswapsi2+0x2c36e0>)
-4211e6a7:	8698      	l32i.n	a9, a6, 32
-4211e6a9:	139987        	bne	a9, a8, 4211e6c0 <framer_physical_key_wrapper+0x74>
-4211e6ac:	03b8      	l32i.n	a11, a3, 0
-4211e6ae:	0004c2        	l8ui	a12, a4, 0
-4211e6b1:	11bb80        	slli	a11, a11, 8
-4211e6b4:	41b8b0        	srli	a11, a11, 8
-4211e6b7:	20a770        	or	a10, a7, a7
-4211e6ba:	ffe381        	l32r	a8, 4211e648 <framer_physical_loader_start+0x1b8> (423e54d8 <__bswapsi2+0x2c5cfc>)
-4211e6bd:	0008e0        	callx8	a8
-4211e6c0:	f01d      	retw.n
+4211e650 <framer_physical_key_wrapper>:
+4211e650:	004136        	entry	a1, 32
+4211e653:	02ad      	mov.n	a10, a2
+4211e655:	04cd      	mov.n	a12, a4
+4211e657:	03bd      	mov.n	a11, a3
+4211e659:	fff881        	l32r	a8, 4211e63c <framer_physical_loader_start+0x1ac> (4206eae0 <esp_mmu_map-0x868bc>)
+4211e65c:	0008e0        	callx8	a8
+4211e65f:	0a2d      	mov.n	a2, a10
+4211e661:	4c0c      	movi.n	a12, 4
+4211e663:	4b0c      	movi.n	a11, 4
+4211e665:	03ad      	mov.n	a10, a3
+4211e667:	009de5        	call8	4211f044 <readable_data>
+4211e66a:	056a16        	beqz	a10, 4211e6c4 <framer_physical_key_wrapper+0x74>
+4211e66d:	1c0c      	movi.n	a12, 1
+4211e66f:	1b0c      	movi.n	a11, 1
+4211e671:	04ad      	mov.n	a10, a4
+4211e673:	009d25        	call8	4211f044 <readable_data>
+4211e676:	04aa16        	beqz	a10, 4211e6c4 <framer_physical_key_wrapper+0x74>
+4211e679:	fff181        	l32r	a8, 4211e640 <framer_physical_loader_start+0x1b0> (42004e1c <esp_mmu_map-0xf0580>)
+4211e67c:	0008e0        	callx8	a8
+4211e67f:	041a16        	beqz	a10, 4211e6c4 <framer_physical_key_wrapper+0x74>
+4211e682:	fff081        	l32r	a8, 4211e644 <framer_physical_loader_start+0x1b4> (4210ad9c <esp_mmu_unmap+0x15628>)
+4211e685:	0008e0        	callx8	a8
+4211e688:	8abc      	beqz.n	a10, 4211e6c4 <framer_physical_key_wrapper+0x74>
+4211e68a:	ffef81        	l32r	a8, 4211e648 <framer_physical_loader_start+0x1b8> (4210af48 <esp_mmu_unmap+0x157d4>)
+4211e68d:	0008e0        	callx8	a8
+4211e690:	4c0c      	movi.n	a12, 4
+4211e692:	4b0c      	movi.n	a11, 4
+4211e694:	0a7d      	mov.n	a7, a10
+4211e696:	009ae5        	call8	4211f044 <readable_data>
+4211e699:	7aac      	beqz.n	a10, 4211e6c4 <framer_physical_key_wrapper+0x74>
+4211e69b:	0768      	l32i.n	a6, a7, 0
+4211e69d:	4c0c      	movi.n	a12, 4
+4211e69f:	cb2c      	movi.n	a11, 44
+4211e6a1:	06ad      	mov.n	a10, a6
+4211e6a3:	009a25        	call8	4211f044 <readable_data>
+4211e6a6:	aa9c      	beqz.n	a10, 4211e6c4 <framer_physical_key_wrapper+0x74>
+4211e6a8:	ffe481        	l32r	a8, 4211e638 <framer_physical_loader_start+0x1a8> (423e2fdc <__bswapsi2+0x2c3800>)
+4211e6ab:	8698      	l32i.n	a9, a6, 32
+4211e6ad:	139987        	bne	a9, a8, 4211e6c4 <framer_physical_key_wrapper+0x74>
+4211e6b0:	03b8      	l32i.n	a11, a3, 0
+4211e6b2:	0004c2        	l8ui	a12, a4, 0
+4211e6b5:	11bb80        	slli	a11, a11, 8
+4211e6b8:	41b8b0        	srli	a11, a11, 8
+4211e6bb:	20a770        	or	a10, a7, a7
+4211e6be:	ffe381        	l32r	a8, 4211e64c <framer_physical_loader_start+0x1bc> (423e5634 <__bswapsi2+0x2c5e58>)
+4211e6c1:	0008e0        	callx8	a8
+4211e6c4:	f01d      	retw.n
 	...
 
-4211e6c4 <sha256_k>:
-4211e6c4:	2f98 428a 4491 7137 fbcf b5c0 dba5 e9b5     ./.B.D7q........
-4211e6d4:	c25b 3956 11f1 59f1 82a4 923f 5ed5 ab1c     [.V9...Y..?..^..
-4211e6e4:	aa98 d807 5b01 1283 85be 2431 7dc3 550c     .....[....1$.}.U
-4211e6f4:	5d74 72be b1fe 80de 06a7 9bdc f174 c19b     t].r........t...
-4211e704:	69c1 e49b 4786 efbe 9dc6 0fc1 a1cc 240c     .i...G.........$
-4211e714:	2c6f 2de9 84aa 4a74 a9dc 5cb0 88da 76f9     o,.-..tJ...\...v
-4211e724:	5152 983e c66d a831 27c8 b003 7fc7 bf59     RQ>.m.1..'....Y.
-4211e734:	0bf3 c6e0 9147 d5a7 6351 06ca 2967 1429     ....G...Qc..g)).
-4211e744:	0a85 27b7 2138 2e1b 6dfc 4d2c 0d13 5338     ...'8!...m,M..8S
-4211e754:	7354 650a 0abb 766a c92e 81c2 2c85 9272     Ts.e..jv.....,r.
-4211e764:	e8a1 a2bf 664b a81a 8b70 c24b 51a3 c76c     ....Kf..p.K..Ql.
-4211e774:	e819 d192 0624 d699 3585 f40e a070 106a     ....$....5..p.j.
-4211e784:	c116 19a4 6c08 1e37 774c 2748 bcb5 34b0     .....l7.LwH'...4
-4211e794:	0cb3 391c aa4a 4ed8 ca4f 5b9c 6ff3 682e     ...9J..NO..[.o.h
-4211e7a4:	82ee 748f 636f 78a5 7814 84c8 0208 8cc7     ...toc.x.x......
-4211e7b4:	fffa 90be 6ceb a450 a3f7 bef9 78f2 c671     .....lP......xq.
-4211e7c4:	ffff 3fc7 0000 3c3d ffff 3c1c               ...?..=<...<
+4211e6c8 <sha256_k>:
+4211e6c8:	2f98 428a 4491 7137 fbcf b5c0 dba5 e9b5     ./.B.D7q........
+4211e6d8:	c25b 3956 11f1 59f1 82a4 923f 5ed5 ab1c     [.V9...Y..?..^..
+4211e6e8:	aa98 d807 5b01 1283 85be 2431 7dc3 550c     .....[....1$.}.U
+4211e6f8:	5d74 72be b1fe 80de 06a7 9bdc f174 c19b     t].r........t...
+4211e708:	69c1 e49b 4786 efbe 9dc6 0fc1 a1cc 240c     .i...G.........$
+4211e718:	2c6f 2de9 84aa 4a74 a9dc 5cb0 88da 76f9     o,.-..tJ...\...v
+4211e728:	5152 983e c66d a831 27c8 b003 7fc7 bf59     RQ>.m.1..'....Y.
+4211e738:	0bf3 c6e0 9147 d5a7 6351 06ca 2967 1429     ....G...Qc..g)).
+4211e748:	0a85 27b7 2138 2e1b 6dfc 4d2c 0d13 5338     ...'8!...m,M..8S
+4211e758:	7354 650a 0abb 766a c92e 81c2 2c85 9272     Ts.e..jv.....,r.
+4211e768:	e8a1 a2bf 664b a81a 8b70 c24b 51a3 c76c     ....Kf..p.K..Ql.
+4211e778:	e819 d192 0624 d699 3585 f40e a070 106a     ....$....5..p.j.
+4211e788:	c116 19a4 6c08 1e37 774c 2748 bcb5 34b0     .....l7.LwH'...4
+4211e798:	0cb3 391c aa4a 4ed8 ca4f 5b9c 6ff3 682e     ...9J..NO..[.o.h
+4211e7a8:	82ee 748f 636f 78a5 7814 84c8 0208 8cc7     ...toc.x.x......
+4211e7b8:	fffa 90be 6ceb a450 a3f7 bef9 78f2 c671     .....lP......xq.
+4211e7c8:	ffff 3fc7 0000 3c3d ffff 3c1c               ...?..=<...<
 
-4211e7d0 <framer_physical_backend_readable_range>:
-4211e7d0:	004136        	entry	a1, 32
-4211e7d3:	029d      	mov.n	a9, a2
-4211e7d5:	323a      	add.n	a3, a2, a3
-4211e7d7:	00a022        	movi	a2, 0
-4211e7da:	313397        	bltu	a3, a9, 4211e80f <framer_physical_backend_readable_range+0x3f>
-4211e7dd:	148090        	extui	a8, a9, 0, 2
-4211e7e0:	b8ec      	bnez.n	a8, 4211e80f <framer_physical_backend_readable_range+0x3f>
-4211e7e2:	fffa81        	l32r	a8, 4211e7cc <sha256_k+0x108> (3c1cffff <esp_mmu_map-0x5f2539d>)
-4211e7e5:	08b897        	bgeu	a8, a9, 4211e7f1 <framer_physical_backend_readable_range+0x21>
-4211e7e8:	fff881        	l32r	a8, 4211e7c8 <sha256_k+0x104> (3c3d0000 <esp_mmu_map-0x5d2539c>)
-4211e7eb:	01a022        	movi	a2, 1
-4211e7ee:	1db837        	bgeu	a8, a3, 4211e80f <framer_physical_backend_readable_range+0x3f>
-4211e7f1:	fff4a1        	l32r	a10, 4211e7c4 <sha256_k+0x100> (3fc7ffff <esp_mmu_map-0x247539d>)
-4211e7f4:	180c      	movi.n	a8, 1
-4211e7f6:	023a97        	bltu	a10, a9, 4211e7fc <framer_physical_backend_readable_range+0x2c>
-4211e7f9:	00a082        	movi	a8, 0
-4211e7fc:	fda3a2        	movi	a10, 0x3fd
-4211e7ff:	01aac0        	slli	a10, a10, 20
-4211e802:	190c      	movi.n	a9, 1
-4211e804:	01ba37        	bgeu	a10, a3, 4211e809 <framer_physical_backend_readable_range+0x39>
-4211e807:	090c      	movi.n	a9, 0
-4211e809:	102890        	and	a2, a8, a9
-4211e80c:	742020        	extui	a2, a2, 0, 8
-4211e80f:	f01d      	retw.n
-4211e811:	000000        	ill
+4211e7d4 <framer_physical_backend_readable_range>:
+4211e7d4:	004136        	entry	a1, 32
+4211e7d7:	029d      	mov.n	a9, a2
+4211e7d9:	323a      	add.n	a3, a2, a3
+4211e7db:	00a022        	movi	a2, 0
+4211e7de:	313397        	bltu	a3, a9, 4211e813 <framer_physical_backend_readable_range+0x3f>
+4211e7e1:	148090        	extui	a8, a9, 0, 2
+4211e7e4:	b8ec      	bnez.n	a8, 4211e813 <framer_physical_backend_readable_range+0x3f>
+4211e7e6:	fffa81        	l32r	a8, 4211e7d0 <sha256_k+0x108> (3c1cffff <esp_mmu_map-0x5f2539d>)
+4211e7e9:	08b897        	bgeu	a8, a9, 4211e7f5 <framer_physical_backend_readable_range+0x21>
+4211e7ec:	fff881        	l32r	a8, 4211e7cc <sha256_k+0x104> (3c3d0000 <esp_mmu_map-0x5d2539c>)
+4211e7ef:	01a022        	movi	a2, 1
+4211e7f2:	1db837        	bgeu	a8, a3, 4211e813 <framer_physical_backend_readable_range+0x3f>
+4211e7f5:	fff4a1        	l32r	a10, 4211e7c8 <sha256_k+0x100> (3fc7ffff <esp_mmu_map-0x247539d>)
+4211e7f8:	180c      	movi.n	a8, 1
+4211e7fa:	023a97        	bltu	a10, a9, 4211e800 <framer_physical_backend_readable_range+0x2c>
+4211e7fd:	00a082        	movi	a8, 0
+4211e800:	fda3a2        	movi	a10, 0x3fd
+4211e803:	01aac0        	slli	a10, a10, 20
+4211e806:	190c      	movi.n	a9, 1
+4211e808:	01ba37        	bgeu	a10, a3, 4211e80d <framer_physical_backend_readable_range+0x39>
+4211e80b:	090c      	movi.n	a9, 0
+4211e80d:	102890        	and	a2, a8, a9
+4211e810:	742020        	extui	a2, a2, 0, 8
+4211e813:	f01d      	retw.n
+4211e815:	000000        	ill
 
-4211e814 <diag_field>:
-4211e814:	004136        	entry	a1, 32
-4211e817:	3ba082        	movi	a8, 59
-4211e81a:	20b330        	or	a11, a3, a3
-4211e81d:	04cd      	mov.n	a12, a4
-4211e81f:	004282        	s8i	a8, a2, 0
-4211e822:	01c2a2        	addi	a10, a2, 1
-4211e825:	00f065        	call8	4211f72c <diag_word>
-4211e828:	d83c      	movi.n	a8, 61
-4211e82a:	004a82        	s8i	a8, a10, 0
-4211e82d:	05bd      	mov.n	a11, a5
-4211e82f:	aa1b      	addi.n	a10, a10, 1
-4211e831:	00f125        	call8	4211f744 <diag_hex32>
-4211e834:	0a2d      	mov.n	a2, a10
-4211e836:	f01d      	retw.n
+4211e818 <diag_field>:
+4211e818:	004136        	entry	a1, 32
+4211e81b:	3ba082        	movi	a8, 59
+4211e81e:	20b330        	or	a11, a3, a3
+4211e821:	04cd      	mov.n	a12, a4
+4211e823:	004282        	s8i	a8, a2, 0
+4211e826:	01c2a2        	addi	a10, a2, 1
+4211e829:	00f025        	call8	4211f72c <diag_word>
+4211e82c:	d83c      	movi.n	a8, 61
+4211e82e:	004a82        	s8i	a8, a10, 0
+4211e831:	05bd      	mov.n	a11, a5
+4211e833:	aa1b      	addi.n	a10, a10, 1
+4211e835:	00f0e5        	call8	4211f744 <diag_hex32>
+4211e838:	0a2d      	mov.n	a2, a10
+4211e83a:	f01d      	retw.n
 
-4211e838 <diag_render_gates>:
-4211e838:	004136        	entry	a1, 32
-4211e83b:	c8a072        	movi	a7, 200
-4211e83e:	727a      	add.n	a7, a2, a7
-4211e840:	07ad      	mov.n	a10, a7
-4211e842:	71a0b2        	movi	a11, 113
-4211e845:	00ece5        	call8	4211f714 <diag_zero>
-4211e848:	76a0b2        	movi	a11, 118
-4211e84b:	2c0c      	movi.n	a12, 2
-4211e84d:	31dbb2        	addmi	a11, a11, 0x3100
-4211e850:	07ad      	mov.n	a10, a7
-4211e852:	00eda5        	call8	4211f72c <diag_word>
-4211e855:	0a7d      	mov.n	a7, a10
-4211e857:	8b1c      	movi.n	a11, 24
-4211e859:	02ad      	mov.n	a10, a2
-4211e85b:	00f1a5        	call8	4211f774 <diag_slot>
-4211e85e:	0add      	mov.n	a13, a10
-4211e860:	1c0c      	movi.n	a12, 1
-4211e862:	67a0b2        	movi	a11, 103
-4211e865:	07ad      	mov.n	a10, a7
-4211e867:	fffae5        	call8	4211e814 <diag_field>
-4211e86a:	0a7d      	mov.n	a7, a10
-4211e86c:	cb1c      	movi.n	a11, 28
-4211e86e:	02ad      	mov.n	a10, a2
-4211e870:	00f025        	call8	4211f774 <diag_slot>
-4211e873:	66a0b2        	movi	a11, 102
-4211e876:	0add      	mov.n	a13, a10
-4211e878:	2c0c      	movi.n	a12, 2
-4211e87a:	30dbb2        	addmi	a11, a11, 0x3000
-4211e87d:	07ad      	mov.n	a10, a7
-4211e87f:	fff965        	call8	4211e814 <diag_field>
-4211e882:	0a7d      	mov.n	a7, a10
-4211e884:	0b2c      	movi.n	a11, 32
-4211e886:	02ad      	mov.n	a10, a2
-4211e888:	00eea5        	call8	4211f774 <diag_slot>
-4211e88b:	6ca0b2        	movi	a11, 108
-4211e88e:	0add      	mov.n	a13, a10
-4211e890:	2c0c      	movi.n	a12, 2
-4211e892:	30dbb2        	addmi	a11, a11, 0x3000
-4211e895:	07ad      	mov.n	a10, a7
-4211e897:	fff7e5        	call8	4211e814 <diag_field>
-4211e89a:	0a7d      	mov.n	a7, a10
-4211e89c:	4b2c      	movi.n	a11, 36
-4211e89e:	02ad      	mov.n	a10, a2
-4211e8a0:	00ed25        	call8	4211f774 <diag_slot>
-4211e8a3:	0add      	mov.n	a13, a10
-4211e8a5:	1c0c      	movi.n	a12, 1
-4211e8a7:	62a0b2        	movi	a11, 98
-4211e8aa:	07ad      	mov.n	a10, a7
-4211e8ac:	fff665        	call8	4211e814 <diag_field>
-4211e8af:	0a7d      	mov.n	a7, a10
-4211e8b1:	8b2c      	movi.n	a11, 40
-4211e8b3:	02ad      	mov.n	a10, a2
-4211e8b5:	00ebe5        	call8	4211f774 <diag_slot>
-4211e8b8:	66a0b2        	movi	a11, 102
-4211e8bb:	0add      	mov.n	a13, a10
-4211e8bd:	2c0c      	movi.n	a12, 2
-4211e8bf:	31dbb2        	addmi	a11, a11, 0x3100
-4211e8c2:	07ad      	mov.n	a10, a7
-4211e8c4:	fff4e5        	call8	4211e814 <diag_field>
-4211e8c7:	0a7d      	mov.n	a7, a10
-4211e8c9:	cb2c      	movi.n	a11, 44
-4211e8cb:	02ad      	mov.n	a10, a2
-4211e8cd:	00ea65        	call8	4211f774 <diag_slot>
-4211e8d0:	6ca0b2        	movi	a11, 108
-4211e8d3:	0add      	mov.n	a13, a10
-4211e8d5:	2c0c      	movi.n	a12, 2
-4211e8d7:	31dbb2        	addmi	a11, a11, 0x3100
-4211e8da:	20a770        	or	a10, a7, a7
-4211e8dd:	fff365        	call8	4211e814 <diag_field>
-4211e8e0:	0a7d      	mov.n	a7, a10
-4211e8e2:	0b3c      	movi.n	a11, 48
-4211e8e4:	02ad      	mov.n	a10, a2
-4211e8e6:	00e8e5        	call8	4211f774 <diag_slot>
-4211e8e9:	0add      	mov.n	a13, a10
-4211e8eb:	1c0c      	movi.n	a12, 1
-4211e8ed:	6da0b2        	movi	a11, 109
-4211e8f0:	20a770        	or	a10, a7, a7
-4211e8f3:	fff225        	call8	4211e814 <diag_field>
-4211e8f6:	0a7d      	mov.n	a7, a10
-4211e8f8:	4b3c      	movi.n	a11, 52
-4211e8fa:	02ad      	mov.n	a10, a2
-4211e8fc:	00e765        	call8	4211f774 <diag_slot>
-4211e8ff:	0add      	mov.n	a13, a10
-4211e901:	1c0c      	movi.n	a12, 1
-4211e903:	73a0b2        	movi	a11, 115
-4211e906:	07ad      	mov.n	a10, a7
-4211e908:	fff0a5        	call8	4211e814 <diag_field>
-4211e90b:	0a7d      	mov.n	a7, a10
-4211e90d:	8b3c      	movi.n	a11, 56
-4211e90f:	02ad      	mov.n	a10, a2
-4211e911:	00e625        	call8	4211f774 <diag_slot>
-4211e914:	0add      	mov.n	a13, a10
-4211e916:	1c0c      	movi.n	a12, 1
-4211e918:	72a0b2        	movi	a11, 114
-4211e91b:	07ad      	mov.n	a10, a7
-4211e91d:	ffef65        	call8	4211e814 <diag_field>
-4211e920:	080c      	movi.n	a8, 0
-4211e922:	004a82        	s8i	a8, a10, 0
-4211e925:	f01d      	retw.n
-4211e927:	daf400        	ufloat.s	f15, a4, 0
-4211e92a:	4038      	l32i.n	a3, a0, 16
+4211e83c <diag_render_gates>:
+4211e83c:	004136        	entry	a1, 32
+4211e83f:	c8a072        	movi	a7, 200
+4211e842:	727a      	add.n	a7, a2, a7
+4211e844:	07ad      	mov.n	a10, a7
+4211e846:	71a0b2        	movi	a11, 113
+4211e849:	00eca5        	call8	4211f714 <diag_zero>
+4211e84c:	76a0b2        	movi	a11, 118
+4211e84f:	2c0c      	movi.n	a12, 2
+4211e851:	31dbb2        	addmi	a11, a11, 0x3100
+4211e854:	07ad      	mov.n	a10, a7
+4211e856:	00ed65        	call8	4211f72c <diag_word>
+4211e859:	0a7d      	mov.n	a7, a10
+4211e85b:	8b1c      	movi.n	a11, 24
+4211e85d:	02ad      	mov.n	a10, a2
+4211e85f:	00f165        	call8	4211f774 <diag_slot>
+4211e862:	0add      	mov.n	a13, a10
+4211e864:	1c0c      	movi.n	a12, 1
+4211e866:	67a0b2        	movi	a11, 103
+4211e869:	07ad      	mov.n	a10, a7
+4211e86b:	fffae5        	call8	4211e818 <diag_field>
+4211e86e:	0a7d      	mov.n	a7, a10
+4211e870:	cb1c      	movi.n	a11, 28
+4211e872:	02ad      	mov.n	a10, a2
+4211e874:	00efe5        	call8	4211f774 <diag_slot>
+4211e877:	66a0b2        	movi	a11, 102
+4211e87a:	0add      	mov.n	a13, a10
+4211e87c:	2c0c      	movi.n	a12, 2
+4211e87e:	30dbb2        	addmi	a11, a11, 0x3000
+4211e881:	07ad      	mov.n	a10, a7
+4211e883:	fff965        	call8	4211e818 <diag_field>
+4211e886:	0a7d      	mov.n	a7, a10
+4211e888:	0b2c      	movi.n	a11, 32
+4211e88a:	02ad      	mov.n	a10, a2
+4211e88c:	00ee65        	call8	4211f774 <diag_slot>
+4211e88f:	6ca0b2        	movi	a11, 108
+4211e892:	0add      	mov.n	a13, a10
+4211e894:	2c0c      	movi.n	a12, 2
+4211e896:	30dbb2        	addmi	a11, a11, 0x3000
+4211e899:	07ad      	mov.n	a10, a7
+4211e89b:	fff7e5        	call8	4211e818 <diag_field>
+4211e89e:	0a7d      	mov.n	a7, a10
+4211e8a0:	4b2c      	movi.n	a11, 36
+4211e8a2:	02ad      	mov.n	a10, a2
+4211e8a4:	00ece5        	call8	4211f774 <diag_slot>
+4211e8a7:	0add      	mov.n	a13, a10
+4211e8a9:	1c0c      	movi.n	a12, 1
+4211e8ab:	62a0b2        	movi	a11, 98
+4211e8ae:	07ad      	mov.n	a10, a7
+4211e8b0:	fff665        	call8	4211e818 <diag_field>
+4211e8b3:	0a7d      	mov.n	a7, a10
+4211e8b5:	8b2c      	movi.n	a11, 40
+4211e8b7:	02ad      	mov.n	a10, a2
+4211e8b9:	00eba5        	call8	4211f774 <diag_slot>
+4211e8bc:	66a0b2        	movi	a11, 102
+4211e8bf:	0add      	mov.n	a13, a10
+4211e8c1:	2c0c      	movi.n	a12, 2
+4211e8c3:	31dbb2        	addmi	a11, a11, 0x3100
+4211e8c6:	07ad      	mov.n	a10, a7
+4211e8c8:	fff4e5        	call8	4211e818 <diag_field>
+4211e8cb:	0a7d      	mov.n	a7, a10
+4211e8cd:	cb2c      	movi.n	a11, 44
+4211e8cf:	02ad      	mov.n	a10, a2
+4211e8d1:	00ea25        	call8	4211f774 <diag_slot>
+4211e8d4:	6ca0b2        	movi	a11, 108
+4211e8d7:	0add      	mov.n	a13, a10
+4211e8d9:	2c0c      	movi.n	a12, 2
+4211e8db:	31dbb2        	addmi	a11, a11, 0x3100
+4211e8de:	20a770        	or	a10, a7, a7
+4211e8e1:	fff365        	call8	4211e818 <diag_field>
+4211e8e4:	0a7d      	mov.n	a7, a10
+4211e8e6:	0b3c      	movi.n	a11, 48
+4211e8e8:	02ad      	mov.n	a10, a2
+4211e8ea:	00e8a5        	call8	4211f774 <diag_slot>
+4211e8ed:	0add      	mov.n	a13, a10
+4211e8ef:	1c0c      	movi.n	a12, 1
+4211e8f1:	6da0b2        	movi	a11, 109
+4211e8f4:	20a770        	or	a10, a7, a7
+4211e8f7:	fff225        	call8	4211e818 <diag_field>
+4211e8fa:	0a7d      	mov.n	a7, a10
+4211e8fc:	4b3c      	movi.n	a11, 52
+4211e8fe:	02ad      	mov.n	a10, a2
+4211e900:	00e725        	call8	4211f774 <diag_slot>
+4211e903:	0add      	mov.n	a13, a10
+4211e905:	1c0c      	movi.n	a12, 1
+4211e907:	73a0b2        	movi	a11, 115
+4211e90a:	07ad      	mov.n	a10, a7
+4211e90c:	fff0a5        	call8	4211e818 <diag_field>
+4211e90f:	0a7d      	mov.n	a7, a10
+4211e911:	8b3c      	movi.n	a11, 56
+4211e913:	02ad      	mov.n	a10, a2
+4211e915:	00e5e5        	call8	4211f774 <diag_slot>
+4211e918:	0add      	mov.n	a13, a10
+4211e91a:	1c0c      	movi.n	a12, 1
+4211e91c:	72a0b2        	movi	a11, 114
+4211e91f:	07ad      	mov.n	a10, a7
+4211e921:	ffef65        	call8	4211e818 <diag_field>
+4211e924:	080c      	movi.n	a8, 0
+4211e926:	004a82        	s8i	a8, a10, 0
+4211e929:	f01d      	retw.n
+4211e92b:	daf400        	ufloat.s	f15, a4, 0
+4211e92e:	4038      	l32i.n	a3, a0, 16
 
-4211e92c <diag_render_owner>:
-4211e92c:	004136        	entry	a1, 32
-4211e92f:	cb0c      	movi.n	a11, 12
-4211e931:	02ad      	mov.n	a10, a2
-4211e933:	00e425        	call8	4211f774 <diag_slot>
-4211e936:	94a0b2        	movi	a11, 148
-4211e939:	0a7d      	mov.n	a7, a10
-4211e93b:	00e525        	call8	4211f78c <diag_peek>
-4211e93e:	c8a042        	movi	a4, 200
-4211e941:	8a0b      	addi.n	a8, a10, -1
-4211e943:	d97c      	movi.n	a9, -3
-4211e945:	424a      	add.n	a4, a2, a4
-4211e947:	0a6d      	mov.n	a6, a10
-4211e949:	f57c      	movi.n	a5, -1
-4211e94b:	073987        	bltu	a9, a8, 4211e956 <diag_render_owner+0x2a>
-4211e94e:	fff681        	l32r	a8, 4211e928 <diag_render_gates+0xf0> (4038daf4 <esp_mmu_map-0x1d678a8>)
-4211e951:	0008e0        	callx8	a8
-4211e954:	0a5d      	mov.n	a5, a10
-4211e956:	04ad      	mov.n	a10, a4
-4211e958:	71a0b2        	movi	a11, 113
-4211e95b:	00dba5        	call8	4211f714 <diag_zero>
-4211e95e:	76a0b2        	movi	a11, 118
-4211e961:	2c0c      	movi.n	a12, 2
-4211e963:	32dbb2        	addmi	a11, a11, 0x3200
-4211e966:	04ad      	mov.n	a10, a4
-4211e968:	00dc25        	call8	4211f72c <diag_word>
-4211e96b:	0a4d      	mov.n	a4, a10
-4211e96d:	0b3c      	movi.n	a11, 48
-4211e96f:	07ad      	mov.n	a10, a7
-4211e971:	00e1a5        	call8	4211f78c <diag_peek>
-4211e974:	0add      	mov.n	a13, a10
-4211e976:	1c0c      	movi.n	a12, 1
-4211e978:	62a0b2        	movi	a11, 98
-4211e97b:	04ad      	mov.n	a10, a4
-4211e97d:	ffe965        	call8	4211e814 <diag_field>
-4211e980:	0a4d      	mov.n	a4, a10
-4211e982:	8b3c      	movi.n	a11, 56
-4211e984:	07ad      	mov.n	a10, a7
-4211e986:	00e065        	call8	4211f78c <diag_peek>
-4211e989:	0add      	mov.n	a13, a10
-4211e98b:	1c0c      	movi.n	a12, 1
-4211e98d:	79a0b2        	movi	a11, 121
-4211e990:	04ad      	mov.n	a10, a4
-4211e992:	ffe825        	call8	4211e814 <diag_field>
-4211e995:	0a4d      	mov.n	a4, a10
-4211e997:	cb0c      	movi.n	a11, 12
-4211e999:	07ad      	mov.n	a10, a7
-4211e99b:	00df25        	call8	4211f78c <diag_peek>
-4211e99e:	0add      	mov.n	a13, a10
-4211e9a0:	1c0c      	movi.n	a12, 1
-4211e9a2:	73a0b2        	movi	a11, 115
-4211e9a5:	04ad      	mov.n	a10, a4
-4211e9a7:	ffe6e5        	call8	4211e814 <diag_field>
-4211e9aa:	0a4d      	mov.n	a4, a10
-4211e9ac:	70a0b2        	movi	a11, 112
-4211e9af:	07ad      	mov.n	a10, a7
-4211e9b1:	00dda5        	call8	4211f78c <diag_peek>
-4211e9b4:	0add      	mov.n	a13, a10
-4211e9b6:	1c0c      	movi.n	a12, 1
-4211e9b8:	74a0b2        	movi	a11, 116
-4211e9bb:	04ad      	mov.n	a10, a4
-4211e9bd:	ffe565        	call8	4211e814 <diag_field>
-4211e9c0:	0a4d      	mov.n	a4, a10
-4211e9c2:	74a0b2        	movi	a11, 116
-4211e9c5:	07ad      	mov.n	a10, a7
-4211e9c7:	00dc65        	call8	4211f78c <diag_peek>
-4211e9ca:	0add      	mov.n	a13, a10
-4211e9cc:	1c0c      	movi.n	a12, 1
-4211e9ce:	66a0b2        	movi	a11, 102
-4211e9d1:	04ad      	mov.n	a10, a4
-4211e9d3:	ffe425        	call8	4211e814 <diag_field>
-4211e9d6:	06dd      	mov.n	a13, a6
-4211e9d8:	1c0c      	movi.n	a12, 1
-4211e9da:	6ba0b2        	movi	a11, 107
-4211e9dd:	ffe365        	call8	4211e814 <diag_field>
-4211e9e0:	05dd      	mov.n	a13, a5
-4211e9e2:	1c0c      	movi.n	a12, 1
-4211e9e4:	77a0b2        	movi	a11, 119
-4211e9e7:	ffe2e5        	call8	4211e814 <diag_field>
-4211e9ea:	0a7d      	mov.n	a7, a10
-4211e9ec:	0b1c      	movi.n	a11, 16
-4211e9ee:	02ad      	mov.n	a10, a2
-4211e9f0:	00d825        	call8	4211f774 <diag_slot>
-4211e9f3:	0add      	mov.n	a13, a10
-4211e9f5:	1c0c      	movi.n	a12, 1
-4211e9f7:	75a0b2        	movi	a11, 117
-4211e9fa:	07ad      	mov.n	a10, a7
-4211e9fc:	ffe165        	call8	4211e814 <diag_field>
-4211e9ff:	0a7d      	mov.n	a7, a10
-4211ea01:	4a0c      	movi.n	a10, 4
-4211ea03:	08daa2        	addmi	a10, a10, 0x800
-4211ea06:	fe9b81        	l32r	a8, 4211e474 <framer_physical_tail_trampoline+0x14> (420c8200 <esp_mmu_map-0x2d19c>)
-4211ea09:	0008e0        	callx8	a8
-4211ea0c:	0add      	mov.n	a13, a10
-4211ea0e:	1c0c      	movi.n	a12, 1
-4211ea10:	68a0b2        	movi	a11, 104
-4211ea13:	07ad      	mov.n	a10, a7
-4211ea15:	ffdfe5        	call8	4211e814 <diag_field>
-4211ea18:	0a7d      	mov.n	a7, a10
-4211ea1a:	4a0c      	movi.n	a10, 4
-4211ea1c:	08daa2        	addmi	a10, a10, 0x800
-4211ea1f:	fe9881        	l32r	a8, 4211e480 <framer_physical_tail_trampoline+0x20> (420c82c4 <esp_mmu_map-0x2d0d8>)
-4211ea22:	0008e0        	callx8	a8
-4211ea25:	0add      	mov.n	a13, a10
-4211ea27:	1c0c      	movi.n	a12, 1
-4211ea29:	67a0b2        	movi	a11, 103
-4211ea2c:	07ad      	mov.n	a10, a7
-4211ea2e:	ffde65        	call8	4211e814 <diag_field>
-4211ea31:	080c      	movi.n	a8, 0
-4211ea33:	004a82        	s8i	a8, a10, 0
-4211ea36:	f01d      	retw.n
+4211e930 <diag_render_owner>:
+4211e930:	004136        	entry	a1, 32
+4211e933:	cb0c      	movi.n	a11, 12
+4211e935:	02ad      	mov.n	a10, a2
+4211e937:	00e3e5        	call8	4211f774 <diag_slot>
+4211e93a:	94a0b2        	movi	a11, 148
+4211e93d:	0a7d      	mov.n	a7, a10
+4211e93f:	00e4e5        	call8	4211f78c <diag_peek>
+4211e942:	c8a042        	movi	a4, 200
+4211e945:	8a0b      	addi.n	a8, a10, -1
+4211e947:	d97c      	movi.n	a9, -3
+4211e949:	424a      	add.n	a4, a2, a4
+4211e94b:	0a6d      	mov.n	a6, a10
+4211e94d:	f57c      	movi.n	a5, -1
+4211e94f:	073987        	bltu	a9, a8, 4211e95a <diag_render_owner+0x2a>
+4211e952:	fff681        	l32r	a8, 4211e92c <diag_render_gates+0xf0> (4038daf4 <esp_mmu_map-0x1d678a8>)
+4211e955:	0008e0        	callx8	a8
+4211e958:	0a5d      	mov.n	a5, a10
+4211e95a:	04ad      	mov.n	a10, a4
+4211e95c:	71a0b2        	movi	a11, 113
+4211e95f:	00db65        	call8	4211f714 <diag_zero>
+4211e962:	76a0b2        	movi	a11, 118
+4211e965:	2c0c      	movi.n	a12, 2
+4211e967:	32dbb2        	addmi	a11, a11, 0x3200
+4211e96a:	04ad      	mov.n	a10, a4
+4211e96c:	00dbe5        	call8	4211f72c <diag_word>
+4211e96f:	0a4d      	mov.n	a4, a10
+4211e971:	0b3c      	movi.n	a11, 48
+4211e973:	07ad      	mov.n	a10, a7
+4211e975:	00e165        	call8	4211f78c <diag_peek>
+4211e978:	0add      	mov.n	a13, a10
+4211e97a:	1c0c      	movi.n	a12, 1
+4211e97c:	62a0b2        	movi	a11, 98
+4211e97f:	04ad      	mov.n	a10, a4
+4211e981:	ffe965        	call8	4211e818 <diag_field>
+4211e984:	0a4d      	mov.n	a4, a10
+4211e986:	8b3c      	movi.n	a11, 56
+4211e988:	07ad      	mov.n	a10, a7
+4211e98a:	00e025        	call8	4211f78c <diag_peek>
+4211e98d:	0add      	mov.n	a13, a10
+4211e98f:	1c0c      	movi.n	a12, 1
+4211e991:	79a0b2        	movi	a11, 121
+4211e994:	04ad      	mov.n	a10, a4
+4211e996:	ffe825        	call8	4211e818 <diag_field>
+4211e999:	0a4d      	mov.n	a4, a10
+4211e99b:	cb0c      	movi.n	a11, 12
+4211e99d:	07ad      	mov.n	a10, a7
+4211e99f:	00dee5        	call8	4211f78c <diag_peek>
+4211e9a2:	0add      	mov.n	a13, a10
+4211e9a4:	1c0c      	movi.n	a12, 1
+4211e9a6:	73a0b2        	movi	a11, 115
+4211e9a9:	04ad      	mov.n	a10, a4
+4211e9ab:	ffe6e5        	call8	4211e818 <diag_field>
+4211e9ae:	0a4d      	mov.n	a4, a10
+4211e9b0:	70a0b2        	movi	a11, 112
+4211e9b3:	07ad      	mov.n	a10, a7
+4211e9b5:	00dd65        	call8	4211f78c <diag_peek>
+4211e9b8:	0add      	mov.n	a13, a10
+4211e9ba:	1c0c      	movi.n	a12, 1
+4211e9bc:	74a0b2        	movi	a11, 116
+4211e9bf:	04ad      	mov.n	a10, a4
+4211e9c1:	ffe565        	call8	4211e818 <diag_field>
+4211e9c4:	0a4d      	mov.n	a4, a10
+4211e9c6:	74a0b2        	movi	a11, 116
+4211e9c9:	07ad      	mov.n	a10, a7
+4211e9cb:	00dc25        	call8	4211f78c <diag_peek>
+4211e9ce:	0add      	mov.n	a13, a10
+4211e9d0:	1c0c      	movi.n	a12, 1
+4211e9d2:	66a0b2        	movi	a11, 102
+4211e9d5:	04ad      	mov.n	a10, a4
+4211e9d7:	ffe425        	call8	4211e818 <diag_field>
+4211e9da:	06dd      	mov.n	a13, a6
+4211e9dc:	1c0c      	movi.n	a12, 1
+4211e9de:	6ba0b2        	movi	a11, 107
+4211e9e1:	ffe365        	call8	4211e818 <diag_field>
+4211e9e4:	05dd      	mov.n	a13, a5
+4211e9e6:	1c0c      	movi.n	a12, 1
+4211e9e8:	77a0b2        	movi	a11, 119
+4211e9eb:	ffe2e5        	call8	4211e818 <diag_field>
+4211e9ee:	0a7d      	mov.n	a7, a10
+4211e9f0:	0b1c      	movi.n	a11, 16
+4211e9f2:	02ad      	mov.n	a10, a2
+4211e9f4:	00d7e5        	call8	4211f774 <diag_slot>
+4211e9f7:	0add      	mov.n	a13, a10
+4211e9f9:	1c0c      	movi.n	a12, 1
+4211e9fb:	75a0b2        	movi	a11, 117
+4211e9fe:	07ad      	mov.n	a10, a7
+4211ea00:	ffe165        	call8	4211e818 <diag_field>
+4211ea03:	0a7d      	mov.n	a7, a10
+4211ea05:	4a0c      	movi.n	a10, 4
+4211ea07:	08daa2        	addmi	a10, a10, 0x800
+4211ea0a:	fe9a81        	l32r	a8, 4211e474 <framer_physical_tail_trampoline+0x14> (420c8200 <esp_mmu_map-0x2d19c>)
+4211ea0d:	0008e0        	callx8	a8
+4211ea10:	0add      	mov.n	a13, a10
+4211ea12:	1c0c      	movi.n	a12, 1
+4211ea14:	68a0b2        	movi	a11, 104
+4211ea17:	07ad      	mov.n	a10, a7
+4211ea19:	ffdfe5        	call8	4211e818 <diag_field>
+4211ea1c:	0a7d      	mov.n	a7, a10
+4211ea1e:	4a0c      	movi.n	a10, 4
+4211ea20:	08daa2        	addmi	a10, a10, 0x800
+4211ea23:	fe9781        	l32r	a8, 4211e480 <framer_physical_tail_trampoline+0x20> (420c82c4 <esp_mmu_map-0x2d0d8>)
+4211ea26:	0008e0        	callx8	a8
+4211ea29:	0add      	mov.n	a13, a10
+4211ea2b:	1c0c      	movi.n	a12, 1
+4211ea2d:	67a0b2        	movi	a11, 103
+4211ea30:	07ad      	mov.n	a10, a7
+4211ea32:	ffde65        	call8	4211e818 <diag_field>
+4211ea35:	080c      	movi.n	a8, 0
+4211ea37:	004a82        	s8i	a8, a10, 0
+4211ea3a:	f01d      	retw.n
 
-4211ea38 <diag_render_admit>:
-4211ea38:	004136        	entry	a1, 32
-4211ea3b:	cb0c      	movi.n	a11, 12
-4211ea3d:	02ad      	mov.n	a10, a2
-4211ea3f:	c8a062        	movi	a6, 200
-4211ea42:	00d325        	call8	4211f774 <diag_slot>
-4211ea45:	626a      	add.n	a6, a2, a6
-4211ea47:	0a7d      	mov.n	a7, a10
-4211ea49:	71a0b2        	movi	a11, 113
-4211ea4c:	06ad      	mov.n	a10, a6
-4211ea4e:	00cc65        	call8	4211f714 <diag_zero>
-4211ea51:	76a0b2        	movi	a11, 118
-4211ea54:	2c0c      	movi.n	a12, 2
-4211ea56:	33dbb2        	addmi	a11, a11, 0x3300
-4211ea59:	06ad      	mov.n	a10, a6
-4211ea5b:	00cd25        	call8	4211f72c <diag_word>
-4211ea5e:	0a6d      	mov.n	a6, a10
-4211ea60:	0b0c      	movi.n	a11, 0
-4211ea62:	07ad      	mov.n	a10, a7
-4211ea64:	00d265        	call8	4211f78c <diag_peek>
-4211ea67:	0add      	mov.n	a13, a10
-4211ea69:	1c0c      	movi.n	a12, 1
-4211ea6b:	6da0b2        	movi	a11, 109
-4211ea6e:	06ad      	mov.n	a10, a6
-4211ea70:	ffda25        	call8	4211e814 <diag_field>
-4211ea73:	b4a0b2        	movi	a11, 180
-4211ea76:	0a6d      	mov.n	a6, a10
-4211ea78:	43dbb2        	addmi	a11, a11, 0x4300
-4211ea7b:	07ad      	mov.n	a10, a7
-4211ea7d:	00d0e5        	call8	4211f78c <diag_peek>
-4211ea80:	0add      	mov.n	a13, a10
-4211ea82:	1c0c      	movi.n	a12, 1
-4211ea84:	63a0b2        	movi	a11, 99
-4211ea87:	06ad      	mov.n	a10, a6
-4211ea89:	ffd8a5        	call8	4211e814 <diag_field>
-4211ea8c:	b0a0b2        	movi	a11, 176
-4211ea8f:	0a6d      	mov.n	a6, a10
-4211ea91:	43dbb2        	addmi	a11, a11, 0x4300
-4211ea94:	07ad      	mov.n	a10, a7
-4211ea96:	00cf65        	call8	4211f78c <diag_peek>
-4211ea99:	0add      	mov.n	a13, a10
-4211ea9b:	1c0c      	movi.n	a12, 1
-4211ea9d:	72a0b2        	movi	a11, 114
-4211eaa0:	06ad      	mov.n	a10, a6
-4211eaa2:	ffd725        	call8	4211e814 <diag_field>
-4211eaa5:	c0a0b2        	movi	a11, 192
-4211eaa8:	0a6d      	mov.n	a6, a10
-4211eaaa:	1fdbb2        	addmi	a11, a11, 0x1f00
-4211eaad:	07ad      	mov.n	a10, a7
-4211eaaf:	00cde5        	call8	4211f78c <diag_peek>
-4211eab2:	0add      	mov.n	a13, a10
-4211eab4:	1c0c      	movi.n	a12, 1
-4211eab6:	61a0b2        	movi	a11, 97
-4211eab9:	06ad      	mov.n	a10, a6
-4211eabb:	ffd5a5        	call8	4211e814 <diag_field>
-4211eabe:	d8a0b2        	movi	a11, 216
+4211ea3c <diag_render_admit>:
+4211ea3c:	004136        	entry	a1, 32
+4211ea3f:	cb0c      	movi.n	a11, 12
+4211ea41:	02ad      	mov.n	a10, a2
+4211ea43:	c8a062        	movi	a6, 200
+4211ea46:	00d2e5        	call8	4211f774 <diag_slot>
+4211ea49:	626a      	add.n	a6, a2, a6
+4211ea4b:	0a7d      	mov.n	a7, a10
+4211ea4d:	71a0b2        	movi	a11, 113
+4211ea50:	06ad      	mov.n	a10, a6
+4211ea52:	00cc25        	call8	4211f714 <diag_zero>
+4211ea55:	76a0b2        	movi	a11, 118
+4211ea58:	2c0c      	movi.n	a12, 2
+4211ea5a:	33dbb2        	addmi	a11, a11, 0x3300
+4211ea5d:	06ad      	mov.n	a10, a6
+4211ea5f:	00cce5        	call8	4211f72c <diag_word>
+4211ea62:	0a6d      	mov.n	a6, a10
+4211ea64:	0b0c      	movi.n	a11, 0
+4211ea66:	07ad      	mov.n	a10, a7
+4211ea68:	00d225        	call8	4211f78c <diag_peek>
+4211ea6b:	0add      	mov.n	a13, a10
+4211ea6d:	1c0c      	movi.n	a12, 1
+4211ea6f:	6da0b2        	movi	a11, 109
+4211ea72:	06ad      	mov.n	a10, a6
+4211ea74:	ffda25        	call8	4211e818 <diag_field>
+4211ea77:	4b7c      	movi.n	a11, -12
+4211ea79:	0a6d      	mov.n	a6, a10
+4211ea7b:	47dbb2        	addmi	a11, a11, 0x4700
+4211ea7e:	07ad      	mov.n	a10, a7
+4211ea80:	00d0a5        	call8	4211f78c <diag_peek>
+4211ea83:	0add      	mov.n	a13, a10
+4211ea85:	1c0c      	movi.n	a12, 1
+4211ea87:	63a0b2        	movi	a11, 99
+4211ea8a:	06ad      	mov.n	a10, a6
+4211ea8c:	ffd8a5        	call8	4211e818 <diag_field>
+4211ea8f:	0b7c      	movi.n	a11, -16
+4211ea91:	0a6d      	mov.n	a6, a10
+4211ea93:	47dbb2        	addmi	a11, a11, 0x4700
+4211ea96:	07ad      	mov.n	a10, a7
+4211ea98:	00cf25        	call8	4211f78c <diag_peek>
+4211ea9b:	0add      	mov.n	a13, a10
+4211ea9d:	1c0c      	movi.n	a12, 1
+4211ea9f:	72a0b2        	movi	a11, 114
+4211eaa2:	06ad      	mov.n	a10, a6
+4211eaa4:	ffd725        	call8	4211e818 <diag_field>
+4211eaa7:	3b2c      	movi.n	a11, 35
+4211eaa9:	0a6d      	mov.n	a6, a10
+4211eaab:	11bb80        	slli	a11, a11, 8
+4211eaae:	07ad      	mov.n	a10, a7
+4211eab0:	00cda5        	call8	4211f78c <diag_peek>
+4211eab3:	0add      	mov.n	a13, a10
+4211eab5:	1c0c      	movi.n	a12, 1
+4211eab7:	61a0b2        	movi	a11, 97
+4211eaba:	06ad      	mov.n	a10, a6
+4211eabc:	ffd5a5        	call8	4211e818 <diag_field>
+4211eabf:	8b1c      	movi.n	a11, 24
 4211eac1:	0a6d      	mov.n	a6, a10
-4211eac3:	1fdbb2        	addmi	a11, a11, 0x1f00
+4211eac3:	23dbb2        	addmi	a11, a11, 0x2300
 4211eac6:	07ad      	mov.n	a10, a7
 4211eac8:	00cc25        	call8	4211f78c <diag_peek>
 4211eacb:	0add      	mov.n	a13, a10
 4211eacd:	1c0c      	movi.n	a12, 1
 4211eacf:	6ea0b2        	movi	a11, 110
 4211ead2:	06ad      	mov.n	a10, a6
-4211ead4:	ffd3e5        	call8	4211e814 <diag_field>
-4211ead7:	cb1c      	movi.n	a11, 28
+4211ead4:	ffd425        	call8	4211e818 <diag_field>
+4211ead7:	cb5c      	movi.n	a11, 92
 4211ead9:	0a6d      	mov.n	a6, a10
-4211eadb:	20dbb2        	addmi	a11, a11, 0x2000
+4211eadb:	23dbb2        	addmi	a11, a11, 0x2300
 4211eade:	07ad      	mov.n	a10, a7
 4211eae0:	00caa5        	call8	4211f78c <diag_peek>
 4211eae3:	0add      	mov.n	a13, a10
 4211eae5:	1c0c      	movi.n	a12, 1
 4211eae7:	65a0b2        	movi	a11, 101
 4211eaea:	06ad      	mov.n	a10, a6
-4211eaec:	ffd265        	call8	4211e814 <diag_field>
-4211eaef:	88a0b2        	movi	a11, 136
+4211eaec:	ffd2a5        	call8	4211e818 <diag_field>
+4211eaef:	c8a0b2        	movi	a11, 200
 4211eaf2:	0a6d      	mov.n	a6, a10
-4211eaf4:	78dbb2        	addmi	a11, a11, 0x7800
+4211eaf4:	7bdbb2        	addmi	a11, a11, 0x7b00
 4211eaf7:	07ad      	mov.n	a10, a7
 4211eaf9:	00c925        	call8	4211f78c <diag_peek>
 4211eafc:	0add      	mov.n	a13, a10
 4211eafe:	1c0c      	movi.n	a12, 1
 4211eb00:	70a0b2        	movi	a11, 112
 4211eb03:	06ad      	mov.n	a10, a6
-4211eb05:	ffd0e5        	call8	4211e814 <diag_field>
-4211eb08:	8b1c      	movi.n	a11, 24
+4211eb05:	ffd125        	call8	4211e818 <diag_field>
+4211eb08:	8b5c      	movi.n	a11, 88
 4211eb0a:	0a6d      	mov.n	a6, a10
-4211eb0c:	79dbb2        	addmi	a11, a11, 0x7900
-4211eb0f:	20a770        	or	a10, a7, a7
-4211eb12:	00c7a5        	call8	4211f78c <diag_peek>
-4211eb15:	0add      	mov.n	a13, a10
-4211eb17:	1c0c      	movi.n	a12, 1
-4211eb19:	6ca0b2        	movi	a11, 108
-4211eb1c:	20a660        	or	a10, a6, a6
-4211eb1f:	ffcf65        	call8	4211e814 <diag_field>
-4211eb22:	cb1c      	movi.n	a11, 28
-4211eb24:	0a6d      	mov.n	a6, a10
-4211eb26:	79dbb2        	addmi	a11, a11, 0x7900
-4211eb29:	20a770        	or	a10, a7, a7
-4211eb2c:	00c5e5        	call8	4211f78c <diag_peek>
-4211eb2f:	0add      	mov.n	a13, a10
-4211eb31:	1c0c      	movi.n	a12, 1
-4211eb33:	64a0b2        	movi	a11, 100
-4211eb36:	06ad      	mov.n	a10, a6
-4211eb38:	ffcda5        	call8	4211e814 <diag_field>
-4211eb3b:	c0a0b2        	movi	a11, 192
-4211eb3e:	0a6d      	mov.n	a6, a10
-4211eb40:	78dbb2        	addmi	a11, a11, 0x7800
-4211eb43:	07ad      	mov.n	a10, a7
-4211eb45:	00c465        	call8	4211f78c <diag_peek>
-4211eb48:	0add      	mov.n	a13, a10
-4211eb4a:	1c0c      	movi.n	a12, 1
-4211eb4c:	76a0b2        	movi	a11, 118
-4211eb4f:	06ad      	mov.n	a10, a6
-4211eb51:	ffcc25        	call8	4211e814 <diag_field>
-4211eb54:	080c      	movi.n	a8, 0
-4211eb56:	004a82        	s8i	a8, a10, 0
-4211eb59:	f01d      	retw.n
+4211eb0c:	7cdbb2        	addmi	a11, a11, 0x7c00
+4211eb0f:	07ad      	mov.n	a10, a7
+4211eb11:	00c7a5        	call8	4211f78c <diag_peek>
+4211eb14:	0add      	mov.n	a13, a10
+4211eb16:	1c0c      	movi.n	a12, 1
+4211eb18:	6ca0b2        	movi	a11, 108
+4211eb1b:	06ad      	mov.n	a10, a6
+4211eb1d:	ffcfa5        	call8	4211e818 <diag_field>
+4211eb20:	cb5c      	movi.n	a11, 92
+4211eb22:	0a6d      	mov.n	a6, a10
+4211eb24:	7cdbb2        	addmi	a11, a11, 0x7c00
+4211eb27:	07ad      	mov.n	a10, a7
+4211eb29:	00c625        	call8	4211f78c <diag_peek>
+4211eb2c:	0add      	mov.n	a13, a10
+4211eb2e:	1c0c      	movi.n	a12, 1
+4211eb30:	64a0b2        	movi	a11, 100
+4211eb33:	06ad      	mov.n	a10, a6
+4211eb35:	ffce25        	call8	4211e818 <diag_field>
+4211eb38:	fb1c      	movi.n	a11, 31
+4211eb3a:	0a6d      	mov.n	a6, a10
+4211eb3c:	11bb60        	slli	a11, a11, 10
+4211eb3f:	07ad      	mov.n	a10, a7
+4211eb41:	00c4a5        	call8	4211f78c <diag_peek>
+4211eb44:	0add      	mov.n	a13, a10
+4211eb46:	1c0c      	movi.n	a12, 1
+4211eb48:	76a0b2        	movi	a11, 118
+4211eb4b:	06ad      	mov.n	a10, a6
+4211eb4d:	ffcca5        	call8	4211e818 <diag_field>
+4211eb50:	080c      	movi.n	a8, 0
+4211eb52:	004a82        	s8i	a8, a10, 0
+4211eb55:	f01d      	retw.n
 	...
 
-4211eb5c <diag_render_adopt>:
-4211eb5c:	004136        	entry	a1, 32
-4211eb5f:	cb0c      	movi.n	a11, 12
-4211eb61:	02ad      	mov.n	a10, a2
-4211eb63:	c8a062        	movi	a6, 200
-4211eb66:	00c0e5        	call8	4211f774 <diag_slot>
-4211eb69:	626a      	add.n	a6, a2, a6
-4211eb6b:	0a7d      	mov.n	a7, a10
-4211eb6d:	71a0b2        	movi	a11, 113
-4211eb70:	06ad      	mov.n	a10, a6
-4211eb72:	00ba25        	call8	4211f714 <diag_zero>
-4211eb75:	76a0b2        	movi	a11, 118
-4211eb78:	2c0c      	movi.n	a12, 2
-4211eb7a:	35dbb2        	addmi	a11, a11, 0x3500
-4211eb7d:	06ad      	mov.n	a10, a6
-4211eb7f:	00bae5        	call8	4211f72c <diag_word>
-4211eb82:	9b1c      	movi.n	a11, 25
-4211eb84:	0a6d      	mov.n	a6, a10
-4211eb86:	11bb90        	slli	a11, a11, 7
-4211eb89:	07ad      	mov.n	a10, a7
-4211eb8b:	00c025        	call8	4211f78c <diag_peek>
-4211eb8e:	0add      	mov.n	a13, a10
-4211eb90:	1c0c      	movi.n	a12, 1
-4211eb92:	61a0b2        	movi	a11, 97
-4211eb95:	06ad      	mov.n	a10, a6
-4211eb97:	ffc7e5        	call8	4211e814 <diag_field>
+4211eb58 <diag_render_adopt>:
+4211eb58:	004136        	entry	a1, 32
+4211eb5b:	cb0c      	movi.n	a11, 12
+4211eb5d:	20a220        	or	a10, a2, a2
+4211eb60:	c8a062        	movi	a6, 200
+4211eb63:	00c125        	call8	4211f774 <diag_slot>
+4211eb66:	626a      	add.n	a6, a2, a6
+4211eb68:	0a7d      	mov.n	a7, a10
+4211eb6a:	71a0b2        	movi	a11, 113
+4211eb6d:	06ad      	mov.n	a10, a6
+4211eb6f:	00ba65        	call8	4211f714 <diag_zero>
+4211eb72:	76a0b2        	movi	a11, 118
+4211eb75:	2c0c      	movi.n	a12, 2
+4211eb77:	35dbb2        	addmi	a11, a11, 0x3500
+4211eb7a:	06ad      	mov.n	a10, a6
+4211eb7c:	00bae5        	call8	4211f72c <diag_word>
+4211eb7f:	a8a0b2        	movi	a11, 168
+4211eb82:	0a6d      	mov.n	a6, a10
+4211eb84:	0ddbb2        	addmi	a11, a11, 0xd00
+4211eb87:	20a770        	or	a10, a7, a7
+4211eb8a:	00c025        	call8	4211f78c <diag_peek>
+4211eb8d:	0add      	mov.n	a13, a10
+4211eb8f:	1c0c      	movi.n	a12, 1
+4211eb91:	61a0b2        	movi	a11, 97
+4211eb94:	20a660        	or	a10, a6, a6
+4211eb97:	ffc825        	call8	4211e818 <diag_field>
 4211eb9a:	0a6d      	mov.n	a6, a10
 4211eb9c:	0b0c      	movi.n	a11, 0
 4211eb9e:	07ad      	mov.n	a10, a7
@@ -681,7 +681,7 @@ Disassembly of section .text:
 4211eba5:	1c0c      	movi.n	a12, 1
 4211eba7:	6da0b2        	movi	a11, 109
 4211ebaa:	06ad      	mov.n	a10, a6
-4211ebac:	ffc665        	call8	4211e814 <diag_field>
+4211ebac:	ffc6a5        	call8	4211e818 <diag_field>
 4211ebaf:	0a6d      	mov.n	a6, a10
 4211ebb1:	0b3c      	movi.n	a11, 48
 4211ebb3:	07ad      	mov.n	a10, a7
@@ -690,7 +690,7 @@ Disassembly of section .text:
 4211ebba:	1c0c      	movi.n	a12, 1
 4211ebbc:	62a0b2        	movi	a11, 98
 4211ebbf:	06ad      	mov.n	a10, a6
-4211ebc1:	ffc525        	call8	4211e814 <diag_field>
+4211ebc1:	ffc565        	call8	4211e818 <diag_field>
 4211ebc4:	080c      	movi.n	a8, 0
 4211ebc6:	004a82        	s8i	a8, a10, 0
 4211ebc9:	f01d      	retw.n
@@ -712,36 +712,36 @@ Disassembly of section .text:
 4211ebeb:	36dbb2        	addmi	a11, a11, 0x3600
 4211ebee:	06ad      	mov.n	a10, a6
 4211ebf0:	00b3a5        	call8	4211f72c <diag_word>
-4211ebf3:	88a0b2        	movi	a11, 136
+4211ebf3:	b0a0b2        	movi	a11, 176
 4211ebf6:	0a6d      	mov.n	a6, a10
-4211ebf8:	0cdbb2        	addmi	a11, a11, 0xc00
+4211ebf8:	0ddbb2        	addmi	a11, a11, 0xd00
 4211ebfb:	20a770        	or	a10, a7, a7
 4211ebfe:	00b8e5        	call8	4211f78c <diag_peek>
 4211ec01:	0add      	mov.n	a13, a10
 4211ec03:	1c0c      	movi.n	a12, 1
 4211ec05:	70a0b2        	movi	a11, 112
 4211ec08:	06ad      	mov.n	a10, a6
-4211ec0a:	ffc0a5        	call8	4211e814 <diag_field>
-4211ec0d:	8ca0b2        	movi	a11, 140
+4211ec0a:	ffc0e5        	call8	4211e818 <diag_field>
+4211ec0d:	b4a0b2        	movi	a11, 180
 4211ec10:	0a6d      	mov.n	a6, a10
-4211ec12:	0cdbb2        	addmi	a11, a11, 0xc00
+4211ec12:	0ddbb2        	addmi	a11, a11, 0xd00
 4211ec15:	20a770        	or	a10, a7, a7
 4211ec18:	00b725        	call8	4211f78c <diag_peek>
 4211ec1b:	0add      	mov.n	a13, a10
 4211ec1d:	1c0c      	movi.n	a12, 1
 4211ec1f:	67a0b2        	movi	a11, 103
 4211ec22:	06ad      	mov.n	a10, a6
-4211ec24:	ffbee5        	call8	4211e814 <diag_field>
-4211ec27:	90a0b2        	movi	a11, 144
+4211ec24:	ffbf25        	call8	4211e818 <diag_field>
+4211ec27:	b8a0b2        	movi	a11, 184
 4211ec2a:	0a6d      	mov.n	a6, a10
-4211ec2c:	0cdbb2        	addmi	a11, a11, 0xc00
+4211ec2c:	0ddbb2        	addmi	a11, a11, 0xd00
 4211ec2f:	07ad      	mov.n	a10, a7
 4211ec31:	00b5a5        	call8	4211f78c <diag_peek>
 4211ec34:	0add      	mov.n	a13, a10
 4211ec36:	1c0c      	movi.n	a12, 1
 4211ec38:	63a0b2        	movi	a11, 99
 4211ec3b:	06ad      	mov.n	a10, a6
-4211ec3d:	ffbd65        	call8	4211e814 <diag_field>
+4211ec3d:	ffbda5        	call8	4211e818 <diag_field>
 4211ec40:	080c      	movi.n	a8, 0
 4211ec42:	004a82        	s8i	a8, a10, 0
 4211ec45:	f01d      	retw.n
@@ -759,8 +759,8 @@ Disassembly of section .text:
 4211ec5b:	cb0c      	movi.n	a11, 12
 4211ec5d:	02ad      	mov.n	a10, a2
 4211ec5f:	00b165        	call8	4211f774 <diag_slot>
-4211ec62:	68a0b2        	movi	a11, 104
-4211ec65:	1cdbb2        	addmi	a11, a11, 0x1c00
+4211ec62:	a8a0b2        	movi	a11, 168
+4211ec65:	1fdbb2        	addmi	a11, a11, 0x1f00
 4211ec68:	c8a072        	movi	a7, 200
 4211ec6b:	727a      	add.n	a7, a2, a7
 4211ec6d:	0a5d      	mov.n	a5, a10
@@ -820,8 +820,8 @@ Disassembly of section .text:
 4211ecfc:	04cb22        	addi	a2, a11, 4
 4211ecff:	6ca082        	movi	a8, 108
 4211ed02:	121287        	beq	a2, a8, 4211ed18 <diag_render_error+0xc0>
-4211ed05:	6ccbb2        	addi	a11, a11, 108
-4211ed08:	1cdbb2        	addmi	a11, a11, 0x1c00
+4211ed05:	accbb2        	addi	a11, a11, -84
+4211ed08:	20dbb2        	addmi	a11, a11, 0x2000
 4211ed0b:	05ad      	mov.n	a10, a5
 4211ed0d:	00a7e5        	call8	4211f78c <diag_peek>
 4211ed10:	0a6d      	mov.n	a6, a10
@@ -856,12 +856,12 @@ Disassembly of section .text:
 4211ed55:	00a1e5        	call8	4211f774 <diag_slot>
 4211ed58:	092a66        	bnei	a10, 2, 4211ed65 <diag_rpc_callback+0x41>
 4211ed5b:	07ad      	mov.n	a10, a7
-4211ed5d:	ffbce5        	call8	4211e92c <diag_render_owner>
+4211ed5d:	ffbd25        	call8	4211e930 <diag_render_owner>
 4211ed60:	000e86        	j	4211ed9e <diag_rpc_callback+0x7a>
 4211ed63:	660000        	ee.ldf.64.xp	f0, f6, a0, a0
 4211ed66:	083a      	add.n	a0, a8, a3
 4211ed68:	07ad      	mov.n	a10, a7
-4211ed6a:	ffcce5        	call8	4211ea38 <diag_render_admit>
+4211ed6a:	ffcd25        	call8	4211ea3c <diag_render_admit>
 4211ed6d:	000b46        	j	4211ed9e <diag_rpc_callback+0x7a>
 4211ed70:	4a6600        	madd.s	f6, f6, f0
 4211ed73:	ad0a      	add.n	a10, a13, a0
@@ -870,7 +870,7 @@ Disassembly of section .text:
 4211ed7c:	000000        	ill
 4211ed7f:	0a5a66        	bnei	a10, 5, 4211ed8d <diag_rpc_callback+0x69>
 4211ed82:	07ad      	mov.n	a10, a7
-4211ed84:	ffdd65        	call8	4211eb5c <diag_render_adopt>
+4211ed84:	ffdd25        	call8	4211eb58 <diag_render_adopt>
 4211ed87:	0004c6        	j	4211ed9e <diag_rpc_callback+0x7a>
 4211ed8a:	000000        	ill
 4211ed8d:	076a66        	bnei	a10, 6, 4211ed98 <diag_rpc_callback+0x74>
@@ -878,7 +878,7 @@ Disassembly of section .text:
 4211ed92:	ffe3a5        	call8	4211ebcc <diag_render_persist>
 4211ed95:	000146        	j	4211ed9e <diag_rpc_callback+0x7a>
 4211ed98:	20a770        	or	a10, a7, a7
-4211ed9b:	ffa9e5        	call8	4211e838 <diag_render_gates>
+4211ed9b:	ffaa25        	call8	4211e83c <diag_render_gates>
 4211ed9e:	20d770        	or	a13, a7, a7
 4211eda1:	01a0c2        	movi	a12, 1
 4211eda4:	04bd      	mov.n	a11, a4
@@ -926,7 +926,7 @@ Disassembly of section .text:
 4211ee02:	8b3c      	movi.n	a11, 56
 4211ee04:	0097a5        	call8	4211f780 <diag_slot_set>
 4211ee07:	02ad      	mov.n	a10, a2
-4211ee09:	ffa2e5        	call8	4211e838 <diag_render_gates>
+4211ee09:	ffa325        	call8	4211e83c <diag_render_gates>
 4211ee0c:	f01d      	retw.n
 	...
 
@@ -1098,27 +1098,27 @@ Disassembly of section .text:
 4211ef94:	004136        	entry	a1, 32
 4211ef97:	fffeb1        	l32r	a11, 4211ef90 <diag_pool_create+0x4c> (f2d0 <esp_mmu_map-0x420e60cc>)
 4211ef9a:	02ad      	mov.n	a10, a2
-4211ef9c:	ff8325        	call8	4211e7d0 <framer_physical_backend_readable_range>
+4211ef9c:	ff8365        	call8	4211e7d4 <framer_physical_backend_readable_range>
 4211ef9f:	6acc      	bnez.n	a10, 4211efa9 <framer_physical_backend_validate+0x15>
 4211efa1:	020c      	movi.n	a2, 0
 4211efa3:	002686        	j	4211f041 <framer_physical_backend_validate+0xad>
 4211efa6:	000000        	ill
-4211efa9:	fda481        	l32r	a8, 4211e63c <framer_physical_loader_start+0x1ac> (42004e1c <esp_mmu_map-0xf0580>)
+4211efa9:	fda581        	l32r	a8, 4211e640 <framer_physical_loader_start+0x1b0> (42004e1c <esp_mmu_map-0xf0580>)
 4211efac:	0008e0        	callx8	a8
 4211efaf:	feea16        	beqz	a10, 4211efa1 <framer_physical_backend_validate+0xd>
-4211efb2:	fda381        	l32r	a8, 4211e640 <framer_physical_loader_start+0x1b0> (4210ad9c <esp_mmu_unmap+0x15628>)
+4211efb2:	fda481        	l32r	a8, 4211e644 <framer_physical_loader_start+0x1b4> (4210ad9c <esp_mmu_unmap+0x15628>)
 4211efb5:	0008e0        	callx8	a8
 4211efb8:	205aa0        	or	a5, a10, a10
 4211efbb:	fe2a16        	beqz	a10, 4211efa1 <framer_physical_backend_validate+0xd>
 4211efbe:	002262        	l32i	a6, a2, 0
 4211efc1:	0b3c      	movi.n	a11, 48
 4211efc3:	06ad      	mov.n	a10, a6
-4211efc5:	ff80a5        	call8	4211e7d0 <framer_physical_backend_readable_range>
+4211efc5:	ff80e5        	call8	4211e7d4 <framer_physical_backend_readable_range>
 4211efc8:	fd5a16        	beqz	a10, 4211efa1 <framer_physical_backend_validate+0xd>
 4211efcb:	b678      	l32i.n	a7, a6, 44
 4211efcd:	cb3c      	movi.n	a11, 60
 4211efcf:	07ad      	mov.n	a10, a7
-4211efd1:	ff7fe5        	call8	4211e7d0 <framer_physical_backend_readable_range>
+4211efd1:	ff8025        	call8	4211e7d4 <framer_physical_backend_readable_range>
 4211efd4:	fc9a16        	beqz	a10, 4211efa1 <framer_physical_backend_validate+0xd>
 4211efd7:	ffeb81        	l32r	a8, 4211ef84 <diag_pool_create+0x40> (bdee6a94 <__bswapsi2+0x7bdc72b8>)
 4211efda:	86e8      	l32i.n	a14, a6, 32
@@ -1174,12 +1174,12 @@ Disassembly of section .text:
 4211f04d:	323397        	bltu	a3, a9, 4211f083 <readable_data+0x3f>
 4211f050:	ffc442        	addi	a4, a4, -1
 4211f053:	2c8947        	bany	a9, a4, 4211f083 <readable_data+0x3f>
-4211f056:	fddd81        	l32r	a8, 4211e7cc <sha256_k+0x108> (3c1cffff <esp_mmu_map-0x5f2539d>)
+4211f056:	fdde81        	l32r	a8, 4211e7d0 <sha256_k+0x108> (3c1cffff <esp_mmu_map-0x5f2539d>)
 4211f059:	08b897        	bgeu	a8, a9, 4211f065 <readable_data+0x21>
-4211f05c:	fddb81        	l32r	a8, 4211e7c8 <sha256_k+0x104> (3c3d0000 <esp_mmu_map-0x5d2539c>)
+4211f05c:	fddc81        	l32r	a8, 4211e7cc <sha256_k+0x104> (3c3d0000 <esp_mmu_map-0x5d2539c>)
 4211f05f:	01a022        	movi	a2, 1
 4211f062:	1db837        	bgeu	a8, a3, 4211f083 <readable_data+0x3f>
-4211f065:	fdd7a1        	l32r	a10, 4211e7c4 <sha256_k+0x100> (3fc7ffff <esp_mmu_map-0x247539d>)
+4211f065:	fdd8a1        	l32r	a10, 4211e7c8 <sha256_k+0x100> (3fc7ffff <esp_mmu_map-0x247539d>)
 4211f068:	180c      	movi.n	a8, 1
 4211f06a:	023a97        	bltu	a10, a9, 4211f070 <readable_data+0x2c>
 4211f06d:	00a082        	movi	a8, 0
@@ -1192,8 +1192,9 @@ Disassembly of section .text:
 4211f080:	742020        	extui	a2, a2, 0, 8
 4211f083:	f01d      	retw.n
 4211f085:	000000        	ill
-4211f088:	c4          	.byte	0xc4
-4211f089:	4211e6        	bgei	a1, 1, 4211f0cf <sha256_block+0x43>
+4211f088:	e6c8      	l32i.n	a12, a6, 56
+4211f08a:	11          	.byte	0x11
+4211f08b:	42          	.byte	0x42
 
 4211f08c <sha256_block>:
 4211f08c:	014136        	entry	a1, 160
@@ -1301,7 +1302,7 @@ Disassembly of section .text:
 4211f1a2:	30ee30        	xor	a14, a14, a3
 4211f1a5:	30eef0        	xor	a14, a14, a15
 4211f1a8:	e8ea      	add.n	a14, a8, a14
-4211f1aa:	ffb781        	l32r	a8, 4211f088 <readable_data+0x44> (4211e6c4 <sha256_k>)
+4211f1aa:	ffb781        	l32r	a8, 4211f088 <readable_data+0x44> (4211e6c8 <sha256_k>)
 4211f1ad:	414a      	add.n	a4, a1, a4
 4211f1af:	a06680        	addx4	a6, a6, a8
 4211f1b2:	0688      	l32i.n	a8, a6, 0
@@ -1463,33 +1464,31 @@ Disassembly of section .text:
 4211f33d:	04ad      	mov.n	a10, a4
 4211f33f:	ffd4e5        	call8	4211f08c <sha256_block>
 4211f342:	f01d      	retw.n
-4211f344:	e33024        	ee.vld.128.ip	q4, a2, 0xfffffb00
-4211f347:	f08926        	beqi	a9, 8, 4211f33b <framer_mqjs_resident_sha256_words+0xe7>
-4211f34a:	7ec403        	ssip	f0, a4, 0x1f8
-4211f34d:	a4          	.byte	0xa4
-4211f34e:	5d          	.byte	0x5d
-4211f34f:	76          	.byte	0x76
-4211f350:	0a29      	s32i.n	a2, a10, 0
-4211f352:	5ce8      	l32i.n	a14, a12, 20
-4211f354:	270cd1        	l32r	a13, 420e8f84 <esp_mmu_map-0xc418>
-4211f357:	daa9      	s32i.n	a10, a10, 52
-4211f359:	a3          	.byte	0xa3
-4211f35a:	974c91        	l32r	a9, 4210508c <esp_mmu_unmap+0xf918>
-4211f35d:	2dc8      	l32i.n	a12, a13, 8
-4211f35f:	dfb8      	l32i.n	a11, a15, 52
-4211f361:	849407        	bne	a4, a0, 4211f2e9 <framer_mqjs_resident_sha256_words+0x95>
-4211f364:	43          	.byte	0x43
-4211f365:	7a1576        	bt	b5, 4211f3e3 <verify_flash_page+0x57>
-4211f368:	1cb8      	l32i.n	a11, a12, 4
-4211f36a:	c30d26        	beqi	a13, -1, 4211f331 <framer_mqjs_resident_sha256_words+0xdd>
-4211f36d:	4e0b      	addi.n	a4, a14, -1
-4211f36f:	bfe9c64e 	ee.vmulas.s8.qacc.ld.xp.qup	q7, a4, a6, q3, q1, q6, q1
-4211f373:	8bacf5        	call12	420aae40 <esp_mmu_map-0x4a55c>
-4211f376:	400637        	bnone	a6, a3, 4211f3ba <verify_flash_page+0x2e>
-4211f379:	2deb      	addi.n	a2, a13, 14
-4211f37b:	b073786e 	ee.vmulas.s16.accx.ld.xp.qup	q0, a6, a8, q1, q6, q7, q3
-4211f37f:	d70890        	ee.stf.64.xp	f0, f13, a9, a8
-4211f382:	b4b8      	l32i.n	a11, a4, 44
+4211f344:	cecb      	addi.n	a12, a14, 12
+4211f346:	aaf1e1        	l32r	a14, 42109f0c <esp_mmu_unmap+0x14798>
+4211f349:	de5a      	add.n	a13, a14, a5
+4211f34b:	7ae8      	l32i.n	a14, a10, 28
+4211f34d:	d3          	.byte	0xd3
+4211f34e:	9909f4        	ee.vld.l.64.ip	q2, a15, 72
+4211f351:	f017543e 	ee.vmulas.u8.qacc.ld.xp	q0, a3, a4, q1, q2
+4211f355:	8f52a6        	blti	a2, 5, 4211f2e8 <framer_mqjs_resident_sha256_words+0x94>
+4211f358:	7f2251        	l32r	a5, 420fefe0 <esp_mmu_unmap+0x986c>
+4211f35b:	dfb9      	s32i.n	a11, a15, 52
+4211f35d:	a272d0        	muluh	a7, a2, a13
+4211f360:	93ddb7        	bbs	a13, a11, 4211f2f7 <framer_mqjs_resident_sha256_words+0xa3>
+4211f363:	c497a6        	blti	a7, 10, 4211f32b <framer_mqjs_resident_sha256_words+0xd7>
+4211f366:	43a687        	bge	a6, a8, 4211f3ad <verify_flash_page+0x21>
+4211f369:	d61ad2        	l16ui	a13, a10, 0x1ac
+4211f36c:	5f2a      	add.n	a5, a15, a2
+4211f36e:	46e5d7        	bbsi	a5, 13, 4211f3b8 <verify_flash_page+0x2c>
+4211f371:	ad          	.byte	0xad
+4211f372:	b3          	.byte	0xb3
+4211f373:	8b62b7        	bbci	a2, 11, 4211f302 <framer_mqjs_resident_sha256_words+0xae>
+4211f376:	5be2e6df 	ee.vmulas.u16.qacc.ld.ip.qup	q6, a13, 0xfffffe60, q7, q5, q6, q2
+4211f37a:	ba5b      	addi.n	a11, a10, 5
+4211f37c:	d44b      	addi.n	a13, a4, 4
+4211f37e:	d1b5f5        	call12	420f0edc <esp_mmu_map-0x44c0>
+4211f381:	82b247        	bgeu	a2, a4, 4211f307 <framer_mqjs_resident_sha256_words+0xb3>
 4211f384:	539c      	beqz.n	a3, 4211f39d <verify_flash_page+0x11>
 4211f386:	5774420f 	ee.vmulas.u16.qacc.ld.ip.qup	q6, a0, 0x120, q5, q0, q7, q4
 4211f38a:	0f          	.byte	0xf
@@ -1510,7 +1509,7 @@ Disassembly of section .text:
 4211f3a6:	0a2d      	mov.n	a2, a10
 4211f3a8:	0c8a56        	bnez	a10, 4211f474 <verify_flash_page+0xe8>
 4211f3ab:	81a8      	l32i.n	a10, a1, 32
-4211f3ad:	fd0681        	l32r	a8, 4211e7c8 <sha256_k+0x104> (3c3d0000 <esp_mmu_map-0x5d2539c>)
+4211f3ad:	fd0781        	l32r	a8, 4211e7cc <sha256_k+0x104> (3c3d0000 <esp_mmu_map-0x5d2539c>)
 4211f3b0:	0a1a87        	beq	a10, a8, 4211f3be <verify_flash_page+0x32>
 4211f3b3:	fff581        	l32r	a8, 4211f388 <framer_mqjs_resident_sha256_words+0x134> (420f5774 <esp_mmu_unmap>)
 4211f3b6:	0008e0        	callx8	a8
@@ -1521,53 +1520,53 @@ Disassembly of section .text:
 4211f3c4:	ffe8e5        	call8	4211f254 <framer_mqjs_resident_sha256_words>
 4211f3c7:	002182        	l32i	a8, a1, 0
 4211f3ca:	043416        	beqz	a4, 4211f411 <verify_flash_page+0x85>
-4211f3cd:	ffec91        	l32r	a9, 4211f380 <framer_mqjs_resident_sha256_words+0x12c> (b4b8d708 <__bswapsi2+0x72a6df2c>)
+4211f3cd:	ffec91        	l32r	a9, 4211f380 <framer_mqjs_resident_sha256_words+0x12c> (82b247d1 <__bswapsi2+0x40a04ff5>)
 4211f3d0:	021897        	beq	a8, a9, 4211f3d6 <verify_flash_page+0x4a>
 4211f3d3:	0021c6        	j	4211f45e <verify_flash_page+0xd2>
-4211f3d6:	ffe981        	l32r	a8, 4211f37c <framer_mqjs_resident_sha256_words+0x128> (90b07378 <__bswapsi2+0x4e9e7b9c>)
+4211f3d6:	ffe981        	l32r	a8, 4211f37c <framer_mqjs_resident_sha256_words+0x128> (b5f5d44b <__bswapsi2+0x73e3dc6f>)
 4211f3d9:	1198      	l32i.n	a9, a1, 4
 4211f3db:	7f9987        	bne	a9, a8, 4211f45e <verify_flash_page+0xd2>
-4211f3de:	ffe681        	l32r	a8, 4211f378 <framer_mqjs_resident_sha256_words+0x124> (6e2deb40 <__bswapsi2+0x2c1bf364>)
+4211f3de:	ffe681        	l32r	a8, 4211f378 <framer_mqjs_resident_sha256_words+0x124> (ba5b5be2 <__bswapsi2+0x78496406>)
 4211f3e1:	2198      	l32i.n	a9, a1, 8
 4211f3e3:	779987        	bne	a9, a8, 4211f45e <verify_flash_page+0xd2>
-4211f3e6:	ffe381        	l32r	a8, 4211f374 <framer_mqjs_resident_sha256_words+0x120> (6378bac <esp_mmu_map-0x3bd7c7f0>)
+4211f3e6:	ffe381        	l32r	a8, 4211f374 <framer_mqjs_resident_sha256_words+0x120> (e6df8b62 <__bswapsi2+0xa4cd9386>)
 4211f3e9:	3198      	l32i.n	a9, a1, 12
 4211f3eb:	6f9987        	bne	a9, a8, 4211f45e <verify_flash_page+0xd2>
-4211f3ee:	ffe081        	l32r	a8, 4211f370 <framer_mqjs_resident_sha256_words+0x11c> (f5bfe9c6 <__bswapsi2+0xb3adf1ea>)
+4211f3ee:	ffe081        	l32r	a8, 4211f370 <framer_mqjs_resident_sha256_words+0x11c> (b7b3ad46 <__bswapsi2+0x75a1b56a>)
 4211f3f1:	4198      	l32i.n	a9, a1, 16
 4211f3f3:	679987        	bne	a9, a8, 4211f45e <verify_flash_page+0xd2>
-4211f3f6:	ffdd81        	l32r	a8, 4211f36c <framer_mqjs_resident_sha256_words+0x118> (4e4e0bc3 <__bswapsi2+0xc3c13e7>)
+4211f3f6:	ffdd81        	l32r	a8, 4211f36c <framer_mqjs_resident_sha256_words+0x118> (e5d75f2a <__bswapsi2+0xa3c5674e>)
 4211f3f9:	5198      	l32i.n	a9, a1, 20
 4211f3fb:	5f9987        	bne	a9, a8, 4211f45e <verify_flash_page+0xd2>
-4211f3fe:	ffda81        	l32r	a8, 4211f368 <framer_mqjs_resident_sha256_words+0x114> (d261cb8 <esp_mmu_map-0x34e936e4>)
+4211f3fe:	ffda81        	l32r	a8, 4211f368 <framer_mqjs_resident_sha256_words+0x114> (d61ad243 <__bswapsi2+0x9408da67>)
 4211f401:	6198      	l32i.n	a9, a1, 24
 4211f403:	579987        	bne	a9, a8, 4211f45e <verify_flash_page+0xd2>
-4211f406:	ffd791        	l32r	a9, 4211f364 <framer_mqjs_resident_sha256_words+0x110> (7a157643 <__bswapsi2+0x38037e67>)
+4211f406:	ffd791        	l32r	a9, 4211f364 <framer_mqjs_resident_sha256_words+0x110> (a687c497 <__bswapsi2+0x6475ccbb>)
 4211f409:	7188      	l32i.n	a8, a1, 28
 4211f40b:	c08890        	sub	a8, a8, a9
 4211f40e:	001046        	j	4211f453 <verify_flash_page+0xc7>
-4211f411:	ffd391        	l32r	a9, 4211f360 <framer_mqjs_resident_sha256_words+0x10c> (849407df <__bswapsi2+0x42821003>)
+4211f411:	ffd391        	l32r	a9, 4211f360 <framer_mqjs_resident_sha256_words+0x10c> (a693ddb7 <__bswapsi2+0x6481e5db>)
 4211f414:	427c      	movi.n	a2, -12
 4211f416:	469897        	bne	a8, a9, 4211f460 <verify_flash_page+0xd4>
-4211f419:	ffd081        	l32r	a8, 4211f35c <framer_mqjs_resident_sha256_words+0x108> (b82dc897 <__bswapsi2+0x761bd0bb>)
+4211f419:	ffd081        	l32r	a8, 4211f35c <framer_mqjs_resident_sha256_words+0x108> (a272d0df <__bswapsi2+0x6060d903>)
 4211f41c:	1198      	l32i.n	a9, a1, 4
 4211f41e:	3e9987        	bne	a9, a8, 4211f460 <verify_flash_page+0xd4>
-4211f421:	ffcd81        	l32r	a8, 4211f358 <framer_mqjs_resident_sha256_words+0x104> (4c91a3da <__bswapsi2+0xa7fabfe>)
+4211f421:	ffcd81        	l32r	a8, 4211f358 <framer_mqjs_resident_sha256_words+0x104> (b97f2251 <__bswapsi2+0x776d2a75>)
 4211f424:	2198      	l32i.n	a9, a1, 8
 4211f426:	369987        	bne	a9, a8, 4211f460 <verify_flash_page+0xd4>
-4211f429:	ffca81        	l32r	a8, 4211f354 <framer_mqjs_resident_sha256_words+0x100> (a9270cd1 <__bswapsi2+0x671514f5>)
+4211f429:	ffca81        	l32r	a8, 4211f354 <framer_mqjs_resident_sha256_words+0x100> (8f52a6f0 <__bswapsi2+0x4d40af14>)
 4211f42c:	3198      	l32i.n	a9, a1, 12
 4211f42e:	2e9987        	bne	a9, a8, 4211f460 <verify_flash_page+0xd4>
-4211f431:	ffc781        	l32r	a8, 4211f350 <framer_mqjs_resident_sha256_words+0xfc> (5ce80a29 <__bswapsi2+0x1ad6124d>)
+4211f431:	ffc781        	l32r	a8, 4211f350 <framer_mqjs_resident_sha256_words+0xfc> (17543e99 <esp_mmu_map-0x2abb1503>)
 4211f434:	4198      	l32i.n	a9, a1, 16
 4211f436:	269987        	bne	a9, a8, 4211f460 <verify_flash_page+0xd4>
-4211f439:	ffc481        	l32r	a8, 4211f34c <framer_mqjs_resident_sha256_words+0xf8> (765da47e <__bswapsi2+0x344baca2>)
+4211f439:	ffc481        	l32r	a8, 4211f34c <framer_mqjs_resident_sha256_words+0xf8> (9f4d37a <esp_mmu_map-0x381a8022>)
 4211f43c:	5198      	l32i.n	a9, a1, 20
 4211f43e:	1e9987        	bne	a9, a8, 4211f460 <verify_flash_page+0xd4>
-4211f441:	ffc181        	l32r	a8, 4211f348 <framer_mqjs_resident_sha256_words+0xf4> (c403f089 <__bswapsi2+0x81f1f8ad>)
+4211f441:	ffc181        	l32r	a8, 4211f348 <framer_mqjs_resident_sha256_words+0xf4> (e8de5aaa <__bswapsi2+0xa6cc62ce>)
 4211f444:	6198      	l32i.n	a9, a1, 24
 4211f446:	169987        	bne	a9, a8, 4211f460 <verify_flash_page+0xd4>
-4211f449:	ffbe91        	l32r	a9, 4211f344 <framer_mqjs_resident_sha256_words+0xf0> (26e33024 <esp_mmu_map-0x1b2c2378>)
+4211f449:	ffbe91        	l32r	a9, 4211f344 <framer_mqjs_resident_sha256_words+0xf0> (f1e1cecb <__bswapsi2+0xafcfd6ef>)
 4211f44c:	7188      	l32i.n	a8, a1, 28
 4211f44e:	020c      	movi.n	a2, 0
 4211f450:	c08890        	sub	a8, a8, a9
@@ -1576,7 +1575,7 @@ Disassembly of section .text:
 4211f458:	000106        	j	4211f460 <verify_flash_page+0xd4>
 4211f45b:	000000        	ill
 4211f45e:	427c      	movi.n	a2, -12
-4211f460:	fcdaa1        	l32r	a10, 4211e7c8 <sha256_k+0x104> (3c3d0000 <esp_mmu_map-0x5d2539c>)
+4211f460:	fcdba1        	l32r	a10, 4211e7cc <sha256_k+0x104> (3c3d0000 <esp_mmu_map-0x5d2539c>)
 4211f463:	ffc981        	l32r	a8, 4211f388 <framer_mqjs_resident_sha256_words+0x134> (420f5774 <esp_mmu_unmap>)
 4211f466:	0008e0        	callx8	a8
 4211f469:	9a8c      	beqz.n	a10, 4211f476 <verify_flash_page+0xea>
@@ -1634,8 +1633,8 @@ Disassembly of section .text:
 4211f4d9:	00          	.byte	00
 4211f4da:	00003c3f 	ee.vmulas.s16.accx.ld.ip.qup	q0, a3, 192, q4, q6, q0, q0
 4211f4de:	c3          	.byte	0xc3
-4211f4df:	0fbd      	mov.n	a11, a15
-4211f4e1:	000190        	retw
+4211f4df:	bd          	.byte	0xbd
+4211f4e0:	000191ff 	ee.vmulas.s16.accx.ld.ip.qup	q0, a15, 16, q6, q2, q0, q1
 4211f4e4:	28f7f5        	call12	42148464 <__bswapsi2+0x28c88>
 4211f4e7:	53cb      	addi.n	a5, a3, 12
 4211f4e9:	a4          	.byte	0xa4
@@ -1826,7 +1825,7 @@ Disassembly of section .text:
 4211f6b2:	102882        	l32i	a8, a8, 64
 4211f6b5:	1d9897        	bne	a8, a9, 4211f6d6 <framer_mqjs_map_canary+0x1ca>
 4211f6b8:	ff89c1        	l32r	a12, 4211f4dc <framer_mqjs_unmap_canary+0x64> (bdc30000 <__bswapsi2+0x7bb10824>)
-4211f6bb:	ff89d1        	l32r	a13, 4211f4e0 <framer_mqjs_unmap_canary+0x68> (1900f <esp_mmu_map-0x420dc38d>)
+4211f6bb:	ff89d1        	l32r	a13, 4211f4e0 <framer_mqjs_unmap_canary+0x68> (191ff <esp_mmu_map-0x420dc19d>)
 4211f6be:	01bd      	mov.n	a11, a1
 4211f6c0:	c90c      	movi.n	a9, 12
 4211f6c2:	0d8976        	loop	a9, 4211f6d3 <framer_mqjs_map_canary+0x1c7>
@@ -1942,8 +1941,8 @@ Disassembly of section .text:
 4211f7ba:	f01d      	retw.n
 
 4211f7bc <framer_physical_module_sha256>:
-4211f7bc:	ae88 b969 1f90 4c42 a153 f6d6 c625 ca79     ..i...BLS...%.y.
-4211f7cc:	726a af2a 6466 86be 4834 8d48 81aa 83b1     jr*.fd..4HH.....
+4211f7bc:	ba8c 8577 95b9 bf29 c4f8 6992 cd6d 9d65     ..w...)....im.e.
+4211f7cc:	dc69 cc9d d84a fa91 1ca1 c50e bbc0 75d9     i...J..........u
 
 4211f7dc <__bswapsi2>:
 4211f7dc:	002136        	entry	a1, 16

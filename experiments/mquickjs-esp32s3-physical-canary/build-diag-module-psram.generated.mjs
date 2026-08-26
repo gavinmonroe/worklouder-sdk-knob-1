@@ -570,7 +570,7 @@ const engineProbe = await probe("probe-engine", `#include "framer_mquickjs_canar
 invariant(blockProbe.sizeofBlock === blockBytes,
   `Probe sizeof(physical_block)=${blockProbe.sizeofBlock} != linked ` +
   `framer_physical_block_allocation_bytes=${blockBytes}.`);
-const widgetUploadBlockBytes = 960;
+const widgetUploadBlockBytes = 1792;
 invariant(blockBytes === expected.releaseBlockBytes - heapBytes + 16 + widgetUploadBlockBytes,
   `PSRAM block size ${blockBytes} is not the frozen release block ` +
   `${expected.releaseBlockBytes} minus the ${heapBytes} B VM heap plus ` +

@@ -32,6 +32,9 @@
  * 0x1d0000 of it is the app's own flash DROM mapping, so PSRAM starts above it.
  * Both bounds below are therefore image-derived, not assumed. */
 #define PHYSICAL_CAP_SPIRAM 0x0400u
+/* PSRAM kept free after the per-slot arenas so the 64 KiB VM heap can always
+ * be claimed by the owner task. */
+#define PHYSICAL_PSRAM_RESERVE_BYTES (192u * 1024u)
 #define PHYSICAL_PSRAM_BEGIN 0x3c1d0000u
 #define PHYSICAL_PSRAM_END 0x3c3d0000u
 /* heap_caps_malloc returns 8-byte alignment on this build (live evidence
@@ -986,6 +989,1966 @@ enum {
 
 static uint8_t *widget_buffer_acquire(void **raw_out, uint32_t extra_bytes);
 static void widget_assets_set_baked(physical_block *block);
+#define FRAMER_RUNTIME_RPC_VALUE_BYTES 113u
+
+/* ── reconstructed 2026-08-26 ─────────────────────────────────────────────
+ * The module glue between the surviving head (constants, block, platform
+ * callbacks) and the surviving tail (scene adopt/persist, proxy publishing,
+ * startup).  Scene record/persist logic is lifted VERBATIM from the host-
+ * proven build-scene-slot-b-host-proof; the RPC/telemetry/proxy scaffolding
+ * from the committed module; the widget-slot and one-widget-per-screen paths
+ * are rebuilt against docs/16-18 and the intact host-proven units.
+ * ──────────────────────────────────────────────────────────────────────── */
+
+/* Forward declarations: the middle and the tail call into each other. */
+static physical_block *block_from_rpc(framer_runtime_rpc_context *context,
+                                      uint32_t index);
+static int rpc_begin_ready(physical_block *block,
+                           framer_runtime_rpc_context *context,
+                           void *response, void *request);
+static void rpc_reply_blocked(framer_runtime_rpc_context *context,
+                              void *response, void *request);
+static void rpc_callback_common(void *callback, void *response, void *request,
+                                uint32_t index,
+                                void (*handler)(framer_runtime_rpc_context *,
+                                                void *, void *));
+static int widget_persist_busy(const physical_block *block);
+static int widget_declared_host_rpc(const physical_block *block, uint32_t id);
+static void rpc_upload_callback(void *callback, void *response, void *request);
+static void scene_persist_step(physical_block *block);
+static void widget_persist_step(physical_block *block);
+static void widget_slot_adopt(physical_block *block);
+static int widget_slot_adopt_from(physical_block *block, uint32_t slot);
+static void proxy_build(physical_proxy *proxy);
+static void proxy_cleanup(physical_proxy *proxy);
+static void proxy_tick(physical_proxy *proxy);
+static void proxy_encoder(physical_proxy *proxy, uint32_t encoder,
+                          uint32_t raw_delta);
+typedef struct {
+    int (*erase)(void *opaque, uint32_t address, uint32_t bytes);
+    int (*write)(void *opaque, uint32_t address, const uint8_t *source,
+                 uint32_t bytes);
+    int (*read)(void *opaque, uint32_t address, uint8_t *destination,
+                uint32_t bytes);
+    void *opaque;
+} scene_flash_ops;
+
+typedef struct {
+    uint32_t state;
+    uint32_t step;
+    uint32_t generation;
+    uint32_t package_bytes;
+    uint32_t cursor;
+    const uint8_t *package;
+    const uint8_t *digest;
+} scene_persist_context;
+
+static uint32_t scene_read32(const uint8_t *data)
+{
+    return (uint32_t)data[0] | ((uint32_t)data[1] << 8u) |
+           ((uint32_t)data[2] << 16u) | ((uint32_t)data[3] << 24u);
+}
+
+static uint32_t scene_crc32(const uint8_t *data, uint32_t bytes)
+{
+    uint32_t crc = 0xffffffffu;
+    uint32_t index;
+    for (index = 0u; index < bytes; ++index) {
+        uint32_t bit;
+        crc ^= (uint32_t)data[index];
+        for (bit = 0u; bit < 8u; ++bit)
+            crc = (crc >> 1u) ^ (0xedb88320u & (0u - (crc & 1u)));
+    }
+    return crc ^ 0xffffffffu;
+}
+
+static int scene_record_is_valid(const uint8_t *header, uint32_t *step,
+                                 uint32_t *generation)
+{
+    uint32_t detail = SCENE_STEP_NONE;
+    uint32_t found = 0u;
+    int accepted = 0;
+    if (header == (const uint8_t *)0) {
+        detail = SCENE_STEP_MAGIC;
+    } else if (scene_read32(header) != SCENE_RECORD_MAGIC_0 ||
+               scene_read32(header + 4u) != SCENE_RECORD_MAGIC_1) {
+        detail = SCENE_STEP_MAGIC;
+    } else if (scene_read32(header + 8u) != SCENE_RECORD_VERSION) {
+        detail = SCENE_STEP_VERSION;
+    } else if (scene_read32(header + 12u) != SCENE_PACKAGE_BYTES) {
+        detail = SCENE_STEP_SIZE;
+    } else if (scene_read32(header + 16u) < SCENE_MIN_GENERATION ||
+               scene_read32(header + 16u) == 0xffffffffu ||
+               scene_read32(header + 20u) != scene_read32(header + 16u) - 1u) {
+        detail = SCENE_STEP_GENERATION;
+    } else if (scene_crc32(header, SCENE_RECORD_HEADER_BYTES - 4u) !=
+               scene_read32(header + SCENE_RECORD_HEADER_BYTES - 4u)) {
+        detail = SCENE_STEP_HEADER_CRC;
+    } else {
+        found = scene_read32(header + 16u);
+        accepted = 1;
+    }
+    if (step != (uint32_t *)0)
+        *step = detail;
+    if (generation != (uint32_t *)0)
+        *generation = found;
+    return accepted;
+}
+
+static int scene_package_header_is_f1wb(const uint8_t *package,
+                                        uint32_t generation)
+{
+    return package != (const uint8_t *)0 &&
+           generation >= SCENE_MIN_GENERATION &&
+           scene_read32(package) == SCENE_F1WB_MAGIC &&
+           scene_read32(package + 8u) == generation &&
+           scene_read32(package + 12u) == SCENE_FOCUS_F1WB_BYTES;
+}
+
+static void scene_copy(uint8_t *destination, const uint8_t *source,
+                       uint32_t bytes)
+{
+    uint32_t words = bytes >> 2u;
+    uint32_t index;
+    uint32_t *out = (uint32_t *)(void *)destination;
+    const uint32_t *in = (const uint32_t *)(const void *)source;
+    for (index = 0u; index < words; ++index)
+        out[index] = in[index];
+    for (index = words << 2u; index < bytes; ++index)
+        destination[index] = source[index];
+}
+
+static int scene_flash_span_allowed(uint32_t address, uint32_t bytes)
+{
+    if (bytes == 0u || bytes > SCENE_PERSIST_SECTOR_BYTES)
+        return 0;
+    if (address < SCENE_PERSIST_BEGIN || address >= SCENE_PERSIST_END)
+        return 0;
+    if (address > SCENE_PERSIST_END - bytes)
+        return 0;
+    if (address + bytes > SCENE_PERSIST_BEGIN +
+                              SCENE_PERSIST_SECTORS * SCENE_PERSIST_SECTOR_BYTES)
+        return 0;
+    return 1;
+}
+
+static void scene_record_header_build(uint8_t header[64],
+                                      uint32_t package_bytes,
+                                      uint32_t generation,
+                                      const uint8_t digest[32])
+{
+    uint32_t index;
+    uint32_t crc;
+    static const uint32_t words[2] = { SCENE_RECORD_MAGIC_0,
+                                       SCENE_RECORD_MAGIC_1 };
+    for (index = 0u; index < SCENE_RECORD_HEADER_BYTES; ++index)
+        header[index] = 0u;
+    for (index = 0u; index < 8u; ++index)
+        header[index] = (uint8_t)(words[index >> 2u] >> ((index & 3u) * 8u));
+    for (index = 0u; index < 4u; ++index) {
+        header[8u + index] = (uint8_t)(SCENE_RECORD_VERSION >> (index * 8u));
+        header[12u + index] = (uint8_t)(package_bytes >> (index * 8u));
+        header[16u + index] = (uint8_t)(generation >> (index * 8u));
+        header[20u + index] = (uint8_t)((generation - 1u) >> (index * 8u));
+    }
+    for (index = 0u; index < 32u; ++index)
+        header[SCENE_RECORD_SHA_OFFSET + index] = digest[index];
+    crc = scene_crc32(header, SCENE_RECORD_HEADER_BYTES - 4u);
+    for (index = 0u; index < 4u; ++index)
+        header[SCENE_RECORD_HEADER_BYTES - 4u + index] =
+            (uint8_t)(crc >> (index * 8u));
+}
+
+static void scene_persist_advance(scene_persist_context *context,
+                                  const scene_flash_ops *ops)
+{
+    uint8_t scratch[SCENE_PERSIST_VERIFY_BYTES];
+    uint8_t header[SCENE_RECORD_HEADER_BYTES];
+    uint32_t address;
+    uint32_t span;
+    uint32_t index;
+    if (context == (scene_persist_context *)0 ||
+        ops == (const scene_flash_ops *)0)
+        return;
+    if (context->package == (const uint8_t *)0 ||
+        context->package_bytes != SCENE_PACKAGE_BYTES ||
+        context->generation < SCENE_MIN_GENERATION ||
+        context->generation == 0xffffffffu) {
+        context->state = SCENE_PERSIST_FAILED;
+        context->step = SCENE_PSTEP_STORE;
+        return;
+    }
+    switch (context->state) {
+    case SCENE_PERSIST_ERASE:
+        if (context->cursor >= SCENE_PERSIST_SECTORS) {
+            context->state = SCENE_PERSIST_WRITE;
+            context->cursor = 0u;
+            return;
+        }
+        address = SCENE_PERSIST_BEGIN +
+                  context->cursor * SCENE_PERSIST_SECTOR_BYTES;
+        if (!scene_flash_span_allowed(address, SCENE_PERSIST_SECTOR_BYTES) ||
+            (address & (SCENE_PERSIST_SECTOR_BYTES - 1u)) != 0u) {
+            context->state = SCENE_PERSIST_FAILED;
+            context->step = SCENE_PSTEP_BOUNDS;
+            return;
+        }
+        if (ops->erase(ops->opaque, address, SCENE_PERSIST_SECTOR_BYTES) != 0) {
+            context->state = SCENE_PERSIST_FAILED;
+            context->step = SCENE_PSTEP_ERASE;
+            return;
+        }
+        context->cursor += 1u;
+        return;
+    case SCENE_PERSIST_WRITE:
+        if (context->cursor >= context->package_bytes) {
+            context->state = SCENE_PERSIST_VERIFY;
+            context->cursor = 0u;
+            return;
+        }
+        span = context->package_bytes - context->cursor;
+        if (span > SCENE_PERSIST_CHUNK_BYTES)
+            span = SCENE_PERSIST_CHUNK_BYTES;
+        address = SCENE_PERSIST_BEGIN + SCENE_RECORD_HEADER_BYTES +
+                  context->cursor;
+        if (!scene_flash_span_allowed(address, span)) {
+            context->state = SCENE_PERSIST_FAILED;
+            context->step = SCENE_PSTEP_BOUNDS;
+            return;
+        }
+        if (ops->write(ops->opaque, address, context->package + context->cursor,
+                       span) != 0) {
+            context->state = SCENE_PERSIST_FAILED;
+            context->step = SCENE_PSTEP_WRITE;
+            return;
+        }
+        context->cursor += span;
+        return;
+    case SCENE_PERSIST_VERIFY:
+        if (context->cursor >= context->package_bytes) {
+            context->state = SCENE_PERSIST_HEADER;
+            context->cursor = 0u;
+            return;
+        }
+        span = context->package_bytes - context->cursor;
+        if (span > SCENE_PERSIST_VERIFY_BYTES)
+            span = SCENE_PERSIST_VERIFY_BYTES;
+        address = SCENE_PERSIST_BEGIN + SCENE_RECORD_HEADER_BYTES +
+                  context->cursor;
+        if (!scene_flash_span_allowed(address, span)) {
+            context->state = SCENE_PERSIST_FAILED;
+            context->step = SCENE_PSTEP_BOUNDS;
+            return;
+        }
+        if (ops->read(ops->opaque, address, scratch, span) != 0) {
+            context->state = SCENE_PERSIST_FAILED;
+            context->step = SCENE_PSTEP_READBACK;
+            return;
+        }
+        for (index = 0u; index < span; ++index) {
+            if (scratch[index] != context->package[context->cursor + index]) {
+                context->state = SCENE_PERSIST_FAILED;
+                context->step = SCENE_PSTEP_MISMATCH;
+                return;
+            }
+        }
+        context->cursor += span;
+        return;
+    case SCENE_PERSIST_HEADER:
+        if (context->digest == (const uint8_t *)0) {
+            context->state = SCENE_PERSIST_FAILED;
+            context->step = SCENE_PSTEP_STORE;
+            return;
+        }
+        scene_record_header_build(header, context->package_bytes,
+                                  context->generation, context->digest);
+        if (!scene_flash_span_allowed(SCENE_PERSIST_BEGIN,
+                                      SCENE_RECORD_HEADER_BYTES)) {
+            context->state = SCENE_PERSIST_FAILED;
+            context->step = SCENE_PSTEP_BOUNDS;
+            return;
+        }
+        if (ops->write(ops->opaque, SCENE_PERSIST_BEGIN, header,
+                       SCENE_RECORD_HEADER_BYTES) != 0) {
+            context->state = SCENE_PERSIST_FAILED;
+            context->step = SCENE_PSTEP_HEADER_WRITE;
+            return;
+        }
+        if (ops->read(ops->opaque, SCENE_PERSIST_BEGIN, scratch,
+                      SCENE_RECORD_HEADER_BYTES) != 0) {
+            context->state = SCENE_PERSIST_FAILED;
+            context->step = SCENE_PSTEP_HEADER_READBACK;
+            return;
+        }
+        for (index = 0u; index < SCENE_RECORD_HEADER_BYTES; ++index) {
+            if (scratch[index] != header[index]) {
+                context->state = SCENE_PERSIST_FAILED;
+                context->step = SCENE_PSTEP_HEADER_MISMATCH;
+                return;
+            }
+        }
+        context->state = SCENE_PERSIST_DONE;
+        context->step = SCENE_PSTEP_NONE;
+        return;
+    default:
+        return;
+    }
+}
+
+/* --- end exact source ---------------------------------------------------- */
+
+/* --- fake NOR flash (host only) ------------------------------------------
+ * 16 MiB of address space is modelled as the 192 KiB slot plus poisoned
+ * guards on either side: any access outside [0x240000,0x270000) aborts the
+ * run rather than silently succeeding, so a bounds regression cannot pass. */
+#define FAKE_BASE 0x00240000u
+#define FAKE_BYTES 0x00030000u
+static uint8_t fake_flash[FAKE_BYTES];
+static uint32_t fake_erases;
+static uint32_t fake_writes;
+static uint32_t fake_reads;
+static uint32_t fake_written_bytes;
+static uint32_t fake_out_of_bounds;
+static uint32_t fake_fail_after;       /* 0 = never fail */
+static uint32_t fake_ops;
+static uint32_t fake_tear_at;          /* op index whose write is truncated */
+static uint32_t fake_tear_silent;      /* truncated write still reports success */
+static uint32_t fake_tear_fired;
+
+
+/* sha256 of the COPY must equal the record's stored digest. */
+static int scene_digest_matches(const uint8_t *expected, const uint8_t *data,
+                                uint32_t bytes)
+{
+    uint8_t digest[32];
+    uint32_t index;
+    uint32_t difference = 0u;
+    if (expected == (const uint8_t *)0 || data == (const uint8_t *)0)
+        return 0;
+    framer_f2js_sha256(data, (size_t)bytes, digest);
+    for (index = 0u; index < 32u; ++index)
+        difference |= (uint32_t)(digest[index] ^ expected[index]);
+    return difference == 0u;
+}
+
+/* PSRAM staging for one scene package; freed by the caller. */
+static uint8_t *scene_buffer_acquire(void **raw_out)
+{
+    const uint32_t caps = PHYSICAL_CAP_SPIRAM | PHYSICAL_CAP_8BIT;
+    const size_t request = (size_t)SCENE_PACKAGE_BYTES +
+                           (size_t)PHYSICAL_HEAP_ALIGN_SLACK;
+    void *raw;
+    uintptr_t aligned;
+    if (raw_out == (void **)0)
+        return (uint8_t *)0;
+    *raw_out = (void *)0;
+    if (STOCK_HEAP_FREE_SIZE(caps) < request ||
+        STOCK_HEAP_LARGEST(caps) < request)
+        return (uint8_t *)0;
+    raw = STOCK_HEAP_MALLOC(request, caps);
+    if (raw == (void *)0)
+        return (uint8_t *)0;
+    aligned = ((uintptr_t)raw + 15u) & ~(uintptr_t)15u;
+    if (aligned < (uintptr_t)raw ||
+        aligned - (uintptr_t)raw > (uintptr_t)PHYSICAL_HEAP_ALIGN_SLACK ||
+        !in_psram(raw, request) ||
+        !in_psram((const void *)aligned, (size_t)SCENE_PACKAGE_BYTES)) {
+        STOCK_HEAP_FREE(raw);
+        return (uint8_t *)0;
+    }
+    *raw_out = raw;
+    return (uint8_t *)aligned;
+}
+
+/* The renderer-v2 sidecar lives at vtable[11] and starts with 'SCV2'. */
+static int scene_sidecar_present(void *controller)
+{
+    void **vtable;
+    uint8_t *sidecar;
+    if (controller == (void *)0 || !in_stock_data(controller, sizeof(void *)))
+        return 0;
+    vtable = *(void ***)controller;
+    if (vtable == (void **)0 ||
+        !in_stock_data(vtable, 12u * sizeof(void *)))
+        return 0;
+    sidecar = (uint8_t *)vtable[11];
+    if (sidecar == (uint8_t *)0 || !in_stock_data(sidecar, 8u))
+        return 0;
+    return *(const uint32_t *)(const void *)sidecar == 0x32565343u;
+}
+
+/* ── widget slot helpers ──────────────────────────────────────────────── */
+
+/* Little-endian word read for the baked F2JS header (generation at +12). */
+static uint32_t widget_read_le32(const uint8_t *bytes)
+{
+    return (uint32_t)bytes[0] | ((uint32_t)bytes[1] << 8) |
+           ((uint32_t)bytes[2] << 16) | ((uint32_t)bytes[3] << 24);
+}
+
+/* One 16-byte-aligned PSRAM arena of container size (+ optional tail). */
+static uint8_t *widget_buffer_acquire(void **raw_out, uint32_t extra_bytes)
+{
+    const uint32_t caps = PHYSICAL_CAP_SPIRAM | PHYSICAL_CAP_8BIT;
+    const size_t body = (size_t)FRAMER_F2UP_MAX_BYTES + (size_t)extra_bytes;
+    const size_t request = body + (size_t)PHYSICAL_HEAP_ALIGN_SLACK;
+    void *raw;
+    uintptr_t aligned;
+    if (raw_out == (void **)0)
+        return (uint8_t *)0;
+    *raw_out = (void *)0;
+    if (STOCK_HEAP_FREE_SIZE(caps) < request ||
+        STOCK_HEAP_LARGEST(caps) < request)
+        return (uint8_t *)0;
+    raw = STOCK_HEAP_MALLOC(request, caps);
+    if (raw == (void *)0)
+        return (uint8_t *)0;
+    aligned = ((uintptr_t)raw + 15u) & ~(uintptr_t)15u;
+    if (aligned < (uintptr_t)raw ||
+        aligned - (uintptr_t)raw > (uintptr_t)PHYSICAL_HEAP_ALIGN_SLACK ||
+        !in_psram(raw, request) ||
+        !in_psram((const void *)aligned, body)) {
+        STOCK_HEAP_FREE(raw);
+        return (uint8_t *)0;
+    }
+    *raw_out = raw;
+    return (uint8_t *)aligned;
+}
+
+/* The baked weather asset set: the default and the fallback whenever an
+ * adopted widget fails any deeper admission gate. */
+static void widget_assets_set_baked(physical_block *block)
+{
+    physical_widget_assets *assets = &block->widget_assets;
+    assets->f2js = framer_physical_weather_f2js_start;
+    assets->f2js_bytes = (uint32_t)(framer_physical_weather_f2js_end -
+                                    framer_physical_weather_f2js_start);
+    assets->f2tf = framer_physical_weather_f2tf_start;
+    assets->f2tf_bytes = (uint32_t)(framer_physical_weather_f2tf_end -
+                                    framer_physical_weather_f2tf_start);
+    assets->lzss = framer_physical_weather_base_lzss_start;
+    assets->lzss_bytes = (uint32_t)(framer_physical_weather_base_lzss_end -
+                                    framer_physical_weather_base_lzss_start);
+    assets->f2js_sha256 = framer_physical_weather_f2js_sha256;
+    assets->generation =
+        widget_read_le32(framer_physical_weather_f2js_start + 12u);
+    assets->source = 0u;
+}
+
+/* Map one widget slot's flash window into the scene data window. */
+static int widget_slot_window_map(uint32_t slot, void **mapped_out)
+{
+    void *mapped = (void *)0;
+    uint32_t base = framer_f2up_slot_base(slot);
+    *mapped_out = (void *)0;
+    if (base == 0u)
+        return 0;
+    if (STOCK_MMU_MAP(base, (size_t)FRAMER_F2UP_SLOT_BYTES,
+                      MMU_TARGET_FLASH0, MMU_MEM_CAP_READ | MMU_MEM_CAP_8BIT,
+                      0, &mapped) != 0 || mapped == (void *)0)
+        return 0;
+    if ((uintptr_t)mapped < SCENE_DATA_WINDOW_BEGIN ||
+        (uintptr_t)mapped > SCENE_DATA_WINDOW_END - FRAMER_F2UP_SLOT_BYTES ||
+        ((uintptr_t)mapped & 3u) != 0u) {
+        (void)STOCK_MMU_UNMAP(mapped);
+        return 0;
+    }
+    *mapped_out = mapped;
+    return 1;
+}
+
+/* Fill the slot inventory: generation + f2js sha prefix per admissible slot. */
+static void widget_slot_scan(physical_block *block)
+{
+    uint32_t slot;
+    for (slot = 0u; slot < FRAMER_F2UP_SLOT_COUNT; ++slot) {
+        void *mapped;
+        framer_f2up_admission admission;
+        int32_t detail = 0;
+        uint32_t index;
+        block->widget_slot_generations[slot] = 0u;
+        for (index = 0u; index < 16u; ++index)
+            block->widget_slot_sha16[slot][index] = 0u;
+        if (STOCK_HEAP_FREE_SIZE(PHYSICAL_CAP_INTERNAL | PHYSICAL_CAP_8BIT) <
+            (size_t)SCENE_MAP_RESERVE_BYTES)
+            continue;
+        if (!widget_slot_window_map(slot, &mapped))
+            continue;
+        if (framer_f2up_adopt_decide((const uint8_t *)mapped,
+                                     FRAMER_F2UP_SLOT_BYTES, 0u, &admission,
+                                     &detail) == FRAMER_F2UP_ADOPT_OK) {
+            block->widget_slot_generations[slot] = admission.generation;
+            for (index = 0u; index < 16u; ++index)
+                block->widget_slot_sha16[slot][index] =
+                    admission.f2js_sha256[index];
+        }
+        (void)STOCK_MMU_UNMAP(mapped);
+    }
+    __atomic_store_n(&block->widget_persisted_generation,
+                     block->widget_slot_generations[0], __ATOMIC_RELEASE);
+}
+
+static physical_block *block_from_rpc(framer_runtime_rpc_context *context,
+                                      uint32_t index)
+{
+    uintptr_t address;
+    physical_block *block;
+    if (context == (framer_runtime_rpc_context *)0 ||
+        index >= FRAMER_RUNTIME_RPC_CONTEXT_COUNT)
+        return (physical_block *)0;
+    address = (uintptr_t)context - offsetof(physical_block, rpc) -
+              index * sizeof(framer_runtime_rpc_context);
+    block = (physical_block *)address;
+    if (!in_internal(block, sizeof(*block)) || block->magic != PHYSICAL_MAGIC ||
+        block->generation != PHYSICAL_GENERATION ||
+        &block->rpc[index] != context)
+        return (physical_block *)0;
+    return block;
+}
+
+static void rpc_reply_blocked(framer_runtime_rpc_context *context,
+                              void *response, void *request)
+{
+    if (context != (framer_runtime_rpc_context *)0 && response != (void *)0 &&
+        request != (void *)0)
+        STOCK_RPC_REPLY(response, request, 0u, context);
+}
+
+static int rpc_begin_ready(physical_block *block,
+                           framer_runtime_rpc_context *context,
+                           void *response, void *request)
+{
+    if (block == (physical_block *)0 || response == (void *)0 ||
+        request == (void *)0 ||
+        __atomic_load_n(&block->rpc_ready, __ATOMIC_ACQUIRE) == 0u ||
+        !framer_runtime_rpc_begin(context)) {
+        rpc_reply_blocked(context, response, request);
+        return 0;
+    }
+    return 1;
+}
+
+static int rpc_read_page(void *request, int32_t *page)
+{
+    __attribute__((aligned(16))) uint8_t root[64];
+    int result;
+    zero_bytes(root, sizeof(root));
+    STOCK_ROOT_MAKE(root, request);
+    result = framer_physical_rpc_read_integer(root, "page", 4u, page);
+    STOCK_ROOT_DESTROY(root);
+    return result;
+}
+
+static int rpc_read_event(void *request, int32_t values[5])
+{
+    static const char *const keys[5] = {
+        "id", "value", "auxiliary", "generation", "revision"
+    };
+    static const uint8_t lengths[5] = { 2u, 5u, 9u, 10u, 8u };
+    __attribute__((aligned(16))) uint8_t root[64];
+    uint32_t index;
+    int result = 1;
+    zero_bytes(root, sizeof(root));
+    STOCK_ROOT_MAKE(root, request);
+    for (index = 0u; index < 5u; ++index)
+        if (!framer_physical_rpc_read_integer(root, keys[index],
+                                               lengths[index], &values[index]))
+            result = 0;
+    STOCK_ROOT_DESTROY(root);
+    return result;
+}
+
+static int weather_rpc_id(uint32_t id)
+{
+    /* 0xb245 = settings.zipAck (host -> widget ZIP acknowledgement, gen 20). */
+    return (id >= 0xb240u && id <= 0xb245u) || id == 0xb24du ||
+           id == 0xb24eu || id == 0xb24fu;
+}
+
+static int provider_status_value(int32_t value, int32_t auxiliary)
+{
+    if (value == INT32_MIN && (uint32_t)auxiliary == 0x54494d45u)
+        return 1;
+    if (value == INT32_MIN + 1 && (uint32_t)auxiliary == 0x4f4f4d21u)
+        return 1;
+    return (value == 0 || value == 1) && auxiliary >= 0 &&
+           auxiliary <= 86400;
+}
+
+static void rpc_cap_handler(framer_runtime_rpc_context *context,
+                            void *response, void *request)
+{
+    physical_block *block = block_from_rpc(context, PHYSICAL_RPC_CAP);
+    int32_t page;
+    if (!rpc_begin_ready(block, context, response, request))
+        return;
+    if (__atomic_load_n(&block->owner.telemetry.permanently_disabled,
+                        __ATOMIC_ACQUIRE) != 0u) {
+        STOCK_RPC_REPLY(response, request, 0u, context);
+        framer_runtime_rpc_end(context);
+        return;
+    }
+    if (!rpc_read_page(request, &page) || page < 0 ||
+        page >= (int32_t)FRAMER_RUNTIME_CAPABILITY_PAGES) {
+        STOCK_RPC_REPLY(response, request, 0u, context);
+        framer_runtime_rpc_end(context);
+        return;
+    }
+    block->runtime_capability.key_events =
+        __atomic_load_n(&block->key_probe.committed, __ATOMIC_ACQUIRE) != 0u;
+    block->runtime_capability.chord_events =
+        block->runtime_capability.key_events;
+    if (!framer_runtime_capability_format(&block->runtime_capability,
+                                           (uint32_t)page,
+                                           context->value))
+        STOCK_RPC_REPLY(response, request, 0u, context);
+    else
+        STOCK_RPC_REPLY(response, request, 1u, context);
+    framer_runtime_rpc_end(context);
+}
+
+static int telemetry_snapshot(physical_block *block,
+                              framer_runtime_telemetry *output)
+{
+    uint32_t expected = 0u;
+    if (!__atomic_compare_exchange_n(&block->runtime_telemetry_lock, &expected,
+                                     1u, 0, __ATOMIC_ACQUIRE,
+                                     __ATOMIC_RELAXED))
+        return 0;
+    *output = block->runtime_telemetry;
+    __atomic_store_n(&block->runtime_telemetry_lock, 0u, __ATOMIC_RELEASE);
+    return 1;
+}
+
+/* --- device->host value channel: telemetry slot pages ----------------------
+ *
+ * Pages 6 and 7 return the sixteen owner-mailbox integer slots (the values the
+ * JavaScript widget publishes) as raw 32-bit words: page 6 carries slots 0..7,
+ * page 7 carries slots 8..15.
+ *
+ * These pages sit deliberately OUTSIDE the
+ * "p0-locks-snapshot-ordered-p1-p5-expiry-clear-v1" protocol that governs
+ * pages 0..5.  They carry no runtime-telemetry sample, so there is nothing for
+ * a page-zero snapshot to make immutable, and a host may poll them at ~1 Hz
+ * without opening a session, without taking block->runtime_telemetry_lock, and
+ * without clearing or advancing telemetry_session.expected_page.  A slot-page
+ * read is therefore invisible to a concurrent p0..p5 transaction.
+ *
+ * Consistency is per-page and comes from the mailbox seqlock, read with the
+ * same discipline as framer_resident_mailbox_try_read() and
+ * framer_tf_snapshot_mailbox(): even sequence, SEQ_CST slot loads, SEQ_CST
+ * fence, re-read and compare.  framer_resident_mailbox_try_read() is a
+ * single-shot helper that would cost a 72-byte snapshot on this stack, so the
+ * window read below is open-coded with the identical ordering and bounded to
+ * FRAMER_TF_SNAPSHOT_ATTEMPTS retries.  A persistently torn read answers with
+ * the blocked reply rather than a half-written page. */
+#define PHYSICAL_TELEMETRY_SLOT_PAGE_FIRST 6u
+#define PHYSICAL_TELEMETRY_SLOT_PAGE_LAST 7u
+#define PHYSICAL_TELEMETRY_SLOTS_PER_PAGE 8u
+
+_Static_assert((PHYSICAL_TELEMETRY_SLOT_PAGE_LAST -
+                PHYSICAL_TELEMETRY_SLOT_PAGE_FIRST + 1u) *
+               PHYSICAL_TELEMETRY_SLOTS_PER_PAGE == FRAMER_MQJS_SLOT_COUNT,
+               "Slot pages must cover the mailbox exactly once.");
+/* "v1;p=7" plus eight ";sNN=xxxxxxxx" groups is the longest encoding:
+ * 6 + 2 * 12 + 6 * 13 = 108 characters, and the terminator lands at 108. */
+_Static_assert(6u + 2u * 12u + 6u * 13u < 113u,
+               "Slot page encoding does not fit the RPC status buffer.");
+
+static int mailbox_slot_window(const framer_resident_mailbox *mailbox,
+                               uint32_t first_slot,
+                               int32_t values[PHYSICAL_TELEMETRY_SLOTS_PER_PAGE])
+{
+    uint32_t attempt;
+    if (mailbox == (const framer_resident_mailbox *)0)
+        return 0;
+    for (attempt = 0u; attempt < FRAMER_TF_SNAPSHOT_ATTEMPTS; ++attempt) {
+        uint32_t first = __atomic_load_n(&mailbox->sequence, __ATOMIC_ACQUIRE);
+        uint32_t second;
+        uint32_t index;
+        if ((first & 1u) != 0u)
+            continue;
+        for (index = 0u; index < PHYSICAL_TELEMETRY_SLOTS_PER_PAGE; ++index)
+            values[index] = __atomic_load_n(&mailbox->slots[first_slot + index],
+                                            __ATOMIC_SEQ_CST);
+        __atomic_thread_fence(__ATOMIC_SEQ_CST);
+        second = __atomic_load_n(&mailbox->sequence, __ATOMIC_ACQUIRE);
+        if (first == second && (second & 1u) == 0u)
+            return 1;
+    }
+    return 0;
+}
+
+/* v1;p=<page>;s<slot>=<8 lower-case hex digits> per slot, slot numbers
+ * absolute (s0..s7 on page 6, s8..s15 on page 7), values written as the raw
+ * 32-bit word so negatives arrive as their two's-complement encoding.
+ *
+ * Deliberately noinline: the eight-word window buffer must live in its own
+ * frame rather than widening rpc_telemetry_handler's, which is on the shared
+ * prefix of every telemetry call.  Inlined it costs the whole RPC chain 32 B
+ * (224 -> 256, the entire remaining budget) on pages that never use it. */
+__attribute__((noinline))
+static int telemetry_slots_format(const framer_resident_mailbox *mailbox,
+                                  uint32_t page, char output[113])
+{
+    static const char digits[] = "0123456789abcdef";
+    int32_t values[PHYSICAL_TELEMETRY_SLOTS_PER_PAGE];
+    uint32_t first;
+    uint32_t index;
+    uint32_t offset = 0u;
+    if (output == (char *)0 || page < PHYSICAL_TELEMETRY_SLOT_PAGE_FIRST ||
+        page > PHYSICAL_TELEMETRY_SLOT_PAGE_LAST)
+        return 0;
+    first = (page - PHYSICAL_TELEMETRY_SLOT_PAGE_FIRST) *
+            PHYSICAL_TELEMETRY_SLOTS_PER_PAGE;
+    if (!mailbox_slot_window(mailbox, first, values))
+        return 0;
+    output[offset++] = 'v';
+    output[offset++] = '1';
+    output[offset++] = ';';
+    output[offset++] = 'p';
+    output[offset++] = '=';
+    output[offset++] = (char)('0' + page);
+    for (index = 0u; index < PHYSICAL_TELEMETRY_SLOTS_PER_PAGE; ++index) {
+        uint32_t slot = first + index;
+        uint32_t word = (uint32_t)values[index];
+        uint32_t shift;
+        output[offset++] = ';';
+        output[offset++] = 's';
+        if (slot >= 10u)
+            output[offset++] = (char)('0' + slot / 10u);
+        output[offset++] = (char)('0' + slot % 10u);
+        output[offset++] = '=';
+        for (shift = 28u;; shift -= 4u) {
+            output[offset++] = digits[(word >> shift) & 15u];
+            if (shift == 0u)
+                break;
+        }
+    }
+    output[offset] = 0;
+    return 1;
+}
+
+static void rpc_telemetry_handler(framer_runtime_rpc_context *context,
+                                  void *response, void *request)
+{
+    physical_block *block = block_from_rpc(context, PHYSICAL_RPC_TELEMETRY);
+    const framer_runtime_telemetry *selected;
+    int accepted = 0;
+    int32_t page;
+    if (!rpc_begin_ready(block, context, response, request))
+        return;
+    if (rpc_read_page(request, &page)) {
+        if (page >= (int32_t)PHYSICAL_TELEMETRY_SLOT_PAGE_FIRST &&
+            page <= (int32_t)PHYSICAL_TELEMETRY_SLOT_PAGE_LAST) {
+            /* Session-free and lock-free; telemetry_session is untouched so a
+             * poll cannot abort an in-flight ordered p0..p5 transaction. */
+            accepted = telemetry_slots_format(&block->owner.mailbox,
+                                              (uint32_t)page, context->value);
+        } else {
+            selected = (const framer_runtime_telemetry *)0;
+            if (page == 0 && telemetry_snapshot(
+                    block, &block->telemetry_session.snapshot)) {
+                accepted = framer_physical_telemetry_session_select(
+                    &block->telemetry_session, page, now_ms(),
+                    &block->telemetry_session.snapshot,
+                    __atomic_load_n(&block->ui_max_tick_us, __ATOMIC_ACQUIRE),
+                    &selected);
+            } else if (page != 0) {
+                accepted = framer_physical_telemetry_session_select(
+                    &block->telemetry_session, page, now_ms(),
+                    (const framer_runtime_telemetry *)0, 0u, &selected);
+            } else {
+                block->telemetry_session.expected_page = 0u;
+            }
+            if (accepted && (!framer_runtime_telemetry_format(
+                    selected, (uint32_t)page, context->value) ||
+                    (page == 5 && !framer_physical_telemetry_append_ui_max(
+                        context->value, block->telemetry_session.ui_max_us)))) {
+                block->telemetry_session.expected_page = 0u;
+                accepted = 0;
+            }
+        }
+    } else {
+        block->telemetry_session.expected_page = 0u;
+    }
+    if (!accepted)
+        STOCK_RPC_REPLY(response, request, 0u, context);
+    else
+        STOCK_RPC_REPLY(response, request, 1u, context);
+    framer_runtime_rpc_end(context);
+}
+
+static void rpc_event_handler(framer_runtime_rpc_context *context,
+                              void *response, void *request)
+{
+    physical_block *block = block_from_rpc(context, PHYSICAL_RPC_EVENT);
+    framer_runtime_receipt_snapshot *snapshot;
+    int32_t *values;
+    uint32_t sequence;
+    uint32_t busy;
+    int valid;
+    int queued = 0;
+    if (!rpc_begin_ready(block, context, response, request))
+        return;
+    snapshot = &block->rpc_event_scratch;
+    values = block->rpc_event_values;
+    zero_bytes(snapshot, sizeof(*snapshot));
+    busy = __atomic_load_n(&block->rpc_event_pending, __ATOMIC_ACQUIRE);
+    valid = rpc_read_event(request, values);
+    sequence = __atomic_add_fetch(&block->rpc_event_sequence, 1u,
+                                  __ATOMIC_RELAXED);
+    if (sequence == 0u)
+        sequence = __atomic_add_fetch(&block->rpc_event_sequence, 1u,
+                                      __ATOMIC_RELAXED);
+    snapshot->event_sequence = sequence;
+    if (valid) {
+        snapshot->event_id = (uint32_t)values[0];
+        snapshot->event_value = values[1];
+        snapshot->event_auxiliary = values[2];
+        snapshot->generation = (uint32_t)values[3];
+        snapshot->revision = (uint32_t)values[4];
+        valid = values[0] > 0 && values[0] <= 0xffff &&
+                widget_declared_host_rpc(block, (uint32_t)values[0]) &&
+                (uint32_t)values[3] == block->widget_assets.generation;
+        if (valid && (uint32_t)values[0] == 0xb24du)
+            valid = provider_status_value(values[1], values[2]);
+    }
+    if (busy != 0u) {
+        snapshot->state = FRAMER_RUNTIME_RECEIPT_BUSY;
+        snapshot->queue_depth = 1u;
+    } else if (!valid) {
+        snapshot->state = FRAMER_RUNTIME_RECEIPT_REJECTED;
+        snapshot->rejected_count =
+            __atomic_add_fetch(&block->runtime_events_rejected, 1u,
+                               __ATOMIC_RELAXED);
+        snapshot->rejection_code = 1u;
+        framer_runtime_receipt_publish(&block->receipt, snapshot);
+    } else {
+        uint32_t expected = 0u;
+        if (!__atomic_compare_exchange_n(&block->rpc_event_pending, &expected,
+                                         1u, 0, __ATOMIC_ACQ_REL,
+                                         __ATOMIC_ACQUIRE)) {
+            snapshot->state = FRAMER_RUNTIME_RECEIPT_BUSY;
+            snapshot->queue_depth = 1u;
+        } else {
+            snapshot->state = FRAMER_RUNTIME_RECEIPT_QUEUED;
+            snapshot->queue_depth = 1u;
+            block->pending_receipt = *snapshot;
+            __atomic_store_n(&block->rpc_event_armed, 0u, __ATOMIC_RELEASE);
+            queued = framer_resident_owner_enqueue_host_rpc_tagged(
+                &block->owner, block->widget_assets.generation,
+                (uint16_t)values[0],
+                values[1], values[2], sequence);
+            if (queued) {
+                __atomic_add_fetch(&block->runtime_events_queued, 1u,
+                                   __ATOMIC_RELAXED);
+                framer_runtime_receipt_publish(&block->receipt, snapshot);
+                __atomic_store_n(&block->rpc_event_armed, 1u,
+                                 __ATOMIC_RELEASE);
+            } else {
+                snapshot->state = FRAMER_RUNTIME_RECEIPT_REJECTED;
+                snapshot->queue_depth = 0u;
+                snapshot->rejected_count = __atomic_add_fetch(
+                    &block->runtime_events_rejected, 1u, __ATOMIC_RELAXED);
+                snapshot->rejection_code = 2u;
+                framer_runtime_receipt_publish(&block->receipt, snapshot);
+                __atomic_store_n(&block->rpc_event_pending, 0u,
+                                 __ATOMIC_RELEASE);
+            }
+        }
+    }
+    if (!framer_runtime_receipt_format(snapshot, context->value))
+        STOCK_RPC_REPLY(response, request, 0u, context);
+    else
+        STOCK_RPC_REPLY(response, request, 1u, context);
+    framer_runtime_rpc_end(context);
+}
+
+static void rpc_receipt_handler(framer_runtime_rpc_context *context,
+                                void *response, void *request)
+{
+    physical_block *block = block_from_rpc(context, PHYSICAL_RPC_RECEIPT);
+    framer_runtime_receipt_snapshot snapshot;
+    if (!rpc_begin_ready(block, context, response, request))
+        return;
+    if (!framer_runtime_receipt_try_read(&block->receipt, &snapshot) ||
+        !framer_runtime_receipt_format(&snapshot, context->value))
+        STOCK_RPC_REPLY(response, request, 0u, context);
+    else
+        STOCK_RPC_REPLY(response, request, 1u, context);
+    framer_runtime_rpc_end(context);
+}
+
+static void rpc_callback_common(void *callback_object, void *response_holder,
+                                void *request, uint32_t index,
+                                void (*handler)(framer_runtime_rpc_context *,
+                                                void *, void *))
+{
+    framer_runtime_rpc_context *context;
+    void *response;
+    if (callback_object == (void *)0 || response_holder == (void *)0 ||
+        request == (void *)0)
+        return;
+    context = *(framer_runtime_rpc_context **)callback_object;
+    response = *(void **)response_holder;
+    if (block_from_rpc(context, index) == (physical_block *)0)
+        return;
+    handler(context, response, request);
+}
+
+static void rpc_cap_callback(void *callback, void *response, void *request)
+{
+    rpc_callback_common(callback, response, request, PHYSICAL_RPC_CAP,
+                        rpc_cap_handler);
+}
+
+static void rpc_telemetry_callback(void *callback, void *response, void *request)
+{
+    rpc_callback_common(callback, response, request, PHYSICAL_RPC_TELEMETRY,
+                        rpc_telemetry_handler);
+}
+
+static void rpc_event_callback(void *callback, void *response, void *request)
+{
+    rpc_callback_common(callback, response, request, PHYSICAL_RPC_EVENT,
+                        rpc_event_handler);
+}
+
+static void rpc_receipt_callback(void *callback, void *response, void *request)
+{
+    rpc_callback_common(callback, response, request, PHYSICAL_RPC_RECEIPT,
+                        rpc_receipt_handler);
+}
+
+static int register_rpc(physical_block *block)
+{
+    static const char *const methods[5] = {
+        FRAMER_RUNTIME_RPC_METHOD_CAP, FRAMER_RUNTIME_RPC_METHOD_TELEMETRY,
+        FRAMER_RUNTIME_RPC_METHOD_EVENT, FRAMER_RUNTIME_RPC_METHOD_RECEIPT,
+        FRAMER_RUNTIME_RPC_METHOD_UPLOAD
+    };
+    static const uint8_t lengths[5] = { 19u, 25u, 21u, 23u, 22u };
+    static void (*const callbacks[5])(void *, void *, void *) = {
+        rpc_cap_callback, rpc_telemetry_callback, rpc_event_callback,
+        rpc_receipt_callback, rpc_upload_callback
+    };
+    void *registry = STOCK_RPC_REGISTRY();
+    uint32_t index;
+    if (registry == (void *)0)
+        return 0;
+    for (index = 0u; index < 5u; ++index) {
+        framer_runtime_rpc_init(&block->rpc[index], methods[index]);
+        STOCK_RPC_REGISTER(registry, &block->rpc[index],
+                           block->rpc[index].method, lengths[index],
+                           (void *)(uintptr_t)callbacks[index]);
+    }
+    return 1;
+}
+
+static int refresh_runtime_telemetry(physical_block *block,
+                                     uint32_t terminal_completion);
+
+static int publish_staged_completion(physical_block *block)
+{
+    if (__atomic_load_n(&block->completion_publish_pending,
+                        __ATOMIC_ACQUIRE) == 0u ||
+        !refresh_runtime_telemetry(block, 1u) ||
+        !framer_physical_completion_can_publish(
+            1u, 1u,
+            __atomic_load_n(&block->rpc_event_pending,
+                            __ATOMIC_ACQUIRE)))
+        return 0;
+    /* Receipt publication is the final release point. A receipt reader that
+     * acquires A/F/R is therefore guaranteed to observe matching p2 n/x.
+     * Admission remains closed until after that publication completes. */
+    framer_runtime_receipt_publish(&block->receipt,
+                                   &block->completion_receipt);
+    __atomic_store_n(&block->completion_publish_pending, 0u,
+                     __ATOMIC_RELEASE);
+    __atomic_store_n(&block->rpc_event_armed, 0u, __ATOMIC_RELEASE);
+    __atomic_store_n(&block->rpc_event_pending, 0u, __ATOMIC_RELEASE);
+    return 1;
+}
+
+static int consume_tagged_completion(physical_block *block)
+{
+    framer_resident_tagged_completion completion;
+    framer_runtime_receipt_snapshot snapshot;
+    if (__atomic_load_n(&block->completion_publish_pending,
+                        __ATOMIC_ACQUIRE) != 0u)
+        return publish_staged_completion(block);
+    if (__atomic_load_n(&block->rpc_event_armed, __ATOMIC_ACQUIRE) == 0u ||
+        !framer_resident_owner_take_tagged_completion(&block->owner,
+                                                       &completion))
+        return 0;
+    snapshot = block->pending_receipt;
+    snapshot.queue_depth = 0u;
+    snapshot.applied_generation = completion.applied_generation;
+    snapshot.applied_revision = completion.applied_revision;
+    if (completion.tag != snapshot.event_sequence) {
+        snapshot.state = FRAMER_RUNTIME_RECEIPT_REJECTED;
+        snapshot.rejection_code = 3u;
+        snapshot.rejected_count = __atomic_add_fetch(
+            &block->runtime_events_rejected, 1u, __ATOMIC_RELAXED);
+    } else if (completion.result < 0) {
+        snapshot.state = FRAMER_RUNTIME_RECEIPT_FAULTED;
+        snapshot.rejection_code = (uint32_t)completion.result;
+        snapshot.rejected_count = __atomic_add_fetch(
+            &block->runtime_events_rejected, 1u, __ATOMIC_RELAXED);
+    } else {
+        snapshot.state = FRAMER_RUNTIME_RECEIPT_APPLIED;
+        __atomic_add_fetch(&block->runtime_events_applied, 1u,
+                           __ATOMIC_RELAXED);
+    }
+    __atomic_store_n(&block->runtime_last_completion_sequence,
+                     completion.tag, __ATOMIC_RELEASE);
+    __atomic_store_n(&block->runtime_last_completion_result,
+                     completion.result, __ATOMIC_RELEASE);
+    block->completion_receipt = snapshot;
+    __atomic_store_n(&block->completion_publish_pending, 1u,
+                     __ATOMIC_RELEASE);
+    return publish_staged_completion(block);
+}
+
+static int refresh_runtime_telemetry(physical_block *block,
+                                     uint32_t terminal_completion)
+{
+    framer_runtime_telemetry next;
+    framer_resident_telemetry resident;
+    framer_mqjs_telemetry engine;
+    framer_runtime_key_probe key;
+    framer_resident_mailbox_snapshot mailbox;
+    uint32_t sequence;
+    uint32_t expected_lock = 0u;
+    if (!__atomic_compare_exchange_n(&block->runtime_telemetry_lock,
+                                     &expected_lock, 1u, 0,
+                                     __ATOMIC_ACQUIRE, __ATOMIC_RELAXED))
+        return 0;
+    zero_bytes(&next, sizeof(next));
+    zero_bytes(&resident, sizeof(resident));
+    zero_bytes(&engine, sizeof(engine));
+    zero_bytes(&key, sizeof(key));
+    zero_bytes(&mailbox, sizeof(mailbox));
+    framer_resident_owner_get_telemetry(&block->owner, &resident);
+    block->owner.engine.get_telemetry(&block->owner.runtime, &engine);
+    (void)framer_runtime_key_probe_try_read(&block->key_probe, &key);
+    next.boot_id = block->runtime_capability.boot_id;
+    next.uptime_us = STOCK_TIME_US() - block->runtime_capability.boot_id;
+    next.polls = engine.interrupt_polls;
+    next.free_internal = (uint32_t)STOCK_HEAP_FREE_SIZE(
+        PHYSICAL_CAP_INTERNAL | PHYSICAL_CAP_8BIT);
+    next.largest_internal = (uint32_t)STOCK_HEAP_LARGEST(
+        PHYSICAL_CAP_INTERNAL | PHYSICAL_CAP_8BIT);
+    next.heap_current = engine.heap_used_bytes;
+    next.heap_high_water = engine.heap_high_water_bytes;
+    next.stack_minimum = resident.task_stack_high_water_bytes;
+    next.callbacks = engine.callbacks;
+    next.deadline_us = FRAMER_RUNTIME_CALLBACK_DEADLINE_US;
+    next.timeouts = engine.timeouts;
+    next.oom = engine.out_of_memory;
+    next.exceptions = engine.exceptions;
+    next.max_slice_us = block->owner_max_slice_us;
+    next.loads = engine.source_loads;
+    next.source_rejected = engine.source_rejections;
+    {
+        uint32_t ui_failures = __atomic_load_n(&block->ui_render_failures,
+                                                __ATOMIC_ACQUIRE);
+        next.publish_failed = engine.publish_failures > UINT32_MAX - ui_failures
+            ? UINT32_MAX : engine.publish_failures + ui_failures;
+    }
+    next.wrong_thread = engine.wrong_thread;
+    next.recoveries = resident.recoveries;
+    next.recovery_failures = resident.recovery_failures;
+    next.last_result = __atomic_load_n(&block->runtime_last_completion_result,
+                                       __ATOMIC_ACQUIRE);
+    next.last_event_sequence = __atomic_load_n(
+        &block->runtime_last_completion_sequence, __ATOMIC_ACQUIRE);
+    next.fatal = resident.permanently_disabled;
+    next.queue_depth = terminal_completion != 0u ? 0u :
+        __atomic_load_n(&block->rpc_event_pending, __ATOMIC_ACQUIRE);
+    next.events_queued = __atomic_load_n(&block->runtime_events_queued,
+                                         __ATOMIC_ACQUIRE);
+    next.events_applied = __atomic_load_n(&block->runtime_events_applied,
+                                          __ATOMIC_ACQUIRE);
+    next.events_rejected = __atomic_load_n(&block->runtime_events_rejected,
+                                           __ATOMIC_ACQUIRE);
+    if (framer_resident_mailbox_try_read(&block->owner.mailbox, &mailbox)) {
+        next.mailbox_sequence = mailbox.sequence;
+        next.applied_generation = mailbox.admitted_revision;
+        next.applied_revision = (uint32_t)mailbox.slots[0];
+    }
+    next.delays = block->owner_delays;
+    next.screen = PHYSICAL_SCREEN_ID;
+    next.visible = __atomic_load_n(&block->visible, __ATOMIC_ACQUIRE);
+    next.replay_count = __atomic_load_n(&block->visibility.replay_pending,
+                                        __ATOMIC_ACQUIRE);
+    next.key_observations = key.observation_count;
+    next.last_token = key.last_token;
+    next.last_level = key.last_level;
+    next.key_gate = key.committed;
+    next.chord_active = engine.held_key_mask == 3u;
+    next.weather_applied_revision = __atomic_load_n(
+        &block->ui_applied_revision, __ATOMIC_ACQUIRE);
+    sequence = __atomic_load_n(&block->runtime_telemetry_sequence,
+                               __ATOMIC_RELAXED);
+    if ((sequence & 1u) != 0u)
+        ++sequence;
+    __atomic_store_n(&block->runtime_telemetry_sequence, sequence + 1u,
+                     __ATOMIC_SEQ_CST);
+    block->runtime_telemetry = next;
+    __atomic_thread_fence(__ATOMIC_RELEASE);
+    __atomic_store_n(&block->runtime_telemetry_sequence, sequence + 2u,
+                     __ATOMIC_RELEASE);
+    __atomic_store_n(&block->runtime_telemetry_lock, 0u, __ATOMIC_RELEASE);
+    return 1;
+}
+
+
+
+/* ── widget upload RPC (docs/16 wire protocol + docs/17 slot additions) ── */
+
+static void widget_upload_append(char *output, size_t *offset,
+                                 const char *text)
+{
+    size_t index = 0u;
+    while (text[index] != '\0' && *offset + 1u < FRAMER_RUNTIME_RPC_VALUE_BYTES)
+        output[(*offset)++] = text[index++];
+}
+
+static void widget_upload_append_hex32(char *output, size_t *offset,
+                                       uint32_t value)
+{
+    static const char digits[] = "0123456789abcdef";
+    int shift;
+    for (shift = 28; shift >= 0; shift -= 4) {
+        if (*offset + 1u >= FRAMER_RUNTIME_RPC_VALUE_BYTES)
+            return;
+        output[(*offset)++] = digits[(value >> (unsigned int)shift) & 15u];
+    }
+}
+
+static int widget_persist_busy(const physical_block *block)
+{
+    uint32_t state = __atomic_load_n(&block->widget_persist_status,
+                                     __ATOMIC_ACQUIRE) & 0xffu;
+    return state != FRAMER_F2UP_PERSIST_IDLE &&
+           state != FRAMER_F2UP_PERSIST_DONE &&
+           state != FRAMER_F2UP_PERSIST_FAILED;
+}
+
+/* Only host.rpc ids the ADMITTED widget declared may be queued. */
+static int widget_declared_host_rpc(const physical_block *block, uint32_t id)
+{
+    const framer_f2js_admission *admission = &block->owner.admission;
+    uint32_t index;
+    for (index = 0u; index < admission->event_count; ++index)
+        if (admission->events[index].kind == 4u &&
+            (uint32_t)admission->events[index].id == id)
+            return 1;
+    return 0;
+}
+
+static void widget_upload_reply(physical_block *block,
+                                framer_runtime_rpc_context *context,
+                                uint32_t op, uint32_t rc)
+{
+    char *output = context->value;
+    size_t offset = 0u;
+    widget_upload_append(output, &offset, "v1;op=");
+    output[offset++] = (char)('0' + (op <= 9u ? op : 9u));
+    widget_upload_append(output, &offset, ";rc=");
+    widget_upload_append_hex32(output, &offset, rc);
+    widget_upload_append(output, &offset, ";st=");
+    output[offset++] = (char)('0' + (block->widget_upload.state & 3u));
+    widget_upload_append(output, &offset, ";rx=");
+    widget_upload_append_hex32(output, &offset,
+                               block->widget_upload.received_bytes);
+    widget_upload_append(output, &offset, ";g=");
+    widget_upload_append_hex32(output, &offset,
+                               block->widget_assets.generation);
+    widget_upload_append(output, &offset, ";pg=");
+    widget_upload_append_hex32(
+        output, &offset,
+        __atomic_load_n(&block->widget_persisted_generation,
+                        __ATOMIC_ACQUIRE));
+    widget_upload_append(output, &offset, ";ps=");
+    widget_upload_append_hex32(
+        output, &offset,
+        __atomic_load_n(&block->widget_persist_status, __ATOMIC_ACQUIRE));
+    widget_upload_append(output, &offset, ";ad=");
+    widget_upload_append_hex32(output, &offset,
+                               (uint32_t)block->widget_upload.admit_result);
+    widget_upload_append(output, &offset, ";src=");
+    output[offset++] = (char)('0' + (block->widget_assets.source & 1u));
+    widget_upload_append(output, &offset, ";fb=");
+    output[offset++] = (char)('0' + (block->widget_boot_fallback & 7u));
+    widget_upload_append(output, &offset, ";sl=");
+    output[offset++] = (char)('0' +
+        (__atomic_load_n(&block->widget_active_slot, __ATOMIC_ACQUIRE) & 7u));
+    widget_upload_append(output, &offset, ";sn=");
+    output[offset++] = (char)('0' + (FRAMER_F2UP_SLOT_COUNT & 7u));
+    output[offset] = '\0';
+}
+
+static void widget_inventory_reply(physical_block *block,
+                                   framer_runtime_rpc_context *context,
+                                   uint32_t slot, uint32_t rc)
+{
+    static const char digits[] = "0123456789abcdef";
+    char *output = context->value;
+    size_t offset = 0u;
+    uint32_t index;
+    widget_upload_append(output, &offset, "v1;op=5;rc=");
+    widget_upload_append_hex32(output, &offset, rc);
+    widget_upload_append(output, &offset, ";slot=");
+    output[offset++] = (char)('0' + (slot & 7u));
+    if (rc == 0u && slot < FRAMER_F2UP_SLOT_COUNT) {
+        uint32_t generation = block->widget_slot_generations[slot];
+        widget_upload_append(output, &offset, ";present=");
+        output[offset++] = generation != 0u ? '1' : '0';
+        widget_upload_append(output, &offset, ";g=");
+        widget_upload_append_hex32(output, &offset, generation);
+        widget_upload_append(output, &offset, ";sha=");
+        for (index = 0u; index < 16u; ++index) {
+            uint8_t byte = block->widget_slot_sha16[slot][index];
+            output[offset++] = digits[byte >> 4];
+            output[offset++] = digits[byte & 15u];
+        }
+    }
+    output[offset] = '\0';
+}
+
+/* Per-screen lifecycle forensics (op 7): which proxy the stock actually
+ * builds/cleans/ticks, plus active vs desired slot. */
+static void widget_forensics_reply(physical_block *block,
+                                   framer_runtime_rpc_context *context)
+{
+    char *output = context->value;
+    size_t offset = 0u;
+    uint32_t resident = 0u;
+    uint32_t slot;
+    for (slot = 0u; slot < FRAMER_F2UP_SLOT_COUNT; ++slot)
+        if (block->slot_resident[slot] != 0u)
+            resident |= 1u << slot;
+    widget_upload_append(output, &offset, "v1;op=7;b0=");
+    widget_upload_append_hex32(output, &offset, block->proxy_build_counts[0]);
+    widget_upload_append(output, &offset, ";c0=");
+    widget_upload_append_hex32(output, &offset, block->proxy_cleanup_counts[0]);
+    widget_upload_append(output, &offset, ";t0=");
+    widget_upload_append_hex32(output, &offset, block->proxy_tick_counts[0]);
+    widget_upload_append(output, &offset, ";b1=");
+    widget_upload_append_hex32(output, &offset, block->proxy_build_counts[1]);
+    widget_upload_append(output, &offset, ";c1=");
+    widget_upload_append_hex32(output, &offset, block->proxy_cleanup_counts[1]);
+    widget_upload_append(output, &offset, ";t1=");
+    widget_upload_append_hex32(output, &offset, block->proxy_tick_counts[1]);
+    widget_upload_append(output, &offset, ";sl=");
+    output[offset++] = (char)('0' +
+        (__atomic_load_n(&block->widget_active_slot, __ATOMIC_ACQUIRE) & 7u));
+    widget_upload_append(output, &offset, ";ds=");
+    output[offset++] = (char)('0' +
+        (__atomic_load_n(&block->widget_desired_slot, __ATOMIC_ACQUIRE) & 7u));
+    widget_upload_append(output, &offset, ";r=");
+    output[offset++] = (char)('0' + (resident & 7u));
+    output[offset] = '\0';
+}
+
+static void rpc_upload_handler(framer_runtime_rpc_context *context,
+                               void *response, void *request)
+{
+    physical_block *block = block_from_rpc(context, PHYSICAL_RPC_UPLOAD);
+    __attribute__((aligned(16))) uint8_t root[64];
+    int32_t op = -1;
+    uint32_t rc = (uint32_t)FRAMER_F2UP_UPLOAD_ERR_ARGUMENT;
+    int32_t inventory_slot = 9;
+    if (!rpc_begin_ready(block, context, response, request))
+        return;
+    zero_bytes(root, sizeof(root));
+    STOCK_ROOT_MAKE(root, request);
+    if (!framer_physical_rpc_read_integer(root, "op", 2u, &op) || op < 0 ||
+        op > 7) {
+        op = 9;
+    } else if (op != 0 && op != 5 && op != 7 && widget_persist_busy(block)) {
+        /* The owner task is reading the staging arena; nothing may touch the
+         * transaction until the machine reaches DONE or FAILED. */
+        rc = (uint32_t)FRAMER_F2UP_UPLOAD_ERR_STATE;
+    } else if (op == 0) {
+        rc = 0u;
+    } else if (op == 1) {
+        int32_t generation = 0;
+        int32_t total = 0;
+        int32_t slot = 0;
+        /* "slot" is optional: absent selects slot 0, exactly the pre-bank
+         * wire behaviour, so older Designers keep working unchanged. */
+        if (framer_physical_rpc_read_integer(root, "slot", 4u, &slot) &&
+            (slot < 0 || slot >= (int32_t)FRAMER_F2UP_SLOT_COUNT))
+            slot = -1;
+        if (slot < 0 ||
+            !framer_physical_rpc_read_integer(root, "generation", 10u,
+                                              &generation) ||
+            !framer_physical_rpc_read_integer(root, "totalBytes", 10u,
+                                              &total)) {
+            rc = (uint32_t)FRAMER_F2UP_UPLOAD_ERR_ARGUMENT;
+        } else {
+            block->widget_session_slot = (uint32_t)slot;
+            if (block->widget_staging == (uint8_t *)0)
+                rc = (uint32_t)FRAMER_F2UP_UPLOAD_ERR_ARGUMENT;
+            else
+                rc = (uint32_t)framer_f2up_upload_begin(
+                    &block->widget_upload, (uint32_t)generation,
+                    (uint32_t)total,
+                    block->widget_slot_generations[block->widget_session_slot]);
+        }
+    } else if (op == 2) {
+        int32_t chunk_offset = 0;
+        const char *data = (const char *)0;
+        uint32_t data_bytes = 0u;
+        uint32_t decoded = 0u;
+        if (!framer_physical_rpc_read_integer(root, "offset", 6u,
+                                              &chunk_offset) ||
+            !framer_physical_rpc_read_string(root, "data", 4u, &data,
+                                             &data_bytes) ||
+            data_bytes < 4u || data_bytes > 4096u) {
+            rc = (uint32_t)FRAMER_F2UP_UPLOAD_ERR_ARGUMENT;
+        } else if (block->widget_chunk_scratch == (uint8_t *)0 ||
+                   !framer_f2up_base64_decode(
+                       data, data_bytes, block->widget_chunk_scratch,
+                       FRAMER_F2UP_CHUNK_RAW_BYTES, &decoded)) {
+            rc = (uint32_t)FRAMER_F2UP_UPLOAD_ERR_ARGUMENT;
+        } else {
+            rc = (uint32_t)framer_f2up_upload_chunk(
+                &block->widget_upload, (uint32_t)chunk_offset,
+                block->widget_chunk_scratch, decoded);
+        }
+    } else if (op == 3) {
+        rc = (uint32_t)framer_f2up_upload_commit(&block->widget_upload);
+        if (rc == 0u) {
+            block->widget_persist_base =
+                framer_f2up_slot_base(block->widget_session_slot);
+            block->widget_persist_total = block->widget_upload.total_bytes;
+            block->widget_persist_pending_generation =
+                block->widget_upload.admission.generation;
+            block->widget_persist_cursor = 0u;
+            block->widget_persist_since_ms = now_ms();
+            __atomic_store_n(&block->widget_persist_status,
+                             (uint32_t)FRAMER_F2UP_PERSIST_ARMED,
+                             __ATOMIC_RELEASE);
+        }
+    } else if (op == 5) {
+        int32_t slot = 0;
+        if (!framer_physical_rpc_read_integer(root, "slot", 4u, &slot) ||
+            slot < 0 || slot >= (int32_t)FRAMER_F2UP_SLOT_COUNT) {
+            rc = (uint32_t)FRAMER_F2UP_UPLOAD_ERR_ARGUMENT;
+        } else {
+            rc = 0u;
+            inventory_slot = slot;
+        }
+    } else if (op == 6) {
+        int32_t slot = 0;
+        if (!framer_physical_rpc_read_integer(root, "slot", 4u, &slot) ||
+            slot < 0 || slot >= (int32_t)FRAMER_F2UP_SLOT_COUNT ||
+            block->slot_resident[slot] == 0u) {
+            rc = (uint32_t)FRAMER_F2UP_UPLOAD_ERR_ARGUMENT;
+        } else {
+            /* Level-triggered: the owner loop converges the live widget to
+             * the desired slot; op 0 reports sl= once it lands. */
+            __atomic_store_n(&block->widget_desired_slot, (uint32_t)slot,
+                             __ATOMIC_RELEASE);
+            rc = 0u;
+        }
+    } else if (op == 7) {
+        rc = 0u;
+    } else {
+        framer_f2up_upload_abort(&block->widget_upload);
+        rc = 0u;
+    }
+    STOCK_ROOT_DESTROY(root);
+    if (op == 5)
+        widget_inventory_reply(block, context, (uint32_t)inventory_slot, rc);
+    else if (op == 7)
+        widget_forensics_reply(block, context);
+    else
+        widget_upload_reply(block, context, (uint32_t)op, rc);
+    STOCK_RPC_REPLY(response, request, 1u, context);
+    framer_runtime_rpc_end(context);
+}
+
+static void rpc_upload_callback(void *callback, void *response, void *request)
+{
+    rpc_callback_common(callback, response, request, PHYSICAL_RPC_UPLOAD,
+                        rpc_upload_handler);
+}
+
+static void owner_begin_focus_release(physical_block *block,
+                                      uint32_t timestamp_ms)
+{
+    uint32_t requested = __atomic_load_n(&block->focus_release_requested,
+                                         __ATOMIC_SEQ_CST);
+    if (!framer_physical_focus_can_issue(
+            requested,
+            __atomic_load_n(&block->focus_release_applied, __ATOMIC_ACQUIRE),
+            __atomic_load_n(&block->focus_release_draining, __ATOMIC_ACQUIRE),
+            __atomic_load_n(&block->input_sink_inflight, __ATOMIC_SEQ_CST)))
+        return;
+    if (framer_mqjs_input_request_focus_release(&block->owner.runtime,
+                                                timestamp_ms) ==
+        FRAMER_MQJS_INPUT_RESYNC_QUEUED) {
+        __atomic_store_n(&block->focus_release_draining, requested,
+                         __ATOMIC_RELEASE);
+        framer_resident_owner_notify_input(&block->owner, block->generation);
+    }
+}
+
+static void owner_finish_focus_release(physical_block *block)
+{
+    framer_mqjs_telemetry telemetry;
+    uint32_t draining = __atomic_load_n(&block->focus_release_draining,
+                                        __ATOMIC_ACQUIRE);
+    if (draining == 0u)
+        return;
+    zero_bytes(&telemetry, sizeof(telemetry));
+    framer_mqjs_get_telemetry(&block->owner.runtime, &telemetry);
+    if (!framer_physical_focus_can_ack(
+            draining,
+            __atomic_load_n(&block->owner.input_pending, __ATOMIC_ACQUIRE),
+            telemetry.pending_input_events, telemetry.held_key_mask))
+        return;
+    /* A pre-hide hold/debounce timer belongs to the closed focus session.
+     * Clear both the platform timer and the resident scheduling latch so a
+     * later build cannot inherit a stale hidden-screen poll. */
+    __atomic_store_n(&block->poll_armed, 0u, __ATOMIC_RELEASE);
+    __atomic_store_n(&block->owner.input_poll_scheduled, 0u,
+                     __ATOMIC_RELEASE);
+    __atomic_store_n(&block->focus_release_applied, draining,
+                     __ATOMIC_RELEASE);
+    __atomic_store_n(&block->focus_release_draining, 0u, __ATOMIC_RELEASE);
+    if (__atomic_load_n(&block->visible, __ATOMIC_ACQUIRE) != 0u &&
+        __atomic_load_n(&block->focus_release_requested,
+                        __ATOMIC_ACQUIRE) == draining) {
+        __atomic_store_n(&block->focus_reopen_pending, 0u, __ATOMIC_RELEASE);
+        __atomic_store_n(&block->input_enabled, 1u, __ATOMIC_RELEASE);
+    }
+}
+
+
+
+/* The complete widget boot: engine heap, adopted-widget preflight with baked
+ * fallback, LZSS + facade preflight, resident owner boot.  Returns 0 on
+ * success, else the boot_state code of the failing stage (11 heap, 5 lzss,
+ * 6 facade, 3 resident boot).  Runs at owner-task start and again on every
+ * slot activation (after quiesce + stop + reinit_shell). */
+static uint32_t owner_boot_widget(physical_block *block)
+{
+    uint32_t package_bytes;
+    uint32_t compressed_bytes;
+    uint32_t target_bytes;
+    framer_f2js_result boot;
+    framer_tf_result target_preflight;
+    package_bytes = block->widget_assets.f2js_bytes;
+    compressed_bytes = block->widget_assets.lzss_bytes;
+    target_bytes = block->widget_assets.f2tf_bytes;
+    block->widget_boot_fallback = 0u;
+    block->boot_started_ms = now_ms();
+    __atomic_store_n(&block->boot_state, 1u, __ATOMIC_RELEASE);
+    if (!psram_heap_acquire(block)) {
+        block->boot_finished_ms = now_ms();
+        return 11u;
+    }
+    /* An ADOPTED widget is fully pre-flighted here - LZSS, facade admit under
+     * ITS OWN generation, and the pure F2JS validator - because
+     * framer_resident_owner_boot_on_task faults the capability on failure and
+     * is not retryable.  Any slot failure reverts to the baked assets before a
+     * non-retryable gate is crossed, and records which stage failed. */
+    if (block->widget_assets.source == 1u) {
+        uint32_t failed_stage = 0u;
+        if (!decode_lzss(block->vm_heap, PHYSICAL_FRAME_BYTES,
+                         block->widget_assets.lzss,
+                         block->widget_assets.lzss_bytes)) {
+            failed_stage = 5u;
+        } else if (framer_tf_admit(
+                       &block->target, block->widget_assets.f2tf,
+                       block->widget_assets.f2tf_bytes,
+                       (const uint16_t *)(const void *)block->vm_heap,
+                       FRAMER_TF_CANVAS_PIXELS,
+                       block->widget_assets.generation,
+                       block->widget_assets.f2js_sha256,
+                       framer_physical_target_contract_sha256,
+                       current_task_token()) != FRAMER_TF_OK) {
+            failed_stage = 6u;
+        } else if (framer_f2js_admit(block->widget_assets.f2js,
+                                     (size_t)block->widget_assets.f2js_bytes,
+                                     &block->owner.admission) !=
+                   FRAMER_F2JS_ADMIT_OK) {
+            failed_stage = 3u;
+        }
+        zero_bytes(&block->target, sizeof(block->target));
+        zero_bytes(block->vm_heap, (size_t)FRAMER_F2JS_HEAP_BYTES);
+        if (failed_stage != 0u) {
+            block->widget_boot_fallback = failed_stage;
+            widget_assets_set_baked(block);
+        }
+        package_bytes = block->widget_assets.f2js_bytes;
+        compressed_bytes = block->widget_assets.lzss_bytes;
+        target_bytes = block->widget_assets.f2tf_bytes;
+    }
+    if (!decode_lzss(block->vm_heap, PHYSICAL_FRAME_BYTES,
+                     block->widget_assets.lzss, compressed_bytes)) {
+        block->boot_finished_ms = now_ms();
+        return 5u;
+    }
+    target_preflight = framer_tf_admit(
+        &block->target, block->widget_assets.f2tf, target_bytes,
+        (const uint16_t *)(const void *)block->vm_heap,
+        FRAMER_TF_CANVAS_PIXELS, block->widget_assets.generation,
+        block->widget_assets.f2js_sha256,
+        framer_physical_target_contract_sha256, current_task_token());
+    zero_bytes(&block->target, sizeof(block->target));
+    zero_bytes(block->vm_heap, (size_t)FRAMER_F2JS_HEAP_BYTES);
+    if (target_preflight != FRAMER_TF_OK) {
+        block->boot_finished_ms = now_ms();
+        return 6u;
+    }
+    boot = framer_resident_owner_boot_on_task(
+        &block->owner, block->widget_assets.f2js, package_bytes);
+    block->boot_finished_ms = now_ms();
+    if (boot != FRAMER_F2JS_ADMIT_OK) {
+        __atomic_store_n(&block->sources_enabled, 0u, __ATOMIC_RELEASE);
+        return 3u;
+    }
+    return 0u;
+}
+
+static void owner_task(void *opaque)
+{
+    physical_block *block = (physical_block *)opaque;
+    if (block == (physical_block *)0 || block->magic != PHYSICAL_MAGIC)
+        for (;;)
+            STOCK_TASK_DELAY(1u);
+    {
+        uint32_t boot_failed = owner_boot_widget(block);
+        if (boot_failed == 11u || boot_failed == 5u || boot_failed == 6u) {
+            __atomic_store_n(&block->boot_state, boot_failed, __ATOMIC_RELEASE);
+            for (;;)
+                STOCK_TASK_DELAY(1u);
+        }
+        __atomic_store_n(&block->boot_state, boot_failed == 0u ? 2u : 3u,
+                         __ATOMIC_RELEASE);
+    }
+    for (;;) {
+        uint32_t milliseconds = now_ms();
+        uint32_t tick100 = milliseconds / 100u;
+        uint32_t seconds = milliseconds / 1000u;
+        uint32_t generation = block->widget_assets.generation;
+        /* Converge the LIVE widget to the desired slot: set by op 6 and by a
+         * screen change (docs/18 §4.2).  The whole switch runs here, on the
+         * owner task, so the VM is never re-entered from another context. */
+        {
+            uint32_t desired = __atomic_load_n(&block->widget_desired_slot,
+                                               __ATOMIC_ACQUIRE);
+            if (desired < FRAMER_F2UP_SLOT_COUNT &&
+                block->slot_resident[desired] != 0u &&
+                __atomic_load_n(&block->widget_active_slot,
+                                __ATOMIC_ACQUIRE) != desired) {
+                uint32_t attempts;
+                uint32_t boot_failed;
+                uint32_t previous = __atomic_load_n(&block->widget_active_slot,
+                                                    __ATOMIC_ACQUIRE);
+                __atomic_store_n(&block->widget_switching, 1u,
+                                 __ATOMIC_RELEASE);
+                (void)framer_resident_owner_begin_quiesce(
+                    &block->owner, milliseconds,
+                    FRAMER_MQJS_INPUT_REASON_DISCONNECT);
+                for (attempts = 0u;
+                     attempts < 1000u &&
+                     !framer_resident_owner_stop_on_task(&block->owner);
+                     ++attempts)
+                    STOCK_TASK_DELAY(1u);
+                if (widget_slot_adopt_from(block, desired) != 0) {
+                    if (widget_slot_adopt_from(block, previous) != 0)
+                        widget_assets_set_baked(block);
+                    __atomic_store_n(&block->widget_desired_slot,
+                                     __atomic_load_n(&block->widget_active_slot,
+                                                     __ATOMIC_ACQUIRE),
+                                     __ATOMIC_RELEASE);
+                }
+                framer_resident_owner_reinit_shell(&block->owner, &engine_api,
+                                                   &block->owner_platform);
+                (void)framer_resident_owner_mark_module_mapped(&block->owner);
+                boot_failed = owner_boot_widget(block);
+                __atomic_store_n(&block->boot_state,
+                                 boot_failed == 0u ? 7u : boot_failed,
+                                 __ATOMIC_RELEASE);
+                zero_bytes(&block->target, sizeof(block->target));
+                block->target_admitted = 0u;
+                __atomic_store_n(&block->widget_switching, 0u,
+                                 __ATOMIC_RELEASE);
+                generation = block->widget_assets.generation;
+            }
+        }
+        owner_begin_focus_release(block, milliseconds);
+        if (__atomic_load_n(&block->sources_enabled, __ATOMIC_ACQUIRE) != 0u &&
+            __atomic_load_n(&block->visible, __ATOMIC_ACQUIRE) != 0u) {
+            if (tick100 != block->last_tick100) {
+                block->last_tick100 = tick100;
+                (void)framer_resident_owner_enqueue(&block->owner, generation,
+                                                    "tick.100ms", 0, 0);
+            }
+            if (seconds != block->last_second) {
+                block->last_second = seconds;
+                (void)framer_resident_owner_enqueue(&block->owner, generation,
+                                                    "tick.1s", 0, 0);
+            }
+        }
+        if (__atomic_load_n(&block->visible, __ATOMIC_ACQUIRE) != 0u &&
+            __atomic_load_n(&block->input_enabled, __ATOMIC_ACQUIRE) != 0u &&
+            __atomic_load_n(&block->poll_armed, __ATOMIC_ACQUIRE) != 0u &&
+            (int32_t)(milliseconds - __atomic_load_n(&block->poll_due_ms,
+                                                      __ATOMIC_RELAXED)) >= 0) {
+            __atomic_store_n(&block->poll_armed, 0u, __ATOMIC_RELEASE);
+            framer_resident_owner_input_poll_due(&block->owner, generation);
+        }
+        {
+            uint64_t slice_started = STOCK_TIME_US();
+            uint32_t slice_us;
+            uint32_t completion_published;
+            (void)framer_resident_owner_step(&block->owner);
+            completion_published = (uint32_t)consume_tagged_completion(block);
+            owner_finish_focus_release(block);
+            if (framer_physical_claim_fatal_retirement(
+                    &block->fatal_sources_retired,
+                    __atomic_load_n(
+                        &block->owner.telemetry.permanently_disabled,
+                        __ATOMIC_ACQUIRE))) {
+                (void)platform_remove_events(block, generation);
+                (void)platform_remove_input(block, generation);
+                (void)platform_cancel_poll(block, generation);
+            }
+            if (framer_physical_periodic_refresh_due(
+                    completion_published,
+                    (uint32_t)(milliseconds - block->last_telemetry_ms))) {
+                if (refresh_runtime_telemetry(block, 0u))
+                    block->last_telemetry_ms = milliseconds;
+            } else if (completion_published != 0u) {
+                block->last_telemetry_ms = milliseconds;
+            }
+            slice_us = (uint32_t)(STOCK_TIME_US() - slice_started);
+            if (slice_us > block->owner_max_slice_us)
+                block->owner_max_slice_us = slice_us;
+        }
+        /* Outside the measured VM slice: one bounded flash step per iteration. */
+        scene_persist_step(block);
+        widget_persist_step(block);
+        STOCK_TASK_DELAY(1u);
+        block->owner_delays += 1u;
+    }
+}
+
+static int sidecar_old_tick(void *backend, void (**old_tick)(void *))
+{
+    void **vtable;
+    uint8_t *sidecar;
+    if (backend == (void *)0 || old_tick == (void (**)(void *))0)
+        return 0;
+    vtable = *(void ***)backend;
+    if (vtable == (void **)0 || vtable[11] == (void *)0)
+        return 0;
+    sidecar = (uint8_t *)vtable[11];
+    if (*(const uint32_t *)sidecar != 0x32565343u)
+        return 0;
+    *old_tick = *(void (**)(void *))(void *)(sidecar + 4u);
+    return *old_tick != (void (*)(void *))0;
+}
+
+
+
+static void proxy_build(physical_proxy *proxy)
+{
+    uint32_t elapsed = 0u;
+    if (proxy == (physical_proxy *)0 || proxy->magic != PHYSICAL_PROXY_MAGIC ||
+        proxy->block == (physical_block *)0 ||
+        !framer_physical_lifecycle_root_ready(proxy->root))
+        return;
+    if (proxy->screen_slot < 2u)
+        __atomic_add_fetch(&proxy->block->proxy_build_counts[proxy->screen_slot],
+                           1u, __ATOMIC_RELAXED);
+    proxy->source_published = 0u;
+    proxy->image = STOCK_IMAGE_CREATE(proxy->root);
+    if (proxy->image == (void *)0)
+        return;
+    if (proxy->block->hidden_at_ms != 0u) {
+        elapsed = (now_ms() - proxy->block->hidden_at_ms) / 1000u;
+        if (elapsed > 604800u)
+            elapsed = 604800u;
+    }
+    proxy->block->hidden_at_ms = 0u;
+    __atomic_store_n(&proxy->block->visible, 1u, __ATOMIC_SEQ_CST);
+    if (framer_physical_focus_can_reopen(
+            1u,
+            __atomic_load_n(&proxy->block->focus_release_requested,
+                            __ATOMIC_ACQUIRE),
+            __atomic_load_n(&proxy->block->focus_release_applied,
+                            __ATOMIC_ACQUIRE),
+            __atomic_load_n(&proxy->block->focus_release_draining,
+                            __ATOMIC_ACQUIRE),
+            __atomic_load_n(
+                &proxy->block->owner.telemetry.permanently_disabled,
+                __ATOMIC_ACQUIRE))) {
+        __atomic_store_n(&proxy->block->focus_reopen_pending, 0u,
+                         __ATOMIC_RELEASE);
+        __atomic_store_n(&proxy->block->input_enabled, 1u, __ATOMIC_RELEASE);
+    } else {
+        __atomic_store_n(&proxy->block->focus_reopen_pending, 1u,
+                         __ATOMIC_RELEASE);
+        __atomic_store_n(&proxy->block->input_enabled, 0u, __ATOMIC_RELEASE);
+    }
+    (void)framer_runtime_visibility_set(&proxy->block->visibility, 1);
+    (void)framer_resident_owner_enqueue_host_rpc(
+        &proxy->block->owner, proxy->block->widget_assets.generation, 0xb24eu, 1,
+        (int32_t)elapsed);
+}
+
+static void proxy_cleanup(physical_proxy *proxy)
+{
+    if (proxy == (physical_proxy *)0 || proxy->magic != PHYSICAL_PROXY_MAGIC ||
+        proxy->block == (physical_block *)0)
+        return;
+    /* Close both producer gates before publishing the owner-thread release
+     * request. A wrapper that already crossed the gate is counted and must
+     * retire before owner_begin_focus_release snapshots the raw held bitmap. */
+    if (proxy->screen_slot < 2u)
+        __atomic_add_fetch(&proxy->block->proxy_cleanup_counts[proxy->screen_slot],
+                           1u, __ATOMIC_RELAXED);
+    __atomic_store_n(&proxy->block->visible, 0u, __ATOMIC_SEQ_CST);
+    __atomic_store_n(&proxy->block->input_enabled, 0u, __ATOMIC_SEQ_CST);
+    __atomic_store_n(&proxy->block->poll_armed, 0u, __ATOMIC_RELEASE);
+    __atomic_add_fetch(&proxy->block->focus_release_requested, 1u,
+                       __ATOMIC_SEQ_CST);
+    (void)framer_runtime_visibility_set(&proxy->block->visibility, 0);
+    proxy->block->hidden_at_ms = now_ms();
+    (void)framer_resident_owner_enqueue_host_rpc(
+        &proxy->block->owner, proxy->block->widget_assets.generation, 0xb24eu, 0, 0);
+    proxy->image = (void *)0;
+    proxy->source_published = 0u;
+}
+
+
+__attribute__((used, visibility("default")))
+uint32_t framer_physical_weather_id(physical_proxy *proxy)
+{
+    /* ONE WIDGET = ONE SCREEN: screen id 28 + slot, so each widget slot is a
+     * distinct screen in the stock registry and navigation. */
+    if (proxy == (physical_proxy *)0 || proxy->magic != PHYSICAL_PROXY_MAGIC)
+        return PHYSICAL_SCREEN_ID;
+    return PHYSICAL_SCREEN_ID + proxy->screen_slot;
+}
+
+static void proxy_tick(physical_proxy *proxy)
+{
+    physical_block *block;
+    uint8_t *framebuffer;
+    void (*old_tick)(void *);
+    framer_tf_result result = FRAMER_TF_OK;
+    uint64_t started;
+    if (proxy == (physical_proxy *)0 || proxy->magic != PHYSICAL_PROXY_MAGIC ||
+        proxy->block == (physical_block *)0 || proxy->backend == (void *)0 ||
+        proxy->image == (void *)0 || !sidecar_old_tick(proxy->backend, &old_tick))
+        return;
+    block = proxy->block;
+    if (proxy->screen_slot < 2u)
+        __atomic_add_fetch(&block->proxy_tick_counts[proxy->screen_slot], 1u,
+                           __ATOMIC_RELAXED);
+    started = STOCK_TIME_US();
+    /* Visibility is the TICK (docs/18 §4.2): the stock host ticks exactly the
+     * one visible controller.  EDGE-triggered, so the steady-state ticks of a
+     * visible screen can never veto an RPC activation. */
+    {
+        uint32_t screen_slot = proxy->screen_slot;
+        if (screen_slot < FRAMER_F2UP_SLOT_COUNT &&
+            __atomic_load_n(&block->visible_screen_slot, __ATOMIC_ACQUIRE) !=
+                screen_slot) {
+            __atomic_store_n(&block->visible_screen_slot, screen_slot,
+                             __ATOMIC_RELEASE);
+            if (block->slot_resident[screen_slot] != 0u)
+                __atomic_store_n(&block->widget_desired_slot, screen_slot,
+                                 __ATOMIC_RELEASE);
+        }
+    }
+    /* A switch is swapping widget_assets on the owner task.  The stock per-tick
+     * TAIL must still run EVERY visible frame (docs/18 §4.3) — skipping it
+     * starved the renderer and crashed the device. */
+    if (__atomic_load_n(&block->widget_switching, __ATOMIC_ACQUIRE) != 0u) {
+        old_tick(proxy->backend);
+        goto measured_exit;
+    }
+    {
+        uint32_t screen_slot = proxy->screen_slot;
+        const physical_widget_assets *assets = &block->widget_assets;
+        framer_tf_context *target = &block->target;
+        uint8_t *admitted = &block->target_admitted;
+        const framer_tf_mailbox *mailbox =
+            (const framer_tf_mailbox *)(const void *)&block->owner.mailbox;
+        framer_tf_mailbox idle_mailbox;
+        uint32_t active = __atomic_load_n(&block->widget_active_slot,
+                                          __ATOMIC_ACQUIRE);
+        /* THIS screen renders ITS OWN slot's widget from ITS OWN resident
+         * assets and facade context.  Only the ACTIVE slot is driven by the
+         * live VM mailbox; every other screen renders its widget's authored
+         * default state, so a screen never shows another screen's widget. */
+        if (screen_slot < FRAMER_F2UP_SLOT_COUNT &&
+            block->slot_resident[screen_slot] != 0u) {
+            assets = &block->slot_assets[screen_slot];
+            target = &block->slot_target[screen_slot];
+            admitted = &block->slot_target_admitted[screen_slot];
+            if (screen_slot != active) {
+                uint32_t index;
+                zero_bytes(&idle_mailbox, sizeof(idle_mailbox));
+                idle_mailbox.sequence = 2u;
+                idle_mailbox.admitted_generation = assets->generation;
+                idle_mailbox.slots[0] = 1;
+                for (index = 1u; index < FRAMER_TF_MAILBOX_SLOTS; ++index)
+                    idle_mailbox.slots[index] = 0;
+                /* Rewound so the overlay re-applies over the base frame this
+                 * tick re-decodes. */
+                target->last_applied_revision = 0u;
+                mailbox = &idle_mailbox;
+            }
+        }
+        old_tick(proxy->backend);
+        framebuffer = (uint8_t *)proxy->backend + 160u;
+        if (!decode_lzss(framebuffer, PHYSICAL_FRAME_BYTES, assets->lzss,
+                         assets->lzss_bytes)) {
+            __atomic_add_fetch(&block->ui_render_failures, 1u,
+                               __ATOMIC_RELAXED);
+            goto measured_exit;
+        }
+        if (*admitted == 0u) {
+            result = framer_tf_admit(
+                target, assets->f2tf, assets->f2tf_bytes,
+                (const uint16_t *)(const void *)framebuffer,
+                FRAMER_TF_CANVAS_PIXELS, assets->generation,
+                assets->f2js_sha256, framer_physical_target_contract_sha256,
+                current_task_token());
+            if (result != FRAMER_TF_OK) {
+                __atomic_add_fetch(&block->ui_render_failures, 1u,
+                                   __ATOMIC_RELAXED);
+                goto measured_exit;
+            }
+            *admitted = 1u;
+        }
+        result = framer_tf_render(
+            target, mailbox, (uint16_t *)(void *)framebuffer,
+            FRAMER_TF_CANVAS_PIXELS, current_task_token(),
+            &block->target_metrics);
+        if (result == FRAMER_TF_OK || result == FRAMER_TF_HIDDEN) {
+            /* The present is mandatory per-tick work for a live screen. */
+            proxy->descriptor_flip ^= 1u;
+            STOCK_IMAGE_SET_SOURCE(
+                proxy->image,
+                &proxy->descriptor[proxy->descriptor_flip & 1u]);
+            if (proxy->source_published == 0u) {
+                STOCK_OBJECT_ALIGN(proxy->image, 9, 0, 0);
+                proxy->source_published = 1u;
+            }
+        }
+        if (result == FRAMER_TF_OK && screen_slot == active) {
+            framer_runtime_visibility_publish(
+                &block->visibility, assets->generation,
+                block->target_metrics.applied_revision);
+            __atomic_store_n(&block->ui_applied_revision,
+                             block->target_metrics.applied_revision,
+                             __ATOMIC_RELEASE);
+        } else if (result != FRAMER_TF_OK && result != FRAMER_TF_HIDDEN) {
+            __atomic_add_fetch(&block->ui_render_failures, 1u,
+                               __ATOMIC_RELAXED);
+        }
+    }
+measured_exit:
+    {
+        uint64_t elapsed64 = STOCK_TIME_US() - started;
+        uint32_t elapsed = elapsed64 > UINT32_MAX ? UINT32_MAX :
+                           (uint32_t)elapsed64;
+        uint32_t maximum = __atomic_load_n(&block->ui_max_tick_us,
+                                            __ATOMIC_RELAXED);
+        while (elapsed > maximum &&
+               !__atomic_compare_exchange_n(&block->ui_max_tick_us,
+                                            &maximum, elapsed, 0,
+                                            __ATOMIC_RELEASE,
+                                            __ATOMIC_RELAXED)) {
+        }
+    }
+}
+
+static void proxy_encoder(physical_proxy *proxy, uint32_t encoder,
+                          uint32_t raw_delta)
+{
+    void *input;
+    int intercepted = 0;
+    int32_t delta = signed_delta(raw_delta);
+    if (proxy == (physical_proxy *)0 || proxy->magic != PHYSICAL_PROXY_MAGIC ||
+        proxy->block == (physical_block *)0 || proxy->backend == (void *)0)
+        return;
+    __atomic_add_fetch(&proxy->block->input_sink_inflight, 1u,
+                       __ATOMIC_SEQ_CST);
+    input = STOCK_INPUT_GET();
+    if (encoder == 1u && delta != 0 && input != (void *)0 &&
+        framer_physical_focus_accepts_key(
+            __atomic_load_n(&proxy->block->visible, __ATOMIC_SEQ_CST),
+            __atomic_load_n(&proxy->block->input_enabled,
+                            __ATOMIC_ACQUIRE)) &&
+        STOCK_FN_PRESSED(input) != 0) {
+        (void)framer_resident_owner_enqueue(
+            &proxy->block->owner, proxy->block->generation,
+            "input.fn-bottom-knob", delta, (int32_t)encoder);
+        intercepted = 1;
+    }
+    __atomic_sub_fetch(&proxy->block->input_sink_inflight, 1u,
+                       __ATOMIC_SEQ_CST);
+    if (intercepted)
+        return;
+    /* Exact renderer-v1 backend encoder slot; never call it on the proxy. */
+    {
+        void **vtable = *(void ***)proxy->backend;
+        if (vtable != (void **)0 && vtable[9] != (void *)0)
+            ((void (*)(void *, uint32_t, uint32_t))vtable[9])(
+                proxy->backend, encoder, raw_delta);
+    }
+}
+
+__attribute__((used, visibility("default")))
+void framer_physical_key_after_stock(void *controller, uint32_t native_token,
+                                     uint8_t level)
+{
+    physical_proxy *proxy = (physical_proxy *)controller;
+    physical_block *block;
+    uint32_t logical_token;
+    if (proxy == (physical_proxy *)0 || proxy->magic != PHYSICAL_PROXY_MAGIC ||
+        proxy->block == (physical_block *)0)
+        return;
+    block = proxy->block;
+    if (block->magic != PHYSICAL_MAGIC ||
+        block->generation != PHYSICAL_GENERATION)
+        return;
+    __atomic_add_fetch(&block->input_sink_inflight, 1u, __ATOMIC_SEQ_CST);
+    if (!framer_physical_focus_accepts_key(
+            __atomic_load_n(&block->visible, __ATOMIC_SEQ_CST),
+            __atomic_load_n(&block->input_enabled, __ATOMIC_ACQUIRE)))
+        goto finished;
+    block->last_raw_token = native_token;
+    block->last_raw_level = level;
+    /* No JS edge is emitted during discovery. The gate flips only after live
+     * down+up observations for exact Space and LeftShift; the next physical
+     * edge begins a clean logical session. Unknown tokens never wildcard-map. */
+    if (framer_physical_key_gate_observe_and_map(
+            &block->key_probe, native_token, level, &logical_token))
+        (void)framer_resident_owner_input_after_stock(
+            &block->owner, block->generation, logical_token, level != 0u,
+            now_ms());
+finished:
+    __atomic_sub_fetch(&block->input_sink_inflight, 1u, __ATOMIC_SEQ_CST);
+}
+
+
 /* Make ONE slot resident: its container is copied into its OWN PSRAM arena,
  * re-admitted there (the renderer only ever sees the copy — the scene-adopt
  * lesson), and recorded in slot_assets[slot].  Resident slots can be rendered
@@ -1636,7 +3599,7 @@ static physical_proxy *publish_proxy_for_slot(physical_block *block,
 
 static physical_proxy *publish_proxy(physical_block *block)
 {
-    return publish_proxy_for_slot(block, &block->proxy_storage, 0u);
+    return publish_proxy_for_slot(block, &block->proxy_storage[0], 0u);
 }
 
 __attribute__((used, visibility("default")))
@@ -1779,6 +3742,26 @@ int framer_physical_module_startup(void *controller,
          * off USB).  docs/17 Phase B lists the research prerequisites; the
          * op-7 lifecycle forensics stay in for that work. */
         STOCK_ADD_NAVIGATION(block->navigation, PHYSICAL_SCREEN_ID);
+        /* ONE WIDGET = ONE SCREEN: every OTHER resident slot gets its own
+         * controller (screen id 28 + slot) in the registry and its own
+         * navigation entry, so the knob reaches each widget directly and each
+         * screen renders its own widget's pixels (docs/18 §6.1). */
+        {
+            uint32_t slot;
+            for (slot = 1u; slot < FRAMER_F2UP_SLOT_COUNT; ++slot) {
+                physical_proxy *extra;
+                if (block->slot_resident[slot] == 0u)
+                    continue;
+                extra = publish_proxy_for_slot(block,
+                                               &block->proxy_storage[slot],
+                                               slot);
+                if (extra != (physical_proxy *)0 &&
+                    framer_physical_registration_matches(extra->registry,
+                                                         block->registry))
+                    STOCK_ADD_NAVIGATION(block->navigation,
+                                         PHYSICAL_SCREEN_ID + slot);
+            }
+        }
         __atomic_store_n(&block->navigation_published, 1u, __ATOMIC_RELEASE);
         __atomic_store_n(&block->boot_state, 7u, __ATOMIC_RELEASE);
         __atomic_store_n(&block->rpc_ready, 1u, __ATOMIC_RELEASE);
