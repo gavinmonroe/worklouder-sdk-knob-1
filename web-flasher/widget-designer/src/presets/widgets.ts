@@ -479,10 +479,10 @@ widget.on("device.typing-speed", function (event) {
 };
 
 export const PRESET_ORDER: { id: keyof typeof PRESETS; label: string; tagline: string }[] = [
-  { id: "counter", label: "TALLY", tagline: "Start here: keys, chords, the Fn knob and live digits() - the hello-world of the device DSL" },
-  { id: "clock", label: "CLOCK", tagline: "Host-fed time over host.rpc, a blinking colon via el.hidden, knob trims the minutes" },
-  { id: "focusTimer", label: "FOCUS TIMER", tagline: "A real pomodoro: tick.1s countdown, lockstep class states, knob sets the duration" },
-  { id: "metronome", label: "METRONOME", tagline: "widget.animate() samples the CSS pendulum into a device flipbook; digits + states" },
-  { id: "weatherDevice", label: "WEATHER", tagline: "Live open-meteo data end-to-end: shared-slot digits, condition marks, two forecast rows" },
-  { id: "eventLab", label: "EVENT LAB", tagline: "Every event kind with its own counter - push it to PROVE ticks, keys, chords, knob and host RPC reach your device" },
+  { id: "counter", label: "TALLY", tagline: "A number you bump with any key - turn the knob to change how much it jumps, press two keys together to reset" },
+  { id: "clock", label: "CLOCK", tagline: "The time sent from your computer, with a colon that blinks each second; the knob trims the minutes" },
+  { id: "focusTimer", label: "FOCUS TIMER", tagline: "A working pomodoro: press to start, watch it count down, turn the knob to set how long" },
+  { id: "metronome", label: "METRONOME", tagline: "A pendulum that really swings on the keyboard screen, with a tempo you set by knob" },
+  { id: "weatherDevice", label: "WEATHER", tagline: "Today's temperature and a two-day forecast, fed live from your computer" },
+  { id: "eventLab", label: "EVENT LAB", tagline: "One counter per thing that can happen - press keys, turn the knob, type anywhere - and watch each one tick up" },
 ];

@@ -830,6 +830,22 @@ export function transpileWidgetScript(dslSource: string): TranspiledWidget {
     });
   }
 
+  // A widget only appears on the keyboard once it publishes; the device shows
+  // whatever was last painted until then. Without a 1-second handler that
+  // rewrites its targets, a widget driven purely by keys or feeds sits blank
+  // from boot until the first event arrives — the single most confusing thing
+  // a new widget can do, and invisible in the Designer (where the simulator
+  // paints immediately). Warn, do not block: some widgets legitimately wait.
+  if (!tick1s && !tick100 && emittedHandlers.length > 0) {
+    diagnostics.push({
+      severity: "warning",
+      message:
+        'No "tick.1s" handler: on the keyboard this widget stays blank until its ' +
+        "first key, knob or feed event arrives. Add a tick.1s handler that rewrites " +
+        "what it shows, so it paints as soon as it appears.",
+    });
+  }
+
   const events: TranspiledWidget["events"] = {};
   if (tick100) events["tick.100ms"] = true;
   if (tick1s) events["tick.1s"] = true;

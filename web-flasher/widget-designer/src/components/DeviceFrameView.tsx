@@ -43,10 +43,21 @@ interface DecodedContainer {
   generation: number;
 }
 
-/** Reverse map of TARGET_FACADE_RESULT for honest non-ok status labels. */
+/** Reverse map of TARGET_FACADE_RESULT — kept for the diagnostic detail. */
 const RESULT_NAME: Record<number, string> = Object.fromEntries(
   Object.entries(TARGET_FACADE_RESULT).map(([name, value]) => [value as number, name]),
 );
+
+/** What each render outcome MEANS, and what to do about it. The chip must tell
+ *  a designer their next move, not name an internal enum. */
+function explainRenderResult(result: number): string {
+  const name = RESULT_NAME[result] ?? "error";
+  if (/torn/i.test(name)) return "The preview updated mid-frame — try again.";
+  if (/generation|format|contract/i.test(name)) return "This build is out of date — build the widget again.";
+  if (/overflow|bounds/i.test(name)) return "Something is drawn outside the screen — check your element positions.";
+  if (/thread|owner/i.test(name)) return "The preview lost sync — reload the page.";
+  return "The keyboard couldn't draw this widget.";
+}
 
 function base64ToBytes(base64: string): Uint8Array {
   const binary = atob(base64);
@@ -216,7 +227,7 @@ export function DeviceFrameView({
       {hasContainer && decodeError && (
         <div className="wd-device-state" role="status" data-tone="error">
           <Icon name="alert-triangle" size={20} />
-          <span className="wd-device-state-title">Container did not decode</span>
+          <span className="wd-device-state-title">Couldn't render the keyboard preview</span>
           <span className="wd-device-state-hint wd-nums">{decodeError}</span>
         </div>
       )}
@@ -226,7 +237,9 @@ export function DeviceFrameView({
       {hasContainer && !decodeError && nonOk && (
         <div className="wd-device-chip" role="status">
           <Icon name="alert-triangle" size={12} />
-          Device result: {RESULT_NAME[renderResult as number] ?? "error"}
+          <span title={`render result: ${RESULT_NAME[renderResult as number] ?? "error"}`}>
+            {explainRenderResult(renderResult as number)}
+          </span>
         </div>
       )}
     </div>

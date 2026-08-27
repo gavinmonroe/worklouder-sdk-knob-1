@@ -91,7 +91,8 @@ export function ScreensView({
           <div>
             <CardTitle>Screens</CardTitle>
             <CardDescription>
-              The keyboard's widget slot bank — one live at a time, the rest cold storage.
+              Every widget stored on your keyboard. Each one gets its own screen — turn the
+              knob to reach it. One is live at a time; the others wait, ready to switch to.
             </CardDescription>
           </div>
           {ready && (
@@ -128,8 +129,8 @@ export function ScreensView({
           <EmptyState
             size="sm"
             icon="search"
-            title="Identify to read the slots"
-            hint="The slot bank is read from the device's mquickjs capability — identify the firmware to sweep it."
+            title="Check what's on your keyboard"
+            hint="Read the keyboard to see which widget is on each screen."
             action={
               onIdentify ? (
                 <Button variant="primary" size="sm" onClick={onIdentify}>
@@ -143,9 +144,10 @@ export function ScreensView({
 
         {phase === "unsupported" && (
           <Callout tone="info">
-            This firmware exposes a single fixed widget slot — the multi-slot RPC
-            (<code>uploader=1</code>) isn't advertised, so there's no slot bank to sweep. Push
-            still targets the one live widget from the <strong className="font-medium">Push</strong> card.
+            This keyboard holds one widget at a time, so sending replaces whatever is on it.
+            To keep several widgets and switch between them with the knob, install{" "}
+            <strong className="font-medium">Widget Designer (multi-widget)</strong> from the web
+            flasher — it's a one-time update.
           </Callout>
         )}
 
@@ -154,7 +156,7 @@ export function ScreensView({
         {phase === "error" && (
           <div className="space-y-3">
             <Callout tone="danger">
-              Couldn't sweep the slot bank{error ? <>: {error}</> : "."}
+              Couldn't read your keyboard's screens{error ? <>: {error}</> : "."}
             </Callout>
             <Button variant="primary" size="sm" onClick={onRefresh}>
               <Icon name="rotate-ccw" size={13} />
@@ -249,7 +251,7 @@ function SlotCard({
       {dataState === "unknown" && (
         <div className="wd-slotcard-body">
           <div className="wd-slotcard-name text-secondary">Couldn't read this slot</div>
-          <div className="wd-slotcard-meta">op 5 returned no inventory.</div>
+          <div className="wd-slotcard-meta">The keyboard didn't answer for this screen.</div>
         </div>
       )}
 

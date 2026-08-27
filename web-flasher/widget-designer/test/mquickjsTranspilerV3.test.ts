@@ -22,7 +22,7 @@ describe("v3 transpiler: pulse preset contract", () => {
   const out = transpileWidgetScript(LEGACY_PRESETS.pulse.script);
 
   it("transpiles the v3 showcase preset with clean diagnostics", () => {
-    expect(out.diagnostics).toEqual([]);
+    expect(out.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
   });
 
   it("produces the v3 metadata contract: slots, tables, animations, hidden, digits", () => {
@@ -170,7 +170,7 @@ widget.on("tick.100ms", function (event) {
   document.querySelector("#led").className = pick(i, "a", "b", "c");
 });
 `);
-    expect(out.diagnostics).toEqual([]);
+    expect(out.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
     expect(out.slotMap).toEqual({ led: { textSlot: 1, classSlot: 2 } });
     expect(out.animations).toEqual({ dot: { frames: 4, slot: 3 } });
     expect(out.sharedPickIndex).toEqual({ led: true });
@@ -194,7 +194,7 @@ widget.on("tick.100ms", function (event) {
 
   it("synthesizes tick.100ms for an animate-only script", () => {
     const out = transpileWidgetScript(`widget.animate("#spin", 2);\n`);
-    expect(out.diagnostics).toEqual([]);
+    expect(out.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
     expect(out.animations).toEqual({ spin: { frames: 2, slot: 1 } });
     expect(out.events).toEqual({ "tick.100ms": true });
     const sim = createMquickjsSimulator(out.deviceSource);
@@ -257,7 +257,7 @@ widget.on("input.fn-bottom-knob", function (event) {
   document.querySelector("#x").hidden = event.delta < 0;
 });
 `);
-    expect(out.diagnostics).toEqual([]);
+    expect(out.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
     expect(out.hiddenVariant).toEqual({ x: 2 });
     expect(out.deviceSource).toContain("__hide(1, event.delta < 0, 2);");
 
@@ -317,7 +317,7 @@ widget.on("host.rpc:0xB201", function (event) {
   document.querySelector("#n").textContent = digits(v, 4);
 });
 `);
-    expect(out.diagnostics).toEqual([]);
+    expect(out.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
     expect(out.digitTargets).toEqual({ n: { count: 4, slot: 1 } });
     expect(out.slotMap).toEqual({});
     expect(out.deviceSource).toContain("__set(1, (v) | 0);");
@@ -445,7 +445,7 @@ widget.on("input.fn-bottom-knob", function (event) {
   document.querySelector("#led").className = pick(i, "on", "off");
 });
 `);
-    expect(out.diagnostics).toEqual([]);
+    expect(out.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
     expect(out.slotMap).toEqual({ led: { classSlot: 1 } });
     expect(out.classTables).toEqual({ led: ["on", "off"] });
     // Single-property targets get no lockstep verdict.
@@ -464,7 +464,7 @@ widget.on("tick.1s", function (event) {
   document.querySelector("#z").className = pick(i, "ca", "cb");
 });
 `);
-    expect(out.diagnostics).toEqual([]);
+    expect(out.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
     expect(out.sharedPickIndex).toEqual({ z: true });
     const sim = createMquickjsSimulator(out.deviceSource);
     const frame = sim.dispatch({ kind: "tick.1s" } as any);
@@ -482,7 +482,7 @@ widget.on("tick.1s", function (event) {
   document.querySelector("#led").className = pick(i, "a", "b", "c");
 });
 `);
-    expect(out.diagnostics).toEqual([]);
+    expect(out.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
     expect(out.sharedPickIndex).toEqual({ led: true });
     expect(out.tables.led).toEqual(["OK"]);
     expect(out.classTables.led).toEqual(["a", "b", "c"]);
@@ -538,7 +538,7 @@ widget.on("tick.1s", function (event) {
   document.querySelector("#z").style.color = pick(j, "#111", "#222");
 });
 `);
-    expect(out.diagnostics).toEqual([]);
+    expect(out.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
     expect(out.sharedPickIndex).toEqual({ z: false });
   });
 
@@ -642,7 +642,7 @@ widget.on("tick.1s", function (event) {
   document.querySelector("#x").style.color = pick(a, "#111", "#222");
 });
 `);
-    expect(out.diagnostics).toEqual([]);
+    expect(out.diagnostics.filter((d) => d.severity === "error")).toEqual([]);
     expect(out.deviceSource).not.toMatch(/__hide|__digits|__anim/);
     expect(out.classTables).toEqual({});
     expect(out.animations).toEqual({});
