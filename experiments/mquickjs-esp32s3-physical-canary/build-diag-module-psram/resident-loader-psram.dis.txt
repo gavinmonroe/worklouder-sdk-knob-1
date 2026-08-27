@@ -21,7 +21,7 @@ Disassembly of section .text:
 4211e484:	e55c      	movi.n	a5, 94
 4211e486:	504037        	ball	a0, a3, 4211e4da <framer_physical_loader_start+0x4a>
 4211e489:	e2          	.byte	0xe2
-4211e48a:	d84037        	ball	a0, a3, 4211e466 <framer_physical_tail_trampoline+0x6>
+4211e48a:	fc4037        	ball	a0, a3, 4211e48a <framer_physical_tail_trampoline+0x2a>
 4211e48d:	3e58      	l32i.n	a5, a14, 12
 4211e48f:	42          	.byte	0x42
 
@@ -153,7 +153,7 @@ Disassembly of section .text:
 4211e5cb:	7cddd2        	addmi	a13, a13, 0x7c00
 4211e5ce:	24c1b2        	addi	a11, a1, 36
 4211e5d1:	02ad      	mov.n	a10, a2
-4211e5d3:	ffae81        	l32r	a8, 4211e48c <framer_physical_tail_trampoline+0x2c> (423e58d8 <__bswapsi2+0x2c6100>)
+4211e5d3:	ffae81        	l32r	a8, 4211e48c <framer_physical_tail_trampoline+0x2c> (423e58fc <__bswapsi2+0x2c6124>)
 4211e5d6:	0008e0        	callx8	a8
 4211e5d9:	71a9      	s32i.n	a10, a1, 28
 4211e5db:	205aa0        	or	a5, a10, a10
@@ -1464,37 +1464,36 @@ Disassembly of section .text:
 4211f339:	04ad      	mov.n	a10, a4
 4211f33b:	ffd4e5        	call8	4211f088 <sha256_block>
 4211f33e:	f01d      	retw.n
-4211f340:	d21b52        	l16ui	a5, a11, 0x1a4
-4211f343:	37fb      	addi.n	a3, a7, 15
-4211f345:	cec8      	l32i.n	a12, a14, 48
-4211f347:	40          	.byte	0x40
-4211f348:	ad          	.byte	0xad
-4211f349:	9f          	.byte	0x9f
-4211f34a:	fff5b6        	bltui	a5, 0x100, 4211f34d <framer_mqjs_resident_sha256_words+0xfd>
-4211f34d:	da1904        	ee.vst.128.ip	q2, a0, 0xfffff990
-4211f350:	cd3fc7        	bltu	a15, a12, 4211f321 <framer_mqjs_resident_sha256_words+0xd1>
-4211f353:	db4d96        	bltz	a13, 4211f10b <sha256_block+0x83>
-4211f356:	a15b05        	call0	420c0908 <esp_mmu_map-0x34a94>
-4211f359:	bbfc      	bnez.n	a11, 4211f398 <verify_flash_page+0x10>
-4211f35b:	2f4445        	call0	4214e7a0 <__bswapsi2+0x2efc8>
-4211f35e:	8809c1        	l32r	a12, 42101384 <esp_mmu_unmap+0xbc10>
-4211f361:	1af650        	sub.s	f15, f6, f5
-4211f364:	cec851        	l32r	a5, 42112e84 <esp_mmu_unmap+0x1d710>
-4211f367:	5d          	.byte	0x5d
-4211f368:	ae18      	l32i.n	a1, a14, 40
-4211f36a:	b638      	l32i.n	a3, a6, 44
-4211f36c:	8cca      	add.n	a8, a12, a12
-4211f36e:	197705        	call0	42138ae0 <__bswapsi2+0x19308>
-4211f371:	772a      	add.n	a7, a7, a2
-4211f373:	af6a      	add.n	a10, a15, a6
-4211f375:	f00a      	add.n	a15, a0, a0
-4211f377:	6d70ab9e 	ee.vmulas.u8.accx.ld.ip.qup	q2, a9, -80, q2, q4, q7, q0
-4211f37b:	22fff16e 	ee.vmulas.s8.accx.ld.ip.qup	q5, a6, 16, q3, q7, q7, q7
-4211f37f:	14          	.byte	0x14
-4211f380:	539c      	beqz.n	a3, 4211f399 <verify_flash_page+0x11>
-4211f382:	5774420f 	ee.vmulas.u16.qacc.ld.ip.qup	q6, a0, 0x120, q5, q0, q7, q4
-4211f386:	0f          	.byte	0xf
-4211f387:	42          	.byte	0x42
+4211f340:	c3          	.byte	0xc3
+4211f341:	6198      	l32i.n	a9, a1, 24
+4211f343:	8e78      	l32i.n	a7, a14, 32
+4211f345:	af4147        	ball	a1, a4, 4211f2f8 <framer_mqjs_resident_sha256_words+0xa8>
+4211f348:	64c9      	s32i.n	a12, a4, 24
+4211f34a:	20d2b0        	or	a13, a2, a11
+4211f34d:	c924b5        	call12	420e8598 <esp_mmu_map-0xce04>
+4211f350:	8d          	.byte	0x8d
+4211f351:	1c28      	l32i.n	a2, a12, 4
+4211f353:	73f045        	call0	42193258 <__bswapsi2+0x73a80>
+4211f356:	2717121f 	ee.vmulas.s8.accx.ld.ip.qup	q6, a1, 0x120, q4, q2, q1, q7
+4211f35a:	1e2bb5        	call12	4213d614 <__bswapsi2+0x1de3c>
+4211f35d:	baf974        	ee.vst.128.ip	q7, a7, 0x790
+4211f360:	da39      	s32i.n	a3, a10, 52
+4211f362:	dd          	.byte	0xdd
+4211f363:	33          	.byte	0x33
+4211f364:	ff5c26        	beqi	a12, 5, 4211f367 <framer_mqjs_resident_sha256_words+0x117>
+4211f367:	138c      	beqz.n	a3, 4211f36c <framer_mqjs_resident_sha256_words+0x11c>
+4211f369:	a3af46        	j	4210822a <esp_mmu_unmap+0x12ab6>
+4211f36c:	74          	.byte	0x74
+4211f36d:	49c2601f 	ee.vmulas.u16.accx.ld.ip.qup	q2, a1, 0xfffffe00, q5, q5, q4, q2
+4211f371:	9948bcbe 	ee.stf.128.xp	f3, f0, f11, f4, a11, a12
+4211f375:	2e3435        	call12	4214d6b8 <__bswapsi2+0x2dee0>
+4211f378:	6d          	.byte	0x6d
+4211f379:	e6e837        	bbsi	a8, 3, 4211f363 <framer_mqjs_resident_sha256_words+0x113>
+4211f37c:	798883        	lsip	f8, a8, 0x1e4
+4211f37f:	9c29      	s32i.n	a2, a12, 36
+4211f381:	420f53        	lsi	f5, a15, 0x108
+4211f384:	74          	.byte	0x74
+4211f385:	420f57        	bnone	a15, a5, 4211f3cb <verify_flash_page+0x43>
 
 4211f388 <verify_flash_page>:
 4211f388:	00a136        	entry	a1, 80
@@ -1522,53 +1521,53 @@ Disassembly of section .text:
 4211f3c0:	ffe8e5        	call8	4211f250 <framer_mqjs_resident_sha256_words>
 4211f3c3:	002182        	l32i	a8, a1, 0
 4211f3c6:	043416        	beqz	a4, 4211f40d <verify_flash_page+0x85>
-4211f3c9:	ffec91        	l32r	a9, 4211f37c <framer_mqjs_resident_sha256_words+0x12c> (1422fff1 <esp_mmu_map-0x2dec53ab>)
+4211f3c9:	ffec91        	l32r	a9, 4211f37c <framer_mqjs_resident_sha256_words+0x12c> (29798883 <esp_mmu_map-0x1895cb19>)
 4211f3cc:	021897        	beq	a8, a9, 4211f3d2 <verify_flash_page+0x4a>
 4211f3cf:	0021c6        	j	4211f45a <verify_flash_page+0xd2>
-4211f3d2:	ffe981        	l32r	a8, 4211f378 <framer_mqjs_resident_sha256_words+0x128> (6e6d70ab <__bswapsi2+0x2c5b78d3>)
+4211f3d2:	ffe981        	l32r	a8, 4211f378 <framer_mqjs_resident_sha256_words+0x128> (e6e8376d <__bswapsi2+0xa4d63f95>)
 4211f3d5:	1198      	l32i.n	a9, a1, 4
 4211f3d7:	7f9987        	bne	a9, a8, 4211f45a <verify_flash_page+0xd2>
-4211f3da:	ffe681        	l32r	a8, 4211f374 <framer_mqjs_resident_sha256_words+0x124> (9ef00aaf <__bswapsi2+0x5cde12d7>)
+4211f3da:	ffe681        	l32r	a8, 4211f374 <framer_mqjs_resident_sha256_words+0x124> (2e343599 <esp_mmu_map-0x13db1e03>)
 4211f3dd:	2198      	l32i.n	a9, a1, 8
 4211f3df:	779987        	bne	a9, a8, 4211f45a <verify_flash_page+0xd2>
-4211f3e2:	ffe381        	l32r	a8, 4211f370 <framer_mqjs_resident_sha256_words+0x120> (6a772a19 <__bswapsi2+0x28653241>)
+4211f3e2:	ffe381        	l32r	a8, 4211f370 <framer_mqjs_resident_sha256_words+0x120> (48bcbe49 <__bswapsi2+0x6aac671>)
 4211f3e5:	3198      	l32i.n	a9, a1, 12
 4211f3e7:	6f9987        	bne	a9, a8, 4211f45a <verify_flash_page+0xd2>
-4211f3ea:	ffe081        	l32r	a8, 4211f36c <framer_mqjs_resident_sha256_words+0x11c> (77058cca <__bswapsi2+0x34f394f2>)
+4211f3ea:	ffe081        	l32r	a8, 4211f36c <framer_mqjs_resident_sha256_words+0x11c> (c2601f74 <__bswapsi2+0x804e279c>)
 4211f3ed:	4198      	l32i.n	a9, a1, 16
 4211f3ef:	679987        	bne	a9, a8, 4211f45a <verify_flash_page+0xd2>
-4211f3f2:	ffdd81        	l32r	a8, 4211f368 <framer_mqjs_resident_sha256_words+0x118> (b638ae18 <__bswapsi2+0x7426b640>)
+4211f3f2:	ffdd81        	l32r	a8, 4211f368 <framer_mqjs_resident_sha256_words+0x118> (a3af4613 <__bswapsi2+0x619d4e3b>)
 4211f3f5:	5198      	l32i.n	a9, a1, 20
 4211f3f7:	5f9987        	bne	a9, a8, 4211f45a <verify_flash_page+0xd2>
-4211f3fa:	ffda81        	l32r	a8, 4211f364 <framer_mqjs_resident_sha256_words+0x114> (5dcec851 <__bswapsi2+0x1bbcd079>)
+4211f3fa:	ffda81        	l32r	a8, 4211f364 <framer_mqjs_resident_sha256_words+0x114> (8cff5c26 <__bswapsi2+0x4aed644e>)
 4211f3fd:	6198      	l32i.n	a9, a1, 24
 4211f3ff:	579987        	bne	a9, a8, 4211f45a <verify_flash_page+0xd2>
-4211f402:	ffd791        	l32r	a9, 4211f360 <framer_mqjs_resident_sha256_words+0x110> (1af65088 <esp_mmu_map-0x27190314>)
+4211f402:	ffd791        	l32r	a9, 4211f360 <framer_mqjs_resident_sha256_words+0x110> (33ddda39 <esp_mmu_map-0xe317963>)
 4211f405:	7188      	l32i.n	a8, a1, 28
 4211f407:	c08890        	sub	a8, a8, a9
 4211f40a:	001046        	j	4211f44f <verify_flash_page+0xc7>
-4211f40d:	ffd391        	l32r	a9, 4211f35c <framer_mqjs_resident_sha256_words+0x10c> (9c12f44 <esp_mmu_map-0x384e2458>)
+4211f40d:	ffd391        	l32r	a9, 4211f35c <framer_mqjs_resident_sha256_words+0x10c> (baf9741e <__bswapsi2+0x78e77c46>)
 4211f410:	427c      	movi.n	a2, -12
 4211f412:	469897        	bne	a8, a9, 4211f45c <verify_flash_page+0xd4>
-4211f415:	ffd081        	l32r	a8, 4211f358 <framer_mqjs_resident_sha256_words+0x108> (45bbfca1 <__bswapsi2+0x3aa04c9>)
+4211f415:	ffd081        	l32r	a8, 4211f358 <framer_mqjs_resident_sha256_words+0x108> (2bb52717 <esp_mmu_map-0x165a2c85>)
 4211f418:	1198      	l32i.n	a9, a1, 4
 4211f41a:	3e9987        	bne	a9, a8, 4211f45c <verify_flash_page+0xd4>
-4211f41d:	ffcd81        	l32r	a8, 4211f354 <framer_mqjs_resident_sha256_words+0x104> (5b05db4d <__bswapsi2+0x18f3e375>)
+4211f41d:	ffcd81        	l32r	a8, 4211f354 <framer_mqjs_resident_sha256_words+0x104> (121f73f0 <esp_mmu_map-0x2fefdfac>)
 4211f420:	2198      	l32i.n	a9, a1, 8
 4211f422:	369987        	bne	a9, a8, 4211f45c <verify_flash_page+0xd4>
-4211f425:	ffca81        	l32r	a8, 4211f350 <framer_mqjs_resident_sha256_words+0x100> (96cd3fc7 <__bswapsi2+0x54bb47ef>)
+4211f425:	ffca81        	l32r	a8, 4211f350 <framer_mqjs_resident_sha256_words+0x100> (451c288d <__bswapsi2+0x30a30b5>)
 4211f428:	3198      	l32i.n	a9, a1, 12
 4211f42a:	2e9987        	bne	a9, a8, 4211f45c <verify_flash_page+0xd4>
-4211f42d:	ffc781        	l32r	a8, 4211f34c <framer_mqjs_resident_sha256_words+0xfc> (da1904ff <__bswapsi2+0x98070d27>)
+4211f42d:	ffc781        	l32r	a8, 4211f34c <framer_mqjs_resident_sha256_words+0xfc> (c924b520 <__bswapsi2+0x8712bd48>)
 4211f430:	4198      	l32i.n	a9, a1, 16
 4211f432:	269987        	bne	a9, a8, 4211f45c <verify_flash_page+0xd4>
-4211f435:	ffc481        	l32r	a8, 4211f348 <framer_mqjs_resident_sha256_words+0xf8> (f5b69fad <__bswapsi2+0xb3a4a7d5>)
+4211f435:	ffc481        	l32r	a8, 4211f348 <framer_mqjs_resident_sha256_words+0xf8> (d2b064c9 <__bswapsi2+0x909e6cf1>)
 4211f438:	5198      	l32i.n	a9, a1, 20
 4211f43a:	1e9987        	bne	a9, a8, 4211f45c <verify_flash_page+0xd4>
-4211f43d:	ffc181        	l32r	a8, 4211f344 <framer_mqjs_resident_sha256_words+0xf4> (40cec837 <esp_mmu_map-0x1408b65>)
+4211f43d:	ffc181        	l32r	a8, 4211f344 <framer_mqjs_resident_sha256_words+0xf4> (af41478e <__bswapsi2+0x6d2f4fb6>)
 4211f440:	6198      	l32i.n	a9, a1, 24
 4211f442:	169987        	bne	a9, a8, 4211f45c <verify_flash_page+0xd4>
-4211f445:	ffbe91        	l32r	a9, 4211f340 <framer_mqjs_resident_sha256_words+0xf0> (fbd21b52 <__bswapsi2+0xb9c0237a>)
+4211f445:	ffbe91        	l32r	a9, 4211f340 <framer_mqjs_resident_sha256_words+0xf0> (786198c3 <__bswapsi2+0x364fa0eb>)
 4211f448:	7188      	l32i.n	a8, a1, 28
 4211f44a:	020c      	movi.n	a2, 0
 4211f44c:	c08890        	sub	a8, a8, a9
@@ -1636,7 +1635,7 @@ Disassembly of section .text:
 4211f4d6:	00003c3f 	ee.vmulas.s16.accx.ld.ip.qup	q0, a3, 192, q4, q6, q0, q0
 4211f4da:	c3          	.byte	0xc3
 4211f4db:	bd          	.byte	0xbd
-4211f4dc:	000192ff 	ee.vmulas.s16.accx.ld.ip.qup	q0, a15, 32, q6, q2, q0, q1
+4211f4dc:	0001931f 	ee.vmulas.s16.accx.ld.ip.qup	q0, a1, 48, q6, q2, q0, q1
 4211f4e0:	28f7f5        	call12	42148460 <__bswapsi2+0x28c88>
 4211f4e3:	53cb      	addi.n	a5, a3, 12
 4211f4e5:	a4          	.byte	0xa4
@@ -1827,7 +1826,7 @@ Disassembly of section .text:
 4211f6ae:	102882        	l32i	a8, a8, 64
 4211f6b1:	1d9897        	bne	a8, a9, 4211f6d2 <framer_mqjs_map_canary+0x1ca>
 4211f6b4:	ff89c1        	l32r	a12, 4211f4d8 <framer_mqjs_unmap_canary+0x64> (bdc30000 <__bswapsi2+0x7bb10828>)
-4211f6b7:	ff89d1        	l32r	a13, 4211f4dc <framer_mqjs_unmap_canary+0x68> (192ff <esp_mmu_map-0x420dc09d>)
+4211f6b7:	ff89d1        	l32r	a13, 4211f4dc <framer_mqjs_unmap_canary+0x68> (1931f <esp_mmu_map-0x420dc07d>)
 4211f6ba:	01bd      	mov.n	a11, a1
 4211f6bc:	c90c      	movi.n	a9, 12
 4211f6be:	0d8976        	loop	a9, 4211f6cf <framer_mqjs_map_canary+0x1c7>
@@ -1943,8 +1942,8 @@ Disassembly of section .text:
 4211f7b6:	f01d      	retw.n
 
 4211f7b8 <framer_physical_module_sha256>:
-4211f7b8:	1ae3 3a93 a5d0 fb01 bf8a 0e17 bbd4 9a90     ...:............
-4211f7c8:	57ab d61f b259 c3cb 2920 505d b380 285b     .W..Y... )]P..[(
+4211f7b8:	8113 0d1c ae19 2978 c159 4aa1 4053 203e     ......x)Y..JS@> 
+4211f7c8:	f41b 9f9b 5e7f 9544 80dd a51e f675 c01a     .....^D.....u...
 
 4211f7d8 <__bswapsi2>:
 4211f7d8:	002136        	entry	a1, 16

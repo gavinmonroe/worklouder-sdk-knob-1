@@ -188,9 +188,9 @@ const ENTRY_META: Record<
     sample: { kind: "host.rpc", id: 0xb201, value: 7, displayName: "0xB201 ← 7" },
   },
   "input.key.down": {
-    blurb: "A declared key was pressed — the down edge, once per press. ANY key can be declared: widget.keys(\"space\", \"a\", \"enter\") picks the set (up to 16; names are space, enter, esc, tab, backspace, shift, ctrl, alt, gui, arrows, a-z, 0-9, or a raw 0xNN token). Without a declaration the widget gets the keyboard's own physical set, so every key just works.",
+    blurb: "A key was pressed — the down edge, once per press. Every key on the keyboard reaches your widget by default (event.key tells you which slot fired). widget.keys(\"space\", \"a\", \"any\") names the ones you want their own slot for — up to 16, from space, enter, esc, tab, backspace, shift, ctrl, alt, gui, arrows, a-z, 0-9, or a raw 0xNN — and \"any\" is the catch-all slot every other key lands in.",
     prelude: "var value = 0;",
-    snippet: `widget.keys("space", "a", "enter");
+    snippet: `widget.keys("space", "a", "any");
 widget.on("input.key.down", function (event) {
   // event.key is the declared index — the same bit it sets in heldMask.
   value = clamp(value + 1, 0, 999);

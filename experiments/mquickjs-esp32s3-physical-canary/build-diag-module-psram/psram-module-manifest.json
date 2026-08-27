@@ -16,9 +16,9 @@
       "file": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/mqjs-id28-text-page-psram.bin",
       "paddr": "0x210000",
       "vaddr": "0x423d0000",
-      "usedBytes": 103168,
+      "usedBytes": 103200,
       "capacityBytes": 131072,
-      "sha256": "1422fff16e6d70ab9ef00aaf6a772a1977058ccab638ae185dcec8511af65088"
+      "sha256": "29798883e6e8376d2e34359948bcbe49c2601f74a3af46138cff5c2633ddda39"
     },
     "rodata": {
       "file": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/mqjs-id28-rodata-page-psram.bin",
@@ -26,19 +26,19 @@
       "vaddr": "0x3c3f0000",
       "usedBytes": 23840,
       "capacityBytes": 65536,
-      "sha256": "09c12f4445bbfca15b05db4d96cd3fc7da1904fff5b69fad40cec837fbd21b52"
+      "sha256": "baf9741e2bb52717121f73f0451c288dc924b520d2b064c9af41478e786198c3"
     },
     "slot": {
       "file": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/mqjs-id28-slot-a-psram.bin",
       "bytes": 196608,
-      "sha256": "e31a933ad0a501fb8abf170ed4bb909aab571fd659b2cbc320295d5080b35b28",
+      "sha256": "13811c0d19ae782959c1a14a53403e201bf49b9f7f5e4495dd801ea575f61ac0",
       "identitySemantics": "SHA-256 of padded text[0x20000] || padded rodata[0x10000]"
     },
     "relocations": 0,
     "undefinedSymbols": 0,
     "writableStaticBytes": 0,
     "residentBlockBytes": 31952,
-    "startupVaddr": "0x423e58d8",
+    "startupVaddr": "0x423e58fc",
     "id28IdentityVaddr": "0x423e2fb8",
     "keySinkVaddr": "0x423e5708",
     "stackUsageRecords": 643,
@@ -53,7 +53,7 @@
   "loader": {
     "file": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/mqjs-id28-resident-loader-psram.bin",
     "bytes": 5004,
-    "sha256": "a4a18fab04696ecee57af220b5eca573eb37edcb8ef5c0ab86321ab9fd112efd",
+    "sha256": "c7c4f33faafdc4ab62571e411e577b619a260e546b255a0fa6054383e4db8ed3",
     "cavityBytes": 6840,
     "tailAddress": "0x4211e460",
     "keyWrapper": "0x4211e64c"
@@ -61,7 +61,7 @@
   "app": {
     "file": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/framer-0.4.1-mqjs-id28-PSRAM-module-app.bin",
     "bytes": 2062912,
-    "sha256": "2eeb3f0fa4b5ebcaed42effe91c18978303e79d8d59fbed09dfc86f9cfa3defc",
+    "sha256": "0d8f8119b2fbf9b9bf8c4cc79e008c451f7092dafc8e9197d097df076779a83f",
     "offset": "0x10000",
     "baseCandidateAppSha256": "674054a6e9d6536ad2414096cd89c1025e78904dff6b4a1aee0ef8cab434e808",
     "healthyAppSha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",

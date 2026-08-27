@@ -39,6 +39,10 @@
  * controller every frame (~30 ms), so 400 ms of silence means no widget screen
  * is fronted.  Well above one frame, well below human perception of "stale". */
 #define FRAMER_PHYSICAL_HIDE_SILENCE_MS 400u
+/* The reserved ANY-KEY token: HID usage 0x01 is ErrorRollOver, which is never
+ * a real key press, so a widget can declare it as a catch-all without
+ * colliding with any physical key. */
+#define FRAMER_PHYSICAL_ANY_KEY_TOKEN 0x01u
 #define PHYSICAL_PSRAM_BEGIN 0x3c1d0000u
 #define PHYSICAL_PSRAM_END 0x3c3d0000u
 /* heap_caps_malloc returns 8-byte alignment on this build (live evidence
@@ -3079,10 +3083,22 @@ void framer_physical_key_after_stock(void *controller, uint32_t native_token,
         }
         goto finished;
     }
+    /* Deliver to the widget's DECLARED token first.  When the widget never
+     * declared this key the engine answers NO_HANDLER (1) and nothing was
+     * enqueued — so re-deliver under the reserved ANY-KEY token.  A widget
+     * that declares "any" (HID 0x01, ErrorRollOver: never a real key press)
+     * therefore receives EVERY key the keyboard has, including keys past the
+     * engine's 16-token table, while a widget that declared specific keys is
+     * unaffected.  Down/up/hold all flow through this one path, so holding
+     * an undeclared letter repeats exactly like a declared key. */
     logical_token = native_token;
-    (void)framer_resident_owner_input_after_stock(
-        &block->owner, block->widget_assets.generation, logical_token,
-        level != 0u, now_ms());
+    if (framer_resident_owner_input_after_stock(
+            &block->owner, block->widget_assets.generation, logical_token,
+            level != 0u, now_ms()) == FRAMER_MQJS_NO_HANDLER &&
+        native_token != FRAMER_PHYSICAL_ANY_KEY_TOKEN)
+        (void)framer_resident_owner_input_after_stock(
+            &block->owner, block->widget_assets.generation,
+            FRAMER_PHYSICAL_ANY_KEY_TOKEN, level != 0u, now_ms());
 finished:
     __atomic_sub_fetch(&block->input_sink_inflight, 1u, __ATOMIC_SEQ_CST);
 }

@@ -59,13 +59,7 @@ describe("v3 transpiler: pulse preset contract", () => {
       keys: [
         { id: 0, nativeToken: 0x2c },
         { id: 1, nativeToken: 0xe1 },
-        { id: 2, nativeToken: 0xe0 },
-        { id: 3, nativeToken: 0xe2 },
-        { id: 4, nativeToken: 0xe3 },
-        { id: 5, nativeToken: 0x50 },
-        { id: 6, nativeToken: 0x51 },
-        { id: 7, nativeToken: 0x4f },
-        { id: 8, nativeToken: 0x28 },
+        { id: 2, nativeToken: 0x01 },
       ],
       chords: [{ id: 0, heldMask: 3 }],
     });
@@ -160,8 +154,8 @@ describe("v3 transpiler: pulse preset contract", () => {
       targets,
     });
     // tick.100ms + knob + 1 host id + 2 keys + 1 chord.
-    expect(built.events.records).toHaveLength(13);
-    expect(built.events.keyCount).toBe(9);
+    expect(built.events.records).toHaveLength(7);
+    expect(built.events.keyCount).toBe(3);
     expect(built.events.chordCount).toBe(1);
   });
 });

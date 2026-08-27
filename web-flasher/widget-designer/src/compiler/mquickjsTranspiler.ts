@@ -159,13 +159,21 @@ export const KEY_TOKEN_NAMES: Record<string, number> = (() => {
     space: 0x2c, enter: 0x28, esc: 0x29, backspace: 0x2a, tab: 0x2b,
     shift: 0xe1, ctrl: 0xe0, alt: 0xe2, gui: 0xe3, cmd: 0xe3,
     right: 0x4f, left: 0x50, down: 0x51, up: 0x52,
+    // Catch-all: the firmware re-delivers any key the widget did NOT declare
+    // under this reserved token (HID ErrorRollOver, never a real press), so
+    // "any" receives every key on the keyboard — letters included — with
+    // down/up/hold all behaving like a declared key.
+    any: 0x01,
   };
   for (let i = 0; i < 26; i++) table[String.fromCharCode(97 + i)] = 0x04 + i;
   for (let i = 1; i <= 9; i++) table[String(i)] = 0x1e + (i - 1);
   table["0"] = 0x27;
   return table;
 })();
-const DEFAULT_KEYS = ["space", "shift", "ctrl", "alt", "gui", "left", "down", "right", "enter"]
+// No widget.keys() declaration: space and shift keep their historical ids 0
+// and 1 (so the chord stays space+shift), and "any" catches EVERY other key,
+// which is what makes an undeclared widget respond to the whole keyboard.
+const DEFAULT_KEYS = ["space", "shift", "any"]
   .map((name, id) => ({ id, nativeToken: KEY_TOKEN_NAMES[name] }));
 // The one admitted chord: the FIRST TWO declared keys held together
 // (space+shift under DEFAULT_KEYS — unchanged for existing widgets).

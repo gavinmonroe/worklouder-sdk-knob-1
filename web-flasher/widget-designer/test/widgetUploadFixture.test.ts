@@ -37,9 +37,11 @@ const GENERATION = 20;
  *  (formatter 13) — the F2TF header's embedded contract sha (offset 160)
  *  changed, and with it the header CRC and section shas; every other byte of
  *  the container is unchanged. */
-// Repinned 2026-08-27: the any-key default set (9 declared keys, F1 layout)
-// replaced the wired Space/LeftShift pair, changing the fixture's event table.
-const ASSEMBLED_SHA256 = "0671c201475698321a4f5272b1f624f444d44b4763697b800bab9c10e14da4f4";
+// Repinned 2026-08-27: any-key input. The default key set is space, shift and
+// "any" (HID 0x01) — the firmware re-delivers every UNDECLARED key under that
+// catch-all token, so a widget hears the whole keyboard while space/shift keep
+// ids 0/1 for the chord. Changing the event table changes this pin.
+const ASSEMBLED_SHA256 = "f29d06b0e4a8c64382839246413e2b8c66b872d8321d809ac9fd2529cfa0a82d";
 
 const DSL = `var counter = 0;
 var knobPos = 0;
