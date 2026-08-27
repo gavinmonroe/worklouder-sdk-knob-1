@@ -942,6 +942,20 @@ export function transpileWidgetScript(dslSource: string): TranspiledWidget {
 
 // ── selector handling ────────────────────────────────────────────────────────
 
+// Named device feeds: data the FIRMWARE publishes on its own. A designer
+// subscribes by name — widget.on("device.typing-speed") — and never needs to
+// know that it travels as a host.rpc packet on a particular id. The id is an
+// implementation detail of the transport, so it lives here and nowhere the
+// user can see it.
+export const DEVICE_FEEDS: Record<string, { id: number; summary: string; value: string; auxiliary: string }> = {
+  "device.typing-speed": {
+    id: 0xb2f2,
+    summary: "How fast you are typing, published by the keyboard once a second.",
+    value: "words per minute",
+    auxiliary: "keys pressed in the last 60 seconds",
+  },
+};
+
 interface SelectorInfo {
   canonical: string;
   /** host.rpc dedupes by numeric id, matching the simulator's keyFor(). */
@@ -957,6 +971,19 @@ function normalizeSelector(selector: string): SelectorInfo | null {
     // The authoring shorthand is normalized so the emitted source registers
     // under the exact name the device (and simulator) dispatch by.
     return { canonical: "input.fn-bottom-knob", dedupeKey: "input.fn-bottom-knob", kind: "knob" };
+  }
+  {
+    const feed = DEVICE_FEEDS[selector];
+    if (feed) {
+      // Canonicalized to the wire selector so the device and simulator both
+      // dispatch it; the user's source keeps the readable name.
+      return {
+        canonical: `host.rpc:${feed.id}`,
+        dedupeKey: `host.rpc:${feed.id}`,
+        kind: "host",
+        hostId: feed.id,
+      };
+    }
   }
   if (selector.startsWith("host.rpc:")) {
     const hostId = Number(selector.slice("host.rpc:".length));

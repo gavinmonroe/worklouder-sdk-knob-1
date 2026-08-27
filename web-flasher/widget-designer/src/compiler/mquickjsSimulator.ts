@@ -13,6 +13,7 @@
 
 
 import { buildDeviceEvent, deviceEventKey } from "./deviceEvent";
+import { DEVICE_FEEDS } from "./mquickjsTranspiler";
 import {
   parseWidgetScript,
   ParsedScript,
@@ -41,8 +42,12 @@ const int32 = (v: unknown): number => {
   return v | 0;
 };
 
+/** Named device feeds resolve to their wire selector here too, so a widget
+ *  written with widget.on("device.typing-speed") simulates identically. */
 const keyFor = (name: string): string => {
   const text = String(name);
+  const feed = DEVICE_FEEDS[text];
+  if (feed) return `host.rpc:${feed.id}`;
   if (!text.startsWith("host.rpc:")) return text;
   const id = Number(text.slice("host.rpc:".length));
   if (!Number.isInteger(id) || id < 1 || id > 0xffff) throw new TypeError("Bad host.rpc selector.");

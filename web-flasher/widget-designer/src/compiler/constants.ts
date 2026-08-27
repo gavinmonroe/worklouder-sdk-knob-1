@@ -83,20 +83,31 @@ export const ALL_EVENT_KINDS = [
     doc: "alias of input.fn-bottom-knob",
   },
   {
+    canonical: "device.typing-speed",
+    insertText: '"device.typing-speed"',
+    detail: "How fast you are typing. Published by the keyboard once a second.",
+    doc:
+      "A built-in device feed - the keyboard measures this itself, so nothing\n" +
+      "needs to run on your computer.\n" +
+      "event.value     -> words per minute\n" +
+      "event.auxiliary -> keys pressed in the last 60 seconds",
+  },
+  {
     canonical: "host.rpc",
     insertText: '"host.rpc"',
-    detail: "RPCs with IDs declared in the package header (hostRpcIds).",
+    detail: "Data sent from your computer, on a channel you name in Host data.",
     doc:
-      "Subscribe by the host RPC identifier declared when you built the package.\n" +
-      "Handlers still take the same event object. event.value holds the latest payload as int32.",
+      "For your own data: define a feed in the Source tab's Host data section,\n" +
+      "then subscribe to it here.\n" +
+      "event.value / event.auxiliary hold the two numbers your feed sends.",
   },
   {
     canonical: "input.key.down",
     insertText: '"input.key.down"',
-    detail: "Physical key press. event.key is the key index.",
+    detail: "A key was pressed. Every key on the keyboard reaches your widget.",
     doc:
-      "Fires when a declared key is first pressed.\n" +
-      "event.key    -> key index (declared in package keys[]).\n" +
+      "Fires when a key goes down.\n" +
+      "event.key    -> which key slot fired (name yours with widget.keys).\n" +
       "event.repeat -> false on the first down edge, true on auto-repeats.",
   },
   {

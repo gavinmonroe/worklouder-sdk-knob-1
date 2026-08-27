@@ -366,8 +366,8 @@ widget.on("tick.1s", function (event) {
   <div class="ev-row ev-in" style="top:176px"><span class="ev-name">HOLD</span><b id="hold">0</b></div>
   <div class="ev-row ev-in" style="top:198px"><span class="ev-name">CHORD \u2193</span><b id="chd">0</b></div>
   <div class="ev-row ev-in" style="top:220px"><span class="ev-name">CHORD \u2191</span><b id="chu">0</b></div>
-  <div class="ev-row ev-host" style="top:250px"><span class="ev-name">RPC</span><b id="rpc">000</b></div>
-  <span class="ev-hint">RPC ROW = LIVE WPM FEED</span>
+  <div class="ev-row ev-host" style="top:250px"><span class="ev-name">WPM</span><b id="rpc">000</b></div>
+  <span class="ev-hint">WPM = DEVICE FEED, NO HOST</span>
 </div>`,
     css: `.evlab-v3{position:relative;width:100px;height:310px;overflow:hidden;background:#080b12;color:#e8eaf0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
 .ev-title{position:absolute;left:0;right:0;top:24px;text-align:center;font:700 11px/16px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:3px;color:#c792ea}
@@ -380,8 +380,8 @@ widget.on("tick.1s", function (event) {
     // The diagnostics preset: EVERY device event kind, one counter each. If a
     // row moves, that event verifiably reaches your widget on this firmware -
     // ticks prove the heartbeat path, the input rows prove keys/chords/knob,
-    // and the RPC row subscribes to the DEVICE's own 0xB2F2 feed: it shows
-    // your live typing speed (words/min) with no host feeder running.
+    // and the WPM row subscribes to the device's own typing-speed feed by
+    // NAME - no hex id anywhere - so it shows live words/min with no host.
     // Digit widths are a budget, not a style: the facade renders 15 records
     // and every digit cell is one, so 2+2+2 (ticks+knob) + 5x1 (keys/chords)
     // + 3 (rpc) = 14 uses the whole allowance with the root target.
@@ -437,7 +437,7 @@ widget.on("input.chord.up", function (event) {
   document.querySelector("#chu").textContent = digits(chu, 1);
 });
 
-widget.on("host.rpc:0xB2F2", function (event) {
+widget.on("device.typing-speed", function (event) {
   rpc = mod(event.value, 1000);
   document.querySelector("#rpc").textContent = digits(rpc, 3);
 });`,
@@ -461,7 +461,7 @@ widget.on("host.rpc:0xB2F2", function (event) {
       { id: "input.key.hold", selector: "input.key.hold", body: `hold counter` },
       { id: "input.chord.down", selector: "input.chord.down", body: `chord-down counter` },
       { id: "input.chord.up", selector: "input.chord.up", body: `chord-up counter` },
-      { id: "host.rpc:0xB2F2", selector: "host.rpc:0xB2F2", body: `live WPM (device feed)` },
+      { id: "device.typing-speed", selector: "device.typing-speed", body: `live WPM (device feed)` },
     ],
     targets: [
       { id: "t100", writes: ["textContent"] },

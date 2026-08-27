@@ -177,10 +177,10 @@ const ENTRY_META: Record<
     sample: { kind: "input.fn-bottom-knob", delta: 1, displayName: "fn+knob △1" },
   },
   "host.rpc": {
-    blurb: "A data packet addressed to the id in your selector, carrying two integers (event.value, event.auxiliary). Feeds come from a host feeder script — or from the DEVICE itself: the firmware publishes host.rpc:0xB2F2 once per second with your live typing speed (value = words/minute from every screen, auxiliary = raw key-downs over the last 60 s). Subscribe and it arrives with no host running.",
+    blurb: "Data arriving from outside the widget, as two numbers: event.value and event.auxiliary. Two sources: feeds YOU define in the Source tab's Host data section (sent from your computer), and feeds the KEYBOARD publishes by itself — subscribe to \"device.typing-speed\" and your live words-per-minute arrives every second with nothing running on your computer.",
     prelude: "var value = 0;",
-    snippet: `widget.on("host.rpc:0xB301", function (event) {
-  // Two integers arrive from the host: event.value and event.auxiliary.
+    snippet: `widget.on("device.typing-speed", function (event) {
+  // Straight from the keyboard: words per minute, once a second.
   value = clamp(event.value, 0, 999);
   document.querySelector("#value").textContent = digits(value, 3);
 });`,
