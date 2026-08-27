@@ -442,3 +442,46 @@ OWN buffer instead of the shared one. RAM: 2×62 KiB in PSRAM is fine.
 Until Round 4: single widget screen + the Designer **Screens panel** (op-6
 RPC switching, shipped) is the reliable multi-widget experience. Native
 per-knob screens wait for the per-slot-framebuffer work on a bench.
+
+## §8 Round 5 — ONE WIDGET = ONE SCREEN: SHIPPED AND HARDWARE-PROVEN (2026-08-27)
+
+Round 4's per-slot-framebuffer plan proved unnecessary. Because the proxy
+tick RE-DECODES the base frame and RE-RENDERS the facade every visible frame,
+per-slot RENDER CONTEXTS are enough: each resident slot owns its assets
+(PSRAM arena), its own `framer_tf_context`, and its own admit flag; the
+visible screen's tick renders ITS OWN slot into the shared framebuffer —
+the active slot from the live VM mailbox, every other slot from a synthetic
+idle mailbox (revision 1, all values 0 = authored default state). One
+surface, correct pixels on every screen, no cross-contamination.
+
+Two contract violations had to be fixed to make it real:
+
+1. **Visibility must be tick-derived (§4.2 enforced).** The module's shared
+   `visible` flag was still owned by proxy_build/cleanup. With 3 adjacent
+   widget screens the stock's neighbor pre-build/cleanup zeroed it while
+   another widget screen was fronted → the owner's tick gate closed → no
+   tick.1s ever reached the VM → every dynamic field rendered 0 and widget
+   input was dead (both gate on `visible`). Now: SHOW runs on the first
+   proxy_tick after silence (skipped while `widget_switching` — enqueueing
+   into an owner mid-reinit_shell writes into memory being zeroed), HIDE
+   runs on the owner task after 400 ms of tick silence, with a fresh clock
+   and a SIGNED delta (the loop-top timestamp goes stale across a slot
+   switch; unsigned math fired a spurious hide/show pulse every switch).
+
+2. **Screen-change edge triggers the slot switch** (unchanged from Round 4
+   prep): the tick stores `widget_desired_slot` only when the visible screen
+   CHANGES, so steady-state ticks cannot veto an op-6 activation.
+
+Proof (app 12ae9a54…, module pins blockBytes 31840 + upload-state 1824):
+resident bitmask 7, screens 28/29/30 each build+tick as fronted, and the
+live mailbox revision advances ~1/s while a widget screen is visible
+(rev 10→13 over 3 s on the clock screen, real values in the slots).
+Forensics op 7 now covers all 4 slots, paginated by slot pair
+(`slot:2` → b2/c2/t2/b3/c3/t3) to stay inside the 113 B RPC value field.
+
+Overnight footnote: after the fix landed the device flickered on/off the
+USB bus for ~an hour, which looked like a crash loop; it self-stabilized by
+morning and answered RPC on the first try. The pattern (idle death with
+zero lifecycle counters, then clean recovery after re-seating) matches a
+weak USB path, not firmware — but the two race fixes above were real bugs
+found while it was down, so the scare paid for itself.

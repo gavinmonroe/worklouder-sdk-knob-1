@@ -230,3 +230,13 @@ hand-off: op-7 watcher must show only the visible proxy's tick advancing,
 active/desired tracking the fronted screen, and the frame counter never
 stalling across switches. Safe restore: app-rollback-81906a77 (single
 screen) or the full-flash backup.
+
+## Status 2026-08-27: ONE WIDGET = ONE SCREEN shipped (app 12ae9a54…)
+
+Every resident slot is its own keyboard screen (28+slot) with its own PSRAM
+arena, facade context, and admit flag; the visible screen renders its own
+widget (active slot live via the VM, others at authored default). Visibility
+is tick-derived per docs/18 §8 — build/cleanup no longer touch it. Hardware
+proven: 3 widgets on 3 screens, live values, knob navigation switches the VM
+to the fronted slot. Phase B is DONE; remaining niceties: slot delete/clear
+op, on-device names, thumbnails.
