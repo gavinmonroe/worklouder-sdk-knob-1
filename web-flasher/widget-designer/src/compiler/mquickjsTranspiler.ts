@@ -580,6 +580,26 @@ export function transpileWidgetScript(dslSource: string): TranspiledWidget {
         });
         continue;
       }
+      {
+        // The mailbox API is the transpiler's PRIVATE lowering: it owns which
+        // slot each target uses, so a hand-written setInt/commit silently
+        // overwrites a render slot (verified: it passed through with zero
+        // diagnostics and corrupted the screen). Refuse it by name, and say
+        // what to write instead.
+        const mailbox = /(?:^|[^\w$.])widget\s*\.\s*(setInt|getInt|commit|snapshot|on|keys)\b/.exec(
+          statement.masked,
+        );
+        if (mailbox) {
+          diagnostics.push({
+            severity: "error",
+            message:
+              `widget.${mailbox[1]} cannot be called inside a handler — the compiler owns ` +
+              `the widget's value slots. Set what the screen shows with ` +
+              `document.querySelector("#id").textContent = … instead: ${statement.raw}`,
+          });
+          continue;
+        }
+      }
       if (/(?:^|[^\w$.])widget\s*\.\s*animate\b/.test(statement.masked)) {
         // A passthrough would emit widget.animate into the device source,
         // where no such method exists — the dispatch would throw on-device.
@@ -956,12 +976,43 @@ export const DEVICE_FEEDS: Record<string, { id: number; summary: string; value: 
   },
 };
 
+// ── Named feeds a designer defines themselves ────────────────────────────────
+// A widget subscribes to its own data by NAME — widget.on("feed.room-temp") —
+// and never invents a channel number. The channel is DERIVED from the name, so
+// it is stable across machines and rebuilds without any registry: the same
+// name always means the same channel, and the generated feeder script computes
+// it the same way. Ids live in 0xC000..0xFEFF, clear of the device feeds and of
+// every id the bundled examples ever used.
+export const USER_FEED_PREFIX = "feed.";
+const USER_FEED_BASE = 0xc000;
+const USER_FEED_SPAN = 0x3f00;
+
+export function userFeedSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 40);
+}
+
+/** FNV-1a over the slug — deterministic in every browser and in Node. */
+export function userFeedId(slug: string): number {
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < slug.length; i += 1) {
+    hash ^= slug.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return USER_FEED_BASE + (hash % USER_FEED_SPAN);
+}
+
 interface SelectorInfo {
   canonical: string;
   /** host.rpc dedupes by numeric id, matching the simulator's keyFor(). */
   dedupeKey: string;
   kind: "tick100" | "tick1s" | "knob" | "host" | "key" | "chord";
   hostId?: number;
+  /** Set for feed.<name> selectors: the slug the designer wrote. */
+  feedSlug?: string;
 }
 
 function normalizeSelector(selector: string): SelectorInfo | null {
@@ -984,6 +1035,18 @@ function normalizeSelector(selector: string): SelectorInfo | null {
         hostId: feed.id,
       };
     }
+  }
+  if (selector.startsWith(USER_FEED_PREFIX)) {
+    const slug = userFeedSlug(selector.slice(USER_FEED_PREFIX.length));
+    if (slug.length === 0) return null;
+    const hostId = userFeedId(slug);
+    return {
+      canonical: `host.rpc:${hostId}`,
+      dedupeKey: `host.rpc:${hostId}`,
+      kind: "host",
+      hostId,
+      feedSlug: slug,
+    };
   }
   if (selector.startsWith("host.rpc:")) {
     const hostId = Number(selector.slice("host.rpc:".length));

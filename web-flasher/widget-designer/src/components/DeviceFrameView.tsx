@@ -186,17 +186,17 @@ export function DeviceFrameView({
           {assembling ? (
             <>
               <Spinner size={22} />
-              <span className="wd-device-state-title">Assembling the container…</span>
+              <span className="wd-device-state-title">Building the widget…</span>
               <span className="wd-device-state-hint">
-                Decoding the F2UP into the device raster
+                Rendering it the way the keyboard will
               </span>
             </>
           ) : (
             <>
               <Icon name="keyboard" size={22} />
-              <span className="wd-device-state-title">Assemble to see the device frame</span>
+              <span className="wd-device-state-title">Build the widget to see it on the keyboard screen</span>
               <span className="wd-device-state-hint">
-                The Device frame renders the pushed bytes through the on-device oracle.
+                This is exactly what the keyboard screen will show.
               </span>
               <Button
                 variant="primary"
@@ -204,7 +204,7 @@ export function DeviceFrameView({
                 onClick={() => void runAssemble(actions, source)}
               >
                 <Icon name="play" size={14} />
-                Assemble F2UP
+                Build widget
               </Button>
             </>
           )}

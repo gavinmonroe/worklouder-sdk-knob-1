@@ -93,13 +93,14 @@ export const ALL_EVENT_KINDS = [
       "event.auxiliary -> keys pressed in the last 60 seconds",
   },
   {
-    canonical: "host.rpc",
-    insertText: '"host.rpc"',
-    detail: "Data sent from your computer, on a channel you name in Host data.",
+    canonical: "feed.my-data",
+    insertText: '"feed.my-data"',
+    detail: "Your own data, sent from your computer. Rename it to anything.",
     doc:
-      "For your own data: define a feed in the Source tab's Host data section,\n" +
-      "then subscribe to it here.\n" +
-      "event.value / event.auxiliary hold the two numbers your feed sends.",
+      "Name a feed whatever you like — feed.room-temp, feed.build-status — and\n" +
+      "it appears in the Source tab's Host data section, where you label its\n" +
+      "two numbers and get a ready-made script to send them.\n" +
+      "event.value / event.auxiliary hold the two numbers you send.",
   },
   {
     canonical: "input.key.down",
@@ -151,36 +152,30 @@ export const WIDGET_API = [
       "Returns nothing. Up to 16 handlers per widget.",
   },
   {
-    name: "getInt",
-    signature: "widget.getInt(slot: number): number",
-    detail: "Read a state slot.",
+    name: "keys",
+    signature: 'widget.keys("space", "a", "any"): void',
+    detail: "Choose which keys this widget listens to. Optional.",
     doc:
-      "slot: integer in [0..N) where N is the number of `var name = N;` declarations at the top of the source.\n" +
-      "Returns the current int32 value of the slot (default 0).",
+      'Names, not codes: space, enter, esc, tab, backspace, shift, ctrl, alt,\n' +
+      'gui, up/down/left/right, a-z, 0-9 — and "any" for every other key.\n' +
+      "Skip it and your widget hears the whole keyboard already.\n" +
+      "Write it once at the top of your script, outside any handler.",
   },
   {
-    name: "setInt",
-    signature: "widget.setInt(slot: number, value: number): void",
-    detail: "Write a state slot. Writes are not visible until widget.commit().",
+    name: "animate",
+    signature: 'widget.animate("#id", frames: number): void',
+    detail: "Play a CSS animation on the keyboard by sampling it into frames.",
     doc:
-      "Stages a write to the named state slot. The write is published only when widget.commit() runs,\n" +
-      "typically at the end of the handler.",
-  },
-  {
-    name: "commit",
-    signature: "widget.commit(): void",
-    detail: "Publish the pending state diff to the host.",
-    doc:
-      "Sends all staged writes since the last commit as a single batch.\n" +
-      "Most handlers call this at the end.",
+      "Samples the element's CSS animation into 2..16 still frames the device\n" +
+      "flips through. Write it at the top of your script, outside any handler.",
   },
   {
     name: "isHeld",
     signature: "widget.isHeld(keyIndex: number): boolean",
     detail: "Returns true iff a declared key is currently held.",
     doc:
-      "Reads the authoritative 16-bit held bitmap for declared keys.\n" +
-      "Argument is the key index (declared in package keys[]).",
+      "True while that key is still down — useful for 'is shift held?' checks.\n" +
+      "The number is the key's position in your widget.keys(...) list.",
   },
 ];
 

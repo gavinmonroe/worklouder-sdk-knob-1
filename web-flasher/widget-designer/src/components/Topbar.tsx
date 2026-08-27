@@ -135,7 +135,7 @@ export function Topbar({
             full state). */}
         {!legacy ? (
           f2up ? (
-            <Tooltip label="F2UP container assembled from the current source — the artifact the device push uploads.">
+            <Tooltip label="Built from your current source and ready to send to the keyboard.">
               <Badge tone="success" className="wd-nums wd-pkg">
                 <span className="wd-pkg-full">{formatArtifact("F2UP", f2up.bytes)}</span>
                 <span className="wd-pkg-mini">{`${f2up.bytes.toLocaleString()} B`}</span>
@@ -143,7 +143,7 @@ export function Topbar({
             </Tooltip>
           ) : (
             <span className="wd-badge wd-pkg" data-tone="neutral" data-empty="true">
-              Not assembled
+              Not built yet
             </span>
           )
         ) : freshness === "stale" ? (
@@ -284,8 +284,8 @@ export function Topbar({
         <Tooltip
           label={
             !pipeline.dslOk
-              ? "Assemble unavailable — the script has device-DSL errors. The Export tab names them."
-              : "Assemble the F2UP container from the live preview — the artifact the device push uploads."
+              ? "Can't build yet — your script has errors. The Export tab explains them."
+              : "Build this widget from the live preview, ready to send to your keyboard."
           }
         >
           <button
@@ -299,7 +299,7 @@ export function Topbar({
             style={{ minWidth: 128 }}
           >
             {assemble.busy ? <Spinner /> : assembleFlash === "ok" ? <Icon name="check" size={14} /> : assembleFlash === "fail" ? <Icon name="x-circle" size={14} /> : <Icon name="terminal" size={14} />}
-            {assemble.busy ? "Assembling…" : assembleFlash === "ok" ? "Assembled" : assembleFlash === "fail" ? "Failed" : "Assemble F2UP"}
+            {assemble.busy ? "Building…" : assembleFlash === "ok" ? "Built" : assembleFlash === "fail" ? "Failed" : "Build widget"}
           </button>
         </Tooltip>
         <span aria-hidden="true" className="wd-divider-v" />

@@ -16,7 +16,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import * as React from "react";
-import { transpileWidgetScript } from "../compiler/mquickjsTranspiler";
+import { transpileWidgetScript, userFeedId, userFeedSlug } from "../compiler/mquickjsTranspiler";
 import type { DesignerState } from "../designer/store";
 
 export interface HostFeed {
@@ -26,6 +26,8 @@ export interface HostFeed {
   hex: string;
   /** The exact selector text in the script, for the jump-to-handler chip. */
   selector: string;
+  /** Set when the designer named the feed (feed.<name>): the slug they wrote. */
+  name?: string;
 }
 
 const canonicalHex = (id: number) => `0x${id.toString(16).toUpperCase()}`;
@@ -38,8 +40,18 @@ export function deriveHostFeeds(js: string, handlers: DesignerState["handlers"])
   const handlerKey = handlers.map((h) => h.kind).join("|");
   if (feedCache && feedCache.js === js && feedCache.handlerKey === handlerKey) return feedCache.feeds;
 
-  // The author's spelling for each id, first occurrence wins.
+  // The author's spelling for each id, first occurrence wins. A feed.<name>
+  // selector is the preferred spelling: it is what the designer wrote, and it
+  // resolves to its channel deterministically.
   const spelling = new Map<number, string>();
+  const named = new Map<number, string>();
+  for (const m of js.matchAll(/["']feed\.([A-Za-z0-9][A-Za-z0-9 _-]*)["']/g)) {
+    const slug = userFeedSlug(m[1]);
+    if (slug.length === 0) continue;
+    const id = userFeedId(slug);
+    if (!named.has(id)) named.set(id, slug);
+    if (!spelling.has(id)) spelling.set(id, `feed.${slug}`);
+  }
   for (const m of js.matchAll(/host\.rpc:(0x[0-9a-fA-F]+|\d+)/g)) {
     const raw = m[1];
     const n = (raw.toLowerCase().startsWith("0x") ? Number.parseInt(raw, 16) : Number.parseInt(raw, 10)) >>> 0;
@@ -64,6 +76,11 @@ export function deriveHostFeeds(js: string, handlers: DesignerState["handlers"])
   const feeds = [...ids]
     .sort((a, b) => a - b)
     .map((id) => {
+      const slug = named.get(id);
+      if (slug !== undefined) {
+        // Named feed: the selector the designer writes IS the name.
+        return { id, hex: `feed.${slug}`, selector: `feed.${slug}`, name: slug };
+      }
       const hex = spelling.get(id) ?? canonicalHex(id);
       return { id, hex, selector: `host.rpc:${hex}` };
     });

@@ -74,7 +74,7 @@ export function StatusBar({
           ...(f2up ? [formatArtifact("F2UP", f2up.bytes)] : []),
         ];
   const pkgLabel =
-    segments.length > 0 ? segments.join(" · ") : legacy ? "No F2JS build" : "Not assembled";
+    segments.length > 0 ? segments.join(" · ") : legacy ? "No F2JS build" : "Not built yet";
   const pkgTip =
     legacy && freshness === "stale"
       ? "Package built from earlier source — open Export to rebuild"

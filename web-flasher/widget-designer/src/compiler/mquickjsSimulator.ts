@@ -13,7 +13,7 @@
 
 
 import { buildDeviceEvent, deviceEventKey } from "./deviceEvent";
-import { DEVICE_FEEDS } from "./mquickjsTranspiler";
+import { DEVICE_FEEDS, USER_FEED_PREFIX, userFeedId, userFeedSlug } from "./mquickjsTranspiler";
 import {
   parseWidgetScript,
   ParsedScript,
@@ -48,6 +48,10 @@ const keyFor = (name: string): string => {
   const text = String(name);
   const feed = DEVICE_FEEDS[text];
   if (feed) return `host.rpc:${feed.id}`;
+  if (text.startsWith(USER_FEED_PREFIX)) {
+    const slug = userFeedSlug(text.slice(USER_FEED_PREFIX.length));
+    if (slug.length > 0) return `host.rpc:${userFeedId(slug)}`;
+  }
   if (!text.startsWith("host.rpc:")) return text;
   const id = Number(text.slice("host.rpc:".length));
   if (!Number.isInteger(id) || id < 1 || id > 0xffff) throw new TypeError("Bad host.rpc selector.");

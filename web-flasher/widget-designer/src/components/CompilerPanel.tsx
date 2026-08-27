@@ -347,7 +347,7 @@ export function CompilerPanel({ state, actions, device }: {
                     and the gate callout below names any blocker. */}
                 <Button onClick={assembleF2up} busy={f2upBusy} disabled={!pipeline.dslOk}>
                   {!f2upBusy && <Icon name="terminal" size={14} />}
-                  {f2upBusy ? "Assembling…" : "Assemble F2UP"}
+                  {f2upBusy ? "Building…" : "Build widget"}
                 </Button>
                 {/* The ?f2upGen pin, surfaced: an invisible URL param must not
                     silently steer what Assemble builds. */}
