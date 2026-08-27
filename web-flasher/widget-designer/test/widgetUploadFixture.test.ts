@@ -37,7 +37,9 @@ const GENERATION = 20;
  *  (formatter 13) — the F2TF header's embedded contract sha (offset 160)
  *  changed, and with it the header CRC and section shas; every other byte of
  *  the container is unchanged. */
-const ASSEMBLED_SHA256 = "67b7d9152e5a028109a667ab5a0d2d20cd94bde1f75bfda131975b00e2ce041c";
+// Repinned 2026-08-27: the any-key default set (9 declared keys, F1 layout)
+// replaced the wired Space/LeftShift pair, changing the fixture's event table.
+const ASSEMBLED_SHA256 = "0671c201475698321a4f5272b1f624f444d44b4763697b800bab9c10e14da4f4";
 
 const DSL = `var counter = 0;
 var knobPos = 0;

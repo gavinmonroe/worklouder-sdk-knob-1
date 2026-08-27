@@ -147,14 +147,30 @@ const ANIMATION_MAX_FRAMES = 16;
 const DIGITS_MIN_COUNT = 1;
 const DIGITS_MAX_COUNT = 4;
 
-// The two key tokens physically wired on this hardware, and the only chord the
-// firmware profile admits (both keys held). A chord requires its keys to be
-// admitted in the package header, so a chord-only script still declares them.
-const WIRED_KEYS: { id: number; nativeToken: number }[] = [
-  { id: 0, nativeToken: 0x2c },
-  { id: 1, nativeToken: 0xe1 },
-];
+// ANY-KEY input (firmware 2eeb3f0f+): the firmware forwards every physical
+// key; the ENGINE admits only the tokens this package declares, so a widget
+// receives exactly the keys it asked for. `widget.keys("space", "a", ...)`
+// declares them (event.key is the declared index); a script with key/chord
+// handlers and no declaration gets DEFAULT_KEYS — the F1's own physical
+// layout — so "any key on the keyboard" works out of the box.
+// Names are HID usage codes; "0xNN" declares a raw token directly.
+export const KEY_TOKEN_NAMES: Record<string, number> = (() => {
+  const table: Record<string, number> = {
+    space: 0x2c, enter: 0x28, esc: 0x29, backspace: 0x2a, tab: 0x2b,
+    shift: 0xe1, ctrl: 0xe0, alt: 0xe2, gui: 0xe3, cmd: 0xe3,
+    right: 0x4f, left: 0x50, down: 0x51, up: 0x52,
+  };
+  for (let i = 0; i < 26; i++) table[String.fromCharCode(97 + i)] = 0x04 + i;
+  for (let i = 1; i <= 9; i++) table[String(i)] = 0x1e + (i - 1);
+  table["0"] = 0x27;
+  return table;
+})();
+const DEFAULT_KEYS = ["space", "shift", "ctrl", "alt", "gui", "left", "down", "right", "enter"]
+  .map((name, id) => ({ id, nativeToken: KEY_TOKEN_NAMES[name] }));
+// The one admitted chord: the FIRST TWO declared keys held together
+// (space+shift under DEFAULT_KEYS — unchanged for existing widgets).
 const WIRED_CHORDS: { id: number; heldMask: number }[] = [{ id: 0, heldMask: 3 }];
+const MAX_DECLARED_KEYS = 16;
 
 // Names the prelude/wrapper machinery owns; user state shadowing them would
 // silently break the transpiled program, so it is refused up front. `digits`
@@ -273,7 +289,7 @@ export function transpileWidgetScript(dslSource: string): TranspiledWidget {
     ? dslSource.slice(SOURCE_PREFIX.length)
     : dslSource;
 
-  const { states, handlers, animates } = scanTopLevel(text, diagnostics);
+  const { states, handlers, animates, keyNames } = scanTopLevel(text, diagnostics);
 
   for (const state of states) {
     if (RESERVED_NAMES.has(state.name) || state.name.startsWith("__anim")) {
@@ -791,8 +807,55 @@ export function transpileWidgetScript(dslSource: string): TranspiledWidget {
   if (tick1s) events["tick.1s"] = true;
   if (knob) events["input.fn-bottom-knob"] = true;
   if (hostIds.size > 0) events.hostRpcIds = [...hostIds].sort((a, b) => a - b);
-  if (hasKey || hasChord) events.keys = WIRED_KEYS.map((key) => ({ ...key }));
-  if (hasChord) events.chords = WIRED_CHORDS.map((chord) => ({ ...chord }));
+  {
+    let declaredKeys: { id: number; nativeToken: number }[] | null = null;
+    if (keyNames !== null) {
+      const tokens: number[] = [];
+      const seenTokens = new Set<number>();
+      for (const name of keyNames) {
+        const hex = /^0x([0-9a-f]{1,2})$/.exec(name);
+        const token = hex ? parseInt(hex[1], 16) : KEY_TOKEN_NAMES[name];
+        if (token === undefined || token === 0) {
+          diagnostics.push({
+            severity: "error",
+            message:
+              `widget.keys: unknown key name "${name}". Names are space, enter, esc, tab, ` +
+              `backspace, shift, ctrl, alt, gui/cmd, up/down/left/right, a-z, 0-9, or a raw "0xNN" token.`,
+          });
+          continue;
+        }
+        if (seenTokens.has(token)) {
+          diagnostics.push({ severity: "error", message: `widget.keys: "${name}" is declared twice.` });
+          continue;
+        }
+        seenTokens.add(token);
+        tokens.push(token);
+      }
+      if (tokens.length > MAX_DECLARED_KEYS) {
+        diagnostics.push({
+          severity: "error",
+          message: `widget.keys declares ${tokens.length} keys; the device admits at most ${MAX_DECLARED_KEYS}.`,
+        });
+      }
+      declaredKeys = tokens.map((nativeToken, id) => ({ id, nativeToken }));
+      if (!hasKey && !hasChord) {
+        diagnostics.push({
+          severity: "error",
+          message: "widget.keys is declared but no input.key.* or input.chord.* handler uses it.",
+        });
+      }
+      if (hasChord && declaredKeys.length < 2) {
+        diagnostics.push({
+          severity: "error",
+          message: "Chord handlers need at least two declared keys (the chord is the first two held together).",
+        });
+      }
+    }
+    if (hasKey || hasChord) {
+      events.keys = (declaredKeys ?? DEFAULT_KEYS).map((key) => ({ ...key }));
+    }
+    if (hasChord) events.chords = WIRED_CHORDS.map((chord) => ({ ...chord }));
+  }
 
   // ── lockstep evidence ───────────────────────────────────────────────────────
   // Folded across handlers against each target's FINAL property set: in every
@@ -906,11 +969,12 @@ function normalizeSelector(selector: string): SelectorInfo | null {
 function scanTopLevel(
   text: string,
   diagnostics: Diagnostic[],
-): { states: ScannedState[]; handlers: ScannedHandler[]; animates: ScannedAnimate[] } {
+): { states: ScannedState[]; handlers: ScannedHandler[]; animates: ScannedAnimate[]; keyNames: string[] | null } {
   const states: ScannedState[] = [];
   const seenStates = new Set<string>();
   const handlers: ScannedHandler[] = [];
   const animates: ScannedAnimate[] = [];
+  let keyNames: string[] | null = null;
   let cursor = 0;
   while (cursor < text.length) {
     const ch = text[cursor];
@@ -953,6 +1017,43 @@ function scanTopLevel(
     if (animate) {
       animates.push({ id: animate[2], frames: Number(animate[3]) });
       cursor += animate[0].length;
+      continue;
+    }
+    const keysDecl = /^widget\s*\.\s*keys\s*\(([^)]*)\)\s*;?/.exec(slice);
+    if (keysDecl) {
+      const names: string[] = [];
+      let ok = true;
+      const body = keysDecl[1].trim();
+      if (body.length > 0) {
+        for (const part of body.split(",")) {
+          const m = /^\s*(["'])([A-Za-z0-9x]+)\1\s*$/.exec(part);
+          if (!m) { ok = false; break; }
+          names.push(m[2].toLowerCase());
+        }
+      }
+      if (!ok || names.length === 0) {
+        diagnostics.push({
+          severity: "error",
+          message:
+            'widget.keys takes 1..16 string key names, e.g. widget.keys("space", "a", "enter").',
+        });
+      } else if (keyNames !== null) {
+        diagnostics.push({ severity: "error", message: "Duplicate widget.keys declaration; declare the key set once." });
+      } else {
+        keyNames = names;
+      }
+      cursor += keysDecl[0].length;
+      continue;
+    }
+    if (/^widget\s*\.\s*keys\b/.test(slice)) {
+      const end = skipStatement(text, cursor);
+      diagnostics.push({
+        severity: "error",
+        message:
+          'widget.keys takes a flat list of string key names: ' +
+          text.slice(cursor, end).trim().replace(/\s+/g, " ").slice(0, 80),
+      });
+      cursor = Math.max(end, cursor + 1);
       continue;
     }
     if (/^widget\s*\.\s*animate\b/.test(slice)) {
@@ -998,7 +1099,7 @@ function scanTopLevel(
     });
     cursor = Math.max(end, cursor + 1);
   }
-  return { states, handlers, animates };
+  return { states, handlers, animates, keyNames };
 }
 
 /** Find the matching close brace, skipping strings AND comments — a "}" inside

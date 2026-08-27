@@ -104,6 +104,15 @@ var widget = {
     if (!__active) throw new TypeError("widget.commit requires active callback");
     __commitRequested = true;
   },
+  keys: function () {
+    // Load-time declaration of the admitted key set (any-key input); the
+    // preview accepts and drops it — token admission is a device concern.
+    if (!__loading) throw new TypeError("widget.keys is load-only");
+    for (var i = 0; i < arguments.length; i++) {
+      if (typeof arguments[i] !== "string") throw new TypeError("widget.keys takes string key names");
+    }
+    if (arguments.length === 0) throw new TypeError("widget.keys takes 1..16 string key names");
+  },
   snapshot: function (name, spec) {
     if (!__loading) throw new TypeError("widget.snapshot is load-only");
     __installSnapshot(name, spec);

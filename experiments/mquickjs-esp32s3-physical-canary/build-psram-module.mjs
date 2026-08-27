@@ -87,8 +87,9 @@ const substitutions = [
      * adoption arena pointer, net of padding.  The exact figure is pinned so
      * any future in-block growth must come back to this comment and justify
      * itself. */
-    to: "const widgetUploadBlockBytes = 1824;\n" + /* +864: 2026-08-26 ONE WIDGET = ONE SCREEN — per-slot resident assets (slot_assets 176 + arena ptrs 16 + slot_sha 128 + per-screen facade contexts 240 + admit/resident/visible flags 12) and a proxy storage per slot (2 -> 4 screens, +296). The 98 KiB asset arenas themselves live in PSRAM, not here. */
+    to: "const widgetUploadBlockBytes = 1904;\n" + /* +864: 2026-08-26 ONE WIDGET = ONE SCREEN — per-slot resident assets (slot_assets 176 + arena ptrs 16 + slot_sha 128 + per-screen facade contexts 240 + admit/resident/visible flags 12) and a proxy storage per slot (2 -> 4 screens, +296). The 98 KiB asset arenas themselves live in PSRAM, not here. */
        /* +32: 2026-08-26 proxy lifecycle forensics counters extended to all 4 screen slots (op 7, paginated by slot) + visible_tick_ms for tick-derived visibility, padding-rounded */
+       /* +80: 2026-08-27 ANY-KEY stream proof (proven/cycle fields, 12 B) + module-computed WPM (60 B second-bucket ring + ring cursor + value + keys_60s), padding-rounded */
       
       "invariant(blockBytes === expected.releaseBlockBytes - heapBytes + 16 + " +
       "widgetUploadBlockBytes,\n" +

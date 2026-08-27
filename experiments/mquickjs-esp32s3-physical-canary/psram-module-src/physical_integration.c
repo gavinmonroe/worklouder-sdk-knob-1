@@ -554,6 +554,24 @@ struct __attribute__((aligned(16))) physical_block {
     framer_runtime_telemetry runtime_telemetry;
     framer_physical_telemetry_session telemetry_session;
     framer_runtime_key_probe key_probe;
+    /* ANY-KEY input: the exact-token allowlist is gone.  The stream is
+     * proven once ONE full down+up cycle of the same token is observed live
+     * (the discovery property the old Space/LeftShift probe enforced,
+     * without requiring specific keys the user's layout may not have).
+     * After proof, EVERY native token forwards; the ENGINE then admits only
+     * the tokens the running widget's package declared (key_for_native_token
+     * returns no-handler for the rest), so a widget still sees exactly the
+     * keys it asked for and nothing else. */
+    volatile uint32_t key_stream_proven;
+    volatile uint32_t key_cycle_down_token;
+    volatile uint32_t key_cycle_down_seen;
+    /* Module-computed WPM from the raw key hook (counted BEFORE the focus
+     * gate, so it reflects the user's typing on EVERY screen): per-second
+     * down-edge buckets over a 60 s window, advanced by the owner loop. */
+    volatile uint8_t wpm_counts[60];
+    volatile uint32_t wpm_ring_second;
+    volatile uint32_t wpm_value;
+    volatile uint32_t wpm_keys_60s;
     framer_runtime_visibility visibility;
     uint32_t runtime_events_queued;
     uint32_t runtime_events_applied;
@@ -1607,7 +1625,7 @@ static void rpc_cap_handler(framer_runtime_rpc_context *context,
         return;
     }
     block->runtime_capability.key_events =
-        __atomic_load_n(&block->key_probe.committed, __ATOMIC_ACQUIRE) != 0u;
+        __atomic_load_n(&block->key_stream_proven, __ATOMIC_ACQUIRE) != 0u;
     block->runtime_capability.chord_events =
         block->runtime_capability.key_events;
     if (!framer_runtime_capability_format(&block->runtime_capability,
@@ -2643,6 +2661,28 @@ static void owner_task(void *opaque)
             }
         }
         owner_begin_focus_release(block, milliseconds);
+        /* WPM window maintenance runs UNGATED (the ring must stay fresh even
+         * while no widget screen is fronted): zero every bucket the clock
+         * skipped past since the last visit, then snapshot the 60 s sums. */
+        {
+            uint32_t second = seconds % 60u;
+            uint32_t last = block->wpm_ring_second;
+            if (second != last) {
+                uint32_t cursor = last;
+                uint32_t sum = 0u;
+                uint32_t index;
+                do {
+                    cursor = (cursor + 1u) % 60u;
+                    block->wpm_counts[cursor] = 0u;
+                } while (cursor != second);
+                block->wpm_ring_second = second;
+                for (index = 0u; index < 60u; ++index)
+                    sum += block->wpm_counts[index];
+                __atomic_store_n(&block->wpm_keys_60s, sum, __ATOMIC_RELAXED);
+                __atomic_store_n(&block->wpm_value, sum / 5u,
+                                 __ATOMIC_RELAXED);
+            }
+        }
         if (__atomic_load_n(&block->sources_enabled, __ATOMIC_ACQUIRE) != 0u &&
             __atomic_load_n(&block->visible, __ATOMIC_ACQUIRE) != 0u) {
             if (tick100 != block->last_tick100) {
@@ -2654,6 +2694,18 @@ static void owner_task(void *opaque)
                 block->last_second = seconds;
                 (void)framer_resident_owner_enqueue(&block->owner, generation,
                                                     "tick.1s", 0, 0);
+                /* Built-in device feeds, published at 1 Hz to the ACTIVE
+                 * widget.  The engine admits an id only when the widget's
+                 * package declared a handler for it, so widgets that never
+                 * asked hear nothing.  0xB2F2 = typing speed from the raw
+                 * key hook: value = words/minute (chars/5), auxiliary = raw
+                 * key-down count over the last 60 s. */
+                (void)framer_resident_owner_enqueue_host_rpc(
+                    &block->owner, generation, 0xb2f2u,
+                    (int32_t)__atomic_load_n(&block->wpm_value,
+                                             __ATOMIC_RELAXED),
+                    (int32_t)__atomic_load_n(&block->wpm_keys_60s,
+                                             __ATOMIC_RELAXED));
             }
         }
         if (__atomic_load_n(&block->visible, __ATOMIC_ACQUIRE) != 0u &&
@@ -2996,20 +3048,41 @@ void framer_physical_key_after_stock(void *controller, uint32_t native_token,
         block->generation != PHYSICAL_GENERATION)
         return;
     __atomic_add_fetch(&block->input_sink_inflight, 1u, __ATOMIC_SEQ_CST);
+    /* WPM counting happens before every gate: it measures the user's typing
+     * on EVERY screen, not just while a widget is fronted. Down edges only. */
+    if (level != 0u) {
+        uint32_t second = (now_ms() / 1000u) % 60u;
+        if (second < 60u)
+            block->wpm_counts[second] =
+                block->wpm_counts[second] == 255u
+                    ? 255u : (uint8_t)(block->wpm_counts[second] + 1u);
+    }
     if (!framer_physical_focus_accepts_key(
             __atomic_load_n(&block->visible, __ATOMIC_SEQ_CST),
             __atomic_load_n(&block->input_enabled, __ATOMIC_ACQUIRE)))
         goto finished;
     block->last_raw_token = native_token;
     block->last_raw_level = level;
-    /* No JS edge is emitted during discovery. The gate flips only after live
-     * down+up observations for exact Space and LeftShift; the next physical
-     * edge begins a clean logical session. Unknown tokens never wildcard-map. */
-    if (framer_physical_key_gate_observe_and_map(
-            &block->key_probe, native_token, level, &logical_token))
-        (void)framer_resident_owner_input_after_stock(
-            &block->owner, block->widget_assets.generation, logical_token,
-            level != 0u, now_ms());
+    /* Telemetry only — the probe's Space/LeftShift bits still feed diag p5. */
+    framer_runtime_key_probe_observe(&block->key_probe, native_token, level);
+    /* No JS edge is emitted during discovery: the FIRST full down+up cycle of
+     * one token proves the stream is live and is itself consumed.  Every
+     * edge after proof forwards its native token; the engine admits only the
+     * tokens the widget's package declared. */
+    if (__atomic_load_n(&block->key_stream_proven, __ATOMIC_ACQUIRE) == 0u) {
+        if (level != 0u) {
+            block->key_cycle_down_token = native_token;
+            block->key_cycle_down_seen = 1u;
+        } else if (block->key_cycle_down_seen != 0u &&
+                   block->key_cycle_down_token == native_token) {
+            __atomic_store_n(&block->key_stream_proven, 1u, __ATOMIC_RELEASE);
+        }
+        goto finished;
+    }
+    logical_token = native_token;
+    (void)framer_resident_owner_input_after_stock(
+        &block->owner, block->widget_assets.generation, logical_token,
+        level != 0u, now_ms());
 finished:
     __atomic_sub_fetch(&block->input_sink_inflight, 1u, __ATOMIC_SEQ_CST);
 }
@@ -3696,6 +3769,13 @@ int framer_physical_module_startup(void *controller,
     block->generation = PHYSICAL_GENERATION;
     framer_runtime_receipt_init(&block->receipt);
     framer_runtime_key_probe_init(&block->key_probe);
+    block->key_stream_proven = 0u;
+    block->key_cycle_down_token = 0u;
+    block->key_cycle_down_seen = 0u;
+    zero_bytes((void *)block->wpm_counts, sizeof(block->wpm_counts));
+    block->wpm_ring_second = 0u;
+    block->wpm_value = 0u;
+    block->wpm_keys_60s = 0u;
     framer_runtime_visibility_init(&block->visibility);
     (void)framer_runtime_visibility_set(&block->visibility, 0);
     copy_text(block->runtime_capability.base_app_sha256,

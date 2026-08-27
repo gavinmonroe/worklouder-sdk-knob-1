@@ -1393,6 +1393,12 @@ Discarded input sections
  .bss           0x00000000        0x0 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
  .text.framer_runtime_status_copy
                 0x00000000       0x3c /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
+ .text.framer_runtime_key_probe_can_commit
+                0x00000000       0x3e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
+ .text.framer_runtime_key_probe_commit
+                0x00000000       0x24 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
+ .text.framer_runtime_key_probe_map
+                0x00000000       0x38 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
  .text.framer_runtime_visibility_take_replay
                 0x00000000       0x77 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
  .text.framer_runtime_allocate_internal
@@ -1597,7 +1603,7 @@ Discarded input sections
  .comment       0x00000000       0x30 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
  .xtensa.info   0x00000000        0x0 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
  .xt.lit        0x00000000      0x1b8 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
- .xt.prop       0x00000000     0x23c4 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+ .xt.prop       0x00000000     0x2418 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
  .text          0x00000000        0x0 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/rpc-shims.o
  .data          0x00000000        0x0 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/rpc-shims.o
  .bss           0x00000000        0x0 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/rpc-shims.o
@@ -1779,7 +1785,7 @@ Name             Origin             Length             Attributes
 Linker script and memory map
 
 
-.text           0x423d0000    0x19280
+.text           0x423d0000    0x19300
  *(.literal .literal.*)
  .literal.physical_rpc
                 0x423d0000        0xc /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/rpc-shims.o
@@ -2978,932 +2984,921 @@ Linker script and memory map
                                  0x16 (size before relaxing)
                 0x423e246c                framer_runtime_key_probe_init
  *fill*         0x423e247a        0x2 
- .text.framer_runtime_key_probe_commit
-                0x423e247c       0x1c /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
-                                 0x24 (size before relaxing)
-                0x423e247c                framer_runtime_key_probe_commit
  .text.framer_runtime_visibility_init
-                0x423e2498       0x20 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
+                0x423e247c       0x20 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
                                  0x28 (size before relaxing)
-                0x423e2498                framer_runtime_visibility_init
+                0x423e247c                framer_runtime_visibility_init
  .text.framer_f2up_admit
-                0x423e24b8      0x220 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-admission.o
+                0x423e249c      0x220 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-admission.o
                                 0x2a0 (size before relaxing)
-                0x423e24c0                framer_f2up_admit
+                0x423e24a4                framer_f2up_admit
  .text.framer_f2up_upload_begin
-                0x423e26d8       0x50 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-upload.o
-                0x423e26dc                framer_f2up_upload_begin
+                0x423e26bc       0x50 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-upload.o
+                0x423e26c0                framer_f2up_upload_begin
  .text.framer_f2up_upload_commit
-                0x423e2728       0x4c /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-upload.o
+                0x423e270c       0x4c /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-upload.o
                                  0x50 (size before relaxing)
-                0x423e2728                framer_f2up_upload_commit
+                0x423e270c                framer_f2up_upload_commit
  .text.framer_f2up_base64_decode
-                0x423e2774      0x18c /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-upload.o
+                0x423e2758      0x18c /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-upload.o
                                 0x1a0 (size before relaxing)
-                0x423e2774                framer_f2up_base64_decode
+                0x423e2758                framer_f2up_base64_decode
  .text.framer_f2up_flash_span_allowed_at
-                0x423e2900       0x43 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-persist.o
+                0x423e28e4       0x43 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-persist.o
                                  0x47 (size before relaxing)
-                0x423e2900                framer_f2up_flash_span_allowed_at
- *fill*         0x423e2943        0x1 
+                0x423e28e4                framer_f2up_flash_span_allowed_at
+ *fill*         0x423e2927        0x1 
  .text.framer_f2up_persist_advance
-                0x423e2944      0x1f4 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-persist.o
+                0x423e2928      0x1f4 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-persist.o
                                 0x20c (size before relaxing)
-                0x423e2944                framer_f2up_persist_advance
+                0x423e2928                framer_f2up_persist_advance
  .text.framer_f2up_adopt_decide
-                0x423e2b38       0x8f /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-adopt.o
+                0x423e2b1c       0x8f /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-adopt.o
                                  0x93 (size before relaxing)
-                0x423e2b38                framer_f2up_adopt_decide
- *fill*         0x423e2bc7        0x1 
+                0x423e2b1c                framer_f2up_adopt_decide
+ *fill*         0x423e2bab        0x1 
  .text.framer_physical_telemetry_session_select
-                0x423e2bc8       0x7d /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e2bac       0x7d /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x81 (size before relaxing)
- *fill*         0x423e2c45        0x3 
+ *fill*         0x423e2c29        0x3 
  .text.in_internal
-                0x423e2c48       0x34 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e2c2c       0x34 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
  .text.in_psram
-                0x423e2c7c       0x35 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
- *fill*         0x423e2cb1        0x3 
+                0x423e2c60       0x35 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+ *fill*         0x423e2c95        0x3 
  .text.in_stock_data
-                0x423e2cb4       0x3d /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e2c98       0x3d /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x49 (size before relaxing)
- *fill*         0x423e2cf1        0x3 
+ *fill*         0x423e2cd5        0x3 
  .text.digest_hex
-                0x423e2cf4       0x38 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
- .text.now_ms   0x423e2d2c       0x1c /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e2cd8       0x38 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+ .text.now_ms   0x423e2d10       0x1c /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x20 (size before relaxing)
  .text.current_task_token
-                0x423e2d48       0x17 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
- *fill*         0x423e2d5f        0x1 
+                0x423e2d2c       0x17 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+ *fill*         0x423e2d43        0x1 
  .text.platform_allocate
-                0x423e2d60       0x5a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
-                                 0x6a (size before relaxing)
- *fill*         0x423e2dba        0x2 
+                0x423e2d44       0x5c /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                                 0x68 (size before relaxing)
  .text.platform_free
-                0x423e2dbc       0x47 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
-                                 0x4b (size before relaxing)
- *fill*         0x423e2e03        0x1 
+                0x423e2da0       0x43 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                                 0x47 (size before relaxing)
+ *fill*         0x423e2de3        0x1 
  .text.platform_now_us
-                0x423e2e04        0xf /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e2de4        0xf /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x13 (size before relaxing)
- *fill*         0x423e2e13        0x1 
+ *fill*         0x423e2df3        0x1 
  .text.platform_now_ms
-                0x423e2e14        0xa /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e2df4        0xa /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x11 (size before relaxing)
- *fill*         0x423e2e1e        0x2 
+ *fill*         0x423e2dfe        0x2 
  .text.platform_thread
-                0x423e2e20        0xa /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e2e00        0xa /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x11 (size before relaxing)
- *fill*         0x423e2e2a        0x2 
+ *fill*         0x423e2e0a        0x2 
  .text.scene_package_header_is_f1wb
-                0x423e2e2c       0x3e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e2e0c       0x3e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x56 (size before relaxing)
- *fill*         0x423e2e6a        0x2 
+ *fill*         0x423e2e4a        0x2 
  .text.widget_buffer_acquire
-                0x423e2e6c       0x7d /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e2e4c       0x7d /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x91 (size before relaxing)
- *fill*         0x423e2ee9        0x3 
+ *fill*         0x423e2ec9        0x3 
  .text.widget_assets_set_baked
-                0x423e2eec       0x66 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
-                                 0x6a (size before relaxing)
- *fill*         0x423e2f52        0x2 
+                0x423e2ecc       0x60 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                                 0x68 (size before relaxing)
  .text.block_from_rpc
-                0x423e2f54       0x54 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e2f2c       0x54 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x58 (size before relaxing)
  .text.widget_upload_append_hex32
-                0x423e2fa8       0x31 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e2f80       0x31 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x35 (size before relaxing)
- *fill*         0x423e2fd9        0x3 
+ *fill*         0x423e2fb1        0x3 
  .text.framer_physical_weather_id
-                0x423e2fdc       0x1e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
-                0x423e2fe0                framer_physical_weather_id
- *fill*         0x423e2ffa        0x2 
+                0x423e2fb4       0x1e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e2fb8                framer_physical_weather_id
+ *fill*         0x423e2fd2        0x2 
  .text.scene_device_read
-                0x423e2ffc       0x1e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
- *fill*         0x423e301a        0x2 
+                0x423e2fd4       0x1e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+ *fill*         0x423e2ff2        0x2 
  .text.proxy_cleanup
-                0x423e301c       0x3e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e2ff4       0x3e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x42 (size before relaxing)
- *fill*         0x423e305a        0x2 
+ *fill*         0x423e3032        0x2 
  .text.platform_stack_water
-                0x423e305c       0x26 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
- *fill*         0x423e3082        0x2 
+                0x423e3034       0x26 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+ *fill*         0x423e305a        0x2 
  .text.proxy_encoder
-                0x423e3084       0xca /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e305c       0xca /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0xd6 (size before relaxing)
- *fill*         0x423e314e        0x2 
+ *fill*         0x423e3126        0x2 
  .text.refresh_runtime_telemetry
-                0x423e3150      0x253 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
-                                0x2a3 (size before relaxing)
- *fill*         0x423e33a3        0x1 
+                0x423e3128      0x257 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                                0x2a7 (size before relaxing)
+ *fill*         0x423e337f        0x1 
  .text.publish_staged_completion
-                0x423e33a4       0x60 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e3380       0x60 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x6c (size before relaxing)
  .text.telemetry_slots_format
-                0x423e3404      0x111 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e33e0      0x111 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                 0x119 (size before relaxing)
- *fill*         0x423e3515        0x3 
+ *fill*         0x423e34f1        0x3 
  .text.widget_slot_window_map
-                0x423e3518       0x5a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e34f4       0x5a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x62 (size before relaxing)
- *fill*         0x423e3572        0x2 
+ *fill*         0x423e354e        0x2 
  .text.rpc_read_page
-                0x423e3574       0x38 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e3550       0x38 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x48 (size before relaxing)
  .text.rpc_begin_ready
-                0x423e35ac       0x66 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e3588       0x66 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x6a (size before relaxing)
- *fill*         0x423e3612        0x2 
+ *fill*         0x423e35ee        0x2 
  .text.rpc_upload_handler
-                0x423e3614      0x6a2 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e35f0      0x69a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                 0x82a (size before relaxing)
- *fill*         0x423e3cb6        0x2 
+ *fill*         0x423e3c8a        0x2 
  .text.rpc_receipt_handler
-                0x423e3cb8       0x54 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e3c8c       0x54 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x78 (size before relaxing)
  .text.rpc_event_handler
-                0x423e3d0c      0x2ee /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
-                                0x34a (size before relaxing)
- *fill*         0x423e3ffa        0x2 
+                0x423e3ce0      0x2f6 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                                0x34e (size before relaxing)
+ *fill*         0x423e3fd6        0x2 
  .text.rpc_telemetry_handler
-                0x423e3ffc      0x18a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e3fd8      0x18a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                 0x1d2 (size before relaxing)
- *fill*         0x423e4186        0x2 
+ *fill*         0x423e4162        0x2 
  .text.rpc_cap_handler
-                0x423e4188       0x9a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e4164       0x9a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0xc2 (size before relaxing)
- *fill*         0x423e4222        0x2 
+ *fill*         0x423e41fe        0x2 
  .text.scene_sidecar_present
-                0x423e4224       0x46 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e4200       0x46 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x5a (size before relaxing)
- *fill*         0x423e426a        0x2 
+ *fill*         0x423e4246        0x2 
  .text.rpc_callback_common
-                0x423e426c       0x32 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e4248       0x32 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x36 (size before relaxing)
- *fill*         0x423e429e        0x2 
+ *fill*         0x423e427a        0x2 
  .text.rpc_cap_callback
-                0x423e42a0       0x1a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e427c       0x1a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x1e (size before relaxing)
- *fill*         0x423e42ba        0x2 
+ *fill*         0x423e4296        0x2 
  .text.rpc_telemetry_callback
-                0x423e42bc       0x1a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e4298       0x1a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x1e (size before relaxing)
- *fill*         0x423e42d6        0x2 
+ *fill*         0x423e42b2        0x2 
  .text.rpc_event_callback
-                0x423e42d8       0x1a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e42b4       0x1a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x1e (size before relaxing)
- *fill*         0x423e42f2        0x2 
+ *fill*         0x423e42ce        0x2 
  .text.rpc_receipt_callback
-                0x423e42f4       0x1a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e42d0       0x1a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x1e (size before relaxing)
- *fill*         0x423e430e        0x2 
+ *fill*         0x423e42ea        0x2 
  .text.rpc_upload_callback
-                0x423e4310       0x1a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e42ec       0x1a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x1e (size before relaxing)
- *fill*         0x423e432a        0x2 
+ *fill*         0x423e4306        0x2 
  .text.proxy_build
-                0x423e432c       0x66 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e4308       0x66 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x6e (size before relaxing)
- *fill*         0x423e4392        0x2 
+ *fill*         0x423e436e        0x2 
  .text.publish_proxy_for_slot
-                0x423e4394      0x10e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e4370      0x10e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                 0x122 (size before relaxing)
- *fill*         0x423e44a2        0x2 
+ *fill*         0x423e447e        0x2 
  .text.widget_slot_adopt_from
-                0x423e44a4       0x48 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
-                                 0x50 (size before relaxing)
+                0x423e4480       0x4a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                                 0x4e (size before relaxing)
+ *fill*         0x423e44ca        0x2 
  .text.platform_schedule_poll
-                0x423e44ec       0x34 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
-                                 0x38 (size before relaxing)
+                0x423e44cc       0x33 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                                 0x37 (size before relaxing)
+ *fill*         0x423e44ff        0x1 
  .text.scene_crc32$constprop$0
-                0x423e4520       0x34 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e4500       0x34 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x38 (size before relaxing)
  .text.decode_lzss$constprop$0
-                0x423e4554       0xae /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e4534       0xae /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0xb2 (size before relaxing)
- *fill*         0x423e4602        0x2 
+ *fill*         0x423e45e2        0x2 
  .text.proxy_tick
-                0x423e4604      0x3ea /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e45e4      0x3ea /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                 0x43e (size before relaxing)
- *fill*         0x423e49ee        0x2 
+ *fill*         0x423e49ce        0x2 
  .text.owner_boot_widget
-                0x423e49f0      0x20b /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
-                                0x2b3 (size before relaxing)
- *fill*         0x423e4bfb        0x1 
+                0x423e49d0      0x1f6 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                                0x29a (size before relaxing)
+ *fill*         0x423e4bc6        0x2 
  .text.scene_flash_protect_byte
-                0x423e4bfc       0x4e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e4bc8       0x4e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x5a (size before relaxing)
- *fill*         0x423e4c4a        0x2 
+ *fill*         0x423e4c16        0x2 
  .text.scene_device_erase
-                0x423e4c4c       0x38 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e4c18       0x38 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x40 (size before relaxing)
  .text.scene_device_write
-                0x423e4c84       0x3a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e4c50       0x3a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
                                  0x42 (size before relaxing)
- *fill*         0x423e4cbe        0x2 
+ *fill*         0x423e4c8a        0x2 
  .text.scene_persist_step
-                0x423e4cc0      0x426 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
-                                0x48a (size before relaxing)
- *fill*         0x423e50e6        0x2 
+                0x423e4c8c      0x418 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                                0x47c (size before relaxing)
  .text.owner_task
-                0x423e50e8      0x5b3 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
-                                0x6b3 (size before relaxing)
- *fill*         0x423e569b        0x1 
+                0x423e50a4      0x663 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                                0x76f (size before relaxing)
+ *fill*         0x423e5707        0x1 
  .text.framer_physical_key_after_stock
-                0x423e569c       0xda /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
-                                0x10a (size before relaxing)
-                0x423e569c                framer_physical_key_after_stock
- *fill*         0x423e5776        0x2 
+                0x423e5708      0x13a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                                0x166 (size before relaxing)
+                0x423e5708                framer_physical_key_after_stock
+ *fill*         0x423e5842        0x2 
  .text.framer_physical_module_startup
-                0x423e5778      0xa0b /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
-                                0xb9b (size before relaxing)
-                0x423e580c                framer_physical_module_startup
- *fill*         0x423e6183        0x1 
+                0x423e5844      0xa37 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                                0xbcf (size before relaxing)
+                0x423e58d8                framer_physical_module_startup
+ *fill*         0x423e627b        0x1 
  .text.physical_rpc
-                0x423e6184       0x58 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/rpc-shims.o
-                0x423e6184                framer_physical_rpc_read_integer
-                0x423e61a4                framer_physical_rpc_read_string
- .text          0x423e61dc      0x312 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_addsubdf3.o)
-                0x423e620c                __adddf3
-                0x423e6368                __subdf3
- *fill*         0x423e64ee        0x2 
- .text          0x423e64f0      0x1ff /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_muldf3.o)
-                0x423e65d4                __muldf3
- *fill*         0x423e66ef        0x1 
- .text          0x423e66f0      0x213 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_divdf3.o)
-                0x423e67e0                __divdf3
- *fill*         0x423e6903        0x1 
- .text          0x423e6904      0x176 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_cmpdf2.o)
-                0x423e6904                __eqdf2
-                0x423e6904                __nedf2
-                0x423e6938                __gtdf2
-                0x423e6960                __ledf2
-                0x423e69c4                __gedf2
-                0x423e69ec                __ltdf2
-                0x423e6a50                __unorddf2
- *fill*         0x423e6a7a        0x2 
- .text          0x423e6a7c       0x4c /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_fixdfsi.o)
-                0x423e6a7c                __fixdfsi
- .text          0x423e6ac8       0xa4 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_truncdfsf2.o)
-                0x423e6ac8                __truncdfsf2
- .text          0x423e6b6c       0x62 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_extendsfdf2.o)
-                0x423e6b6c                __extendsfdf2
- *fill*         0x423e6bce        0x2 
- .text          0x423e6bd0      0x123 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libc.a(libc_a-strcmp.o)
-                0x423e6bd0                strcmp
- *fill*         0x423e6cf3        0x1 
- .text          0x423e6cf4       0x63 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libc.a(libc_a-strlen.o)
-                0x423e6cf4                strlen
- *fill*         0x423e6d57        0x1 
+                0x423e627c       0x58 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/rpc-shims.o
+                0x423e627c                framer_physical_rpc_read_integer
+                0x423e629c                framer_physical_rpc_read_string
+ .text          0x423e62d4      0x312 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_addsubdf3.o)
+                0x423e6304                __adddf3
+                0x423e6460                __subdf3
+ *fill*         0x423e65e6        0x2 
+ .text          0x423e65e8      0x1ff /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_muldf3.o)
+                0x423e66cc                __muldf3
+ *fill*         0x423e67e7        0x1 
+ .text          0x423e67e8      0x213 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_divdf3.o)
+                0x423e68d8                __divdf3
+ *fill*         0x423e69fb        0x1 
+ .text          0x423e69fc      0x176 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_cmpdf2.o)
+                0x423e69fc                __eqdf2
+                0x423e69fc                __nedf2
+                0x423e6a30                __gtdf2
+                0x423e6a58                __ledf2
+                0x423e6abc                __gedf2
+                0x423e6ae4                __ltdf2
+                0x423e6b48                __unorddf2
+ *fill*         0x423e6b72        0x2 
+ .text          0x423e6b74       0x4c /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_fixdfsi.o)
+                0x423e6b74                __fixdfsi
+ .text          0x423e6bc0       0xa4 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_truncdfsf2.o)
+                0x423e6bc0                __truncdfsf2
+ .text          0x423e6c64       0x62 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_extendsfdf2.o)
+                0x423e6c64                __extendsfdf2
+ *fill*         0x423e6cc6        0x2 
+ .text          0x423e6cc8      0x123 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libc.a(libc_a-strcmp.o)
+                0x423e6cc8                strcmp
+ *fill*         0x423e6deb        0x1 
+ .text          0x423e6dec       0x63 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libc.a(libc_a-strlen.o)
+                0x423e6dec                strlen
+ *fill*         0x423e6e4f        0x1 
  .text.from_hex
-                0x423e6d58       0x23 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e6d7b        0x1 
+                0x423e6e50       0x23 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e6e73        0x1 
  .text.get_special_prop
-                0x423e6d7c       0x23 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e6d9f        0x1 
+                0x423e6e74       0x23 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e6e97        0x1 
  .text.js_rehash_props
-                0x423e6da0       0x74 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+                0x423e6e98       0x74 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
  .text.dummy_write_func
-                0x423e6e14        0x5 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e6e19        0x3 
+                0x423e6f0c        0x5 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e6f11        0x3 
  .text.skip_spaces
-                0x423e6e1c       0x1d /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e6e39        0x3 
+                0x423e6f14       0x1d /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e6f31        0x3 
  .text.js_reverse_val
-                0x423e6e3c       0x28 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+                0x423e6f34       0x28 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
  .text.is_ident_first
-                0x423e6e64       0x2a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e6e8e        0x0 
- *fill*         0x423e6e8e        0x2 
+                0x423e6f5c       0x2a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e6f86        0x0 
+ *fill*         0x423e6f86        0x2 
  .text.get_line_col
-                0x423e6e90       0x31 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e6ec1        0x0 
- *fill*         0x423e6ec1        0x0 
- *fill*         0x423e6ec1        0x3 
+                0x423e6f88       0x31 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e6fb9        0x0 
+ *fill*         0x423e6fb9        0x0 
+ *fill*         0x423e6fb9        0x3 
  .text.get_prev_opcode
-                0x423e6ec4       0x17 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e6edb        0x1 
+                0x423e6fbc       0x17 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e6fd3        0x1 
  .text.find_var
-                0x423e6edc       0x27 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e6f03        0x1 
+                0x423e6fd4       0x27 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e6ffb        0x1 
  .text.pop_break_entry
-                0x423e6f04       0x1d /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e6f21        0x0 
- *fill*         0x423e6f21        0x0 
- *fill*         0x423e6f21        0x0 
- *fill*         0x423e6f21        0x3 
+                0x423e6ffc       0x1d /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e7019        0x0 
+ *fill*         0x423e7019        0x0 
+ *fill*         0x423e7019        0x0 
+ *fill*         0x423e7019        0x3 
  .text.mtag_has_references
-                0x423e6f24       0x11 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e6f35        0x0 
- *fill*         0x423e6f35        0x3 
+                0x423e701c       0x11 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e702d        0x0 
+ *fill*         0x423e702d        0x3 
  .text.gc_thread_pointer
-                0x423e6f38       0x1f /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e6f57        0x1 
+                0x423e7030       0x1f /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e704f        0x1 
  .text.js_string_set_length
-                0x423e6f58        0x7 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
-                0x423e6f58                js_string_set_length
- *fill*         0x423e6f5f        0x1 
+                0x423e7050        0x7 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+                0x423e7050                js_string_set_length
+ *fill*         0x423e7057        0x1 
  .text.parse_digits
-                0x423e6f60       0x55 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e6fb5        0x3 
+                0x423e7058       0x55 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e70ad        0x3 
  .text.range_sort_cmp
-                0x423e6fb8       0x4a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e7002        0x2 
+                0x423e70b0       0x4a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e70fa        0x2 
  .text.range_sort_swap
-                0x423e7004       0xc5 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e70c9        0x3 
+                0x423e70fc       0xc5 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e71c1        0x3 
  .text.range_compress
-                0x423e70cc      0x102 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e71ce        0x0 
- *fill*         0x423e71ce        0x2 
+                0x423e71c4      0x102 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e72c6        0x0 
+ *fill*         0x423e72c6        0x2 
  .text.is_owner_thread
-                0x423e71d0       0x18 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+                0x423e72c8       0x18 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
  .text.sample_memory
-                0x423e71e8       0x3b /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e7223        0x0 
- *fill*         0x423e7223        0x0 
- *fill*         0x423e7223        0x1 
+                0x423e72e0       0x3b /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e731b        0x0 
+ *fill*         0x423e731b        0x0 
+ *fill*         0x423e731b        0x1 
  .text.find_handler
-                0x423e7224       0x3d /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e7261        0x0 
- *fill*         0x423e7261        0x0 
- *fill*         0x423e7261        0x0 
- *fill*         0x423e7261        0x0 
- *fill*         0x423e7261        0x3 
+                0x423e731c       0x3d /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e7359        0x0 
+ *fill*         0x423e7359        0x0 
+ *fill*         0x423e7359        0x0 
+ *fill*         0x423e7359        0x0 
+ *fill*         0x423e7359        0x3 
  .text.finish_input_producer
-                0x423e7264       0x32 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e7296        0x2 
+                0x423e735c       0x32 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e738e        0x2 
  .text.JS_IsFunctionObject$part$0
-                0x423e7298       0x1e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e72b6        0x2 
+                0x423e7390       0x1e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e73ae        0x2 
  .text.rqsort_idx$part$0
-                0x423e72b8       0xbb /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e7373        0x1 
+                0x423e73b0       0xbb /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e746b        0x1 
  .text.diag_error_append$part$0
-                0x423e7374       0x4f /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e73c3        0x0 
- *fill*         0x423e73c3        0x0 
- *fill*         0x423e73c3        0x0 
- *fill*         0x423e73c3        0x0 
- *fill*         0x423e73c3        0x0 
- *fill*         0x423e73c3        0x0 
- *fill*         0x423e73c3        0x0 
- *fill*         0x423e73c3        0x0 
- *fill*         0x423e73c3        0x1 
+                0x423e746c       0x4f /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e74bb        0x0 
+ *fill*         0x423e74bb        0x0 
+ *fill*         0x423e74bb        0x0 
+ *fill*         0x423e74bb        0x0 
+ *fill*         0x423e74bb        0x0 
+ *fill*         0x423e74bb        0x0 
+ *fill*         0x423e74bb        0x0 
+ *fill*         0x423e74bb        0x0 
+ *fill*         0x423e74bb        0x1 
  .text.JS_IsString$constprop$0
-                0x423e73c4       0x2a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e73ee        0x0 
- *fill*         0x423e73ee        0x0 
- *fill*         0x423e73ee        0x0 
- *fill*         0x423e73ee        0x0 
- *fill*         0x423e73ee        0x2 
+                0x423e74bc       0x2a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e74e6        0x0 
+ *fill*         0x423e74e6        0x0 
+ *fill*         0x423e74e6        0x0 
+ *fill*         0x423e74e6        0x0 
+ *fill*         0x423e74e6        0x2 
  .text.js_parse_pop_val$isra$0
-                0x423e73f0       0x1a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e740a        0x2 
+                0x423e74e8       0x1a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e7502        0x2 
  .text.find_ext_var$isra$0
-                0x423e740c       0x24 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+                0x423e7504       0x24 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
  .text.js_eq_get_type$isra$0
-                0x423e7430       0x3c /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+                0x423e7528       0x3c /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
  .text.js_function_get_length_name1$isra$0
-                0x423e746c       0x7c /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+                0x423e7564       0x7c /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
  .text.find_own_property$isra$0
-                0x423e74e8       0x3a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e7522        0x0 
- *fill*         0x423e7522        0x0 
- *fill*         0x423e7522        0x0 
- *fill*         0x423e7522        0x2 
+                0x423e75e0       0x3a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e761a        0x0 
+ *fill*         0x423e761a        0x0 
+ *fill*         0x423e761a        0x0 
+ *fill*         0x423e761a        0x2 
  .text.js_get_object_class$isra$0
-                0x423e7524       0x29 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e754d        0x3 
+                0x423e761c       0x29 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e7645        0x3 
  .text.JS_IsObject$isra$0
-                0x423e7550       0x1e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e756e        0x0 
- *fill*         0x423e756e        0x0 
- *fill*         0x423e756e        0x0 
- *fill*         0x423e756e        0x2 
+                0x423e7648       0x1e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e7666        0x0 
+ *fill*         0x423e7666        0x0 
+ *fill*         0x423e7666        0x0 
+ *fill*         0x423e7666        0x2 
  .text.emit_label
-                0x423e7570       0x66 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
- *fill*         0x423e75d6        0x0 
- *fill*         0x423e75d6        0x0 
- *fill*         0x423e75d6        0x2 
+                0x423e7668       0x66 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+ *fill*         0x423e76ce        0x0 
+ *fill*         0x423e76ce        0x0 
+ *fill*         0x423e76ce        0x2 
  .text.JS_IsError
-                0x423e75d8       0x1e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
-                0x423e75d8                JS_IsError
- *fill*         0x423e75f6        0x2 
+                0x423e76d0       0x1e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+                0x423e76d0                JS_IsError
+ *fill*         0x423e76ee        0x2 
  .text.JS_IsNumber
-                0x423e75f8       0x1f /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
-                0x423e75f8                JS_IsNumber
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x0 
- *fill*         0x423e7617        0x1 
- .text.abort    0x423e7618        0x6 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/adapter.o
-                0x423e7618                abort
- *fill*         0x423e761e        0x2 
+                0x423e76f0       0x1f /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime.o
+                0x423e76f0                JS_IsNumber
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x0 
+ *fill*         0x423e770f        0x1 
+ .text.abort    0x423e7710        0x6 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/adapter.o
+                0x423e7710                abort
+ *fill*         0x423e7716        0x2 
  .text.mpb_renorm
-                0x423e7620       0x1a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/dtoa.o
- *fill*         0x423e763a        0x0 
- *fill*         0x423e763a        0x2 
+                0x423e7718       0x1a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/dtoa.o
+ *fill*         0x423e7732        0x0 
+ *fill*         0x423e7732        0x2 
  .text.to_digit
-                0x423e763c       0x26 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/dtoa.o
- *fill*         0x423e7662        0x0 
- *fill*         0x423e7662        0x0 
- *fill*         0x423e7662        0x2 
+                0x423e7734       0x26 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/dtoa.o
+ *fill*         0x423e775a        0x0 
+ *fill*         0x423e775a        0x0 
+ *fill*         0x423e775a        0x2 
  .text.mp_div1norm$constprop$0
-                0x423e7664       0x98 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/dtoa.o
- *fill*         0x423e76fc        0x0 
- *fill*         0x423e76fc        0x0 
- *fill*         0x423e76fc        0x0 
- *fill*         0x423e76fc        0x0 
- *fill*         0x423e76fc        0x0 
- *fill*         0x423e76fc        0x0 
- *fill*         0x423e76fc        0x0 
- *fill*         0x423e76fc        0x0 
- *fill*         0x423e76fc        0x0 
- *fill*         0x423e76fc        0x0 
- *fill*         0x423e76fc        0x0 
- *fill*         0x423e76fc        0x0 
- *fill*         0x423e76fc        0x0 
- *fill*         0x423e76fc        0x0 
- *fill*         0x423e76fc        0x0 
- *fill*         0x423e76fc        0x0 
- *fill*         0x423e76fc        0x0 
- *fill*         0x423e76fc        0x0 
+                0x423e775c       0x98 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/dtoa.o
+ *fill*         0x423e77f4        0x0 
+ *fill*         0x423e77f4        0x0 
+ *fill*         0x423e77f4        0x0 
+ *fill*         0x423e77f4        0x0 
+ *fill*         0x423e77f4        0x0 
+ *fill*         0x423e77f4        0x0 
+ *fill*         0x423e77f4        0x0 
+ *fill*         0x423e77f4        0x0 
+ *fill*         0x423e77f4        0x0 
+ *fill*         0x423e77f4        0x0 
+ *fill*         0x423e77f4        0x0 
+ *fill*         0x423e77f4        0x0 
+ *fill*         0x423e77f4        0x0 
+ *fill*         0x423e77f4        0x0 
+ *fill*         0x423e77f4        0x0 
+ *fill*         0x423e77f4        0x0 
+ *fill*         0x423e77f4        0x0 
+ *fill*         0x423e77f4        0x0 
  .text.strstart
-                0x423e76fc       0x29 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/cutils.o
-                0x423e76fc                strstart
- *fill*         0x423e7725        0x3 
+                0x423e77f4       0x29 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/cutils.o
+                0x423e77f4                strstart
+ *fill*         0x423e781d        0x3 
  .text.__unicode_to_utf8
-                0x423e7728       0x78 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/cutils.o
-                0x423e7728                __unicode_to_utf8
+                0x423e7820       0x78 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/cutils.o
+                0x423e7820                __unicode_to_utf8
  .text.__unicode_from_utf8
-                0x423e77a0      0x112 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/cutils.o
-                0x423e77a0                __unicode_from_utf8
- *fill*         0x423e78b2        0x2 
+                0x423e7898      0x112 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/cutils.o
+                0x423e7898                __unicode_from_utf8
+ *fill*         0x423e79aa        0x2 
  .text.__utf8_get
-                0x423e78b4       0x94 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/cutils.o
-                0x423e78b4                __utf8_get
+                0x423e79ac       0x94 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/cutils.o
+                0x423e79ac                __utf8_get
  .text.read_u32
-                0x423e7948       0x23 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2js.o
- *fill*         0x423e796b        0x1 
+                0x423e7a40       0x23 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2js.o
+ *fill*         0x423e7a63        0x1 
  .text.bytes_equal
-                0x423e796c       0x2b /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2js.o
- *fill*         0x423e7997        0x1 
+                0x423e7a64       0x2b /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2js.o
+ *fill*         0x423e7a8f        0x1 
  .text.bytes_zero
-                0x423e7998       0x20 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2js.o
+                0x423e7a90       0x20 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2js.o
  .text.copy_bytes
-                0x423e79b8       0x19 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2js.o
- *fill*         0x423e79d1        0x0 
- *fill*         0x423e79d1        0x0 
- *fill*         0x423e79d1        0x0 
- *fill*         0x423e79d1        0x0 
- *fill*         0x423e79d1        0x3 
+                0x423e7ab0       0x19 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2js.o
+ *fill*         0x423e7ac9        0x0 
+ *fill*         0x423e7ac9        0x0 
+ *fill*         0x423e7ac9        0x0 
+ *fill*         0x423e7ac9        0x0 
+ *fill*         0x423e7ac9        0x3 
  .text.zero_bytes
-                0x423e79d4       0x16 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
- *fill*         0x423e79ea        0x2 
+                0x423e7acc       0x16 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
+ *fill*         0x423e7ae2        0x2 
  .text.copy_bytes
-                0x423e79ec       0x19 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
- *fill*         0x423e7a05        0x3 
+                0x423e7ae4       0x19 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
+ *fill*         0x423e7afd        0x3 
  .text.owner_now_us
-                0x423e7a08       0x1f /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
- *fill*         0x423e7a27        0x1 
+                0x423e7b00       0x1f /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
+ *fill*         0x423e7b1f        0x1 
  .text.owner_thread_token
-                0x423e7a28       0x1c /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
+                0x423e7b20       0x1c /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
  .text.owner_publish_gate_unlock
-                0x423e7a44       0x13 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
- *fill*         0x423e7a57        0x1 
+                0x423e7b3c       0x13 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
+ *fill*         0x423e7b4f        0x1 
  .text.owner_issue_terminal_release_on_task
-                0x423e7a58       0x56 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
- *fill*         0x423e7aae        0x2 
+                0x423e7b50       0x56 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
+ *fill*         0x423e7ba6        0x2 
  .text.owner_publish_gate_lock
-                0x423e7ab0       0x22 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
- *fill*         0x423e7ad2        0x2 
- .text.schedule_input_poll
-                0x423e7ad4       0x5a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
- *fill*         0x423e7b2e        0x2 
- .text.owner_ingress_leave
-                0x423e7b30       0x1d /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
- *fill*         0x423e7b4d        0x3 
- .text.owner_runtime_leave
-                0x423e7b50       0x1d /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
- *fill*         0x423e7b6d        0x3 
- .text.string_equal
-                0x423e7b70       0x2a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
- *fill*         0x423e7b9a        0x2 
- .text.owner_reschedule
-                0x423e7b9c       0x2e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
+                0x423e7ba8       0x22 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
  *fill*         0x423e7bca        0x2 
+ .text.schedule_input_poll
+                0x423e7bcc       0x5a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
+ *fill*         0x423e7c26        0x2 
+ .text.owner_ingress_leave
+                0x423e7c28       0x1d /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
+ *fill*         0x423e7c45        0x3 
+ .text.owner_runtime_leave
+                0x423e7c48       0x1d /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
+ *fill*         0x423e7c65        0x3 
+ .text.string_equal
+                0x423e7c68       0x2a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
+ *fill*         0x423e7c92        0x2 
+ .text.owner_reschedule
+                0x423e7c94       0x2e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
+ *fill*         0x423e7cc2        0x2 
  .text.owner_ingress_enter
-                0x423e7bcc       0xb2 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
- *fill*         0x423e7c7e        0x0 
- *fill*         0x423e7c7e        0x2 
+                0x423e7cc4       0xb2 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
+ *fill*         0x423e7d76        0x0 
+ *fill*         0x423e7d76        0x2 
  .text.framer_resident_mailbox_write
-                0x423e7c80       0x6a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
-                0x423e7c80                framer_resident_mailbox_write
- *fill*         0x423e7cea        0x0 
- *fill*         0x423e7cea        0x2 
+                0x423e7d78       0x6a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
+                0x423e7d78                framer_resident_mailbox_write
+ *fill*         0x423e7de2        0x0 
+ *fill*         0x423e7de2        0x2 
  .text.framer_resident_mailbox_try_read
-                0x423e7cec       0x63 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
-                0x423e7cec                framer_resident_mailbox_try_read
- *fill*         0x423e7d4f        0x0 
- *fill*         0x423e7d4f        0x1 
+                0x423e7de4       0x63 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
+                0x423e7de4                framer_resident_mailbox_try_read
+ *fill*         0x423e7e47        0x0 
+ *fill*         0x423e7e47        0x1 
  .text.framer_resident_capability_set_ready
-                0x423e7d50       0x75 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
-                0x423e7d50                framer_resident_capability_set_ready
- *fill*         0x423e7dc5        0x3 
+                0x423e7e48       0x75 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
+                0x423e7e48                framer_resident_capability_set_ready
+ *fill*         0x423e7ebd        0x3 
  .text.framer_resident_capability_advertise
-                0x423e7dc8       0x4f /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
-                0x423e7dc8                framer_resident_capability_advertise
- *fill*         0x423e7e17        0x1 
+                0x423e7ec0       0x4f /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
+                0x423e7ec0                framer_resident_capability_advertise
+ *fill*         0x423e7f0f        0x1 
  .text.framer_resident_capability_begin_quiesce
-                0x423e7e18       0x2a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
-                0x423e7e18                framer_resident_capability_begin_quiesce
- *fill*         0x423e7e42        0x2 
+                0x423e7f10       0x2a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
+                0x423e7f10                framer_resident_capability_begin_quiesce
+ *fill*         0x423e7f3a        0x2 
  .text.framer_resident_capability_finish_quiesce
-                0x423e7e44       0x33 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
-                0x423e7e44                framer_resident_capability_finish_quiesce
- *fill*         0x423e7e77        0x1 
+                0x423e7f3c       0x33 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
+                0x423e7f3c                framer_resident_capability_finish_quiesce
+ *fill*         0x423e7f6f        0x1 
  .text.framer_resident_capability_fault
-                0x423e7e78       0x1e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
-                0x423e7e78                framer_resident_capability_fault
- *fill*         0x423e7e96        0x0 
- *fill*         0x423e7e96        0x0 
- *fill*         0x423e7e96        0x0 
- *fill*         0x423e7e96        0x0 
- *fill*         0x423e7e96        0x0 
- *fill*         0x423e7e96        0x0 
- *fill*         0x423e7e96        0x2 
+                0x423e7f70       0x1e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
+                0x423e7f70                framer_resident_capability_fault
+ *fill*         0x423e7f8e        0x0 
+ *fill*         0x423e7f8e        0x0 
+ *fill*         0x423e7f8e        0x0 
+ *fill*         0x423e7f8e        0x0 
+ *fill*         0x423e7f8e        0x0 
+ *fill*         0x423e7f8e        0x0 
+ *fill*         0x423e7f8e        0x2 
  .text.framer_resident_owner_take_tagged_completion
-                0x423e7e98       0x80 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
-                0x423e7e98                framer_resident_owner_take_tagged_completion
- *fill*         0x423e7f18        0x0 
- *fill*         0x423e7f18        0x0 
- *fill*         0x423e7f18        0x0 
- *fill*         0x423e7f18        0x0 
- *fill*         0x423e7f18        0x0 
- *fill*         0x423e7f18        0x0 
- *fill*         0x423e7f18        0x0 
- *fill*         0x423e7f18        0x0 
+                0x423e7f90       0x80 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/resident.o
+                0x423e7f90                framer_resident_owner_take_tagged_completion
+ *fill*         0x423e8010        0x0 
+ *fill*         0x423e8010        0x0 
+ *fill*         0x423e8010        0x0 
+ *fill*         0x423e8010        0x0 
+ *fill*         0x423e8010        0x0 
+ *fill*         0x423e8010        0x0 
+ *fill*         0x423e8010        0x0 
+ *fill*         0x423e8010        0x0 
  .text.read_u32
-                0x423e7f18       0x23 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/target.o
- *fill*         0x423e7f3b        0x1 
+                0x423e8010       0x23 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/target.o
+ *fill*         0x423e8033        0x1 
  .text.bytes_equal
-                0x423e7f3c       0x22 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/target.o
- *fill*         0x423e7f5e        0x2 
+                0x423e8034       0x22 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/target.o
+ *fill*         0x423e8056        0x2 
  .text.glyph_index
-                0x423e7f60       0x39 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/target.o
- *fill*         0x423e7f99        0x3 
+                0x423e8058       0x39 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/target.o
+ *fill*         0x423e8091        0x3 
  .text.append_byte
-                0x423e7f9c       0x1e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/target.o
- *fill*         0x423e7fba        0x2 
+                0x423e8094       0x1e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/target.o
+ *fill*         0x423e80b2        0x2 
  .text.packed_ascii
-                0x423e7fbc       0xdc /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/target.o
+                0x423e80b4       0xdc /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/target.o
  .text.copy_table
-                0x423e8098       0xb2 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/target.o
- *fill*         0x423e814a        0x2 
+                0x423e8190       0xb2 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/target.o
+ *fill*         0x423e8242        0x2 
  .text.validate_raster_table$constprop$0$isra$0
-                0x423e814c       0x5a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/target.o
- *fill*         0x423e81a6        0x0 
- *fill*         0x423e81a6        0x0 
- *fill*         0x423e81a6        0x2 
+                0x423e8244       0x5a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/target.o
+ *fill*         0x423e829e        0x0 
+ *fill*         0x423e829e        0x0 
+ *fill*         0x423e829e        0x2 
  .text.framer_tf_snapshot_mailbox
-                0x423e81a8       0x92 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/target.o
-                0x423e81a8                framer_tf_snapshot_mailbox
- *fill*         0x423e823a        0x0 
- *fill*         0x423e823a        0x2 
+                0x423e82a0       0x92 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/target.o
+                0x423e82a0                framer_tf_snapshot_mailbox
+ *fill*         0x423e8332        0x0 
+ *fill*         0x423e8332        0x2 
  .text.zero_bytes
-                0x423e823c       0x11 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
- *fill*         0x423e824d        0x3 
+                0x423e8334       0x11 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
+ *fill*         0x423e8345        0x3 
  .text.append_character
-                0x423e8250       0x18 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
- *fill*         0x423e8268        0x0 
- *fill*         0x423e8268        0x0 
+                0x423e8348       0x18 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
+ *fill*         0x423e8360        0x0 
+ *fill*         0x423e8360        0x0 
  .text.copy_string
-                0x423e8268       0x42 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
- *fill*         0x423e82aa        0x2 
+                0x423e8360       0x42 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
+ *fill*         0x423e83a2        0x2 
  .text.is_lower_hex_digest
-                0x423e82ac       0x38 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
- *fill*         0x423e82e4        0x0 
+                0x423e83a4       0x38 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
+ *fill*         0x423e83dc        0x0 
  .text.framer_runtime_rpc_begin
-                0x423e82e4       0x2f /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
-                0x423e82e4                framer_runtime_rpc_begin
- *fill*         0x423e8313        0x1 
+                0x423e83dc       0x2f /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
+                0x423e83dc                framer_runtime_rpc_begin
+ *fill*         0x423e840b        0x1 
  .text.framer_runtime_rpc_end
-                0x423e8314       0x12 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
-                0x423e8314                framer_runtime_rpc_end
- *fill*         0x423e8326        0x0 
- *fill*         0x423e8326        0x2 
+                0x423e840c       0x12 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
+                0x423e840c                framer_runtime_rpc_end
+ *fill*         0x423e841e        0x0 
+ *fill*         0x423e841e        0x2 
  .text.framer_runtime_receipt_publish
-                0x423e8328       0xde /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
-                0x423e8328                framer_runtime_receipt_publish
- *fill*         0x423e8406        0x2 
+                0x423e8420       0xde /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
+                0x423e8420                framer_runtime_receipt_publish
+ *fill*         0x423e84fe        0x2 
  .text.framer_runtime_receipt_try_read
-                0x423e8408       0xdb /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
-                0x423e8408                framer_runtime_receipt_try_read
- *fill*         0x423e84e3        0x0 
- *fill*         0x423e84e3        0x0 
- *fill*         0x423e84e3        0x0 
- *fill*         0x423e84e3        0x0 
- *fill*         0x423e84e3        0x1 
+                0x423e8500       0xdb /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
+                0x423e8500                framer_runtime_receipt_try_read
+ *fill*         0x423e85db        0x0 
+ *fill*         0x423e85db        0x0 
+ *fill*         0x423e85db        0x0 
+ *fill*         0x423e85db        0x0 
+ *fill*         0x423e85db        0x1 
  .text.framer_runtime_key_probe_observe
-                0x423e84e4       0x82 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
-                0x423e84e4                framer_runtime_key_probe_observe
- *fill*         0x423e8566        0x2 
- .text.framer_runtime_key_probe_can_commit
-                0x423e8568       0x3e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
-                0x423e8568                framer_runtime_key_probe_can_commit
- *fill*         0x423e85a6        0x2 
+                0x423e85dc       0x82 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
+                0x423e85dc                framer_runtime_key_probe_observe
+ *fill*         0x423e865e        0x2 
  .text.framer_runtime_key_probe_try_read
-                0x423e85a8       0x79 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
-                0x423e85a8                framer_runtime_key_probe_try_read
- *fill*         0x423e8621        0x3 
- .text.framer_runtime_key_probe_map
-                0x423e8624       0x38 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
-                0x423e8624                framer_runtime_key_probe_map
+                0x423e8660       0x79 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
+                0x423e8660                framer_runtime_key_probe_try_read
+ *fill*         0x423e86d9        0x3 
  .text.framer_runtime_visibility_set
-                0x423e865c       0x5a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
-                0x423e865c                framer_runtime_visibility_set
- *fill*         0x423e86b6        0x2 
+                0x423e86dc       0x5a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
+                0x423e86dc                framer_runtime_visibility_set
+ *fill*         0x423e8736        0x2 
  .text.framer_runtime_visibility_publish
-                0x423e86b8       0x66 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
-                0x423e86b8                framer_runtime_visibility_publish
- *fill*         0x423e871e        0x2 
- .text.read32   0x423e8720       0x23 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-admission.o
- *fill*         0x423e8743        0x1 
+                0x423e8738       0x66 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/runtime-proof.o
+                0x423e8738                framer_runtime_visibility_publish
+ *fill*         0x423e879e        0x2 
+ .text.read32   0x423e87a0       0x23 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-admission.o
+ *fill*         0x423e87c3        0x1 
  .text.section_ok
-                0x423e8744       0x2e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-admission.o
- *fill*         0x423e8772        0x2 
+                0x423e87c4       0x2e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-admission.o
+ *fill*         0x423e87f2        0x2 
  .text.base64_value
-                0x423e8774       0x3c /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-upload.o
+                0x423e87f4       0x3c /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-upload.o
  .text.framer_f2up_upload_init
-                0x423e87b0       0x22 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-upload.o
-                0x423e87b0                framer_f2up_upload_init
- *fill*         0x423e87d2        0x2 
+                0x423e8830       0x22 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-upload.o
+                0x423e8830                framer_f2up_upload_init
+ *fill*         0x423e8852        0x2 
  .text.framer_f2up_upload_chunk
-                0x423e87d4       0x78 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-upload.o
-                0x423e87d4                framer_f2up_upload_chunk
+                0x423e8854       0x78 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-upload.o
+                0x423e8854                framer_f2up_upload_chunk
  .text.framer_f2up_upload_abort
-                0x423e884c       0x16 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-upload.o
-                0x423e884c                framer_f2up_upload_abort
- *fill*         0x423e8862        0x2 
+                0x423e88cc       0x16 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-upload.o
+                0x423e88cc                framer_f2up_upload_abort
+ *fill*         0x423e88e2        0x2 
  .text.framer_f2up_slot_base
-                0x423e8864       0x16 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-persist.o
-                0x423e8864                framer_f2up_slot_base
- *fill*         0x423e887a        0x0 
- *fill*         0x423e887a        0x0 
- *fill*         0x423e887a        0x0 
- *fill*         0x423e887a        0x0 
- *fill*         0x423e887a        0x0 
- *fill*         0x423e887a        0x2 
+                0x423e88e4       0x16 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/f2up-persist.o
+                0x423e88e4                framer_f2up_slot_base
+ *fill*         0x423e88fa        0x0 
+ *fill*         0x423e88fa        0x0 
+ *fill*         0x423e88fa        0x0 
+ *fill*         0x423e88fa        0x0 
+ *fill*         0x423e88fa        0x0 
+ *fill*         0x423e88fa        0x2 
  .text.zero_bytes
-                0x423e887c       0x11 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
- *fill*         0x423e888d        0x0 
- *fill*         0x423e888d        0x0 
- *fill*         0x423e888d        0x0 
- *fill*         0x423e888d        0x0 
- *fill*         0x423e888d        0x0 
- *fill*         0x423e888d        0x0 
- *fill*         0x423e888d        0x3 
+                0x423e88fc       0x11 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+ *fill*         0x423e890d        0x0 
+ *fill*         0x423e890d        0x0 
+ *fill*         0x423e890d        0x0 
+ *fill*         0x423e890d        0x0 
+ *fill*         0x423e890d        0x0 
+ *fill*         0x423e890d        0x3 
  .text.platform_reschedule
-                0x423e8890        0x5 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
- *fill*         0x423e8895        0x3 
+                0x423e8910        0x5 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+ *fill*         0x423e8915        0x3 
  .text.scene_read32
-                0x423e8898       0x23 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
- *fill*         0x423e88bb        0x0 
- *fill*         0x423e88bb        0x1 
+                0x423e8918       0x23 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+ *fill*         0x423e893b        0x0 
+ *fill*         0x423e893b        0x1 
  .text.scene_copy
-                0x423e88bc       0x35 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
- *fill*         0x423e88f1        0x0 
- *fill*         0x423e88f1        0x0 
- *fill*         0x423e88f1        0x3 
+                0x423e893c       0x35 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+ *fill*         0x423e8971        0x0 
+ *fill*         0x423e8971        0x3 
  .text.widget_upload_append
-                0x423e88f4       0x23 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
- *fill*         0x423e8917        0x0 
- *fill*         0x423e8917        0x0 
- *fill*         0x423e8917        0x0 
- *fill*         0x423e8917        0x0 
- *fill*         0x423e8917        0x0 
- *fill*         0x423e8917        0x0 
- *fill*         0x423e8917        0x0 
- *fill*         0x423e8917        0x0 
- *fill*         0x423e8917        0x0 
- *fill*         0x423e8917        0x0 
- *fill*         0x423e8917        0x0 
- *fill*         0x423e8917        0x0 
- *fill*         0x423e8917        0x0 
- *fill*         0x423e8917        0x0 
- *fill*         0x423e8917        0x1 
+                0x423e8974       0x23 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+ *fill*         0x423e8997        0x0 
+ *fill*         0x423e8997        0x0 
+ *fill*         0x423e8997        0x0 
+ *fill*         0x423e8997        0x0 
+ *fill*         0x423e8997        0x0 
+ *fill*         0x423e8997        0x0 
+ *fill*         0x423e8997        0x0 
+ *fill*         0x423e8997        0x0 
+ *fill*         0x423e8997        0x0 
+ *fill*         0x423e8997        0x0 
+ *fill*         0x423e8997        0x0 
+ *fill*         0x423e8997        0x0 
+ *fill*         0x423e8997        0x0 
+ *fill*         0x423e8997        0x0 
+ *fill*         0x423e8997        0x1 
  .text.scene_flash_span_allowed
-                0x423e8918       0x13 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
- *fill*         0x423e892b        0x0 
- *fill*         0x423e892b        0x0 
- *fill*         0x423e892b        0x0 
- *fill*         0x423e892b        0x0 
- *fill*         0x423e892b        0x0 
- *fill*         0x423e892b        0x0 
- *fill*         0x423e892b        0x0 
- *fill*         0x423e892b        0x0 
- *fill*         0x423e892b        0x0 
- *fill*         0x423e892b        0x1 
+                0x423e8998       0x13 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+ *fill*         0x423e89ab        0x0 
+ *fill*         0x423e89ab        0x0 
+ *fill*         0x423e89ab        0x0 
+ *fill*         0x423e89ab        0x0 
+ *fill*         0x423e89ab        0x0 
+ *fill*         0x423e89ab        0x0 
+ *fill*         0x423e89ab        0x0 
+ *fill*         0x423e89ab        0x0 
+ *fill*         0x423e89ab        0x0 
+ *fill*         0x423e89ab        0x0 
+ *fill*         0x423e89ab        0x0 
+ *fill*         0x423e89ab        0x1 
  .text.platform_cancel_poll
-                0x423e892c       0x1e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
- *fill*         0x423e894a        0x2 
+                0x423e89ac       0x1e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+ *fill*         0x423e89ca        0x2 
  .text.platform_remove_input
-                0x423e894c       0x1e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
- *fill*         0x423e896a        0x2 
+                0x423e89cc       0x1e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+ *fill*         0x423e89ea        0x2 
  .text.platform_activate_input
-                0x423e896c       0x20 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+                0x423e89ec       0x1f /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+ *fill*         0x423e8a0b        0x1 
  .text.platform_remove_events
-                0x423e898c       0x1e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
- *fill*         0x423e89aa        0x2 
+                0x423e8a0c       0x1e /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+ *fill*         0x423e8a2a        0x2 
  .text.platform_activate_events
-                0x423e89ac       0x20 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
- *fill*         0x423e89cc        0x0 
- *fill*         0x423e89cc        0x0 
- *fill*         0x423e89cc        0x0 
- *fill*         0x423e89cc        0x0 
- *fill*         0x423e89cc        0x0 
- *fill*         0x423e89cc        0x0 
- *fill*         0x423e89cc        0x0 
- *fill*         0x423e89cc        0x0 
- *fill*         0x423e89cc        0x0 
- .text          0x423e89cc        0xc /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libm.a(libm_a-s_fabs.o)
-                0x423e89cc                fabs
- .text          0x423e89d8       0x10 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libm.a(libm_a-s_copysign.o)
-                0x423e89d8                copysign
- .text          0x423e89e8       0x18 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_ashldi3.o)
-                0x423e89e8                __ashldi3
- .text          0x423e8a00       0x18 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_lshrdi3.o)
-                0x423e8a00                __lshrdi3
- .text          0x423e8a18       0x14 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_bswapsi2.o)
-                0x423e8a18                __bswapsi2
- *fill*         0x423e8a2c        0x0 
- *fill*         0x423e8a2c        0x0 
- *fill*         0x423e8a2c        0x0 
- *fill*         0x423e8a2c        0x0 
- .text          0x423e8a2c       0x3d /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_floatsidf.o)
-                0x423e8a2c                __floatunsidf
-                0x423e8a38                __floatsidf
- *fill*         0x423e8a69        0x3 
- .text          0x423e8a6c       0x81 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_floatdidf.o)
-                0x423e8a6c                __floatundidf
-                0x423e8a7c                __floatdidf
- *fill*         0x423e8aed        0x0 
- *fill*         0x423e8aed        0x3 
- .text          0x423e8af0      0x20c /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_udivdi3.o)
-                0x423e8af0                __udivdi3
- .text          0x423e8cfc      0x21b /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_umoddi3.o)
-                0x423e8cfc                __umoddi3
- *fill*         0x423e8f17        0x1 
- .text          0x423e8f18        0x8 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libc.a(libc_a-abs.o)
-                0x423e8f18                abs
- .text          0x423e8f20       0x4f /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libc.a(libc_a-memcmp.o)
-                0x423e8f20                memcmp
- *fill*         0x423e8f6f        0x1 
- .text          0x423e8f70       0x41 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libc.a(libc_a-memmove.o)
-                0x423e8f70                memmove
- *fill*         0x423e8fb1        0x3 
- .text          0x423e8fb4       0x3a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libc.a(libc_a-strncmp.o)
-                0x423e8fb4                strncmp
- *fill*         0x423e8fee        0x2 
- .text          0x423e8ff0      0x135 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libc.a(libc_a-memcpy.o)
-                0x423e9030                memcpy
- *fill*         0x423e9125        0x3 
- .text          0x423e9128       0x74 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libc.a(libc_a-memset.o)
-                0x423e9150                memset
- .text          0x423e919c       0xd8 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libc.a(libc_a-setjmp.o)
-                0x423e919c                setjmp
-                0x423e9200                longjmp
- *fill*         0x423e9274        0x0 
-                0x423e9280                        . = ALIGN (0x10)
- *fill*         0x423e9274        0xc 
+                0x423e8a2c       0x1f /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/build/physical.o
+ *fill*         0x423e8a4b        0x0 
+ *fill*         0x423e8a4b        0x0 
+ *fill*         0x423e8a4b        0x0 
+ *fill*         0x423e8a4b        0x0 
+ *fill*         0x423e8a4b        0x0 
+ *fill*         0x423e8a4b        0x0 
+ *fill*         0x423e8a4b        0x0 
+ *fill*         0x423e8a4b        0x0 
+ *fill*         0x423e8a4b        0x1 
+ .text          0x423e8a4c        0xc /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libm.a(libm_a-s_fabs.o)
+                0x423e8a4c                fabs
+ .text          0x423e8a58       0x10 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libm.a(libm_a-s_copysign.o)
+                0x423e8a58                copysign
+ .text          0x423e8a68       0x18 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_ashldi3.o)
+                0x423e8a68                __ashldi3
+ .text          0x423e8a80       0x18 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_lshrdi3.o)
+                0x423e8a80                __lshrdi3
+ .text          0x423e8a98       0x14 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_bswapsi2.o)
+                0x423e8a98                __bswapsi2
+ *fill*         0x423e8aac        0x0 
+ *fill*         0x423e8aac        0x0 
+ *fill*         0x423e8aac        0x0 
+ *fill*         0x423e8aac        0x0 
+ .text          0x423e8aac       0x3d /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_floatsidf.o)
+                0x423e8aac                __floatunsidf
+                0x423e8ab8                __floatsidf
+ *fill*         0x423e8ae9        0x3 
+ .text          0x423e8aec       0x81 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_floatdidf.o)
+                0x423e8aec                __floatundidf
+                0x423e8afc                __floatdidf
+ *fill*         0x423e8b6d        0x0 
+ *fill*         0x423e8b6d        0x3 
+ .text          0x423e8b70      0x20c /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_udivdi3.o)
+                0x423e8b70                __udivdi3
+ .text          0x423e8d7c      0x21b /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/esp32s3/libgcc.a(_umoddi3.o)
+                0x423e8d7c                __umoddi3
+ *fill*         0x423e8f97        0x1 
+ .text          0x423e8f98        0x8 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libc.a(libc_a-abs.o)
+                0x423e8f98                abs
+ .text          0x423e8fa0       0x4f /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libc.a(libc_a-memcmp.o)
+                0x423e8fa0                memcmp
+ *fill*         0x423e8fef        0x1 
+ .text          0x423e8ff0       0x41 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libc.a(libc_a-memmove.o)
+                0x423e8ff0                memmove
+ *fill*         0x423e9031        0x3 
+ .text          0x423e9034       0x3a /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libc.a(libc_a-strncmp.o)
+                0x423e9034                strncmp
+ *fill*         0x423e906e        0x2 
+ .text          0x423e9070      0x135 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libc.a(libc_a-memcpy.o)
+                0x423e90b0                memcpy
+ *fill*         0x423e91a5        0x3 
+ .text          0x423e91a8       0x74 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libc.a(libc_a-memset.o)
+                0x423e91d0                memset
+ .text          0x423e921c       0xd8 /Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/.toolchains/xtensa-esp-elf-13.2.0_20240530/bin/../lib/gcc/xtensa-esp-elf/13.2.0/../../../../xtensa-esp-elf/lib/esp32s3/libc.a(libc_a-setjmp.o)
+                0x423e921c                setjmp
+                0x423e9280                longjmp
+ *fill*         0x423e92f4        0x0 
+                0x423e9300                        . = ALIGN (0x10)
+ *fill*         0x423e92f4        0xc 
 
 .rodata         0x3c3f0000     0x5d20
  *(.rodata.framer_mqjs_descriptor)

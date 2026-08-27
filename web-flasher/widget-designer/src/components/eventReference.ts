@@ -177,7 +177,7 @@ const ENTRY_META: Record<
     sample: { kind: "input.fn-bottom-knob", delta: 1, displayName: "fn+knob △1" },
   },
   "host.rpc": {
-    blurb: "A data packet from the host computer, addressed to the id in your selector. Its two integers (event.value, event.auxiliary) carry whatever your feeder sends — the Host data section below lists every feed this script declares.",
+    blurb: "A data packet addressed to the id in your selector, carrying two integers (event.value, event.auxiliary). Feeds come from a host feeder script — or from the DEVICE itself: the firmware publishes host.rpc:0xB2F2 once per second with your live typing speed (value = words/minute from every screen, auxiliary = raw key-downs over the last 60 s). Subscribe and it arrives with no host running.",
     prelude: "var value = 0;",
     snippet: `widget.on("host.rpc:0xB301", function (event) {
   // Two integers arrive from the host: event.value and event.auxiliary.
@@ -188,10 +188,11 @@ const ENTRY_META: Record<
     sample: { kind: "host.rpc", id: 0xb201, value: 7, displayName: "0xB201 ← 7" },
   },
   "input.key.down": {
-    blurb: "A declared physical key was pressed — the down edge, once per press.",
+    blurb: "A declared key was pressed — the down edge, once per press. ANY key can be declared: widget.keys(\"space\", \"a\", \"enter\") picks the set (up to 16; names are space, enter, esc, tab, backspace, shift, ctrl, alt, gui, arrows, a-z, 0-9, or a raw 0xNN token). Without a declaration the widget gets the keyboard's own physical set, so every key just works.",
     prelude: "var value = 0;",
-    snippet: `widget.on("input.key.down", function (event) {
-  // event.key is the key's index — the same bit it sets in heldMask.
+    snippet: `widget.keys("space", "a", "enter");
+widget.on("input.key.down", function (event) {
+  // event.key is the declared index — the same bit it sets in heldMask.
   value = clamp(value + 1, 0, 999);
   document.querySelector("#value").textContent = digits(value, 3);
 });`,
@@ -220,7 +221,7 @@ const ENTRY_META: Record<
     sample: { kind: "input.key.hold", id: 0, displayName: "key ⇩ hold id 0" },
   },
   "input.chord.down": {
-    blurb: "An exact multi-key combination was completed. Order doesn't matter — the mask is exact, so a chord never double-fires its member keys' meanings.",
+    blurb: "An exact multi-key combination was completed: the FIRST TWO declared keys held together (space+shift under the default set). Order doesn't matter — the mask is exact, so a chord never double-fires its member keys' meanings.",
     prelude: "var value = 0;",
     snippet: `widget.on("input.chord.down", function (event) {
   // Both wired keys held together — a natural "reset" gesture.

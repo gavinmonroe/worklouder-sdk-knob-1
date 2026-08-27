@@ -103,6 +103,15 @@ export function createMquickjsSimulator(source: string, opts: SimulatorOptions =
       if (handlers.size >= 16) throw new TypeError("Handler budget exceeded.");
       handlers.set(key, callback);
     },
+    keys(...names: string[]) {
+      // Load-time declaration of the admitted key set (any-key input). The
+      // simulator validates the shape; token resolution and the 16-key cap
+      // are the transpiler's job, and key events here are injected samples.
+      if (!loading) throw new TypeError("widget.keys is load-only.");
+      if (names.length === 0 || names.some((n) => typeof n !== "string")) {
+        throw new TypeError("widget.keys takes 1..16 string key names.");
+      }
+    },
     isHeld(event: any, keyId: number) {
       if (!active) throw new TypeError("widget.isHeld requires active callback.");
       if (!Number.isInteger(keyId) || keyId < 0 || keyId > 15) throw new TypeError("keyId must be 0..15.");
@@ -156,6 +165,7 @@ export function createMquickjsSimulator(source: string, opts: SimulatorOptions =
    */
   const widgetDispatch = {
     on: widgetLoad.on, // never called here but typed-complete
+    keys: widgetLoad.keys,
     getInt(slot: number) {
       if (!active) throw new TypeError("widget.getInt requires active callback.");
       if (!Number.isInteger(slot) || slot < 0 || slot > 15) throw new TypeError("slot must be 0..15.");
