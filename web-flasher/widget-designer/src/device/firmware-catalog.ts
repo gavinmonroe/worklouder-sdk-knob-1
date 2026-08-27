@@ -66,6 +66,14 @@ export const FIRMWARE_CATALOG: FirmwareEntry[] = [
     screenIds: [1, 7, 26, 27, 28],
   },
   {
+    id: "widget-designer-multi",
+    name: "Widget Designer (multi-widget)",
+    bytes: 2_062_912,
+    sha256: "01251fce47c3451172e8cd4c4f7da618136845f1278b0855c823d1c7b5d2a26c",
+    hasMquickjs: true,
+    screenIds: [1, 7, 26, 27, 28, 29, 30, 31],
+  },
+  {
     id: "input-lab-generic",
     name: "Input Lab custom widgets (render v2 generic)",
     bytes: 2_062_912,

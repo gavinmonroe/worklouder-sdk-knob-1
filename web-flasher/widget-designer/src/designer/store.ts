@@ -24,6 +24,12 @@ import { compileWidget, type ViewportFrame } from "../compiler/cssScene";
 import { createMquickjsSimulator } from "../compiler/mquickjsSimulator";
 import { parseWidgetScript } from "../compiler/scriptParser";
 import { buildF2JSPackage, downloadPackage as downloadF2JSBytes } from "../compiler/f2jsPackage";
+import {
+  downloadWidgetFile,
+  parseWidgetFile,
+  serializeWidgetFile,
+  widgetFileName,
+} from "./widgetFile";
 import { buildRenderV2RasterPackage, type RenderV2Package } from "../compiler/renderV2Package";
 import type { F2epBuildResult } from "../compiler/f2epPackage";
 import type { SnapshotSchema } from "../data/schemas";
@@ -133,6 +139,11 @@ export interface DesignerActions {
   resetSimulator: () => void;
   compileF2JS: () => Promise<void>;
   downloadF2JS: () => Promise<void>;
+  /** Download the current widget as a shareable .f1widget.json source file. */
+  shareWidget: () => void;
+  /** Load a shared .f1widget.json file into the editor (throws with a
+   *  human-readable message on anything malformed — callers toast it). */
+  openWidget: (file: File) => Promise<void>;
   /** Rasterize the current frame into a pushable render-v2 package. */
   compileRenderV2: (options?: { frameCount?: number }) => Promise<RenderV2Package | null>;
   /** Compile the widget into an F1WB bundle plus an F2EP event program. */
@@ -924,6 +935,35 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
     downloadF2JSBytes(f2js.binary, `${name}.f2js`);
   }, [f2js, compileF2JS]);
 
+  const shareWidget = useCallback<DesignerActions["shareWidget"]>(() => {
+    const w = widgetRef.current;
+    downloadWidgetFile(
+      serializeWidgetFile({
+        name: w.name,
+        rootClass: w.rootClass,
+        html: w.html,
+        css: w.css,
+        js: w.script,
+        hostData: w.hostData,
+      }),
+      widgetFileName(w.name),
+    );
+  }, []);
+
+  const openWidget = useCallback<DesignerActions["openWidget"]>(async (file) => {
+    const parsed = parseWidgetFile(await file.text());
+    // recompile() is the ONE source-replacement path: it swaps every source
+    // field and resets both simulators, exactly like a preset load.
+    recompile({
+      html: parsed.html,
+      css: parsed.css,
+      js: parsed.js,
+      name: parsed.name,
+      rootClass: parsed.rootClass,
+    });
+    setHostData(parsed.hostData ?? {});
+  }, [recompile, setHostData]);
+
   const playSampleLoop = useCallback<DesignerActions["playSampleLoop"]>(() => {
     const events: SimulatedEvent[] = [
       { kind: "tick.1s", displayName: "loop", description: "" },
@@ -994,6 +1034,8 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
       resetSimulator,
       compileF2JS,
       downloadF2JS,
+    shareWidget,
+    openWidget,
       compileRenderV2,
       compileEventDriven,
       assembleWidgetUpload: assembleWidgetUploadAction,

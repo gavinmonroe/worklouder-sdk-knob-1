@@ -24,8 +24,8 @@ import { createMquickjsSimulator } from "../src/compiler/mquickjsSimulator";
 import { transpileWidgetScript } from "../src/compiler/mquickjsTranspiler";
 import { buildF2JSPackage } from "../src/compiler/f2jsPackage";
 
-const STRICT_SIM_READY = new Set(["events", "focusDial", "weatherDevice", "pomodoro"]);
-const DEVICE_DSL_READY = new Set(["focusDial", "weatherDevice", "pulse", "pomodoro"]);
+const STRICT_SIM_READY = new Set(["counter", "clock", "focusTimer", "weatherDevice", "eventLab"]);
+const DEVICE_DSL_READY = new Set(["counter", "clock", "focusTimer", "metronome", "weatherDevice", "eventLab"]);
 
 const withHeader = (script: string) =>
   script.startsWith(RENDER_V2_MQUICKJS_SOURCE_PREFIX)

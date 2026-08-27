@@ -43,6 +43,11 @@ function subscribe(listener: () => void): () => void {
 export function publishF2up(next: F2upStatus | null): void {
   current = next;
   listeners.forEach((l) => l());
+  // E2E hook: automated tests (and the hardware push scripts) read the last
+  // assembled container off the window instead of reaching into module state.
+  if (typeof window !== "undefined") {
+    (window as unknown as { __WD_F2UP__?: F2upStatus | null }).__WD_F2UP__ = next;
+  }
 }
 
 /**

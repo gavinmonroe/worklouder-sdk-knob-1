@@ -353,6 +353,126 @@ widget.on("tick.1s", function (event) {
     ],
   },
 
+  eventLab: {
+    name: "Event lab",
+    rootClass: "evlab-v3",
+    html: `<div class="evlab-v3" aria-label="Event lab">
+  <span class="ev-title">EVENT LAB</span>
+  <div class="ev-row" style="top:58px"><span class="ev-name">100MS</span><b id="t100">00</b></div>
+  <div class="ev-row" style="top:80px"><span class="ev-name">1S</span><b id="t1s">00</b></div>
+  <div class="ev-row ev-in" style="top:110px"><span class="ev-name">KNOB</span><b id="knob">50</b></div>
+  <div class="ev-row ev-in" style="top:132px"><span class="ev-name">KEY \u2193</span><b id="keyd">0</b></div>
+  <div class="ev-row ev-in" style="top:154px"><span class="ev-name">KEY \u2191</span><b id="keyu">0</b></div>
+  <div class="ev-row ev-in" style="top:176px"><span class="ev-name">HOLD</span><b id="hold">0</b></div>
+  <div class="ev-row ev-in" style="top:198px"><span class="ev-name">CHORD \u2193</span><b id="chd">0</b></div>
+  <div class="ev-row ev-in" style="top:220px"><span class="ev-name">CHORD \u2191</span><b id="chu">0</b></div>
+  <div class="ev-row ev-host" style="top:250px"><span class="ev-name">RPC</span><b id="rpc">000</b></div>
+  <span class="ev-hint">EVERY EVENT, ONE COUNTER</span>
+</div>`,
+    css: `.evlab-v3{position:relative;width:100px;height:310px;overflow:hidden;background:#080b12;color:#e8eaf0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
+.ev-title{position:absolute;left:0;right:0;top:24px;text-align:center;font:700 11px/16px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:3px;color:#c792ea}
+.ev-row{position:absolute;left:10px;right:10px;height:16px;display:flex;align-items:center;justify-content:space-between}
+.ev-name{font:600 8px/16px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:1px;color:#77839a}
+.ev-row b{width:26px;height:16px;text-align:right;font:700 11px/16px ui-monospace,SFMono-Regular,Menlo,monospace;color:#f5f7fa;font-style:normal}
+.ev-in b{color:#59e2ff}
+.ev-host b{color:#ffb74d}
+.ev-hint{position:absolute;left:6px;right:6px;top:280px;text-align:center;font:600 7px/10px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:1px;color:#4a5468}`,
+    // The diagnostics preset: EVERY device event kind, one counter each. If a
+    // row moves, that event verifiably reaches your widget on this firmware -
+    // ticks prove the heartbeat path, the input rows prove keys/chords/knob,
+    // and the RPC row proves the host feed path (send 0xB2E0 from Source).
+    // Digit widths are a budget, not a style: the facade renders 15 records
+    // and every digit cell is one, so 2+2+2 (ticks+knob) + 5x1 (keys/chords)
+    // + 3 (rpc) = 14 uses the whole allowance with the root target.
+    script: `var t100 = 0;
+var t1s = 0;
+var knob = 50;
+var keyd = 0;
+var keyu = 0;
+var hold = 0;
+var chd = 0;
+var chu = 0;
+var rpc = 0;
+
+widget.on("tick.100ms", function (event) {
+  t100 = mod(t100 + 1, 100);
+  document.querySelector("#t100").textContent = digits(t100, 2);
+});
+
+widget.on("tick.1s", function (event) {
+  t1s = mod(t1s + 1, 100);
+  document.querySelector("#t1s").textContent = digits(t1s, 2);
+});
+
+widget.on("input.fn-bottom-knob", function (event) {
+  knob = clamp(knob + event.delta, 0, 99);
+  document.querySelector("#knob").textContent = digits(knob, 2);
+});
+
+widget.on("input.key.down", function (event) {
+  keyd = mod(keyd + 1, 10);
+  document.querySelector("#keyd").textContent = digits(keyd, 1);
+});
+
+widget.on("input.key.up", function (event) {
+  keyu = mod(keyu + 1, 10);
+  document.querySelector("#keyu").textContent = digits(keyu, 1);
+});
+
+widget.on("input.key.hold", function (event) {
+  hold = mod(hold + 1, 10);
+  document.querySelector("#hold").textContent = digits(hold, 1);
+});
+
+widget.on("input.chord.down", function (event) {
+  chd = mod(chd + 1, 10);
+  document.querySelector("#chd").textContent = digits(chd, 1);
+});
+
+widget.on("input.chord.up", function (event) {
+  chu = mod(chu + 1, 10);
+  document.querySelector("#chu").textContent = digits(chu, 1);
+});
+
+widget.on("host.rpc:0xB2E0", function (event) {
+  rpc = mod(event.value, 1000);
+  document.querySelector("#rpc").textContent = digits(rpc, 3);
+});`,
+    states: [
+      { name: "t100", initial: 0 },
+      { name: "t1s", initial: 0 },
+      { name: "knob", initial: 50 },
+      { name: "keyd", initial: 0 },
+      { name: "keyu", initial: 0 },
+      { name: "hold", initial: 0 },
+      { name: "chd", initial: 0 },
+      { name: "chu", initial: 0 },
+      { name: "rpc", initial: 0 },
+    ],
+    handlers: [
+      { id: "tick.100ms", selector: "tick.100ms", body: `100ms counter` },
+      { id: "tick.1s", selector: "tick.1s", body: `1s counter + heartbeat` },
+      { id: "input.fn-bottom-knob", selector: "input.fn-bottom-knob", body: `knob accumulator` },
+      { id: "input.key.down", selector: "input.key.down", body: `key-down counter` },
+      { id: "input.key.up", selector: "input.key.up", body: `key-up counter` },
+      { id: "input.key.hold", selector: "input.key.hold", body: `hold counter` },
+      { id: "input.chord.down", selector: "input.chord.down", body: `chord-down counter` },
+      { id: "input.chord.up", selector: "input.chord.up", body: `chord-up counter` },
+      { id: "host.rpc:0xB2E0", selector: "host.rpc:0xB2E0", body: `last host value` },
+    ],
+    targets: [
+      { id: "t100", writes: ["textContent"] },
+      { id: "t1s", writes: ["textContent"] },
+      { id: "knob", writes: ["textContent"] },
+      { id: "keyd", writes: ["textContent"] },
+      { id: "keyu", writes: ["textContent"] },
+      { id: "hold", writes: ["textContent"] },
+      { id: "chd", writes: ["textContent"] },
+      { id: "chu", writes: ["textContent"] },
+      { id: "rpc", writes: ["textContent"] },
+    ],
+  },
+
 };
 
 export const PRESET_ORDER: { id: keyof typeof PRESETS; label: string; tagline: string }[] = [
@@ -361,4 +481,5 @@ export const PRESET_ORDER: { id: keyof typeof PRESETS; label: string; tagline: s
   { id: "focusTimer", label: "FOCUS TIMER", tagline: "A real pomodoro: tick.1s countdown, lockstep class states, knob sets the duration" },
   { id: "metronome", label: "METRONOME", tagline: "widget.animate() samples the CSS pendulum into a device flipbook; digits + states" },
   { id: "weatherDevice", label: "WEATHER", tagline: "Live open-meteo data end-to-end: shared-slot digits, condition marks, two forecast rows" },
+  { id: "eventLab", label: "EVENT LAB", tagline: "Every event kind with its own counter - push it to PROVE ticks, keys, chords, knob and host RPC reach your device" },
 ];

@@ -44,7 +44,7 @@ describe("preset event capability", () => {
     // (docs/17-era roster): none of them is an F2EP event-program build, so
     // the event-capability probe reports each as frames-only.
     expect(Object.keys(PRESETS).sort()).toEqual(
-      ["clock", "counter", "focusTimer", "metronome", "weatherDevice"].sort());
+      ["clock", "counter", "eventLab", "focusTimer", "metronome", "weatherDevice"].sort());
     for (const preset of Object.values(PRESETS))
       expect(describeEventCapability(preset).supported).toBe(false);
   });

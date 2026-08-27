@@ -88,6 +88,7 @@ export function Topbar({
   const assemble = useAssembleStatus({ html: state.html, css: state.css, js: state.js });
   const [assembleFlash, setAssembleFlash] = useState<"ok" | "fail" | null>(null);
   const flashTimer = useRef<number | undefined>(undefined);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => () => window.clearTimeout(flashTimer.current), []);
   const assembleNow = async () => {
     if (assemble.busy || !pipeline.dslOk) return;
@@ -232,6 +233,51 @@ export function Topbar({
             </Tooltip>
           </>
         )}
+        {/* Widget files: Open loads a shared .f1widget.json into the editor
+            (same reset path as a preset load), Share downloads the current
+            source as one. Sharing SOURCE, never binaries: the recipient's
+            Designer re-runs its own pipeline, so a shared file can never
+            smuggle stale bytes past the gates. */}
+        <Tooltip label="Open a shared widget file (.f1widget.json) — replaces the current source">
+          <Button
+            className="wd-btn-tippable"
+            onClick={() => fileInputRef.current?.click()}
+            aria-label="Open widget file"
+          >
+            <Icon name="folder-open" size={14} />
+            <span className="wd-dl-label">Open</span>
+          </Button>
+        </Tooltip>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".json,application/json"
+          hidden
+          onChange={(e) => {
+            const file = e.currentTarget.files?.[0];
+            e.currentTarget.value = "";
+            if (!file) return;
+            void actions.openWidget(file).then(
+              () => toast({ tone: "success", title: `Opened ${file.name}` }),
+              (cause: unknown) =>
+                toast({
+                  tone: "danger",
+                  title: "Could not open widget file",
+                  body: (cause as Error).message,
+                }),
+            );
+          }}
+        />
+        <Tooltip label="Share this widget — downloads its source as a .f1widget.json anyone can Open">
+          <Button
+            className="wd-btn-tippable"
+            onClick={actions.shareWidget}
+            aria-label="Share widget"
+          >
+            <Icon name="share" size={14} />
+            <span className="wd-dl-label">Share</span>
+          </Button>
+        </Tooltip>
         {/* THE primary: assemble the F2UP container — the same shared action
             the Export tab's Assemble stage runs. Disabled (with the blocker
             named) while the script sits outside the device DSL. */}

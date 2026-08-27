@@ -5,6 +5,8 @@
 import * as React from "react";
 
 export type IconName =
+  | "folder-open"
+  | "share"
   | "play"
   | "download"
   | "upload"
@@ -115,6 +117,20 @@ const GLYPHS: Record<IconName, React.ReactNode> = {
       <circle cx="8" cy="8" r="6.2" />
       <path d="M8 7.2v3.6" />
       <path d="M8 5h.01" />
+    </>
+  ),
+  "folder-open": (
+    <>
+      <path d="M1.5 4A1.5 1.5 0 0 1 3 2.5h3l1.5 2H13A1.5 1.5 0 0 1 14.5 6v.5" />
+      <path d="M2.6 13.5h9.6a1.2 1.2 0 0 0 1.15-.86l1.2-4A1.2 1.2 0 0 0 13.4 7H4.3a1.2 1.2 0 0 0-1.15.86l-1.2 4a1.2 1.2 0 0 0 1.15 1.64" />
+    </>
+  ),
+  share: (
+    <>
+      <circle cx="12" cy="3.5" r="1.8" />
+      <circle cx="4" cy="8" r="1.8" />
+      <circle cx="12" cy="12.5" r="1.8" />
+      <path d="m5.7 7.2 4.6-2.9M5.7 8.8l4.6 2.9" />
     </>
   ),
   copy: (

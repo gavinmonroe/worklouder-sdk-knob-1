@@ -8,6 +8,10 @@ import weatherAppUrl from "../../../experiments/mquickjs-esp32s3-physical-canary
 import weatherTextPageUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-18-id28-persist-btp1/mqjs-id28-text-page.bin?url";
 import weatherRodataPageUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-18-id28-persist-btp1/mqjs-id28-rodata-page.bin?url";
 import weatherSceneSlotBUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-18-id28-persist-btp1/scene-slot-b.bin?url";
+import multiWidgetAppUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-27-id28-multi-widget/framer-0.4.1-mqjs-id28-multi-widget-app.bin?url";
+import multiWidgetTextPageUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-27-id28-multi-widget/mqjs-id28-text-page.bin?url";
+import multiWidgetRodataPageUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-27-id28-multi-widget/mqjs-id28-rodata-page.bin?url";
+import multiWidgetSceneSlotBUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-27-id28-multi-widget/scene-slot-b.bin?url";
 import inputLabGenericUrl from "../../../f1-widget-sdk/build/combined-renderer-v2-generic-input-lab/framer-0.4.1-input-lab-renderer-v2-generic-id26-app.bin?url";
 import inputLabGenericManifest from "../../../f1-widget-sdk/build/combined-renderer-v2-generic-input-lab/combined-renderer-v2-generic-input-lab-manifest.json";
 
@@ -193,6 +197,61 @@ export const firmwareCatalog = Object.freeze([
     sha256: "5413d4b8735b437048a731b231cd874ae7d261c218dce50710722a9d7e8565dd",
     accent: "green",
     scenePackage: weatherClockTimerFallbackPackage,
+    hostCompanion: weatherHostCompanion,
+  }),
+  Object.freeze({
+    id: "widget-designer-multi",
+    name: "Widget Designer (multi-widget)",
+    includes: Object.freeze(["WPM Pet", "Music", "Clock", "Timer", "Widget screens 28-31"]),
+    compilerUrl: "./widget-designer/",
+    description:
+      "The Widget Designer firmware: store up to four of your own widgets, each on its own keyboard screen, pushed over USB from the Designer.",
+    detail: "Widget screens 28-31 \u00b7 Clock ID 26 \u00b7 Timer ID 27 \u00b7 Music ID 1 \u00b7 WPM ID 7",
+    evidence: "Live tested 2026-08-27",
+    evidenceTone: "caution",
+    flashable: true,
+    notice:
+      "The firmware behind the Widget Designer: a 4-slot widget bank in flash, one keyboard screen per stored widget (rotate the knob between them), instant activation, and the full event path (ticks, keys, chords, Fn+knob, host RPC) verified end-to-end on hardware on 2026-08-27. Widgets are built and pushed from the Widget Designer over normal-mode USB \u2014 no reflash per widget. The boot weather widget is baked in; pushed widgets persist across power cycles. Live-tested on one unit; it has not been through the audited release pipeline.",
+    // The persisted clock+timer scene slot first, then the two MicroQuickJS
+    // module pages, then the app that loads them, written last.
+    regions: Object.freeze([
+      Object.freeze({
+        address: 0x240000,
+        kind: "page",
+        label: "Clock + Timer scene slot B (persisted)",
+        url: multiWidgetSceneSlotBUrl,
+        bytes: 95_599,
+        sha256: "599be673ca9aba43a1fc64ec73324137919df70d9475ff8477100aa57cf0008f",
+      }),
+      Object.freeze({
+        address: 0x210000,
+        kind: "page",
+        label: "MicroQuickJS text page",
+        url: multiWidgetTextPageUrl,
+        bytes: 131_072,
+        sha256: "bac18adcb4402ccd4f250507541bcc9ad2ef95eb25ea35c8f6afe4c87a474ec2",
+      }),
+      Object.freeze({
+        address: 0x230000,
+        kind: "page",
+        label: "MicroQuickJS rodata page",
+        url: multiWidgetRodataPageUrl,
+        bytes: 65_536,
+        sha256: "f6c4dab4db51925bccc23aebe761a9471fc9ec553335c0aa68ee2d11bcd37d0f",
+      }),
+      Object.freeze({
+        address: 0x10000,
+        kind: "app",
+        label: "Widget Designer app",
+        url: multiWidgetAppUrl,
+        bytes: 2_062_912,
+        sha256: "01251fce47c3451172e8cd4c4f7da618136845f1278b0855c823d1c7b5d2a26c",
+      }),
+    ]),
+    url: multiWidgetAppUrl,
+    bytes: 2_062_912,
+    sha256: "01251fce47c3451172e8cd4c4f7da618136845f1278b0855c823d1c7b5d2a26c",
+    accent: "purple",
     hostCompanion: weatherHostCompanion,
   }),
   Object.freeze({

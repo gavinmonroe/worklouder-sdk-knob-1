@@ -20,6 +20,7 @@ still need live acceptance.
 | Custom HTML / CSS Preview | WPM Pet + Music + renderer ID 26 | Smoke candidate | app `0x10000` | Input Lab pushes |
 | Clock + Timer (render v2) | WPM Pet + Music + clock ID 26 + timer ID 27 | Live accepted | app `0x10000` | **Enable clock & timer** (RAM only) |
 | Weather (MicroQuickJS canary) | WPM Pet + Music + clock + timer + weather ID 28 | Live tested canary | pages `0x240000`, `0x210000`, `0x230000`, then app `0x10000` | Weather host companion, **Push clock & timer again** (fallback; firmware persists it) |
+| Widget Designer (multi-widget) | WPM Pet + Music + clock + timer + widget screens 28-31 | Live tested 2026-08-27 | pages `0x240000`, `0x210000`, `0x230000`, then app `0x10000` | Build and push widgets from the [Widget Designer](./widget-designer/); each stored widget gets its own keyboard screen |
 | Input Lab custom widgets (render v2 generic) | WPM Pet + Music + generic renderer ID 26 | Smoke candidate | app `0x10000` | Input Lab pushes |
 
 Choose **Input Lab custom widgets** to push your own compiled scenes from

@@ -20,6 +20,7 @@
 
 import { describe, expect, it } from "vitest";
 import { PRESETS, PRESET_ORDER } from "../src/presets/widgets";
+import { LEGACY_PRESETS } from "../test/fixtures/legacyPresets";
 import { presetStageCss } from "../src/components/presetFidelity";
 
 const DEVICE_W = 100;
@@ -96,7 +97,12 @@ function collisions(model: GridModel, texts: string[]): string[] {
   return out;
 }
 
-const GLYPH_GRID_PRESETS = ["events", "focusDial", "pomodoro"];
+/* The 2026-08 roster is entirely absolutely-positioned (no fixed-track grids),
+ * so no shipped preset is grid-audited today. The per-preset audit below still
+ * runs against every roster entry, so a future grid preset is covered the
+ * moment it ships — and the teeth test below keeps the detector honest
+ * against the known-bad legacy grid. */
+const GLYPH_GRID_PRESETS: string[] = [];
 
 it("audits every glyph-grid example (coverage cannot silently shrink)", () => {
   const audited = PRESET_ORDER.filter((p) => gridModel(String(p.id)) !== null).map((p) => String(p.id));
@@ -106,7 +112,7 @@ it("audits every glyph-grid example (coverage cannot silently shrink)", () => {
 it("the audit itself has teeth: the raw (unpatched) events grid collides", () => {
   // Sanity-check the detector against the known-bad layout this gate exists
   // for — if this stops failing on raw source, the audit went blind.
-  const widget = PRESETS.events;
+  const widget = LEGACY_PRESETS.events;
   const decls = rootDecls(widget.css, widget.rootClass);
   const model: GridModel = {
     fontPx: Number(/^([\d.]+)px$/.exec(decls.get("font-size") ?? "")?.[1] ?? DEFAULT_FONT_PX),
