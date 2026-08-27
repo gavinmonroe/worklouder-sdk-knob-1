@@ -35,6 +35,10 @@
 /* PSRAM kept free after the per-slot arenas so the 64 KiB VM heap can always
  * be claimed by the owner task. */
 #define PHYSICAL_PSRAM_RESERVE_BYTES (192u * 1024u)
+/* Hide after this many ms without any proxy_tick: the stock ticks the visible
+ * controller every frame (~30 ms), so 400 ms of silence means no widget screen
+ * is fronted.  Well above one frame, well below human perception of "stale". */
+#define FRAMER_PHYSICAL_HIDE_SILENCE_MS 400u
 #define PHYSICAL_PSRAM_BEGIN 0x3c1d0000u
 #define PHYSICAL_PSRAM_END 0x3c3d0000u
 /* heap_caps_malloc returns 8-byte alignment on this build (live evidence
@@ -616,15 +620,23 @@ struct __attribute__((aligned(16))) physical_block {
      * the VISIBLE screen actually changes, so a steady-state visible screen
      * cannot veto an RPC activation (the "Activate did nothing" defect). */
     volatile uint32_t visible_screen_slot;
+    /* Timestamp of the most recent proxy_tick.  docs/18 §4.2: the TICK is the
+     * only visibility signal — build/cleanup fire for NEIGHBOR pre-builds, so
+     * with several adjacent widget screens a neighbor's cleanup would zero
+     * `visible` while another widget screen is fronted, closing the owner's
+     * tick gate (VM never publishes → every dynamic field renders 0).  Show
+     * fires on the first tick after silence; hide fires on the owner task when
+     * no proxy has ticked for FRAMER_PHYSICAL_HIDE_SILENCE_MS. */
+    volatile uint32_t visible_tick_ms;
     /* The slot the display SHOULD show: written by op 6 and by every
      * proxy_build (fronting a screen), consumed level-triggered by the owner
      * loop - the last fronted screen always wins, rapid rotation converges. */
     volatile uint32_t widget_desired_slot;
     /* Stock-lifecycle forensics: how often each screen proxy's build /
      * cleanup / tick callbacks actually fire (upload op 7 reads them). */
-    volatile uint32_t proxy_build_counts[2];
-    volatile uint32_t proxy_cleanup_counts[2];
-    volatile uint32_t proxy_tick_counts[2];
+    volatile uint32_t proxy_build_counts[FRAMER_F2UP_SLOT_COUNT];
+    volatile uint32_t proxy_cleanup_counts[FRAMER_F2UP_SLOT_COUNT];
+    volatile uint32_t proxy_tick_counts[FRAMER_F2UP_SLOT_COUNT];
     volatile uint32_t widget_switching;        /* proxy render gate */
     framer_resident_platform owner_platform;   /* for reinit on activation */
     /* The MicroQuickJS heap is no longer resident in this internal-RAM block.
@@ -2221,28 +2233,40 @@ static void widget_inventory_reply(physical_block *block,
 
 /* Per-screen lifecycle forensics (op 7): which proxy the stock actually
  * builds/cleans/ticks, plus active vs desired slot. */
+/* The 113-byte RPC value field fits TWO slots of counters, so the reply is
+ * paginated: base 0 emits b0/c0/t0/b1/c1/t1 (byte-compatible with the original
+ * two-screen reply), base 2 emits b2/c2/t2/b3/c3/t3.  Field names always carry
+ * the REAL slot index, so a parser needs no page context. */
 static void widget_forensics_reply(physical_block *block,
-                                   framer_runtime_rpc_context *context)
+                                   framer_runtime_rpc_context *context,
+                                   uint32_t base)
 {
     char *output = context->value;
     size_t offset = 0u;
     uint32_t resident = 0u;
     uint32_t slot;
+    if (base > FRAMER_F2UP_SLOT_COUNT - 2u)
+        base = FRAMER_F2UP_SLOT_COUNT - 2u;
     for (slot = 0u; slot < FRAMER_F2UP_SLOT_COUNT; ++slot)
         if (block->slot_resident[slot] != 0u)
             resident |= 1u << slot;
-    widget_upload_append(output, &offset, "v1;op=7;b0=");
-    widget_upload_append_hex32(output, &offset, block->proxy_build_counts[0]);
-    widget_upload_append(output, &offset, ";c0=");
-    widget_upload_append_hex32(output, &offset, block->proxy_cleanup_counts[0]);
-    widget_upload_append(output, &offset, ";t0=");
-    widget_upload_append_hex32(output, &offset, block->proxy_tick_counts[0]);
-    widget_upload_append(output, &offset, ";b1=");
-    widget_upload_append_hex32(output, &offset, block->proxy_build_counts[1]);
-    widget_upload_append(output, &offset, ";c1=");
-    widget_upload_append_hex32(output, &offset, block->proxy_cleanup_counts[1]);
-    widget_upload_append(output, &offset, ";t1=");
-    widget_upload_append_hex32(output, &offset, block->proxy_tick_counts[1]);
+    widget_upload_append(output, &offset, "v1;op=7");
+    for (slot = base; slot < base + 2u; ++slot) {
+        char field[5];
+        field[0] = ';'; field[2] = (char)('0' + slot); field[3] = '='; field[4] = 0;
+        field[1] = 'b';
+        widget_upload_append(output, &offset, field);
+        widget_upload_append_hex32(output, &offset,
+                                   block->proxy_build_counts[slot]);
+        field[1] = 'c';
+        widget_upload_append(output, &offset, field);
+        widget_upload_append_hex32(output, &offset,
+                                   block->proxy_cleanup_counts[slot]);
+        field[1] = 't';
+        widget_upload_append(output, &offset, field);
+        widget_upload_append_hex32(output, &offset,
+                                   block->proxy_tick_counts[slot]);
+    }
     widget_upload_append(output, &offset, ";sl=");
     output[offset++] = (char)('0' +
         (__atomic_load_n(&block->widget_active_slot, __ATOMIC_ACQUIRE) & 7u));
@@ -2358,6 +2382,12 @@ static void rpc_upload_handler(framer_runtime_rpc_context *context,
             rc = 0u;
         }
     } else if (op == 7) {
+        int32_t slot = 0;
+        if (framer_physical_rpc_read_integer(root, "slot", 4u, &slot) &&
+            slot >= 0 && slot < (int32_t)FRAMER_F2UP_SLOT_COUNT)
+            inventory_slot = slot;
+        else
+            inventory_slot = 0;
         rc = 0u;
     } else {
         framer_f2up_upload_abort(&block->widget_upload);
@@ -2367,7 +2397,8 @@ static void rpc_upload_handler(framer_runtime_rpc_context *context,
     if (op == 5)
         widget_inventory_reply(block, context, (uint32_t)inventory_slot, rc);
     else if (op == 7)
-        widget_forensics_reply(block, context);
+        widget_forensics_reply(block, context,
+                               (uint32_t)(inventory_slot & ~1));
     else
         widget_upload_reply(block, context, (uint32_t)op, rc);
     STOCK_RPC_REPLY(response, request, 1u, context);
@@ -2586,6 +2617,30 @@ static void owner_task(void *opaque)
                 generation = block->widget_assets.generation;
             }
         }
+        /* HIDE by tick silence (docs/18 §4.2: tick is the ONLY visibility
+         * signal).  Mirrors the bookkeeping proxy_cleanup used to do, in the
+         * same order: close both producer gates, then publish the release. */
+        if (__atomic_load_n(&block->visible, __ATOMIC_ACQUIRE) != 0u) {
+            /* Fresh clock + SIGNED delta: `milliseconds` from the loop top is
+             * stale after a multi-hundred-ms slot switch, and an unsigned
+             * delta against a tick timestamp taken DURING the switch wraps
+             * huge — firing a spurious hide/show pulse after every switch. */
+            uint32_t now_hide = now_ms();
+            if ((int32_t)(now_hide -
+                          __atomic_load_n(&block->visible_tick_ms,
+                                          __ATOMIC_RELAXED)) >
+                (int32_t)FRAMER_PHYSICAL_HIDE_SILENCE_MS) {
+                __atomic_store_n(&block->visible, 0u, __ATOMIC_SEQ_CST);
+                __atomic_store_n(&block->input_enabled, 0u, __ATOMIC_SEQ_CST);
+                __atomic_store_n(&block->poll_armed, 0u, __ATOMIC_RELEASE);
+                __atomic_add_fetch(&block->focus_release_requested, 1u,
+                                   __ATOMIC_SEQ_CST);
+                (void)framer_runtime_visibility_set(&block->visibility, 0);
+                block->hidden_at_ms = now_hide;
+                (void)framer_resident_owner_enqueue_host_rpc(
+                    &block->owner, generation, 0xb24eu, 0, 0);
+            }
+        }
         owner_begin_focus_release(block, milliseconds);
         if (__atomic_load_n(&block->sources_enabled, __ATOMIC_ACQUIRE) != 0u &&
             __atomic_load_n(&block->visible, __ATOMIC_ACQUIRE) != 0u) {
@@ -2669,43 +2724,14 @@ static void proxy_build(physical_proxy *proxy)
         proxy->block == (physical_block *)0 ||
         !framer_physical_lifecycle_root_ready(proxy->root))
         return;
-    if (proxy->screen_slot < 2u)
+    if (proxy->screen_slot < FRAMER_F2UP_SLOT_COUNT)
         __atomic_add_fetch(&proxy->block->proxy_build_counts[proxy->screen_slot],
                            1u, __ATOMIC_RELAXED);
     proxy->source_published = 0u;
     proxy->image = STOCK_IMAGE_CREATE(proxy->root);
-    if (proxy->image == (void *)0)
-        return;
-    if (proxy->block->hidden_at_ms != 0u) {
-        elapsed = (now_ms() - proxy->block->hidden_at_ms) / 1000u;
-        if (elapsed > 604800u)
-            elapsed = 604800u;
-    }
-    proxy->block->hidden_at_ms = 0u;
-    __atomic_store_n(&proxy->block->visible, 1u, __ATOMIC_SEQ_CST);
-    if (framer_physical_focus_can_reopen(
-            1u,
-            __atomic_load_n(&proxy->block->focus_release_requested,
-                            __ATOMIC_ACQUIRE),
-            __atomic_load_n(&proxy->block->focus_release_applied,
-                            __ATOMIC_ACQUIRE),
-            __atomic_load_n(&proxy->block->focus_release_draining,
-                            __ATOMIC_ACQUIRE),
-            __atomic_load_n(
-                &proxy->block->owner.telemetry.permanently_disabled,
-                __ATOMIC_ACQUIRE))) {
-        __atomic_store_n(&proxy->block->focus_reopen_pending, 0u,
-                         __ATOMIC_RELEASE);
-        __atomic_store_n(&proxy->block->input_enabled, 1u, __ATOMIC_RELEASE);
-    } else {
-        __atomic_store_n(&proxy->block->focus_reopen_pending, 1u,
-                         __ATOMIC_RELEASE);
-        __atomic_store_n(&proxy->block->input_enabled, 0u, __ATOMIC_RELEASE);
-    }
-    (void)framer_runtime_visibility_set(&proxy->block->visibility, 1);
-    (void)framer_resident_owner_enqueue_host_rpc(
-        &proxy->block->owner, proxy->block->widget_assets.generation, 0xb24eu, 1,
-        (int32_t)elapsed);
+    (void)elapsed;
+    /* NO visibility/focus bookkeeping here: build fires for NEIGHBOR
+     * pre-builds too (docs/18 §4.2).  Show runs on the first proxy_tick. */
 }
 
 static void proxy_cleanup(physical_proxy *proxy)
@@ -2716,18 +2742,14 @@ static void proxy_cleanup(physical_proxy *proxy)
     /* Close both producer gates before publishing the owner-thread release
      * request. A wrapper that already crossed the gate is counted and must
      * retire before owner_begin_focus_release snapshots the raw held bitmap. */
-    if (proxy->screen_slot < 2u)
+    if (proxy->screen_slot < FRAMER_F2UP_SLOT_COUNT)
         __atomic_add_fetch(&proxy->block->proxy_cleanup_counts[proxy->screen_slot],
                            1u, __ATOMIC_RELAXED);
-    __atomic_store_n(&proxy->block->visible, 0u, __ATOMIC_SEQ_CST);
-    __atomic_store_n(&proxy->block->input_enabled, 0u, __ATOMIC_SEQ_CST);
-    __atomic_store_n(&proxy->block->poll_armed, 0u, __ATOMIC_RELEASE);
-    __atomic_add_fetch(&proxy->block->focus_release_requested, 1u,
-                       __ATOMIC_SEQ_CST);
-    (void)framer_runtime_visibility_set(&proxy->block->visibility, 0);
-    proxy->block->hidden_at_ms = now_ms();
-    (void)framer_resident_owner_enqueue_host_rpc(
-        &proxy->block->owner, proxy->block->widget_assets.generation, 0xb24eu, 0, 0);
+    /* NO hide bookkeeping here: cleanup fires for screens leaving the
+     * pre-build NEIGHBORHOOD while another widget screen stays fronted
+     * (docs/18 §4.2) — zeroing `visible` here silenced the owner tick gate
+     * for the fronted widget.  Hide runs on the owner task after tick
+     * silence (see owner_task). */
     proxy->image = (void *)0;
     proxy->source_published = 0u;
 }
@@ -2755,7 +2777,7 @@ static void proxy_tick(physical_proxy *proxy)
         proxy->image == (void *)0 || !sidecar_old_tick(proxy->backend, &old_tick))
         return;
     block = proxy->block;
-    if (proxy->screen_slot < 2u)
+    if (proxy->screen_slot < FRAMER_F2UP_SLOT_COUNT)
         __atomic_add_fetch(&block->proxy_tick_counts[proxy->screen_slot], 1u,
                            __ATOMIC_RELAXED);
     started = STOCK_TIME_US();
@@ -2764,6 +2786,49 @@ static void proxy_tick(physical_proxy *proxy)
      * visible screen can never veto an RPC activation. */
     {
         uint32_t screen_slot = proxy->screen_slot;
+        uint32_t milliseconds = now_ms();
+        __atomic_store_n(&block->visible_tick_ms, milliseconds,
+                         __ATOMIC_RELAXED);
+        if (__atomic_load_n(&block->widget_switching, __ATOMIC_ACQUIRE) == 0u &&
+            __atomic_load_n(&block->visible, __ATOMIC_ACQUIRE) == 0u) {
+            /* Deferred while switching: enqueueing into the owner mid-
+             * reinit_shell would write into memory being zeroed.  The next
+             * tick after the switch completes runs the show. */
+            /* SHOW — the bookkeeping that used to live in proxy_build, moved
+             * to the tick edge because build also fires for neighbor
+             * pre-builds (docs/18 §4.2) and therefore cannot own `visible`. */
+            uint32_t elapsed = 0u;
+            if (block->hidden_at_ms != 0u) {
+                elapsed = (milliseconds - block->hidden_at_ms) / 1000u;
+                if (elapsed > 604800u)
+                    elapsed = 604800u;
+            }
+            block->hidden_at_ms = 0u;
+            __atomic_store_n(&block->visible, 1u, __ATOMIC_SEQ_CST);
+            if (framer_physical_focus_can_reopen(
+                    1u,
+                    __atomic_load_n(&block->focus_release_requested,
+                                    __ATOMIC_ACQUIRE),
+                    __atomic_load_n(&block->focus_release_applied,
+                                    __ATOMIC_ACQUIRE),
+                    __atomic_load_n(&block->focus_release_draining,
+                                    __ATOMIC_ACQUIRE),
+                    __atomic_load_n(
+                        &block->owner.telemetry.permanently_disabled,
+                        __ATOMIC_ACQUIRE))) {
+                __atomic_store_n(&block->focus_reopen_pending, 0u,
+                                 __ATOMIC_RELEASE);
+                __atomic_store_n(&block->input_enabled, 1u, __ATOMIC_RELEASE);
+            } else {
+                __atomic_store_n(&block->focus_reopen_pending, 1u,
+                                 __ATOMIC_RELEASE);
+                __atomic_store_n(&block->input_enabled, 0u, __ATOMIC_RELEASE);
+            }
+            (void)framer_runtime_visibility_set(&block->visibility, 1);
+            (void)framer_resident_owner_enqueue_host_rpc(
+                &block->owner, block->widget_assets.generation, 0xb24eu, 1,
+                (int32_t)elapsed);
+        }
         if (screen_slot < FRAMER_F2UP_SLOT_COUNT &&
             __atomic_load_n(&block->visible_screen_slot, __ATOMIC_ACQUIRE) !=
                 screen_slot) {
@@ -3041,6 +3106,7 @@ static void widget_slot_adopt(physical_block *block)
     assets->adopt_detail = 0;
     block->widget_active_slot = 0u;
     block->visible_screen_slot = 0u;
+    block->visible_tick_ms = 0u;
     widget_slot_scan(block);
     /* Stage EVERY occupied slot into its own arena first: each resident slot
      * earns its own keyboard screen below. */
