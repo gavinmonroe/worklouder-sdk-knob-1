@@ -983,6 +983,38 @@ export const DEVICE_FEEDS: Record<string, { id: number; summary: string; value: 
 // name always means the same channel, and the generated feeder script computes
 // it the same way. Ids live in 0xC000..0xFEFF, clear of the device feeds and of
 // every id the bundled examples ever used.
+// Feeds with a FIXED channel because something already ships that sends them:
+// the weather host companion and the clock feeder use these exact ids today.
+// They get names here (not hash-derived ids) so the bundled examples read in
+// plain language while staying wire-compatible with the feeders people already
+// run. Everything else a designer names is derived — see userFeedId.
+export const PINNED_FEEDS: Record<string, { id: number; summary: string; value: string; auxiliary: string }> = {
+  "feed.weather-now": {
+    id: 0xb241,
+    summary: "Current conditions from the weather companion on your computer.",
+    value: "temperature in °F (0–99)",
+    auxiliary: "condition: 0 clear, 1 cloudy, 2 rain, 3 windy",
+  },
+  "feed.forecast-day-1": {
+    id: 0xb242,
+    summary: "Tomorrow's forecast row from the weather companion.",
+    value: "weekday, 0 = Monday",
+    auxiliary: "high × 100 + low",
+  },
+  "feed.forecast-day-2": {
+    id: 0xb243,
+    summary: "The day-after forecast row from the weather companion.",
+    value: "weekday, 0 = Monday",
+    auxiliary: "high × 100 + low",
+  },
+  "feed.wall-clock-time": {
+    id: 0xb250,
+    summary: "The time of day, sent from your computer once a minute.",
+    value: "hours × 100 + minutes (13:45 → 1345)",
+    auxiliary: "unused",
+  },
+};
+
 export const USER_FEED_PREFIX = "feed.";
 const USER_FEED_BASE = 0xc000;
 const USER_FEED_SPAN = 0x3f00;
@@ -1033,6 +1065,19 @@ function normalizeSelector(selector: string): SelectorInfo | null {
         dedupeKey: `host.rpc:${feed.id}`,
         kind: "host",
         hostId: feed.id,
+      };
+    }
+  }
+  {
+    // Pinned names resolve FIRST, so a shipped feeder keeps working.
+    const pinned = PINNED_FEEDS[selector];
+    if (pinned) {
+      return {
+        canonical: `host.rpc:${pinned.id}`,
+        dedupeKey: `host.rpc:${pinned.id}`,
+        kind: "host",
+        hostId: pinned.id,
+        feedSlug: selector.slice(USER_FEED_PREFIX.length),
       };
     }
   }

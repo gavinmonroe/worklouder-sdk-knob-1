@@ -67,7 +67,7 @@ widget.on("tick.1s", function (event) {
   <span class="clock-title">CLOCK</span>
   <div class="clock-face"><b id="hh">12</b><i id="colon">:</i><b id="mm">00</b></div>
   <span class="clock-hint">KNOB TRIMS MINUTES</span>
-  <span class="clock-sub">FED BY HOST RPC 0xB250</span>
+  <span class="clock-sub">TIME FROM YOUR COMPUTER</span>
 </div>`,
     css: `.clock-v3{position:relative;width:100px;height:310px;overflow:hidden;background:#07090f;color:#e8eaf0;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
 .clock-title{position:absolute;left:0;right:0;top:48px;text-align:center;font:700 12px/16px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:5px;color:#ffb74d}
@@ -76,15 +76,15 @@ widget.on("tick.1s", function (event) {
 #colon{display:block;width:8px;height:36px;text-align:center;font:700 26px/34px ui-monospace,SFMono-Regular,Menlo,monospace;color:#ffb74d;font-style:normal}
 .clock-hint{position:absolute;left:6px;right:6px;top:236px;text-align:center;font:600 7px/10px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:1px;color:#4a5468}
 .clock-sub{position:absolute;left:6px;right:6px;top:252px;text-align:center;font:600 7px/10px ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:1px;color:#39404f}`,
-    // Digits fed by the HOST: a feeder script sends hh*100+mm on
-    // host.rpc:0xB250 and the widget decodes it with the divisor trick. The
+    // Digits fed by your computer: the feed sends hh*100+mm and the widget
+    // decodes it with the divisor trick. The feed is subscribed BY NAME - the
     // colon blinks by riding el.hidden on the tick - the background-patch
     // variant the assembler captures automatically.
     script: `var hours = 12;
 var minutes = 0;
 var blink = 0;
 
-widget.on("host.rpc:0xB250", function (event) {
+widget.on("feed.wall-clock-time", function (event) {
   hours = mod((event.value / 100) | 0, 24);
   minutes = mod(event.value, 100);
   document.querySelector("#hh").textContent = digits(hours, 2);
@@ -108,7 +108,7 @@ widget.on("input.fn-bottom-knob", function (event) {
       { name: "blink", initial: 0 },
     ],
     handlers: [
-      { id: "host.rpc:0xB250", selector: "host.rpc:0xB250", body: `time feed` },
+      { id: "feed.wall-clock-time", selector: "feed.wall-clock-time", body: `time feed` },
       { id: "tick.1s", selector: "tick.1s", body: `colon blink + heartbeat` },
       { id: "input.fn-bottom-knob", selector: "input.fn-bottom-knob", body: `minute trim` },
     ],
@@ -292,9 +292,9 @@ widget.on("tick.1s", function (event) {
     // targets (one mailbox slot per number, formatter-13 divisors extract the
     // display digits on-device), the condition mark is a class-variant CSS
     // drawing (sun/cloud/rain/wind), and weekday names are 7-variant picks.
-    //   0xB241  value=temp \u00b0F (0..99)     auxiliary=condition 0..3
-    //   0xB242  value=day-1 weekday 0..6   auxiliary=high*100+low
-    //   0xB243  value=day-2 weekday 0..6   auxiliary=high*100+low
+    //   feed.weather-now      value=temp \u00b0F (0..99)   auxiliary=condition 0..3
+    //   feed.forecast-day-1   value=weekday 0..6        auxiliary=high*100+low
+    //   feed.forecast-day-2   value=weekday 0..6        auxiliary=high*100+low
     // The knob nudges the displayed temperature for a hands-on demo, and a
     // 1 Hz heartbeat republishes it so the widget paints from the first
     // second after boot (the facade only draws after a publication).
@@ -306,7 +306,7 @@ widget.on("input.fn-bottom-knob", function (event) {
   document.querySelector("#temp-num").textContent = digits(temp, 2);
 });
 
-widget.on("host.rpc:0xB241", function (event) {
+widget.on("feed.weather-now", function (event) {
   temp = clamp(event.value, 0, 99);
   cond = mod(event.auxiliary, 4);
   document.querySelector("#temp-num").textContent = digits(temp, 2);
@@ -314,13 +314,13 @@ widget.on("host.rpc:0xB241", function (event) {
   document.querySelector("#mark").className = pick(cond, "mark-sun", "mark-cloud", "mark-rain", "mark-wind");
 });
 
-widget.on("host.rpc:0xB242", function (event) {
+widget.on("feed.forecast-day-1", function (event) {
   document.querySelector("#day-1").textContent = pick(mod(event.value, 7), "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun");
   document.querySelector("#high-1").textContent = digits((event.auxiliary / 100) | 0, 2);
   document.querySelector("#low-1").textContent = digits(mod(event.auxiliary, 100), 2);
 });
 
-widget.on("host.rpc:0xB243", function (event) {
+widget.on("feed.forecast-day-2", function (event) {
   document.querySelector("#day-2").textContent = pick(mod(event.value, 7), "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun");
   document.querySelector("#high-2").textContent = digits((event.auxiliary / 100) | 0, 2);
   document.querySelector("#low-2").textContent = digits(mod(event.auxiliary, 100), 2);
@@ -335,9 +335,9 @@ widget.on("tick.1s", function (event) {
     ],
     handlers: [
       { id: "input.fn-bottom-knob", selector: "input.fn-bottom-knob", body: `temp nudge` },
-      { id: "host.rpc:0xB241", selector: "host.rpc:0xB241", body: `temp + condition + mark` },
-      { id: "host.rpc:0xB242", selector: "host.rpc:0xB242", body: `day-1 forecast` },
-      { id: "host.rpc:0xB243", selector: "host.rpc:0xB243", body: `day-2 forecast` },
+      { id: "feed.weather-now", selector: "feed.weather-now", body: `temp + condition + mark` },
+      { id: "feed.forecast-day-1", selector: "feed.forecast-day-1", body: `day-1 forecast` },
+      { id: "feed.forecast-day-2", selector: "feed.forecast-day-2", body: `day-2 forecast` },
       { id: "tick.1s", selector: "tick.1s", body: `heartbeat publish` },
     ],
     targets: [

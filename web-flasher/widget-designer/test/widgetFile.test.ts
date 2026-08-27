@@ -98,3 +98,80 @@ describe("widget file naming", () => {
     expect(widgetFileName("")).toBe("widget.f1widget.json");
   });
 });
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Named feeds: a designer subscribes by name and never types a channel number.
+// Two guarantees are load-bearing and easy to break silently, so they are
+// pinned here:
+//   1. PINNED_FEEDS keep the EXACT ids the shipped feeders already send —
+//      renaming must never silently move a widget onto a dead channel.
+//   2. Derived ids are stable: the same name must mean the same channel on
+//      every machine and across rebuilds, or a shared widget stops receiving.
+// ─────────────────────────────────────────────────────────────────────────────
+
+import {
+  PINNED_FEEDS,
+  DEVICE_FEEDS,
+  transpileWidgetScript,
+  userFeedId,
+  userFeedSlug,
+} from "../src/compiler/mquickjsTranspiler";
+import { ALL_EVENT_KINDS } from "../src/compiler/constants";
+
+describe("named feeds", () => {
+  it("keeps the wire ids the shipped feeders already send", () => {
+    expect(PINNED_FEEDS["feed.weather-now"].id).toBe(0xb241);
+    expect(PINNED_FEEDS["feed.forecast-day-1"].id).toBe(0xb242);
+    expect(PINNED_FEEDS["feed.forecast-day-2"].id).toBe(0xb243);
+    expect(PINNED_FEEDS["feed.wall-clock-time"].id).toBe(0xb250);
+    expect(DEVICE_FEEDS["device.typing-speed"].id).toBe(0xb2f2);
+  });
+
+  it("compiles the bundled examples onto exactly those ids", () => {
+    const clock = transpileWidgetScript(PRESETS.clock.script);
+    expect(clock.events.hostRpcIds).toEqual([0xb250]);
+    const weather = transpileWidgetScript(PRESETS.weatherDevice.script);
+    expect(weather.events.hostRpcIds).toEqual([0xb241, 0xb242, 0xb243]);
+    const lab = transpileWidgetScript(PRESETS.eventLab.script);
+    expect(lab.events.hostRpcIds).toEqual([0xb2f2]);
+  });
+
+  it("no bundled example makes a designer type a channel number", () => {
+    for (const p of PRESET_ORDER) {
+      expect(PRESETS[p.id].script).not.toMatch(/host\.rpc:/);
+      expect(PRESETS[p.id].html).not.toMatch(/0x[0-9A-Fa-f]{3,}/);
+    }
+  });
+
+  it("derives a stable channel from a name, in the user range", () => {
+    const id = userFeedId(userFeedSlug("Room Temp"));
+    expect(id).toBe(userFeedId("room-temp"));
+    expect(id).toBeGreaterThanOrEqual(0xc000);
+    expect(id).toBeLessThanOrEqual(0xfeff);
+    // Same name, same channel — a shared widget keeps receiving.
+    expect(userFeedId("room-temp")).toBe(userFeedId("room-temp"));
+  });
+
+  it("every completion the editor offers actually compiles", () => {
+    // The editor once offered a bare "host.rpc" selector the compiler rejects,
+    // walking the user into an error. Never again.
+    for (const kind of ALL_EVENT_KINDS) {
+      const script =
+        `var v = 0;\nwidget.on(${JSON.stringify(kind.canonical)}, function (event) {\n` +
+        `  document.querySelector("#v").textContent = digits(v, 3);\n});`;
+      const unknown = transpileWidgetScript(script).diagnostics.filter(
+        (d) => d.severity === "error" && /Unknown event selector/.test(d.message),
+      );
+      expect(unknown, `completion "${kind.canonical}" does not compile`).toEqual([]);
+    }
+  });
+
+  it("refuses the compiler's private slot API inside a handler", () => {
+    // widget.setInt used to pass through and silently overwrite a render slot.
+    const script =
+      `var v = 0;\nwidget.on("tick.1s", function (event) {\n  widget.setInt(3, 7);\n});`;
+    const out = transpileWidgetScript(script);
+    expect(out.diagnostics.some((d) => d.severity === "error" && /widget\.setInt/.test(d.message))).toBe(true);
+    expect(out.deviceSource).not.toMatch(/setInt\(3/);
+  });
+});

@@ -49,8 +49,8 @@ import type { SimulatedEvent } from "../types";
 // (or any other) handler the script already has. Transpiles as-is (covered
 // by test); the comment carries the heartbeat-republish teaching instead.
 const EXAMPLE_FEED_PRELUDE = "var feed = 0;";
-const EXAMPLE_FEED_SNIPPET = `// Host feed: the Designer lists this id under Host data automatically.
-widget.on("host.rpc:0xB301", function (event) {
+const EXAMPLE_FEED_SNIPPET = `// Name the feed whatever you like - it appears under Host data below.
+widget.on("feed.my-data", function (event) {
   // event.value and event.auxiliary are the two integers your feeder sends.
   feed = clamp(event.value, 0, 999);
   document.querySelector("#value").textContent = digits(feed, 3);
@@ -124,9 +124,10 @@ export function HostFeedsPanel({
             <div className="min-w-0">
               <CardTitle>Host data</CardTitle>
               <CardDescription>
-                Derived from your source — every <span className="font-mono">host.rpc:&lt;id&gt;</span>{" "}
-                handler in the script is a feed the outside world can drive. Name it, label its two
-                numbers, and test it live.
+                Live numbers your computer can send this widget. Every{" "}
+                <span className="font-mono">feed.&lt;name&gt;</span> handler in your script shows up
+                here — label its two numbers, test it live, and copy the ready-made script that
+                sends it.
               </CardDescription>
             </div>
             {dirty && (
@@ -141,11 +142,11 @@ export function HostFeedsPanel({
             <EmptyState
               size="sm"
               icon="cable"
-              title="This script declares no host feeds yet"
+              title="This widget doesn't take any data from your computer yet"
               hint={
                 <>
-                  Add <code>{`widget.on("host.rpc:0x…", function (event) { … })`}</code> to your script
-                  and it appears here automatically — no schema, no setup.
+                  Add <code>{`widget.on("feed.my-data", function (event) { … })`}</code> to your
+                  script — name it anything — and it appears here, ready to label and test.
                 </>
               }
               action={
