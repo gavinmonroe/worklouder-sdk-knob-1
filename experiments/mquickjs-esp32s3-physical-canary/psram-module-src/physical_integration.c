@@ -2427,7 +2427,8 @@ static void owner_begin_focus_release(physical_block *block,
         FRAMER_MQJS_INPUT_RESYNC_QUEUED) {
         __atomic_store_n(&block->focus_release_draining, requested,
                          __ATOMIC_RELEASE);
-        framer_resident_owner_notify_input(&block->owner, block->generation);
+        framer_resident_owner_notify_input(&block->owner,
+                                           block->widget_assets.generation);
     }
 }
 
@@ -2963,7 +2964,7 @@ static void proxy_encoder(physical_proxy *proxy, uint32_t encoder,
                             __ATOMIC_ACQUIRE)) &&
         STOCK_FN_PRESSED(input) != 0) {
         (void)framer_resident_owner_enqueue(
-            &proxy->block->owner, proxy->block->generation,
+            &proxy->block->owner, proxy->block->widget_assets.generation,
             "input.fn-bottom-knob", delta, (int32_t)encoder);
         intercepted = 1;
     }
@@ -3007,8 +3008,8 @@ void framer_physical_key_after_stock(void *controller, uint32_t native_token,
     if (framer_physical_key_gate_observe_and_map(
             &block->key_probe, native_token, level, &logical_token))
         (void)framer_resident_owner_input_after_stock(
-            &block->owner, block->generation, logical_token, level != 0u,
-            now_ms());
+            &block->owner, block->widget_assets.generation, logical_token,
+            level != 0u, now_ms());
 finished:
     __atomic_sub_fetch(&block->input_sink_inflight, 1u, __ATOMIC_SEQ_CST);
 }
