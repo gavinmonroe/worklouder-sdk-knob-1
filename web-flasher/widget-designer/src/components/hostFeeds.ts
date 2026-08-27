@@ -16,7 +16,14 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import * as React from "react";
-import { transpileWidgetScript, userFeedId, userFeedSlug } from "../compiler/mquickjsTranspiler";
+import {
+  DEVICE_FEEDS,
+  PINNED_FEEDS,
+  USER_FEED_PREFIX,
+  transpileWidgetScript,
+  userFeedId,
+  userFeedSlug,
+} from "../compiler/mquickjsTranspiler";
 import type { DesignerState } from "../designer/store";
 
 export interface HostFeed {
@@ -43,14 +50,35 @@ export function deriveHostFeeds(js: string, handlers: DesignerState["handlers"])
   // The author's spelling for each id, first occurrence wins. A feed.<name>
   // selector is the preferred spelling: it is what the designer wrote, and it
   // resolves to its channel deterministically.
+  //
+  // Resolution has to match normalizeSelector EXACTLY, pinned names first. The
+  // pinned and device feeds carry fixed channels that predate the
+  // name-derives-the-channel rule, so hashing their slug the way a user feed is
+  // hashed keys this map under an id no handler ever registers — and then every
+  // shipped example (Weather, Clock, Event lab) falls through to raw hex: cards
+  // reading "host.rpc:0xB241" for a script that says feed.weather-now, and a
+  // jump-to-handler chip searching the source for text that isn't in it.
   const spelling = new Map<number, string>();
   const named = new Map<number, string>();
-  for (const m of js.matchAll(/["']feed\.([A-Za-z0-9][A-Za-z0-9 _-]*)["']/g)) {
-    const slug = userFeedSlug(m[1]);
+  for (const m of js.matchAll(/["']((?:feed|device)\.[A-Za-z0-9][A-Za-z0-9 _-]*)["']/g)) {
+    const selector = m[1];
+    const platform = DEVICE_FEEDS[selector] ?? PINNED_FEEDS[selector];
+    if (platform) {
+      if (!spelling.has(platform.id)) spelling.set(platform.id, selector);
+      // A feed.<name> is the designer's own word for the channel and reads as a
+      // name; device.<name> keeps its prefix, because that prefix is the fact
+      // that the KEYBOARD publishes it and nothing else says so.
+      if (selector.startsWith(USER_FEED_PREFIX) && !named.has(platform.id)) {
+        named.set(platform.id, selector.slice(USER_FEED_PREFIX.length));
+      }
+      continue;
+    }
+    if (!selector.startsWith(USER_FEED_PREFIX)) continue;
+    const slug = userFeedSlug(selector.slice(USER_FEED_PREFIX.length));
     if (slug.length === 0) continue;
     const id = userFeedId(slug);
     if (!named.has(id)) named.set(id, slug);
-    if (!spelling.has(id)) spelling.set(id, `feed.${slug}`);
+    if (!spelling.has(id)) spelling.set(id, `${USER_FEED_PREFIX}${slug}`);
   }
   for (const m of js.matchAll(/host\.rpc:(0x[0-9a-fA-F]+|\d+)/g)) {
     const raw = m[1];
@@ -81,7 +109,13 @@ export function deriveHostFeeds(js: string, handlers: DesignerState["handlers"])
         // Named feed: the selector the designer writes IS the name.
         return { id, hex: `feed.${slug}`, selector: `feed.${slug}`, name: slug };
       }
-      const hex = spelling.get(id) ?? canonicalHex(id);
+      const written = spelling.get(id);
+      // device.<name>: the exact text in the source IS the selector, so the
+      // jump-to-handler chip finds it and the card never shows a channel.
+      if (written !== undefined && written.startsWith("device.")) {
+        return { id, hex: written, selector: written };
+      }
+      const hex = written ?? canonicalHex(id);
       return { id, hex, selector: `host.rpc:${hex}` };
     });
   feedCache = { js, handlerKey, feeds };
@@ -116,22 +150,25 @@ export function feedMetaKey(widgetName: string, id: number): string {
 // mirror the presets' own feed-protocol comments). A default fills a field
 // only until the user writes that field themselves — saved metadata always
 // wins, including a deliberately cleared value.
+// The widget half of each key is the preset's DISPLAY NAME (presets/widgets.ts),
+// not its preset id, so renaming an example means renaming it in both places or
+// that example quietly loses its feed names, labels and test values.
 const FEED_META_DEFAULTS: Record<string, FeedMeta> = {
-  [feedMetaKey("Weather (device DSL)", 0xb241)]: {
+  [feedMetaKey("Weather", 0xb241)]: {
     name: "Current conditions",
     valueLabel: "temperature °F (0–99)",
     auxLabel: "condition 0–3",
     value: "72",
     auxiliary: "1",
   },
-  [feedMetaKey("Weather (device DSL)", 0xb242)]: {
+  [feedMetaKey("Weather", 0xb242)]: {
     name: "Forecast day 1",
     valueLabel: "day of week 0–6",
     auxLabel: "high×100+low",
     value: "1",
     auxiliary: "6448",
   },
-  [feedMetaKey("Weather (device DSL)", 0xb243)]: {
+  [feedMetaKey("Weather", 0xb243)]: {
     name: "Forecast day 2",
     valueLabel: "day of week 0–6",
     auxLabel: "high×100+low",

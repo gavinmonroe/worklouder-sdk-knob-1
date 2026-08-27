@@ -1,4 +1,5 @@
-import { useLayoutEffect, useEffect, useRef } from "react";
+import { useCallback, useLayoutEffect, useEffect, useRef, useState } from "react";
+import { Icon } from "./icons";
 import { DesignerPanel } from "./DesignerPanel";
 import { InspectorPanel } from "./InspectorPanel";
 import { SourceWorkspace } from "./SourceWorkspace";
@@ -13,8 +14,106 @@ import type { DesignerState, DesignerActions } from "../designer/store";
 // rail (the same sections, compact); legacy ?tab= URLs map in App.tsx.
 export type WorkspaceTab = "design" | "source" | "export" | "device";
 
+/**
+ * Has this browser been shown the getting-started steps? Storage failures
+ * (private window, blocked site data) answer "yes" deliberately: a guide that
+ * cannot remember being dismissed would come back on every single load, which
+ * is a worse experience than never meeting it. Same "wd-" key convention as
+ * wd-sidebar and wd-knob-hint-seen.
+ */
+function firstRunSeen(): boolean {
+  try {
+    return localStorage.getItem("wd-first-run-seen") === "1";
+  } catch {
+    return true;
+  }
+}
+
+/**
+ * The three moves that make up this product, said once, in the stage pane a
+ * cold open lands on. Without it the first screen is somebody else's weather
+ * widget on a dark rectangle, a rail of accordions and four tab names — with
+ * nothing anywhere saying what gets made here or where to start. Each step is
+ * a button that puts the designer where that step happens, and the strip is
+ * FLOW content above the stage, never a layer over it: the device preview is
+ * the one thing that must always stay visible.
+ */
+function FirstRunSteps({
+  onShowExamples,
+  onNavigate,
+  onDismiss,
+}: {
+  onShowExamples: () => void;
+  onNavigate: (tab: WorkspaceTab) => void;
+  onDismiss: () => void;
+}) {
+  const steps = [
+    {
+      title: "Pick an example",
+      detail: "Start from a widget that already works.",
+      go: onShowExamples,
+    },
+    {
+      title: "Make it yours",
+      detail: "Edit its HTML, CSS and JavaScript in Source.",
+      go: () => onNavigate("source"),
+    },
+    {
+      title: "Send it to your keyboard",
+      detail: "Plug in your F1, then send the widget over.",
+      go: () => onNavigate("device"),
+    },
+  ];
+  return (
+    <div
+      className="rounded-md border border-border bg-panel px-3 py-2.5"
+      role="group"
+      aria-label="Getting started"
+    >
+      <div className="flex items-center gap-2">
+        <span className="text-sm font-semibold text-fg">
+          New here? Building a widget takes three moves.
+        </span>
+        <button
+          type="button"
+          className="wd-iconbtn ml-auto"
+          aria-label="Hide the getting-started steps"
+          onClick={onDismiss}
+        >
+          <Icon name="x" size={14} />
+        </button>
+      </div>
+      <ol className="mt-1.5 flex flex-wrap gap-2">
+        {steps.map((step, i) => (
+          <li key={step.title} className="min-w-[220px] flex-1">
+            <button
+              type="button"
+              onClick={step.go}
+              className="flex w-full items-start gap-2 rounded-md border border-transparent bg-inset px-2.5 py-2 text-left transition-colors hover:border-accent-border hover:bg-raised"
+            >
+              {/* The <ol> already carries the order for assistive tech, so the
+                  numeral is decoration — it exists to make the sequence
+                  readable at a glance. */}
+              <span
+                aria-hidden="true"
+                className="mt-px flex h-4 w-4 flex-none items-center justify-center rounded-full bg-accent text-[10px] font-semibold leading-none text-accent-fg"
+              >
+                {i + 1}
+              </span>
+              <span className="min-w-0">
+                <span className="block text-xs font-medium text-fg">{step.title}</span>
+                <span className="block text-xs text-muted-fg">{step.detail}</span>
+              </span>
+            </button>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
 export function Workspace({
-  state, actions, tab, device, onScrolledChange,
+  state, actions, tab, device, onScrolledChange, onNavigate, onShowExamples,
 }: {
   state: DesignerState;
   actions: DesignerActions;
@@ -25,9 +124,25 @@ export function Workspace({
   device: ReturnType<typeof useDevice>;
   /** Reports whether the workspace has scrolled (topbar elevation). */
   onScrolledChange?: (scrolled: boolean) => void;
+  /** Switches tabs — the first-run steps take the designer to the tab each
+   *  step happens on. */
+  onNavigate: (tab: WorkspaceTab) => void;
+  /** Reveals the example gallery (the sidebar boots collapsed under 1200px). */
+  onShowExamples: () => void;
 }) {
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
+
+  // Shown until the designer dismisses it, then gone for good on this browser.
+  const [firstRun, setFirstRun] = useState(() => !firstRunSeen());
+  const dismissFirstRun = useCallback(() => {
+    setFirstRun(false);
+    try {
+      localStorage.setItem("wd-first-run-seen", "1");
+    } catch {
+      /* storage unavailable */
+    }
+  }, []);
 
   // Topbar elevation: a 1px sentinel at the top of the document-style scroll
   // container; once it leaves, the header casts its shadow. The Design tab
@@ -95,7 +210,33 @@ export function Workspace({
             never push the device, the sim pill, or the zoom toolbar
             off-screen. */}
         <div className="wd-design-grid">
-          <section className="wd-design-stage-pane" aria-label="Device stage">
+          {/* While the first-run steps are up, the pane is a two-row grid: an
+              auto row for the strip and a minmax(0,1fr) row for the stage. The
+              stage is height:100%, so it needs a row with a DEFINITE height —
+              stacked as plain blocks it would keep claiming the pane's full
+              height and push its own zoom and simulator controls below the
+              fold. Dismissed, the pane is exactly the single-child block it
+              has always been, with no layout delta at all. */}
+          <section
+            className="wd-design-stage-pane"
+            aria-label="Device stage"
+            style={
+              firstRun
+                ? {
+                    display: "grid",
+                    gridTemplateRows: "auto minmax(0, 1fr)",
+                    gap: "var(--wd-space-3)",
+                  }
+                : undefined
+            }
+          >
+            {firstRun && (
+              <FirstRunSteps
+                onShowExamples={onShowExamples}
+                onNavigate={onNavigate}
+                onDismiss={dismissFirstRun}
+              />
+            )}
             <ViewportShell state={state} actions={actions} />
           </section>
           <aside className="wd-design-rail" aria-label="Widget inspector rail">

@@ -135,6 +135,30 @@ const SOURCE_BUDGET_BYTES = 8192;
 const FIRST_TARGET_SLOT = 1;
 const LAST_TARGET_SLOT = 14;
 
+/**
+ * The one hard ceiling a designer runs into while doing something completely
+ * ordinary — adding one more changing value to a screen. "Slot" is not a word
+ * that appears anywhere in the language they write, so the refusal leads with
+ * the number they CAN count (fourteen things that change), names what spends
+ * it in their own vocabulary, and says what to remove. The mailbox mechanism
+ * still ships, parenthesised last, for whoever is reading the generated device
+ * source — and because everything before that first " (" is what the toast
+ * shows (see diagnosticsView.humanizeDiagnostic), the actionable half is
+ * guaranteed to be the half that fits.
+ *
+ * `subject` names the thing that could not be placed, phrased to follow "so".
+ */
+function liveValueBudgetMessage(subject: string): string {
+  return (
+    `This screen already shows all ${LAST_TARGET_SLOT} live values the keyboard can hold ` +
+    `at once, so ${subject} has nowhere to go. Anything that changes while the widget ` +
+    `runs spends one of them — a text, a colour, a class variant, a digits() number, an ` +
+    `animated element — so drop one, or drive two of them from the same value. ` +
+    `(On the device those live values ride mailbox slots 1..${LAST_TARGET_SLOT}: slot 0 ` +
+    `carries the publish revision and slot 15 the flags word.)`
+  );
+}
+
 // Device budget: widget.on throws on the 17th registration, so refuse earlier
 // with a diagnostic the Designer can show instead of a load-time crash.
 const HANDLER_BUDGET = 16;
@@ -153,12 +177,24 @@ const DIGITS_MAX_COUNT = 4;
 // declares them (event.key is the declared index); a script with key/chord
 // handlers and no declaration gets DEFAULT_KEYS — the F1's own physical
 // layout — so "any key on the keyboard" works out of the box.
-// Names are HID usage codes; "0xNN" declares a raw token directly.
+// The table below is deliberately a WHOLE keyboard, not a useful subset: the
+// moment a real key has no name here — f5, the comma — the only way forward is
+// an HID usage table, and looking one up is exactly the detour this app exists
+// to remove. The numbers are HID usage codes, but nothing the author reads ever
+// says so. A raw "0xNN" string still resolves for firmware bring-up; it is kept
+// out of every user-facing string so nobody is ever pointed at it.
 export const KEY_TOKEN_NAMES: Record<string, number> = (() => {
   const table: Record<string, number> = {
     space: 0x2c, enter: 0x28, esc: 0x29, backspace: 0x2a, tab: 0x2b,
     shift: 0xe1, ctrl: 0xe0, alt: 0xe2, gui: 0xe3, cmd: 0xe3,
     right: 0x4f, left: 0x50, down: 0x51, up: 0x52,
+    capslock: 0x39, insert: 0x49, delete: 0x4c,
+    home: 0x4a, end: 0x4d, pageup: 0x4b, pagedown: 0x4e,
+    // Punctuation goes by name because the key-name grammar admits letters and
+    // digits only: an author writes "comma", never ",".
+    comma: 0x36, period: 0x37, slash: 0x38, semicolon: 0x33, quote: 0x34,
+    minus: 0x2d, equals: 0x2e, lbracket: 0x2f, rbracket: 0x30,
+    backslash: 0x31, grave: 0x35,
     // Catch-all: the firmware re-delivers any key the widget did NOT declare
     // under this reserved token (HID ErrorRollOver, never a real press), so
     // "any" receives every key on the keyboard — letters included — with
@@ -168,6 +204,16 @@ export const KEY_TOKEN_NAMES: Record<string, number> = (() => {
   for (let i = 0; i < 26; i++) table[String.fromCharCode(97 + i)] = 0x04 + i;
   for (let i = 1; i <= 9; i++) table[String(i)] = 0x1e + (i - 1);
   table["0"] = 0x27;
+  for (let i = 1; i <= 12; i++) table[`f${i}`] = 0x3a + (i - 1);
+  // Second names for keys whose cap reads differently depending on which
+  // keyboard the author is looking at. Rejecting "escape" or "return" would be
+  // a pure vocabulary failure — the widget they described was never wrong.
+  const alternates: Record<string, string> = {
+    escape: "esc", return: "enter", del: "delete", caps: "capslock",
+    pgup: "pageup", pgdn: "pagedown", control: "ctrl", option: "alt",
+    win: "gui", backtick: "grave", apostrophe: "quote",
+  };
+  for (const [alternate, name] of Object.entries(alternates)) table[alternate] = table[name];
   return table;
 })();
 // No widget.keys() declaration: space and shift keep their historical ids 0
@@ -382,10 +428,7 @@ export function transpileWidgetScript(dslSource: string): TranspiledWidget {
     if (nextSlot > LAST_TARGET_SLOT) {
       diagnostics.push({
         severity: "error",
-        message:
-          `Slot budget exhausted: more than ${LAST_TARGET_SLOT} distinct slot needs ` +
-          `(slots 1..14 are free; 0 is the revision, 15 the flags word). ` +
-          `No slot left for "#${id}" ${property}.`,
+        message: liveValueBudgetMessage(`the changing ${property} on "#${id}"`),
       });
       return null;
     }
@@ -450,9 +493,10 @@ export function transpileWidgetScript(dslSource: string): TranspiledWidget {
             diagnostics.push({
               severity: "error",
               message:
-                `Target "#${id}" hidden write needs the target's textContent write in the ` +
-                `same handler, textually before it — hidden wraps that staged content ` +
-                `slot with the reserved background variant: ${statement.raw}`,
+                `Set "#${id}" textContent earlier in the same handler, above the line that ` +
+                `hides it. The keyboard hides an element by painting over the text it was ` +
+                `last given, so it has to be given that text first — in this handler, not ` +
+                `another one. Offending statement: ${statement.raw}`,
             });
             continue;
           }
@@ -486,9 +530,11 @@ export function transpileWidgetScript(dslSource: string): TranspiledWidget {
             diagnostics.push({
               severity: "error",
               message:
-                `digits(value, count) needs a literal integer count ` +
-                `${DIGITS_MIN_COUNT}..${DIGITS_MAX_COUNT} (the capture pipeline pre-renders ` +
-                `one raster table per digit): ${statement.raw}`,
+                `digits(value, count) needs a plain number for the count — write ` +
+                `${DIGITS_MIN_COUNT} to ${DIGITS_MAX_COUNT} out in full, not a variable. ` +
+                `How many digit positions the widget has is decided when it is built, ` +
+                `before it ever runs, so it cannot be worked out on the keyboard. ` +
+                `Offending statement: ${statement.raw}`,
             });
             continue;
           }
@@ -525,10 +571,7 @@ export function transpileWidgetScript(dslSource: string): TranspiledWidget {
             if (nextSlot > LAST_TARGET_SLOT) {
               diagnostics.push({
                 severity: "error",
-                message:
-                  `Slot budget exhausted: "#${id}" digits(value, ${count}) needs one slot ` +
-                  `but none of 1..${LAST_TARGET_SLOT} remain (0 is the revision, 15 the ` +
-                  `flags word).`,
+                message: liveValueBudgetMessage(`the ${count}-digit number on "#${id}"`),
               });
               continue;
             }
@@ -752,10 +795,7 @@ export function transpileWidgetScript(dslSource: string): TranspiledWidget {
     if (nextSlot > LAST_TARGET_SLOT) {
       diagnostics.push({
         severity: "error",
-        message:
-          `Slot budget exhausted: more than ${LAST_TARGET_SLOT} distinct slot needs ` +
-          `(slots 1..14 are free; 0 is the revision, 15 the flags word). ` +
-          `No slot left for "#${declared.id}" animation.`,
+        message: liveValueBudgetMessage(`the animation on "#${declared.id}"`),
       });
       continue;
     }
@@ -863,8 +903,13 @@ export function transpileWidgetScript(dslSource: string): TranspiledWidget {
           diagnostics.push({
             severity: "error",
             message:
-              `widget.keys: unknown key name "${name}". Names are space, enter, esc, tab, ` +
-              `backspace, shift, ctrl, alt, gui/cmd, up/down/left/right, a-z, 0-9, or a raw "0xNN" token.`,
+              `widget.keys: there is no key called "${name}". Name keys the way you say ` +
+              `them — a-z, 0-9, f1-f12, up/down/left/right, space, enter, tab, esc, ` +
+              `backspace, delete, insert, home, end, pageup, pagedown, capslock, ` +
+              `shift/ctrl/alt/cmd, punctuation spelled out like comma or slash, or "any" ` +
+              `for every key you did not name. ` +
+              `(Punctuation in full: comma, period, slash, semicolon, quote, minus, ` +
+              `equals, lbracket, rbracket, backslash, grave.)`,
           });
           continue;
         }
@@ -952,11 +997,11 @@ export function transpileWidgetScript(dslSource: string): TranspiledWidget {
       diagnostics.push({
         severity: "error",
         message:
-          `Target "#${id}" drives className and its other written properties from ` +
-          `independent pick indexes. Class variants are captured pixels bound to one ` +
-          `slot value, so every handler that writes "#${id}" must drive all of its ` +
-          `properties from the same pick index (write them back-to-back with an ` +
-          `identical index expression).`,
+          `Write "#${id}" className and its other properties back-to-back from the same ` +
+          `pick index — the identical expression in every handler that touches it. Right ` +
+          `now className is picked independently of the rest. ` +
+          `(The keyboard draws each combination ahead of time and chooses between them ` +
+          `with a single value, so a styled element's properties cannot vary apart.)`,
       });
     }
   }
@@ -1125,6 +1170,40 @@ function normalizeSelector(selector: string): SelectorInfo | null {
 
 // ── top-level scanning ───────────────────────────────────────────────────────
 
+// The entire legal top level, in one place. Each form's PATTERN is what the
+// scanner matches and its EXAMPLE is what the refusal at the bottom of
+// scanTopLevel offers back, so the grammar and the sentence describing it
+// cannot disagree. They used to be written twice and did disagree: the message
+// listed everything except widget.keys, which the scanner had accepted all
+// along and which the Event Lab preset opens with — so an author who tripped
+// any unrelated top-level error was told, authoritatively, to delete a correct
+// line. Adding a form means adding it here, which makes that impossible.
+// (Patterns are anchored and flagless, so sharing one across calls is safe:
+// exec on a non-global regex keeps no state.)
+const TOP_LEVEL_STATE_FORM = {
+  example: "var name = 0;",
+  pattern: /^(?:let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(-?\d+)\s*;/,
+};
+const TOP_LEVEL_ANIMATE_FORM = {
+  example: 'widget.animate("#id", frames);',
+  pattern: /^widget\s*\.\s*animate\s*\(\s*(["'])#([A-Za-z][A-Za-z0-9_-]{0,15})\1\s*,\s*(-?\d+)\s*\)\s*;?/,
+};
+const TOP_LEVEL_KEYS_FORM = {
+  example: 'widget.keys("space", "a");',
+  pattern: /^widget\s*\.\s*keys\s*\(([^)]*)\)\s*;?/,
+};
+const TOP_LEVEL_HANDLER_FORM = {
+  example: 'widget.on("tick.1s", function (event) { … });',
+  pattern:
+    /^widget\.on\(\s*(["'])([^"'\\]*)\1\s*,\s*(?:function\s*\(\s*event\s*\)\s*\{|\(\s*event\s*\)\s*=>\s*\{)/,
+};
+const TOP_LEVEL_FORMS = [
+  TOP_LEVEL_STATE_FORM,
+  TOP_LEVEL_KEYS_FORM,
+  TOP_LEVEL_ANIMATE_FORM,
+  TOP_LEVEL_HANDLER_FORM,
+];
+
 function scanTopLevel(
   text: string,
   diagnostics: Diagnostic[],
@@ -1157,7 +1236,7 @@ function scanTopLevel(
       continue;
     }
     const slice = text.slice(cursor);
-    const decl = /^(?:let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(-?\d+)\s*;/.exec(slice);
+    const decl = TOP_LEVEL_STATE_FORM.pattern.exec(slice);
     if (decl) {
       const name = decl[1];
       if (seenStates.has(name)) {
@@ -1169,16 +1248,13 @@ function scanTopLevel(
       cursor += decl[0].length;
       continue;
     }
-    const animate =
-      /^widget\s*\.\s*animate\s*\(\s*(["'])#([A-Za-z][A-Za-z0-9_-]{0,15})\1\s*,\s*(-?\d+)\s*\)\s*;?/.exec(
-        slice,
-      );
+    const animate = TOP_LEVEL_ANIMATE_FORM.pattern.exec(slice);
     if (animate) {
       animates.push({ id: animate[2], frames: Number(animate[3]) });
       cursor += animate[0].length;
       continue;
     }
-    const keysDecl = /^widget\s*\.\s*keys\s*\(([^)]*)\)\s*;?/.exec(slice);
+    const keysDecl = TOP_LEVEL_KEYS_FORM.pattern.exec(slice);
     if (keysDecl) {
       const names: string[] = [];
       let ok = true;
@@ -1226,10 +1302,7 @@ function scanTopLevel(
       cursor = Math.max(end, cursor + 1);
       continue;
     }
-    const header =
-      /^widget\.on\(\s*(["'])([^"'\\]*)\1\s*,\s*(?:function\s*\(\s*event\s*\)\s*\{|\(\s*event\s*\)\s*=>\s*\{)/.exec(
-        slice,
-      );
+    const header = TOP_LEVEL_HANDLER_FORM.pattern.exec(slice);
     if (header) {
       const open = header[0].length - 1;
       const close = matchBrace(slice, open);
@@ -1252,9 +1325,10 @@ function scanTopLevel(
     diagnostics.push({
       severity: "error",
       message:
-        `Unsupported top-level statement (the DSL allows "var name = <int>;", ` +
-        `widget.animate("#id", frames); and ` +
-        `widget.on("selector", function (event) { … }); only): ${snippet}`,
+        `Unsupported top-level statement. Outside a handler a widget can only declare a ` +
+        `starting number, the keys it listens to, an animation, or a handler — ` +
+        `${TOP_LEVEL_FORMS.map((form) => form.example).join(" ")} — so move this line ` +
+        `inside one of your widget.on handlers. Offending statement: ${snippet}`,
     });
     cursor = Math.max(end, cursor + 1);
   }

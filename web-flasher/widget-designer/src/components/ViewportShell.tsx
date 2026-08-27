@@ -462,7 +462,13 @@ export function ViewportShell({
           {empty && viewMode === "design" && (
             <div className="wd-aperture-empty" aria-hidden="true">
               <span className="wd-aperture-empty-title">Nothing rendered</span>
-              <span className="wd-aperture-empty-hint">Check DOM targets</span>
+              {/* The condition this overlay reports is isEmptyRender — one
+                  cause exactly: no element carries the wrapper class. It used
+                  to say "Check DOM targets", which named neither that cause
+                  nor any control in the app (the meter for targets is called
+                  "Elements" now), so it sent people looking at the one thing
+                  that was fine. */}
+              <span className="wd-aperture-empty-hint">Check the wrapper class</span>
             </div>
           )}
           {/* Device frame: the oracle raster, layered OVER the (still laid-out)

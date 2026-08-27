@@ -213,7 +213,7 @@ widget.on("tick.1s", function (event) {
     ).join("\n");
     const out = transpileWidgetScript(`var a = 0;\nwidget.on("tick.1s", function (event) {\n${writes}\n});\n`);
     const exhausted = out.diagnostics.find(
-      (d) => d.severity === "error" && /exhausted/i.test(d.message),
+      (d) => d.severity === "error" && /live values the keyboard can hold/.test(d.message),
     );
     expect(exhausted).toBeDefined();
     expect(exhausted!.message).toContain("#t14");

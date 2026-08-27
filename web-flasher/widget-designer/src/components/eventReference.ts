@@ -72,18 +72,18 @@ const FIELD_DOCS: Record<string, string> = {
   type: "The event's kind string — the same selector you passed to widget.on.",
   sequence: "Monotonic counter — increments once per delivered event.",
   timestampMs: "Device uptime in milliseconds when the event fired.",
-  heldMask: "Bitmask of currently held keys — bit N set means key N is down (widget.isHeld(N) reads the same map).",
+  heldMask: "Which keys are being held right now, packed into one number. You never have to unpack it: widget.isHeld(0) asks about the first key you named, widget.isHeld(1) the second.",
   synthetic: "True when tooling injected the event; false for real hardware input.",
   value: "First 32-bit integer payload.",
   auxiliary: "Second 32-bit integer payload.",
   delta: "Signed detent count — positive per clockwise click, negative counter-clockwise, never 0.",
   fn: "Always true — this event only fires while Fn is held.",
   id: "The host RPC id the packet was addressed to — matches your host.rpc:<id> selector.",
-  key: "Index of the physical key — the same bit position it occupies in heldMask.",
+  key: "Which key fired, as a position in the list you passed to widget.keys(…): 0 is the first key you named, 1 the second. (No widget.keys line? The list is space, shift, then every other key.) It is a number, not a letter — turn it into words with pick(event.key, …).",
   repeat: "False on a first down edge; true for auto-repeats (always true on hold).",
   holdCount: "How many hold cadences this key has been down — climbs while held.",
   reason: "Firmware reason code for the edge (0 = normal input).",
-  chord: "The chord's exact key mask — 0b0011 means keys 0 and 1 together, order-independent.",
+  chord: "Which chord fired. The keyboard wires exactly one — the first two keys you named, held together in any order — so this is always the same value.",
 };
 
 const KIND_FIELD_DOCS: Record<string, Record<string, string>> = {
@@ -188,26 +188,26 @@ const ENTRY_META: Record<
     sample: { kind: "host.rpc", id: 0xb201, value: 7, displayName: "0xB201 ← 7" },
   },
   "input.key.down": {
-    blurb: "A key was pressed — the down edge, once per press. Every key on the keyboard reaches your widget by default (event.key tells you which slot fired). widget.keys(\"space\", \"a\", \"any\") names the ones you want their own slot for — up to 16, from space, enter, esc, tab, backspace, shift, ctrl, alt, gui, arrows, a-z, 0-9, or a raw 0xNN — and \"any\" is the catch-all slot every other key lands in.",
+    blurb: "A key was pressed — the down edge, once per press. Every key on the keyboard reaches your widget by default, and event.key says which one: it counts down the list you write in widget.keys(\"space\", \"a\", \"any\"), so \"space\" there is 0 and \"a\" is 1. Name up to 16 keys — space, enter, esc, tab, backspace, shift, ctrl, alt, gui, arrows, a-z, 0-9 — and \"any\" catches every key you did not name. Skip the widget.keys line entirely and the list is space, shift, any.",
     prelude: "var value = 0;",
     snippet: `widget.keys("space", "a", "any");
 widget.on("input.key.down", function (event) {
-  // event.key is the declared index — the same bit it sets in heldMask.
+  // event.key is a number, not a letter: 0 is "space", 1 is "a", 2 is "any".
   value = clamp(value + 1, 0, 999);
   document.querySelector("#value").textContent = digits(value, 3);
 });`,
-    sampleLabel: "key ↓ 0",
-    sample: { kind: "input.key.down", id: 0, displayName: "key ↓ id 0" },
+    sampleLabel: "key ↓ (first key)",
+    sample: { kind: "input.key.down", id: 0, displayName: "key ↓ first key" },
   },
   "input.key.up": {
     blurb: "A declared physical key was released — the up edge that pairs with key.down.",
     prelude: "var value = 0;",
     snippet: `widget.on("input.key.up", function (event) {
-  // Fires on release; widget.isHeld(n) still answers for other keys.
+  // Fires on release; widget.isHeld(0) still says whether the first key is down.
   document.querySelector("#value").textContent = digits(value, 3);
 });`,
-    sampleLabel: "key ↑ 0",
-    sample: { kind: "input.key.up", id: 0, displayName: "key ↑ id 0" },
+    sampleLabel: "key ↑ (first key)",
+    sample: { kind: "input.key.up", id: 0, displayName: "key ↑ first key" },
   },
   "input.key.hold": {
     blurb: "Auto-repeat while a key stays held — fires on the hold cadence, not on the down edge. event.holdCount climbs each repeat.",
@@ -217,19 +217,19 @@ widget.on("input.key.down", function (event) {
   value = clamp(value + 1, 0, 999);
   document.querySelector("#value").textContent = digits(value, 3);
 });`,
-    sampleLabel: "key ⇩ hold 0",
-    sample: { kind: "input.key.hold", id: 0, displayName: "key ⇩ hold id 0" },
+    sampleLabel: "key ⇩ hold (first key)",
+    sample: { kind: "input.key.hold", id: 0, displayName: "key ⇩ hold first key" },
   },
   "input.chord.down": {
-    blurb: "An exact multi-key combination was completed: the FIRST TWO declared keys held together (space+shift under the default set). Order doesn't matter — the mask is exact, so a chord never double-fires its member keys' meanings.",
+    blurb: "The first two keys you named were pressed together — space and shift when you have not written a widget.keys line. Order doesn't matter, and the match is exact, so holding both never also counts as pressing either one on its own. This is the only chord the keyboard wires today.",
     prelude: "var value = 0;",
     snippet: `widget.on("input.chord.down", function (event) {
-  // Both wired keys held together — a natural "reset" gesture.
+  // Your first two keys, held together — a natural "reset" gesture.
   value = 0;
   document.querySelector("#value").textContent = digits(value, 3);
 });`,
-    sampleLabel: "chord ↓ 0b0011",
-    sample: { kind: "input.chord.down", mask: 0b0011, displayName: "chord ↓ 0b0011" },
+    sampleLabel: "chord ↓ (first two keys)",
+    sample: { kind: "input.chord.down", mask: 0b0011, displayName: "chord ↓ first two keys" },
   },
   "input.chord.up": {
     blurb: "A chord was released. Widgets usually act on chord.down OR chord.up, not both.",
@@ -238,8 +238,8 @@ widget.on("input.key.down", function (event) {
   // The chord released — republish so the screen reflects the reset.
   document.querySelector("#value").textContent = digits(value, 3);
 });`,
-    sampleLabel: "chord ↑ 0b0011",
-    sample: { kind: "input.chord.up", mask: 0b0011, displayName: "chord ↑ 0b0011" },
+    sampleLabel: "chord ↑ (first two keys)",
+    sample: { kind: "input.chord.up", mask: 0b0011, displayName: "chord ↑ first two keys" },
   },
 };
 

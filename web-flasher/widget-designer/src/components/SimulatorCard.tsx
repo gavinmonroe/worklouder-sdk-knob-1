@@ -25,6 +25,7 @@ import {
   EmptyState,
   Input,
   Label,
+  Select,
   StatusDot,
   Tooltip,
 } from "./ui";
@@ -32,6 +33,8 @@ import { Icon } from "./icons";
 import { useToast } from "./toast";
 import { viewDiagnostics } from "./diagnosticsView";
 import { EventLogList, logEntryId, peekNextLogId } from "./InspectorPanel";
+import { deriveHostFeeds, feedMetaKey, useFeedMeta } from "./hostFeeds";
+import { feedDisplayName } from "./HostFeedsPanel";
 import type { SimulatedEvent } from "../types";
 
 /**
@@ -164,13 +167,8 @@ export function SimulatorCard({
             },
             {
               id: "rpc",
-              title: "Custom host RPC",
-              badge: (
-                <Badge tone="muted" className="font-mono">
-                  0x…
-                </Badge>
-              ),
-              render: () => <CustomRpcForm onSend={dispatch} />,
+              title: "Send test data",
+              render: () => <SendTestDataForm state={state} onSend={dispatch} />,
             },
           ]}
         />
@@ -179,9 +177,26 @@ export function SimulatorCard({
   );
 }
 
-// ── Custom host RPC ──────────────────────────────────────────────────────────
-// Send ANY host.rpc packet — declared or not — for poking at handlers the
-// Host data section doesn't list yet. Rail-compact: stacked fields, one Send.
+// ── Send test data ───────────────────────────────────────────────────────────
+// The fastest answer to "does my handler work?", sitting right beside the log:
+// pick one of the feeds THIS widget listens for — by the name the designer
+// gave it — type the two numbers under their own labels, Send.
+//
+// The channel number never appears. A feed's channel is derived from its name
+// by the compiler, and the picker resolves it here the same way, so a designer
+// who wrote widget.on("feed.room-temp", …) sends to it by choosing
+// "room-temp". Anyone who lands on this form looking for "send test data" used
+// to meet a hexadecimal field they could not fill in without knowing what an
+// RPC id is; now the id is something the app knows and they don't.
+//
+// Raw-channel entry survives as the LAST option in the picker, for poking at a
+// handler the script hasn't declared yet or a channel some host app owns. It
+// stays reachable and stays secondary: last in the list, named in words, and
+// its field only exists once it is chosen.
+
+/** Picker value for the raw-channel escape hatch. Not a channel — the ids are
+ *  numbers, so no feed can ever collide with it. */
+const RAW_TARGET = "raw";
 
 function parseRpcId(raw: string): number | null {
   const text = raw.trim();
@@ -197,8 +212,18 @@ function parseRpcValue(raw: string): number | null {
   return Number.isFinite(n) ? n >>> 0 : null;
 }
 
-function CustomRpcForm({ onSend }: { onSend: (e: SimulatedEvent) => void }) {
-  const [id, setId] = React.useState("0xB201");
+function SendTestDataForm({
+  state,
+  onSend,
+}: {
+  state: DesignerState;
+  onSend: (e: SimulatedEvent) => void;
+}) {
+  const feeds = deriveHostFeeds(state.js, state.handlers);
+  const meta = useFeedMeta();
+
+  const [target, setTarget] = React.useState<string>("");
+  const [id, setId] = React.useState("");
   const [value, setValue] = React.useState("1");
   const [auxiliary, setAuxiliary] = React.useState("0");
   const [errors, setErrors] = React.useState<{ id?: string; value?: string; auxiliary?: string }>({});
@@ -206,23 +231,38 @@ function CustomRpcForm({ onSend }: { onSend: (e: SimulatedEvent) => void }) {
   const flashTimer = React.useRef<number | undefined>(undefined);
   React.useEffect(() => () => window.clearTimeout(flashTimer.current), []);
 
+  // Resolved on every render rather than held in state: editing the script
+  // retires feeds, and a picker still pointing at a channel the widget stopped
+  // listening for would send into nothing while looking correct. Falling back
+  // to the first feed also means a widget with no feeds at all lands on the
+  // raw entry with no extra bookkeeping.
+  const feed =
+    target === RAW_TARGET ? null : (feeds.find((f) => String(f.id) === target) ?? feeds[0] ?? null);
+  const feedMeta = feed ? meta[feedMetaKey(state.displayName, feed.id)] : undefined;
+  const feedName = feed ? feedDisplayName(feed, feedMeta) : "";
+  // The designer's own labels for the two numbers when they wrote them on the
+  // Host data card; otherwise the names their handler reads them by.
+  const valueLabel = feedMeta?.valueLabel?.trim() || "Value";
+  const auxLabel = feedMeta?.auxLabel?.trim() || "Auxiliary";
+
   const send = () => {
-    const n = parseRpcId(id);
+    const n = feed ? feed.id : parseRpcId(id);
     const v = parseRpcValue(value);
     const a = parseRpcValue(auxiliary);
     const next: typeof errors = {};
-    if (n === null) next.id = "Enter a decimal or 0x-hex id.";
-    if (v === null) next.value = "Enter an integer value.";
-    if (a === null) next.auxiliary = "Enter an integer value.";
+    if (n === null) next.id = "Enter a channel as a whole number, or as 0x hex.";
+    if (v === null) next.value = "Enter a whole number.";
+    if (a === null) next.auxiliary = "Enter a whole number.";
     setErrors(next);
     if (n === null || v === null || a === null) return;
+    const hex = `0x${n.toString(16).toUpperCase()}`;
     onSend({
       kind: "host.rpc",
       id: n,
       value: v,
       auxiliary: a,
-      displayName: `0x${n.toString(16).toUpperCase()} ← ${v}${a !== 0 ? ` · ${a}` : ""}`,
-      description: "Custom dispatch",
+      displayName: `${feed ? feedName : hex} ← ${v}${a !== 0 ? ` · ${a}` : ""}`,
+      description: feed ? feed.hex : "Sent by hand",
     });
     setFlash(true);
     window.clearTimeout(flashTimer.current);
@@ -231,38 +271,61 @@ function CustomRpcForm({ onSend }: { onSend: (e: SimulatedEvent) => void }) {
 
   return (
     <div className="space-y-2">
-      <div className="wd-sim-rpcgrid">
+      {feeds.length > 0 && (
         <div className="min-w-0">
-          <Label htmlFor="sim-rpc-id">Id — decimal or 0x hex</Label>
-          <Input
-            id="sim-rpc-id"
-            mono
-            value={id}
-            inputMode="numeric"
-            placeholder="0xB201"
-            aria-invalid={errors.id ? true : undefined}
-            aria-describedby={errors.id ? "sim-rpc-id-err" : undefined}
+          <Label htmlFor="sim-rpc-feed">Feed</Label>
+          <Select
+            id="sim-rpc-feed"
+            value={feed ? String(feed.id) : RAW_TARGET}
             onChange={(e) => {
-              setId(e.target.value);
+              setTarget(e.target.value);
               if (errors.id) setErrors((prev) => ({ ...prev, id: undefined }));
             }}
-            onKeyDown={(e) => e.key === "Enter" && send()}
-          />
-          {errors.id && (
-            <div id="sim-rpc-id-err" className="wd-field-error">
-              <Icon name="alert-triangle" size={12} />
-              {errors.id}
-            </div>
-          )}
+          >
+            {feeds.map((f) => (
+              <option key={f.id} value={String(f.id)}>
+                {feedDisplayName(f, meta[feedMetaKey(state.displayName, f.id)])}
+              </option>
+            ))}
+            <option value={RAW_TARGET}>Another channel…</option>
+          </Select>
         </div>
+      )}
+      <div className="wd-sim-rpcgrid">
+        {!feed && (
+          <div className="min-w-0">
+            <Label htmlFor="sim-rpc-id">Channel</Label>
+            <Input
+              id="sim-rpc-id"
+              mono
+              value={id}
+              inputMode="numeric"
+              placeholder="0xB201"
+              aria-invalid={errors.id ? true : undefined}
+              aria-describedby={errors.id ? "sim-rpc-id-err" : undefined}
+              onChange={(e) => {
+                setId(e.target.value);
+                if (errors.id) setErrors((prev) => ({ ...prev, id: undefined }));
+              }}
+              onKeyDown={(e) => e.key === "Enter" && send()}
+            />
+            {errors.id && (
+              <div id="sim-rpc-id-err" className="wd-field-error">
+                <Icon name="alert-triangle" size={12} />
+                {errors.id}
+              </div>
+            )}
+          </div>
+        )}
         <div className="min-w-0">
-          <Label htmlFor="sim-rpc-value">Value — 32-bit integer</Label>
+          <Label htmlFor="sim-rpc-value">{valueLabel}</Label>
           <Input
             id="sim-rpc-value"
             mono
             value={value}
             inputMode="numeric"
             placeholder="1"
+            aria-label={feed ? `${valueLabel} — the first number sent to ${feedName}` : undefined}
             aria-invalid={errors.value ? true : undefined}
             aria-describedby={errors.value ? "sim-rpc-value-err" : undefined}
             onChange={(e) => {
@@ -279,13 +342,14 @@ function CustomRpcForm({ onSend }: { onSend: (e: SimulatedEvent) => void }) {
           )}
         </div>
         <div className="min-w-0">
-          <Label htmlFor="sim-rpc-aux">Auxiliary — 32-bit integer</Label>
+          <Label htmlFor="sim-rpc-aux">{auxLabel}</Label>
           <Input
             id="sim-rpc-aux"
             mono
             value={auxiliary}
             inputMode="numeric"
             placeholder="0"
+            aria-label={feed ? `${auxLabel} — the second number sent to ${feedName}` : undefined}
             aria-invalid={errors.auxiliary ? true : undefined}
             aria-describedby={errors.auxiliary ? "sim-rpc-aux-err" : undefined}
             onChange={(e) => {
@@ -309,8 +373,23 @@ function CustomRpcForm({ onSend }: { onSend: (e: SimulatedEvent) => void }) {
         </Button>
       </div>
       <div className="wd-ins-note">
-        Only ids with a declared <span className="font-mono">host.rpc:…</span> handler are consumed by your
-        widget.
+        {feeds.length === 0 ? (
+          <>
+            This widget doesn&apos;t listen for any data yet. Add{" "}
+            <code>{`widget.on("feed.my-data", function (event) { … })`}</code> to your script and it
+            appears in this list, ready to test.
+          </>
+        ) : feed ? (
+          <>
+            Your handler reads these two numbers as <span className="font-mono">event.value</span> and{" "}
+            <span className="font-mono">event.auxiliary</span>. Whole numbers only.
+          </>
+        ) : (
+          <>
+            Nothing happens unless your script listens for this exact channel — pick a feed above to
+            send to one it already handles.
+          </>
+        )}
       </div>
     </div>
   );

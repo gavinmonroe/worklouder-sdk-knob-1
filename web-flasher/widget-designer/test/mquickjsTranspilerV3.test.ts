@@ -241,7 +241,9 @@ widget.on("tick.1s", function (event) {
     const out = transpileWidgetScript(
       `var a = 0;\nwidget.animate("#late", 4);\nwidget.on("tick.1s", function (event) {\n${writes}\n});\n`,
     );
-    const exhausted = errorsOf(out).find((d) => /exhausted/i.test(d.message) && d.message.includes("#late"));
+    const exhausted = errorsOf(out).find(
+      (d) => /live values the keyboard can hold/.test(d.message) && d.message.includes("#late"),
+    );
     expect(exhausted).toBeDefined();
     expect(exhausted!.message).toContain("animation");
     expect(out.animations).toEqual({});
@@ -281,7 +283,9 @@ widget.on("input.fn-bottom-knob", function (event) {
   document.querySelector("#x").hidden = event.delta;
 });
 `);
-    const needsContent = errorsOf(orphan).find((d) => d.message.includes("hidden write needs"));
+    const needsContent = errorsOf(orphan).find((d) =>
+      d.message.includes("textContent earlier in the same handler"),
+    );
     expect(needsContent).toBeDefined();
     expect(needsContent!.message).toContain("hidden = event.delta");
 
@@ -379,7 +383,7 @@ widget.on("tick.1s", function (event) {
   document.querySelector("#n").textContent = digits(v, n);
 });
 `);
-    expect(errorsOf(dynamic).some((d) => d.message.includes("literal integer count"))).toBe(true);
+    expect(errorsOf(dynamic).some((d) => d.message.includes("plain number for the count"))).toBe(true);
 
     // digits first, pick later.
     const forward = transpileWidgetScript(`var v = 0;
@@ -430,7 +434,7 @@ ${writes}
   document.querySelector("#z").textContent = digits(v, 3);
 });
 `);
-    const exhausted = errorsOf(out).find((d) => /exhausted/i.test(d.message));
+    const exhausted = errorsOf(out).find((d) => /live values the keyboard can hold/.test(d.message));
     expect(exhausted).toBeDefined();
     expect(exhausted!.message).toContain("#z");
     expect(Object.keys(out.digitTargets).sort()).toEqual(ids.sort());

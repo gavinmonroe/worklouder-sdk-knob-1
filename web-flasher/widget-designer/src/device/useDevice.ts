@@ -486,8 +486,13 @@ export function useDevice() {
           },
         });
         appendLog(
+          // The log is evidence, so it keeps the slot index and the generation
+          // the wire actually carried — but the moment it names a CONTROL it
+          // has to use that control's label. The Screens card's button is
+          // called "Put on screen"; "Activate it" sends the reader hunting for
+          // a button that is not there.
           `Widget generation ${result.generation} persisted to slot ${slot} (${result.chunks} chunks). ` +
-            "Activate it to show it now, or power-cycle — the highest generation boots.",
+            'Choose "Put on screen" to show it now, or power-cycle — the highest generation boots.',
         );
         setState((s) => ({ ...s, pushing: false, slotBusy: null }));
         await sweepSlots({ silent: true });

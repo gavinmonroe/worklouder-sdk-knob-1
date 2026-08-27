@@ -24,27 +24,57 @@ import type { WorkspaceTab } from "./components/Workspace";
 
 const TAB_IDS: readonly WorkspaceTab[] = ["design", "source", "export", "device"];
 
+/**
+ * Tab labels are the only map of this app a designer gets, so they name the
+ * GOAL, not the machinery. This row used to read "Export", which promises a
+ * file on your disk — so someone hunting for "put this on my keyboard" walked
+ * straight past the tab that leads there. "Send" says where the widget is
+ * going, and stays distinct from the Device tab beside it (that one is about
+ * the keyboard itself: connect it, see what's on it, update its software).
+ *
+ * Only the LABEL moved. The tab's id is still `export`, because every
+ * pipeline module, the footer's package button and the deep-link helpers
+ * address it by that id; renaming those would be a refactor with no reader.
+ */
 const TAB_ITEMS: { id: WorkspaceTab; label: string }[] = [
   { id: "design", label: "Design" },
   { id: "source", label: "Source" },
-  { id: "export", label: "Export" },
+  { id: "export", label: "Send" },
   { id: "device", label: "Device" },
 ];
 
 /**
+ * ?tab= spellings for the tabs whose URL name differs from their internal id.
+ * A link copied out of the address bar should say the same word the tab row
+ * does; anything absent here uses its id verbatim.
+ */
+const TAB_URL_NAMES: Partial<Record<WorkspaceTab, string>> = { export: "send" };
+
+const tabUrlName = (tab: WorkspaceTab): string => TAB_URL_NAMES[tab] ?? tab;
+
+/** The inverse: a ?tab= value back to the tab it names, or null if it names none. */
+function tabFromUrlName(name: string): WorkspaceTab | null {
+  return TAB_IDS.find((id) => tabUrlName(id) === name) ?? null;
+}
+
+/**
  * Pre-restructure tab URLs keep working: Events and Host data dissolved into
  * the Source view (a one-shot reveal flag steers the workspace to the exact
- * surface the URL named), and Inspect folded into the Design rail. The mount
- * effect below rewrites the URL to the canonical tab name.
+ * surface the URL named), Inspect folded into the Design rail, and the Export
+ * tab is now called Send. The mount effect below rewrites the URL to the
+ * canonical tab name.
  */
 const LEGACY_TAB_ALIASES: Record<string, WorkspaceTab> = {
   events: "source",
   hostdata: "source",
   inspect: "design",
+  // Same tab, old name: a bookmark or doc link saying ?tab=export still opens
+  // Send, and the URL is rewritten to ?tab=send once the shell mounts.
+  export: "export",
 };
 
 /**
- * The example the shell boots into. "Weather (device DSL)" is the flagship:
+ * The example the shell boots into. "Weather" is the flagship:
  * it renders a clean first frame (no glyph overflow), and — loaded with the
  * canonical strict header — passes the strict simulator, Build F2JS, and the
  * F2UP device-DSL gate, so the very first thing a new user sees is the whole
@@ -60,7 +90,7 @@ function tabFromUrl(): WorkspaceTab {
     if (t === "hostdata") requestHostDataReveal();
     return LEGACY_TAB_ALIASES[t];
   }
-  return (TAB_IDS as readonly string[]).includes(t ?? "") ? (t as WorkspaceTab) : "design";
+  return (t && tabFromUrlName(t)) || "design";
 }
 
 /**
@@ -71,15 +101,16 @@ function tabFromUrl(): WorkspaceTab {
  *      typed it. A cleared URL must never be silently re-populated moments
  *      after load by boot-time effects.
  *   2. Touch nothing but `tab`. Every other param (notably ?f2upGen, which
- *      pins the assemble generation and renders as a visible pin on the
- *      Export tab) is carried verbatim — never added, never resurrected.
+ *      pins the assemble generation and renders as a visible pin on the Send
+ *      tab) is carried verbatim — never added, never resurrected.
  */
 function syncTabToUrl(tab: WorkspaceTab) {
   const url = new URL(window.location.href);
+  const name = tabUrlName(tab);
   const current = url.searchParams.get("tab");
-  if (current === tab) return;
+  if (current === name) return;
   if (current === null && tab === "design") return;
-  url.searchParams.set("tab", tab);
+  url.searchParams.set("tab", name);
   window.history.replaceState(window.history.state, "", url);
 }
 
@@ -119,6 +150,20 @@ export default function App() {
       }
       return next;
     });
+  }, []);
+
+  // "Pick an example" (step one of the first-run strip) has to be able to
+  // produce the gallery: the sidebar boots collapsed under 1200px, so on a
+  // laptop the thing that step names isn't on screen yet. Idempotent — an
+  // already-open gallery stays open — and it records the same explicit choice
+  // the toggle does, so the gallery doesn't collapse again on the next load.
+  const showExamples = useCallback(() => {
+    setSidebarOpen(true);
+    try {
+      localStorage.setItem("wd-sidebar", "open");
+    } catch {
+      /* storage unavailable */
+    }
   }, []);
 
   // Picking an example replaces the source and NOTHING else — the current tab
@@ -174,8 +219,9 @@ export default function App() {
     setBooted(true);
   }, [booted, pickPreset, actions]);
 
-  // A legacy ?tab= URL (events/hostdata/inspect) already landed on its new
-  // home via tabFromUrl; rewrite the URL once so it names the canonical tab.
+  // A legacy ?tab= URL (events/hostdata/inspect/export) already landed on its
+  // new home via tabFromUrl; rewrite the URL once so it names the canonical
+  // tab — ?tab=export becomes ?tab=send, the word the tab row shows.
   useEffect(() => {
     const t = new URLSearchParams(window.location.search).get("tab");
     if (t && t in LEGACY_TAB_ALIASES) syncTabToUrl(LEGACY_TAB_ALIASES[t]);
@@ -190,7 +236,7 @@ export default function App() {
   // tab; the workspace consumes the pending jump once its editor is ready.
   useEffect(() => onRevealSource(() => setTab("source")), [setTab]);
 
-  // "Open Device tab" handoff from the Export pipeline's Push stage.
+  // "Open Device tab" handoff from the Send tab's Push stage.
   useEffect(() => onRevealDeviceTab(() => setTab("device")), [setTab]);
 
   return (
@@ -232,6 +278,8 @@ export default function App() {
                 tab={tab}
                 device={device}
                 onScrolledChange={setScrolled}
+                onNavigate={setTab}
+                onShowExamples={showExamples}
               />
             ) : (
               <main aria-hidden="true" />

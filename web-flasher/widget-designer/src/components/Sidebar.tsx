@@ -1,17 +1,20 @@
 // Left sidebar — the example gallery, IDE-style. One rich card per preset
-// (sentence-cased name, the teaching tagline, tiny capability glyphs), the
-// loaded example carrying the ember dot + tinted card + accent inset rail.
+// (sentence-cased name, the teaching tagline, tiny capability glyphs, and a
+// "Preview only" chip on the ones the keyboard can't run), the loaded example
+// carrying the ember dot + tinted card + accent inset rail.
 //
 // Picking a card loads source only — it never navigates. A dirty buffer asks
-// before being replaced (the same ConfirmLoadDialog the chip strip used), and
-// while the buffer matches no preset a pinned "edited widget" row at the top
-// keeps the current location visible.
+// before being replaced (the same ConfirmLoadDialog the chip strip used, which
+// offers to save the edits first so browsing the gallery can never cost work),
+// and while the buffer matches no preset a pinned "edited widget" row at the
+// top keeps the current location visible.
 
 import * as React from "react";
 import { createPortal } from "react-dom";
 import { PRESETS, PRESET_ORDER } from "../presets/widgets";
 import { RENDER_V2_MQUICKJS_SOURCE_PREFIX } from "../compiler/constants";
 import type { DesignerState } from "../designer/store";
+import { downloadWidgetFile, serializeWidgetFile, widgetFileName } from "../designer/widgetFile";
 import { probeScriptPipeline, preferredPresetSource } from "./pipeline";
 import { presetStageCss } from "./presetFidelity";
 import { presetCapabilities, type PresetCapability } from "./presetCapabilities";
@@ -69,6 +72,27 @@ export function Sidebar({
 
   const [confirm, setConfirm] = React.useState<{ id: PresetId; label: string } | null>(null);
 
+  // The rescue the replace dialog offers: the SAME .f1widget.json the topbar's
+  // Share button writes — same serializer, same filename rule, so a copy saved
+  // here reopens exactly like a shared one. It is spelled out inline rather
+  // than called through the store because the gallery is handed only `state`
+  // and `onPick`; threading the whole action set in for one download would tie
+  // the example list to the store, and the widget-file helpers are the single
+  // source of the format either way.
+  const saveCopy = React.useCallback(() => {
+    downloadWidgetFile(
+      serializeWidgetFile({
+        name: state.displayName,
+        rootClass: state.rootClass,
+        html: state.html,
+        css: state.css,
+        js: state.js,
+        hostData: state.hostData,
+      }),
+      widgetFileName(state.displayName),
+    );
+  }, [state.displayName, state.rootClass, state.html, state.css, state.js, state.hostData]);
+
   const pick = (id: PresetId, label: string) => {
     if (id === activeId) return;
     if (activeId === null) setConfirm({ id, label: sentenceCase(label) });
@@ -122,20 +146,25 @@ export function Sidebar({
                     </span>
                   </Tooltip>
                 ))}
-                <Tooltip
-                  label={
-                    probe.pushable
-                      ? "Device-pushable example"
-                      : "Preview-only example — outside the device DSL"
-                  }
-                >
-                  <span className="wd-sidecard-cap" data-push={probe.pushable || undefined} tabIndex={-1}>
-                    <Icon name={probe.pushable ? "upload" : "info"} size={12} />
-                    <span className="sr-only">
-                      {probe.pushable ? "Device-pushable example" : "Preview-only example"}
+                {/* Whether an example can ever reach the keyboard is the one
+                    fact worth knowing BEFORE the click — an hour of styling a
+                    preview-only example ends at a greyed-out "Build widget"
+                    with nothing on screen to explain why. So the constraint
+                    is a readable chip on the card, not a hover-only glyph;
+                    the happy case stays a quiet green mark, because "it
+                    works" needs no words. */}
+                {probe.pushable ? (
+                  <Tooltip label="Runs on your keyboard — this example can go to the device as it is.">
+                    <span className="wd-sidecard-cap" data-push tabIndex={-1}>
+                      <Icon name="upload" size={12} />
+                      <span className="sr-only">Runs on your keyboard</span>
                     </span>
-                  </span>
-                </Tooltip>
+                  </Tooltip>
+                ) : (
+                  <Tooltip label="Preview only — this example uses things the keyboard can't run. It plays here in the browser, but Build widget stays greyed out.">
+                    <Badge tone="warning">Preview only</Badge>
+                  </Tooltip>
+                )}
               </span>
             )}
           </button>
@@ -144,6 +173,7 @@ export function Sidebar({
       {confirm && (
         <ConfirmLoadDialog
           label={confirm.label}
+          onSaveCopy={saveCopy}
           onCancel={() => setConfirm(null)}
           onConfirm={() => {
             onPick(confirm.id);
@@ -157,14 +187,23 @@ export function Sidebar({
 
 function ConfirmLoadDialog({
   label,
+  onSaveCopy,
   onCancel,
   onConfirm,
 }: {
   label: string;
+  /** Download the current source as a .f1widget.json before it is replaced. */
+  onSaveCopy: () => void;
   onCancel: () => void;
   onConfirm: () => void;
 }) {
   const titleId = React.useId();
+  // Saving does NOT load: the download can be blocked or ignored by the
+  // browser, and a dialog that saved-and-loaded in one motion would leave
+  // someone believing a copy exists that never landed. So the copy button
+  // acknowledges itself and hands the decision back — you replace your edits
+  // only from a click that says it replaces them.
+  const [saved, setSaved] = React.useState(false);
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onCancel();
@@ -181,16 +220,23 @@ function ConfirmLoadDialog({
       }}
     >
       <div className="wd-dialog" role="dialog" aria-modal="true" aria-labelledby={titleId}>
-        <div className="wd-dialog-title" id={titleId}>Replace edited source?</div>
+        <div className="wd-dialog-title" id={titleId}>Replace your edits?</div>
         <div className="wd-dialog-body">
-          The current widget has edits that no preset matches. Loading{" "}
+          Your widget has edits no example matches. Loading{" "}
           <strong className="text-fg font-medium">{label}</strong> replaces the HTML, CSS, and
-          script in the editor.
+          script in the editor, and there is no undo. Save a copy first if you want it back.
         </div>
-        <div className="wd-dialog-actions">
-          <Button onClick={onCancel}>Cancel</Button>
+        <div className="wd-dialog-actions flex-wrap">
+          {/* Text-only, and short: all three actions have to sit on one row
+              inside the 400px dialog, and a button that wraps to its own line
+              reads as an afterthought — which is the last thing the rescue
+              should look like. */}
+          <Button className="mr-auto" onClick={() => { onSaveCopy(); setSaved(true); }}>
+            {saved ? "Copy saved" : "Save a copy"}
+          </Button>
+          <Button onClick={onCancel}>Keep editing</Button>
           <Button variant="primary" autoFocus onClick={onConfirm}>
-            Load {label}
+            Discard and load
           </Button>
         </div>
       </div>

@@ -85,6 +85,10 @@ var minutes = 0;
 var blink = 0;
 
 widget.on("feed.wall-clock-time", function (event) {
+  // The feed packs the whole clock into one number: 1345 means 13:45. The
+  // "| 0" after a division is this language's round-down. The keyboard does
+  // whole-number math only, so there is no Math.floor to call - divide, then
+  // "| 0" to drop the remainder. You will see the same trick below.
   hours = mod((event.value / 100) | 0, 24);
   minutes = mod(event.value, 100);
   document.querySelector("#hh").textContent = digits(hours, 2);
@@ -154,6 +158,8 @@ widget.on("input.key.down", function (event) {
 
 widget.on("tick.1s", function (event) {
   total = clamp(total - running, 0, 5940);
+  // Seconds to whole minutes: "| 0" rounds the division down (the keyboard
+  // does whole-number math only, so it stands in for Math.floor).
   document.querySelector("#min").textContent = digits((total / 60) | 0, 2);
   document.querySelector("#sec").textContent = digits(mod(total, 60), 2);
 });
@@ -251,7 +257,14 @@ widget.on("tick.1s", function (event) {
   },
 
   weatherDevice: {
-    name: "Weather (device DSL)",
+    // This is the boot example, so its display name is the first phrase a new
+    // user reads - the titlebar, the frame label under the device and the
+    // editable Display name field all show it at once. It has to read like
+    // something a person would call their widget. It is also the key half of
+    // the shipped feed metadata in components/hostFeeds.ts (keys are
+    // displayName::0xID), so renaming it here means renaming it there too or
+    // this example silently loses its feed names, labels and test values.
+    name: "Weather",
     rootClass: "weather-v2",
     html: `<div class="weather-v2" aria-label="Weather">
   <div id="mark" class="mark-cloud" aria-hidden="true"><i></i><b></b></div>
@@ -315,6 +328,10 @@ widget.on("feed.weather-now", function (event) {
 });
 
 widget.on("feed.forecast-day-1", function (event) {
+  // One feed carries both temperatures as high*100+low, so 6448 is a high of
+  // 64 and a low of 48. Divide to get the high, mod to get the low - and
+  // "| 0" rounds the division down, since the keyboard does whole-number
+  // math only and has no Math.floor.
   document.querySelector("#day-1").textContent = pick(mod(event.value, 7), "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun");
   document.querySelector("#high-1").textContent = digits((event.auxiliary / 100) | 0, 2);
   document.querySelector("#low-1").textContent = digits(mod(event.auxiliary, 100), 2);

@@ -57,8 +57,8 @@ export function StatusBar({
   // source moves on. Below 1180px this is the package state's only home (the
   // topbar pill collapses), so it never disappears.
   const freshness = usePackageFreshness(state.js, state.f2js);
-  // The F2UP container assembled on the Export tab counts as a package too —
-  // the footer must agree with the header chip and the Export card. When BOTH
+  // The F2UP container assembled on the Send tab counts as a package too —
+  // the footer must agree with the header chip and the Send card. When BOTH
   // artifacts exist for the current source, both render as segments (F2JS,
   // then the pipeline-terminal F2UP) — never last-write-wins.
   const f2up = useF2upStatus(state);
@@ -73,20 +73,33 @@ export function StatusBar({
           ...(freshF2js ? [formatArtifact("F2JS", freshF2js.bytes)] : []),
           ...(f2up ? [formatArtifact("F2UP", f2up.bytes)] : []),
         ];
+  // With legacy tools off the readout says whether the WIDGET is ready, in the
+  // same words the Send tab's own badge uses ("Ready to send · N B") — the
+  // footer and that badge describe one artifact and must never name it two
+  // different ways. Legacy tools restore the artifact spellings, which is the
+  // point of that mode.
   const pkgLabel =
-    segments.length > 0 ? segments.join(" · ") : legacy ? "No F2JS build" : "Not built yet";
+    legacy
+      ? segments.length > 0
+        ? segments.join(" · ")
+        : "No F2JS build"
+      : f2up
+        ? `Ready to send · ${f2up.bytes.toLocaleString()} B`
+        : "Not built yet";
+  // Every branch ends at the tab that acts on it. That tab is labelled Send
+  // (App.tsx TAB_ITEMS); "the Export tab" named a tab nobody can find.
   const pkgTip =
     legacy && freshness === "stale"
-      ? "Package built from earlier source — open Export to rebuild"
+      ? "Package built from earlier source — open the Send tab to rebuild"
       : freshF2js && f2up
-        ? "F2JS package and F2UP container, both from the current source — open the Export tab"
+        ? "F2JS package and F2UP container, both from the current source — open the Send tab"
         : freshF2js
-          ? "Open the Export tab"
+          ? "Open the Send tab"
           : f2up
-            ? "F2UP container assembled — open the Export tab"
+            ? "Your widget is built and ready to send — open the Send tab"
             : legacy
-              ? "No F2JS package built yet — open the Export tab"
-              : "No F2UP container assembled yet — open the Export tab";
+              ? "No F2JS package built yet — open the Send tab"
+              : "You haven't built this widget yet — open the Send tab";
 
   return (
     <footer className="wd-statusbar">
@@ -117,7 +130,7 @@ export function StatusBar({
           type="button"
           className="wd-statusbtn"
           data-tone={legacy && freshness === "stale" ? "warning" : undefined}
-          aria-label={`${pkgLabel} — open Export tab`}
+          aria-label={`${pkgLabel} — open the Send tab`}
           onClick={() => onNavigate("export")}
         >
           {legacy && freshness === "stale" && <StatusDot state="warn" />}

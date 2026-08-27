@@ -86,9 +86,11 @@ const SIM_STRICT = /Simulator requires exact strict F2JS source/;
 /** The one shell-synthesized diagnostic: the markup carries no root-class
  *  element, so the widget's CSS anchors nothing and the screen is a void.
  *  Kept here so every surface (footer count, Inspector rows, stage HUD)
- *  agrees on the wording. */
+ *  agrees on the wording — and it names the field by the label the Design
+ *  rail actually shows, "Wrapper class". Sending someone to look for a "root
+ *  class" field they cannot find is the same dead end as saying nothing. */
 export const EMPTY_RENDER_MESSAGE =
-  "Nothing rendered — the markup has no element with the widget's root class, so its CSS and DOM targets anchor nothing. Check the root class and element structure.";
+  "Nothing rendered — no element in your HTML carries the widget's wrapper class, so your CSS and script anchor to nothing. Match the Wrapper class on the Design tab to the class on your outermost <div>, or add it there.";
 
 /**
  * True when the widget markup contains no element carrying the root class —
@@ -396,7 +398,7 @@ export function countLabel(n: number, noun: string): string {
  * stays available behind "Show details" — never verbatim in shell chrome.
  *
  * NO character-count truncation here: a JS slice ellipsizes mid-word
- * ("Check the root clas…"), which reads as a broken layout. A long summary
+ * ("Match the Wrapper clas…"), which reads as a broken layout. A long summary
  * WRAPS; any surface that must cap its height clamps at a rendered line
  * boundary with CSS line-clamp instead (see .wd-ins-diagtext, .wd-toast-body).
  */
@@ -404,8 +406,13 @@ export function humanizeDiagnostic(message: string): string {
   const text = message.replace(/^(F2JS|widget upload|render-v2|event-driven):\s*/i, "");
   const docWrite = /^Unsupported document write in "([^"]+)" handler/.exec(text);
   if (docWrite) return `Unsupported statement in the ${docWrite[1]} handler.`;
+  // The transpiler's own message for this now opens with the fix and lists the
+  // four forms a top level may contain, so the ONLY reason to shorten it here
+  // is height — not vocabulary. It used to swap the whole thing for "outside
+  // the device DSL", which named a language the author has never been shown
+  // and left them nothing to do; this keeps the instruction and drops the list.
   if (/^Unsupported top-level statement/.test(text)) {
-    return "Unsupported top-level statement outside the device DSL.";
+    return "This line can't sit outside a handler — move it inside one of your widget.on handlers.";
   }
   if (SIM_STRICT.test(text)) {
     return "The simulator requires the strict F2JS header (“use strict”).";

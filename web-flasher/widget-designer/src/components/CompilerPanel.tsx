@@ -3,6 +3,13 @@
 // own gate/failure callouts, and successful stages mint artifact cards
 // (sha, sizes, sections). The Push stage is an explicit handoff to the
 // Device tab — the same vocabulary (§4.15 stepper nodes) on both ends.
+//
+// The stage TITLES a designer reads are goals ("Build", "Send to keyboard"),
+// never the container nouns the code assembles. F2JS/F2UP/F2TF and the
+// firmware capability flags survive only where they are OPTIONAL evidence —
+// artifact chips, tooltips, and the folded "Under the hood" / "Technical
+// details" disclosures — because someone who knows HTML and CSS has to be
+// able to ship a widget without ever learning what a container format is.
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import type { DesignerState, DesignerActions } from "../designer/store";
@@ -13,6 +20,7 @@ import {
   Badge,
   BudgetMeter,
   Button,
+  Callout,
   Card,
   CardContent,
   CardDescription,
@@ -32,6 +40,7 @@ import {
   humanizeDiagnostic,
   revealDeviceTab,
   revealDiagnostics,
+  revealSource,
   viewDiagnostics,
 } from "./diagnosticsView";
 import { useF2upStatus, type F2upStatus } from "./f2upStatus";
@@ -324,17 +333,22 @@ export function CompilerPanel({ state, actions, device }: {
             <CardHeader>
               <div className="wd-stagehead">
                 <div>
-                  <CardTitle>Assemble</CardTitle>
+                  <CardTitle>Build</CardTitle>
                   <CardDescription>
-                    Wraps the runtime, facade and base frame into the <span className="font-mono">F2UP</span> container
-                    that the device push uploads — assembled from the live preview, no keyboard needed.
+                    Builds your widget — your layout, your code, and the picture the keyboard shows — into one file
+                    that is ready to send. Works with no keyboard plugged in.
                   </CardDescription>
                 </div>
                 <div className="wd-stagehead-badges">
                   {f2upBusy ? (
-                    <Badge tone="neutral">Assembling…</Badge>
+                    <Badge tone="neutral">Building…</Badge>
                   ) : f2up ? (
-                    <Badge tone="success" className="wd-nums">{formatArtifact("F2UP", f2up.bytes)}</Badge>
+                    // The chip answers the question the designer actually has
+                    // ("can I send this?"), so the container name it is derived
+                    // from sits one hover away instead of being the headline.
+                    <Tooltip label={`Your widget file is built and ready to send — ${formatArtifact("F2UP", f2up.bytes)}.`}>
+                      <Badge tone="success" className="wd-nums">Ready to send · {f2up.bytes.toLocaleString()} B</Badge>
+                    </Tooltip>
                   ) : !pipeline.dslOk ? (
                     <Badge tone="info">Blocked</Badge>
                   ) : null}
@@ -372,13 +386,20 @@ export function CompilerPanel({ state, actions, device }: {
                 <IssueBlock
                   tone="info"
                   summary={
-                    `Assemble unavailable — ${humanizeDiagnostic(pipeline.dslErrors[0])}` +
+                    `Can’t build yet — ${humanizeDiagnostic(pipeline.dslErrors[0])}` +
                     (pipeline.dslErrors.length > 1
                       ? ` (+ ${countLabel(pipeline.dslErrors.length - 1, "more issue")})`
                       : "")
                   }
                   detail={pipeline.dslErrors.join("\n\n")}
-                />
+                >
+                  {/* Naming the blocker is only half an answer. Every blocker
+                      here is a line of the user's script, so the callout ends
+                      where the fix is made — in the editor. */}
+                  <button type="button" className="wd-callout-link" onClick={revealSource}>
+                    Open Source
+                  </button>
+                </IssueBlock>
               )}
               {/* A real assemble attempt failed at runtime (capture/measure/…):
                   one danger block — summary first, full compiler text behind the
@@ -386,7 +407,7 @@ export function CompilerPanel({ state, actions, device }: {
               {pipeline.dslOk && f2upError && (
                 <IssueBlock
                   tone="danger"
-                  summary={`Assemble failed: ${humanizeDiagnostic(f2upError)}`}
+                  summary={`Couldn’t build your widget — ${humanizeDiagnostic(f2upError)}`}
                   detail={f2upError}
                   copyText={f2upError}
                 />
@@ -394,7 +415,7 @@ export function CompilerPanel({ state, actions, device }: {
               {f2up && (
                 <ArtifactCard
                   format="F2UP"
-                  name="Widget upload container"
+                  name="Your widget, ready to send"
                   bytes={f2up.bytes}
                   rows={[
                     { key: "SHA-256", value: <ShaValue sha={f2up.sha256} />, mono: true },
@@ -417,10 +438,10 @@ export function CompilerPanel({ state, actions, device }: {
             <CardHeader>
               <div className="wd-stagehead">
                 <div>
-                  <CardTitle>Push</CardTitle>
+                  <CardTitle>Send to keyboard</CardTitle>
                   <CardDescription>
-                    Hand the widget to a Framer F1 over WebHID. The device names the target generation; the push
-                    re-assembles from the live preview so all three artifacts agree.
+                    Sends your widget to a Framer F1 plugged in over USB. It is rebuilt from the live preview on the
+                    way out, so what lands on the keyboard is exactly what you see here.
                   </CardDescription>
                 </div>
                 <div className="wd-stagehead-badges">
@@ -443,7 +464,7 @@ export function CompilerPanel({ state, actions, device }: {
               {deviceNoteIsNews && deviceBuild && (
                 <IssueBlock
                   tone="warning"
-                  summary={`Device package build failed — ${humanizeDiagnostic(deviceBuild.error ?? "the device compiler rejected this widget.")} The F2JS and F2UP artifacts above are unaffected.`}
+                  summary={`The Device tab’s build of this widget failed — ${humanizeDiagnostic(deviceBuild.error ?? "the device compiler rejected this widget.")} The files built on the stages above are unaffected.`}
                 >
                   <button type="button" className="wd-callout-link" onClick={revealDeviceBuildStep}>
                     Open the Device build step
@@ -451,43 +472,93 @@ export function CompilerPanel({ state, actions, device }: {
                 </IssueBlock>
               )}
               {connected ? (
-                <KVTable
-                  rows={[
-                    {
-                      key: "Admission",
-                      value: uploaderReady ? (
-                        <span>
-                          mquickjs uploader <span className="font-mono text-xs">uploader=1</span>
-                          <span className="wd-kv-dim"> · persists to the widget flash slot</span>
-                        </span>
-                      ) : dev.renderV2?.genericPackages ? (
-                        <span>
-                          Generic render-v2 packages<span className="wd-kv-dim"> · RAM scene store</span>
-                        </span>
-                      ) : dev.renderV2?.present ? (
-                        <span>
-                          Pinned package only<span className="wd-kv-dim"> · this build admits no arbitrary pushes</span>
-                        </span>
-                      ) : (
-                        <span className="wd-kv-dim">No render-v2 scene RPC</span>
-                      ),
-                    },
-                    {
-                      key: "Running generation",
-                      value: <span className="wd-nums">{dev.committedGeneration.toLocaleString()}</span>,
-                    },
-                    ...(dev.renderV2?.maxBundleBytes != null
-                      ? [{
-                          key: "Bundle ceiling",
-                          value: <span className="wd-nums">{dev.renderV2.maxBundleBytes.toLocaleString()} B</span>,
-                        } satisfies KVRow]
-                      : []),
-                  ]}
-                />
+                <>
+                  {/* This readout exists to answer exactly two questions —
+                      "can I send right now?" and "does what I send survive
+                      unplugging?" — so it answers them in those words. The
+                      capability negotiation it is derived from (the uploader
+                      flag, the running generation, the size ceiling) is real
+                      and worth keeping, but as evidence underneath, never as
+                      a taxonomy the designer has to decode first. */}
+                  <KVTable
+                    rows={[
+                      {
+                        key: "This keyboard",
+                        value: uploaderReady ? (
+                          <span>
+                            Ready for your widgets
+                            <span className="wd-kv-dim"> · what you send is saved and is still there after you unplug</span>
+                          </span>
+                        ) : dev.renderV2?.genericPackages ? (
+                          <span>
+                            Ready for your widgets
+                            <span className="wd-kv-dim"> · what you send runs until the keyboard loses power</span>
+                          </span>
+                        ) : dev.renderV2?.present ? (
+                          <span>
+                            Can’t take widgets from the Designer
+                            <span className="wd-kv-dim"> · its firmware only runs the widget it shipped with</span>
+                          </span>
+                        ) : (
+                          <span>
+                            Can’t take widgets from the Designer
+                            <span className="wd-kv-dim"> · its firmware has no widget screen at all</span>
+                          </span>
+                        ),
+                      },
+                    ]}
+                  />
+                  {/* A "no" that stops there is a dead end. The way out is the
+                      same one-time firmware update the Screens tab offers, in
+                      the same words, so the two surfaces never read as two
+                      different problems. */}
+                  {!pushReady && (
+                    <Callout tone="info">
+                      To send widgets you design here, install{" "}
+                      <strong className="font-medium">Widget Designer (multi-widget)</strong> from the web flasher —
+                      it’s a one-time update.
+                    </Callout>
+                  )}
+                  <TechDetails label="Technical details">
+                    <KVTable
+                      rows={[
+                        {
+                          key: "Admission",
+                          value: uploaderReady ? (
+                            <span>
+                              mquickjs uploader <span className="font-mono text-xs">uploader=1</span>
+                              <span className="wd-kv-dim"> · persists to the widget flash slot</span>
+                            </span>
+                          ) : dev.renderV2?.genericPackages ? (
+                            <span>
+                              Generic render-v2 packages<span className="wd-kv-dim"> · RAM scene store</span>
+                            </span>
+                          ) : dev.renderV2?.present ? (
+                            <span>
+                              Pinned package only<span className="wd-kv-dim"> · this build admits no arbitrary pushes</span>
+                            </span>
+                          ) : (
+                            <span className="wd-kv-dim">No render-v2 scene RPC</span>
+                          ),
+                        },
+                        {
+                          key: "Running generation",
+                          value: <span className="wd-nums">{dev.committedGeneration.toLocaleString()}</span>,
+                        },
+                        ...(dev.renderV2?.maxBundleBytes != null
+                          ? [{
+                              key: "Bundle ceiling",
+                              value: <span className="wd-nums">{dev.renderV2.maxBundleBytes.toLocaleString()} B</span>,
+                            } satisfies KVRow]
+                          : []),
+                      ]}
+                    />
+                  </TechDetails>
+                </>
               ) : (
                 <p className="text-xs text-tertiary">
-                  No keyboard connected yet — the pipeline ends at a Framer F1 over WebHID. Connect and identify on the
-                  Device tab; this stage lights up when the device admits pushes.
+                  No keyboard connected yet. Plug your Framer F1 into this computer and connect it on the Device tab —
+                  this step wakes up once the keyboard is ready to take your widget.
                 </p>
               )}
             </CardContent>
@@ -496,12 +567,12 @@ export function CompilerPanel({ state, actions, device }: {
       </div>
 
       {/* ── Right rail: budgets + provenance ───────────────────────────── */}
-      <aside className="wd-export-rail" aria-label="Budgets and pipeline notes">
+      <aside className="wd-export-rail" aria-label="Size limits and how this works">
         <Card>
           <CardHeader>
-            <CardTitle>Budget</CardTitle>
+            <CardTitle>Size limits</CardTitle>
             <CardDescription>
-              The engine's hard caps plus the <span className="font-mono">F2UP</span> upload ceiling.
+              How much of the keyboard’s room your widget uses. If a bar fills up, trim that part until it fits.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -511,24 +582,62 @@ export function CompilerPanel({ state, actions, device }: {
         <Card>
           <CardHeader><CardTitle>What this does</CardTitle></CardHeader>
           <CardContent className="text-sm text-secondary leading-relaxed">
-            {legacy ? (
-              <ul className="list-disc pl-5 space-y-1.5">
-                <li>Compiles the F1SC CSS subset into a fixed-glyph scene (col, row, glyph, color, glow).</li>
-                <li>Emits a MicroQuickJS bundle for the <span className="font-mono">widget on / getInt / setInt / commit / isHeld</span> surface.</li>
-                <li>Wraps the scene + runtime into a single <span className="font-mono">FRMRv2MJS</span> F2JS blob.</li>
-                <li>Round-trips with the SDK's <span className="font-mono">decodeRenderV2MQuickJsPackage()</span>.</li>
-              </ul>
-            ) : (
-              <ul className="list-disc pl-5 space-y-1.5">
-                <li>Transpiles the widget DSL (<span className="font-mono">widget.on / getInt / setInt / commit</span>) for the on-device MicroQuickJS engine.</li>
-                <li>Captures the live preview into an <span className="font-mono">F2TF</span> facade with its pre-rendered pixels.</li>
-                <li>Wraps runtime, facade, and the compressed base frame into one <span className="font-mono">F2UP</span> container.</li>
-                <li>The device push streams that container over the mquickjs uploader and persists it to the widget flash slot.</li>
-              </ul>
-            )}
+            {/* This is the card a lost user opens, so it is the one place that
+                may NOT be written in artifact names. The plain story renders in
+                both modes; the format nouns stay one click down, where they are
+                evidence for whoever wants them rather than the price of
+                understanding what the tab is doing. */}
+            <ul className="list-disc pl-5 space-y-1.5">
+              <li>Turns your HTML and CSS into the exact picture the keyboard will draw — the same pixels as the preview.</li>
+              <li>Brings your JavaScript along so it runs on the keyboard itself, reacting to the knob and the keys.</li>
+              <li>Packs that picture and your script into one widget file, and checks it fits the room the keyboard has.</li>
+              <li>Sending hands that file to your keyboard; the “Send to keyboard” step says whether it stays there after you unplug.</li>
+            </ul>
+            <TechDetails label="Under the hood">
+              {legacy ? (
+                <ul className="list-disc pl-5 space-y-1.5">
+                  <li>Compiles the F1SC CSS subset into a fixed-glyph scene (col, row, glyph, color, glow).</li>
+                  <li>Emits a MicroQuickJS bundle for the <span className="font-mono">widget on / getInt / setInt / commit / isHeld</span> surface.</li>
+                  <li>Wraps the scene + runtime into a single <span className="font-mono">FRMRv2MJS</span> F2JS blob.</li>
+                  <li>Round-trips with the SDK's <span className="font-mono">decodeRenderV2MQuickJsPackage()</span>.</li>
+                </ul>
+              ) : (
+                <ul className="list-disc pl-5 space-y-1.5">
+                  <li>Transpiles the widget DSL (<span className="font-mono">widget.on / getInt / setInt / commit</span>) for the on-device MicroQuickJS engine.</li>
+                  <li>Captures the live preview into an <span className="font-mono">F2TF</span> facade with its pre-rendered pixels.</li>
+                  <li>Wraps runtime, facade, and the compressed base frame into one <span className="font-mono">F2UP</span> container.</li>
+                  <li>The device push streams that container over the mquickjs uploader and persists it to the widget flash slot.</li>
+                </ul>
+              )}
+            </TechDetails>
           </CardContent>
         </Card>
       </aside>
+    </div>
+  );
+}
+
+/** Optional evidence, folded shut by default. Internals are worth SHOWING —
+ *  a firmware flag, a byte ceiling, the container names — because they are how
+ *  a stuck user (or the person they ask for help) proves what happened. They
+ *  are only a bug when reading them is the PRICE of understanding the screen,
+ *  so everything behind this control has already been said in plain words
+ *  above it. Shares the wd-disclose anatomy every other reveal in the app
+ *  uses, so a fold looks like a fold wherever it appears. */
+function TechDetails({ label, children }: { label: string; children: ReactNode }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div>
+      <button
+        type="button"
+        className="wd-disclose"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+      >
+        <Icon name="chevron-right" size={12} className="wd-disclose-chevron" />
+        {label}
+      </button>
+      {open && <div className="mt-2">{children}</div>}
     </div>
   );
 }
@@ -776,11 +885,13 @@ function F2upDump({ sha256, base64 }: { sha256: string; base64: string }) {
   );
 }
 
-/** Every meter names the ARTIFACT its cap governs: "F2JS package" (legacy
- *  tools only) is the compiled blob against the device staging budget, "F2UP
- *  upload" is the assembled container against the upload ceiling — after
- *  Assemble, the row that fills is the artifact the push actually sends.
- *  Unbuilt artifacts show explicit empties, never zeros. */
+/** Every meter names the thing the DESIGNER can shrink, not the container the
+ *  cap lives in: "Widget size" is the built file measured against what the
+ *  keyboard will accept, "Source size" is the markup, styles and script they
+ *  are typing. A bar named after a container format is unactionable — you
+ *  cannot edit an F2UP. The legacy "F2JS package" row keeps its artifact name
+ *  because legacy tools exist for the people who work in those artifacts.
+ *  Unbuilt rows show explicit empties, never zeros. */
 function Budgets({ state, f2up, legacy }: { state: DesignerState; f2up: F2upStatus | null; legacy: boolean }) {
   const srcBytes = new Blob([state.html + "\n" + state.css + "\n" + state.js]).size;
   // A stale package's size is not this widget's budget — show explicit empty.
@@ -791,10 +902,10 @@ function Budgets({ state, f2up, legacy }: { state: DesignerState; f2up: F2upStat
       {legacy && (
         <BudgetMeter label="F2JS package" value={pkgBytes} cap={MQUICKJS_LIMITS.packageBytes} />
       )}
-      <BudgetMeter label="F2UP upload" value={f2up ? f2up.bytes : null} cap={F2UP_MAX_BYTES} />
-      <BudgetMeter label="Source" value={srcBytes} cap={MQUICKJS_LIMITS.sourceBytes} />
+      <BudgetMeter label="Widget size" value={f2up ? f2up.bytes : null} cap={F2UP_MAX_BYTES} />
+      <BudgetMeter label="Source size" value={srcBytes} cap={MQUICKJS_LIMITS.sourceBytes} />
       <BudgetMeter label="Events" value={state.handlers.length} cap={MQUICKJS_LIMITS.eventRecords} />
-      <BudgetMeter label="DOM targets" value={state.targets.length} cap={MQUICKJS_LIMITS.targets} />
+      <BudgetMeter label="Elements" value={state.targets.length} cap={MQUICKJS_LIMITS.targets} />
     </div>
   );
 }

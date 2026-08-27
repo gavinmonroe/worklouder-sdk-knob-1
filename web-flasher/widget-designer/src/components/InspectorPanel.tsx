@@ -208,7 +208,7 @@ export function InspectorPanel({
             },
             {
               id: "targets",
-              title: "DOM targets",
+              title: "Elements",
               badge: <Badge tone="muted">{state.targets.length}</Badge>,
               defaultOpen: !compact,
               render: () =>
@@ -216,7 +216,7 @@ export function InspectorPanel({
                   <EmptyState
                     size="sm"
                     icon="search"
-                    title="No DOM targets yet"
+                    title="No elements bound yet"
                     hint={
                       <>
                         Reference elements by id — <code>document.querySelector('#temp')</code> —
@@ -768,9 +768,8 @@ function PreviewOnlyNote({ mode }: { mode: NonNullable<DiagnosticsView["previewO
       <Icon name="info" size={14} />
       <span>
         Preview-only widget — {mode.api ? <code>{mode.api}()</code> : "this script"} runs in the
-        live preview but not in the {legacy ? "strict F2JS VM" : "strict device VM"}, so the
-        packaging paths on Export are gated. The preview and every event surface stay fully
-        interactive.
+        live preview but not in the {legacy ? "strict F2JS VM" : "strict device VM"}, so Build
+        widget stays greyed out. The preview and every event surface stay fully interactive.
       </span>
     </div>
   );
@@ -779,7 +778,8 @@ function PreviewOnlyNote({ mode }: { mode: NonNullable<DiagnosticsView["previewO
 // ── mquickjs budgets ─────────────────────────────────────────────────────────
 // The Package meter reads whichever artifact is fresh for THIS exact source:
 // the F2JS build first, else the assembled F2UP container (so the header's
-// green "F2UP · 56,599 B" chip and this bar can never contradict each other).
+// green "Ready to send · 56,599 B" chip and this bar can never contradict
+// each other).
 // With neither, the footnote names the action that fills it.
 
 function Budgets({
@@ -801,9 +801,9 @@ function Budgets({
   const meters = (
     <>
       <BudgetMeter label="Package" value={pkgBytes} cap={MQUICKJS_LIMITS.packageBytes} />
-      <BudgetMeter label="Source" value={srcBytes} cap={MQUICKJS_LIMITS.sourceBytes} />
+      <BudgetMeter label="Source size" value={srcBytes} cap={MQUICKJS_LIMITS.sourceBytes} />
       <BudgetMeter label="Events" value={state.handlers.length} cap={MQUICKJS_LIMITS.eventRecords} />
-      <BudgetMeter label="DOM targets" value={state.targets.length} cap={MQUICKJS_LIMITS.targets} />
+      <BudgetMeter label="Elements" value={state.targets.length} cap={MQUICKJS_LIMITS.targets} />
     </>
   );
   return (
@@ -816,11 +816,11 @@ function Budgets({
       {pkgBytes === null ? (
         <div className="wd-ins-note">
           {legacy
-            ? "Package is unmeasured — run Build F2JS or Assemble F2UP on the Export tab."
-            : "Package is unmeasured — run Assemble F2UP on the Export tab."}
+            ? "Nothing built yet — run Build F2JS or Build widget on the Send tab."
+            : "Nothing built yet — press Build widget (top right, or on the Send tab) to measure it."}
         </div>
       ) : legacy && f2jsBytes === null ? (
-        <div className="wd-ins-note">Package measured from the assembled F2UP container.</div>
+        <div className="wd-ins-note">Measured from the built widget, not the F2JS package.</div>
       ) : null}
       {!compact && (
         <div className="wd-ins-note">

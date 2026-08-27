@@ -1,5 +1,5 @@
 // Source tab — the widget's home. One frame owns the whole editing surface:
-// a slim toolbar (buffer facts, diagnostics, recompile mode, the Reference
+// a slim toolbar (buffer facts, diagnostics, recompile mode, the Events
 // toggle) sits INSIDE the code frame, the CodeMirror surface fills the rest
 // with the event-reference rail docked at its right edge, and the Host data
 // card (feeds derived from the source) sits directly below — events and host
@@ -52,8 +52,23 @@ const MODES: { id: RecompileMode; label: string }[] = [
 
 const bytesOf = (text: string) => new TextEncoder().encode(text).length;
 
-/** Reference-rail visibility: an explicit choice persists; with none stored,
- *  wide viewports (≥1440px) open it and narrower ones boot closed. */
+/**
+ * Reference-rail visibility: an explicit choice persists; with none stored the
+ * rail starts OPEN at every width.
+ *
+ * It used to boot open only above 1440px, which meant that on a laptop the one
+ * surface in the app that says what a widget can react to — and hands over the
+ * tick heartbeat every widget needs to repaint — was hidden behind the
+ * lowest-emphasis button on screen. Nobody goes looking for a rail they have
+ * never seen, and the failure that costs is a widget that never repaints on
+ * the device.
+ *
+ * The trade is paid between 1280px and 1440px, where the rail docks as a
+ * COLUMN and squeezes the code down to ~220–380px (under 1280px it floats over
+ * the editor instead, so it costs nothing but a dismissal). One click on the
+ * Events toggle buys the width back, and that click is remembered forever —
+ * cheaper than never meeting the rail at all.
+ */
 function initialRefOpen(): boolean {
   try {
     const stored = localStorage.getItem("wd-ref-rail");
@@ -62,7 +77,7 @@ function initialRefOpen(): boolean {
   } catch {
     /* storage unavailable */
   }
-  return window.innerWidth >= 1440;
+  return true;
 }
 
 export function SourceWorkspace({ state, actions }: { state: DesignerState; actions: DesignerActions }) {
@@ -335,11 +350,14 @@ export function SourceWorkspace({ state, actions }: { state: DesignerState; acti
                   )}
                 </div>
                 <div className="flex items-center gap-2">
+                  {/* Named for what it answers, not for what it contains: a
+                      designer looking for "how do I make this respond to the
+                      knob?" scans for the question, never for "reference". */}
                   <Tooltip
                     label={
                       refOpen
-                        ? "Hide the event reference"
-                        : "Event reference — all nine event kinds, their fields, and insertable handlers"
+                        ? "Hide the event list"
+                        : "What can my widget react to? Key presses, the knob, a repeating timer, and data sent from the computer — each one drops working code into your script."
                     }
                   >
                     <Button
@@ -350,7 +368,7 @@ export function SourceWorkspace({ state, actions }: { state: DesignerState; acti
                       onClick={toggleRefRail}
                     >
                       <Icon name="book" size={12} />
-                      Reference
+                      Events
                     </Button>
                   </Tooltip>
                   <SegmentedControl
@@ -435,7 +453,7 @@ export function SourceWorkspace({ state, actions }: { state: DesignerState; acti
                     <Badge
                       tone={totalBytes > MQUICKJS_LIMITS.sourceBytes ? "danger" : "neutral"}
                       className="wd-nums"
-                      title="Combined HTML+CSS+JS bytes as a share of the source cap"
+                      title="How much of the size limit your HTML, CSS, and script use together"
                     >
                       <span className="wd-badge-prefix">used</span>
                       {Math.round((totalBytes / MQUICKJS_LIMITS.sourceBytes) * 100)}%
@@ -454,9 +472,20 @@ export function SourceWorkspace({ state, actions }: { state: DesignerState; acti
                           </div>
                         ))}
                       </div>
-                      <div className="wd-ins-note">
-                        The mquickjs engine refuses to flash a package whose combined source exceeds{" "}
-                        {MQUICKJS_LIMITS.sourceBytes.toLocaleString()} B.
+                      {/* The size ceiling is real and the author has to plan
+                          around it, so the sentence has to be readable at the
+                          moment the meter turns red. It names the three things
+                          they can actually shrink and points at the per-buffer
+                          rows above; the engine and the exact byte count stay
+                          on the hover, as evidence rather than instruction. */}
+                      <div
+                        className="wd-ins-note"
+                        title={`Enforced by the keyboard's mquickjs engine: ${MQUICKJS_LIMITS.sourceBytes.toLocaleString()} bytes of combined source.`}
+                      >
+                        Your HTML, CSS, and script have to fit in{" "}
+                        {Math.round(MQUICKJS_LIMITS.sourceBytes / 1024)} kB together — the keyboard
+                        can't take a widget bigger than that. Over the line, trim the largest of the
+                        three above: long text, comments, and repeated CSS rules cost the most.
                       </div>
                     </div>
                   ),

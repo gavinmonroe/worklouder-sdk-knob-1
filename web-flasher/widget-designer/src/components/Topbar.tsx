@@ -101,7 +101,7 @@ export function Topbar({
     if (!result.ok && result.error !== null) {
       toast({
         tone: "danger",
-        title: "Assemble failed",
+        title: "Couldn't build your widget",
         body: humanizeDiagnostic(result.error),
       });
     }
@@ -127,17 +127,20 @@ export function Topbar({
       </div>
 
       <div className="wd-topbar-right">
-        {/* The ONE package-state pill (the Export card carries none). In v3
-            mode it is F2UP-only — the container the device push uploads.
-            Legacy tools restore the F2JS branches (stale = warning tone, the
-            pill itself the remedy: clicking it recompiles). Below 1180px the
-            pill collapses to its short form (the footer readout carries the
-            full state). */}
+        {/* The ONE package-state pill (the Send card carries none). In v3
+            mode it is F2UP-only — the container the device push uploads — and
+            it wears the same words the Send tab's badge and the footer readout
+            use for that container ("Ready to send · N B"), because all three
+            describe one artifact and a designer comparing them must not have
+            to work out that they agree. Legacy tools restore the F2JS branches
+            (stale = warning tone, the pill itself the remedy: clicking it
+            recompiles). Below 1180px the pill collapses to its short form (the
+            footer readout carries the full state). */}
         {!legacy ? (
           f2up ? (
             <Tooltip label="Built from your current source and ready to send to the keyboard.">
               <Badge tone="success" className="wd-nums wd-pkg">
-                <span className="wd-pkg-full">{formatArtifact("F2UP", f2up.bytes)}</span>
+                <span className="wd-pkg-full">{`Ready to send · ${f2up.bytes.toLocaleString()} B`}</span>
                 <span className="wd-pkg-mini">{`${f2up.bytes.toLocaleString()} B`}</span>
               </Badge>
             </Tooltip>
@@ -180,7 +183,7 @@ export function Topbar({
           // No F2JS build, but the Export tab assembled an F2UP container
           // from the CURRENT source — say so, in the same success tone the
           // Export card uses, so the two never contradict each other.
-          <Tooltip label="F2UP container assembled on the Export tab. Build F2JS separately for the download path.">
+          <Tooltip label="Widget built on the Send tab. Build F2JS separately for the download path.">
             <Badge tone="success" className="wd-nums wd-pkg">
               <span className="wd-pkg-full">{formatArtifact("F2UP", f2up.bytes)}</span>
               <span className="wd-pkg-mini">{`${f2up.bytes.toLocaleString()} B`}</span>
@@ -284,7 +287,7 @@ export function Topbar({
         <Tooltip
           label={
             !pipeline.dslOk
-              ? "Can't build yet — your script has errors. The Export tab explains them."
+              ? "Can't build yet — your script has errors. The Send tab explains them."
               : "Build this widget from the live preview, ready to send to your keyboard."
           }
         >

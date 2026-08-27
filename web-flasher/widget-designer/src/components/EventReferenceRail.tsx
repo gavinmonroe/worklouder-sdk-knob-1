@@ -82,10 +82,10 @@ export function EventReferenceRail({
   const [commonOpen, setCommonOpen] = React.useState(false);
 
   return (
-    <aside className="wd-ref-rail" aria-label="Event reference">
+    <aside className="wd-ref-rail" aria-label="Events your widget can react to">
       <div className="wd-ref-scroll">
         <div className="wd-ref-head">
-          <span className="wd-overline">Event reference</span>
+          <span className="wd-overline">Events</span>
           <span className="wd-ref-count wd-nums">{EVENT_REFERENCE.length} kinds</span>
         </div>
         <div className="wd-ref-intro">

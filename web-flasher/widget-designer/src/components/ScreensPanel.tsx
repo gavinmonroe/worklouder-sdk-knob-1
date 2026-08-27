@@ -1,8 +1,19 @@
 // Screens panel (docs/17) — the on-screen counterpart to the keyboard's
 // widget slot bank. It sweeps op 0 (sl/sn) + op 5 per slot into a set of slot
-// cards: the ACTIVE slot (live now), OCCUPIED slots (one tap to activate), and
-// EMPTY slots (push the current widget here). A local sha→name registry
-// (slotRegistry.ts) gives stored widgets friendly names.
+// cards: the ACTIVE slot (on the keyboard now), OCCUPIED slots (one tap to put
+// on screen), and EMPTY slots (send the widget you're designing here).
+//
+// Every label here is written for a designer, so it names a screen, a widget,
+// or what a button is about to do. The protocol facts a card sits on — the
+// F2JS content hash the keyboard reports for a slot, the per-slot generation
+// the push ratchets — stay reachable as tooltips, because they are the only
+// way to answer "are these two really the same widget?" on the rare day that
+// question comes up. What they must never be is the thing a designer reads to
+// find out what a screen holds: a hash cannot be compared against anything the
+// app shows them elsewhere. Names come from a local sha→name registry
+// (slotRegistry.ts), which only knows the pushes THIS browser made; a widget
+// sent from another browser gets a plain sentence saying so, plus the button
+// that resolves it — put it on screen and look at the keyboard.
 //
 // ScreensView is PURE — model + handlers in, cards out — so the same component
 // renders live against the device and, with mock props, in the screenshot
@@ -51,8 +62,8 @@ export interface ScreensViewProps {
   canAct: boolean;
   /** Registry lookup → friendly name, or null when this sha is unknown. */
   nameForSha: (sha16: string) => string | null;
-  /** Name of the widget currently loaded in the Designer — the one "Push
-   *  here" sends — so an empty slot names exactly what it will receive. */
+  /** Name of the widget currently loaded in the Designer — the one "Send
+   *  here" sends — so an empty screen names exactly what it will receive. */
   currentWidgetName?: string;
   onRefresh: () => void;
   onIdentify?: () => void;
@@ -60,12 +71,23 @@ export interface ScreensViewProps {
   onPush: (slot: number) => void;
 }
 
-/** First 8 hex chars — enough to eyeball, short enough to sit on one line. */
-function shortSha(sha16: string): string {
-  return sha16 ? sha16.slice(0, 8) : "";
-}
-
 // ── Pure view ────────────────────────────────────────────────────────────────
+
+/**
+ * What a designer calls this screen. The keyboard indexes its widget slots
+ * from zero and the Session log keeps saying "slot 0"; nobody counts the
+ * screens on a device that way, and — more to the point — the Device tab's
+ * screen roster right above these cards already labels the same screen
+ * "Widget screen 1" (DevicePanel.describeScreen, keyed off screen id 28 =
+ * slot 0). Two panels on one tab numbering the same screen differently is a
+ * contradiction a designer cannot resolve, so both count from one here and the
+ * device's own index rides the tooltip for anyone reading it beside the log.
+ *
+ * Display only: every handler below still passes `view.slot` to the device.
+ */
+function screenNumber(slot: number): number {
+  return slot + 1;
+}
 
 export function ScreensView({
   phase,
@@ -83,6 +105,12 @@ export function ScreensView({
   onPush,
 }: ScreensViewProps) {
   const ready = phase === "ready" && model !== null;
+  // A bank of screens raises exactly two questions before any card is read:
+  // how much room is left, and which screen is the keyboard showing. Both are
+  // already in the sweep, so answer them in the header rather than printing the
+  // slot index and generation counters the sweep happens to carry with it.
+  const usedCount = model ? model.slots.filter((s) => s.present).length : 0;
+  const liveSlot = model ? (model.slots.find((s) => s.active) ?? null) : null;
 
   return (
     <Card>
@@ -97,8 +125,12 @@ export function ScreensView({
           </div>
           {ready && (
             <div className="wd-stagehead-badges">
-              <Badge tone="neutral" className="wd-nums" title="Active slot / slot count">
-                slot {model!.activeSlot} / {model!.slotCount}
+              <Badge
+                tone="neutral"
+                className="wd-nums"
+                title="Screens that already hold a widget. The rest are empty and ready for one."
+              >
+                {usedCount} of {model!.slotCount} screens used
               </Badge>
               <Button
                 variant="ghost"
@@ -106,7 +138,7 @@ export function ScreensView({
                 onClick={onRefresh}
                 busy={scanning}
                 disabled={!canAct && !scanning}
-                aria-label="Refresh slots"
+                aria-label="Refresh screens"
               >
                 {!scanning && <Icon name="rotate-ccw" size={13} />}
                 Refresh
@@ -121,7 +153,7 @@ export function ScreensView({
             size="sm"
             icon="keyboard"
             title="No keyboard connected"
-            hint="Connect and identify a keyboard to see and manage its widget slots."
+            hint="Connect your keyboard to see the widgets it's holding and send it a new one."
           />
         )}
 
@@ -168,10 +200,11 @@ export function ScreensView({
         {ready && (
           <div className="wd-slotbank">
             <div className="wd-slotbank-meta wd-nums">
-              {model!.slotCount} slot{model!.slotCount === 1 ? "" : "s"} · slot {model!.activeSlot} live ·
-              running generation {model!.running}
+              {liveSlot?.present
+                ? `Screen ${screenNumber(model!.activeSlot)} is on your keyboard now — turn the knob to switch.`
+                : "Nothing on the keyboard's screen yet — send your widget to an empty screen below."}
             </div>
-            <div className="wd-slotgrid" role="list" aria-label="Widget slots">
+            <div className="wd-slotgrid" role="list" aria-label="Widget screens">
               {model!.slots.map((slot) => (
                 <SlotCard
                   key={slot.slot}
@@ -232,7 +265,9 @@ function SlotCard({
   return (
     <div className="wd-slotcard" data-state={dataState} role="listitem">
       <div className="wd-slotcard-head">
-        <span className="wd-slotcard-idx">Slot {view.slot}</span>
+        <span className="wd-slotcard-idx" title={`Widget screen ${screenNumber(view.slot)} — the keyboard calls it slot ${view.slot}`}>
+          Screen {screenNumber(view.slot)}
+        </span>
         <SlotStatusPill state={dataState} />
       </div>
 
@@ -241,30 +276,36 @@ function SlotCard({
           <span className="wd-slotcard-plus" aria-hidden="true">
             <Icon name="plus" size={18} />
           </span>
-          <div className="wd-slotcard-name">Empty slot</div>
+          <div className="wd-slotcard-name">Empty screen</div>
           <div className="wd-slotcard-emptyhint">
-            {currentWidgetName ? <>Push <strong className="font-medium">{currentWidgetName}</strong> here.</> : "Push the current widget here."}
+            {currentWidgetName ? <>Send <strong className="font-medium">{currentWidgetName}</strong> here.</> : "Send the widget you're designing here."}
           </div>
         </div>
       )}
 
       {dataState === "unknown" && (
         <div className="wd-slotcard-body">
-          <div className="wd-slotcard-name text-secondary">Couldn't read this slot</div>
+          <div className="wd-slotcard-name text-secondary">Couldn't read this screen</div>
           <div className="wd-slotcard-meta">The keyboard didn't answer for this screen.</div>
         </div>
       )}
 
       {(dataState === "active" || dataState === "occupied") && (
         <div className="wd-slotcard-body">
-          <div className="wd-slotcard-name" title={name ?? undefined}>
-            {name ?? "Unknown widget"}
+          {/* The keyboard identifies a stored widget only by the hash of its
+              code, so the NAME on this line is ours — recorded when this browser
+              pushed that exact hash. Lead with it, and keep the hash on the
+              tooltip: its one real use is telling apart two widgets a designer
+              gave the same name. */}
+          <div
+            className="wd-slotcard-name"
+            title={name ? `${name} · widget id ${view.sha16}` : `Widget id ${view.sha16}`}
+          >
+            {name ?? "Unnamed widget"}
           </div>
           <div className="wd-slotcard-meta wd-nums">
-            <span>gen {view.generation}</span>
-            <span className="wd-slotcard-dot" aria-hidden="true">·</span>
-            <span className="wd-slotcard-sha font-mono" title={view.sha16}>
-              {shortSha(view.sha16)}
+            <span title="Goes up by one each time a widget is sent to this screen. The keyboard checks it, so an out-of-date copy can't overwrite a newer one.">
+              Version {view.generation}
             </span>
           </div>
           {view.active && (
@@ -274,16 +315,27 @@ function SlotCard({
             </div>
           )}
           {!name && (
-            <div className="wd-slotcard-unnamed">Not in this browser's push history.</div>
+            <div className="wd-slotcard-unnamed">
+              {view.active
+                ? "Sent from another browser, so its name isn't saved here — it's the one you can see on the keyboard right now."
+                : "Sent from another browser, so its name isn't saved here. Put it on screen to see which widget it is."}
+            </div>
           )}
         </div>
       )}
 
       <div className="wd-slotcard-actions">
         {dataState === "empty" && (
-          <Button variant="primary" size="sm" onClick={onPush} busy={pushing} disabled={lockOthers}>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={onPush}
+            busy={pushing}
+            disabled={lockOthers}
+            title={`Sends ${currentWidgetName || "the widget you're designing"} to screen ${screenNumber(view.slot)} and keeps it there.`}
+          >
             {!pushing && <Icon name="upload" size={13} />}
-            {pushing ? "Pushing…" : `Push here · gen ${view.nextGeneration}`}
+            {pushing ? "Sending…" : "Send here"}
           </Button>
         )}
 
@@ -295,9 +347,10 @@ function SlotCard({
               onClick={onActivate}
               busy={activating}
               disabled={lockOthers || pushing}
+              title={`Shows this widget on the keyboard instead of the one on screen now. Nothing is erased — screen ${screenNumber(view.slot)} keeps what it holds.`}
             >
               {!activating && <Icon name="play" size={13} />}
-              {activating ? "Activating…" : "Activate"}
+              {activating ? "Switching…" : "Put on screen"}
             </Button>
             <Button
               variant="ghost"
@@ -305,17 +358,25 @@ function SlotCard({
               onClick={onPush}
               busy={pushing}
               disabled={lockOthers || activating}
+              title={`Overwrites screen ${screenNumber(view.slot)} with ${currentWidgetName || "the widget you're designing"}. The widget stored here now is gone.`}
             >
               {!pushing && <Icon name="upload" size={13} />}
-              {pushing ? "Pushing…" : "Push here"}
+              {pushing ? "Sending…" : "Replace"}
             </Button>
           </>
         )}
 
         {dataState === "active" && (
-          <Button variant="default" size="sm" onClick={onPush} busy={pushing} disabled={lockOthers}>
+          <Button
+            variant="default"
+            size="sm"
+            onClick={onPush}
+            busy={pushing}
+            disabled={lockOthers}
+            title={`Overwrites this screen with ${currentWidgetName || "the widget you're designing"}. The widget on it now is gone.`}
+          >
             {!pushing && <Icon name="upload" size={13} />}
-            {pushing ? "Pushing…" : `Replace · gen ${view.nextGeneration}`}
+            {pushing ? "Sending…" : "Replace"}
           </Button>
         )}
 
@@ -365,15 +426,15 @@ function SlotLegend() {
     <div className="wd-slotlegend" aria-hidden="true">
       <span className="wd-slotlegend-item">
         <span className="wd-slotlegend-swatch" data-state="active" />
-        Live — on screen now
+        On screen now
       </span>
       <span className="wd-slotlegend-item">
         <span className="wd-slotlegend-swatch" data-state="occupied" />
-        Stored — one tap to activate
+        Stored — one tap to show it
       </span>
       <span className="wd-slotlegend-item">
         <span className="wd-slotlegend-swatch" data-state="empty" />
-        Empty — ready for a push
+        Empty — ready for a widget
       </span>
     </div>
   );
@@ -383,13 +444,13 @@ function SlotScanningGrid() {
   return (
     <div className="wd-slotbank">
       <div className="wd-slotbank-meta">
-        <Spinner size={12} /> Reading slot inventory…
+        <Spinner size={12} /> Checking what's on your keyboard's screens…
       </div>
       <div className="wd-slotgrid" aria-hidden="true">
         {[0, 1, 2, 3].map((k) => (
           <div key={k} className="wd-slotcard" data-state="skeleton">
             <div className="wd-slotcard-head">
-              <span className="wd-slotcard-idx">Slot {k}</span>
+              <span className="wd-slotcard-idx">Screen {screenNumber(k)}</span>
             </div>
             <div className="wd-slotcard-body">
               <span className="wd-skeleton" style={{ width: "62%", height: 14 }} />
@@ -458,6 +519,10 @@ export function ScreensPanel({
   const canAct = dev.slotScan !== "scanning" && !dev.pushing && busy === null;
 
   const onPush = async (slot: number) => {
+    // Read before the await: a completed push re-sweeps the bank, so asking
+    // afterwards would answer for the state we just created, not the one the
+    // designer pressed the button in.
+    const wroteToLiveScreen = dev.slotBank?.activeSlot === slot;
     const res = await device.pushWidgetToSlot(slot, (generation) =>
       actions.assembleWidgetUpload({ generation }),
     );
@@ -468,8 +533,10 @@ export function ScreensPanel({
       });
       toast({
         tone: "success",
-        title: `Pushed to slot ${slot}`,
-        body: `Generation ${res.result.generation} persisted — activate the slot to show it now.`,
+        title: `Sent to screen ${screenNumber(slot)}`,
+        body: wroteToLiveScreen
+          ? "Saved on your keyboard — it stays there after you unplug."
+          : 'Saved on your keyboard. Choose "Put on screen" on that card to show it now.',
       });
     }
   };
@@ -479,8 +546,8 @@ export function ScreensPanel({
     if (ok) {
       toast({
         tone: "success",
-        title: `Slot ${slot} is live`,
-        body: "The keyboard switched widgets in place — no power-cycle needed.",
+        title: `Screen ${screenNumber(slot)} is on your keyboard`,
+        body: "It switched over right away — nothing to unplug or restart.",
       });
     }
   };

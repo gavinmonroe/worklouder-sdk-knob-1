@@ -15,7 +15,15 @@
 
 import * as React from "react";
 import type { DesignerActions, DesignerState } from "../designer/store";
-import { deriveHostFeeds, feedMetaKey, setFeedMeta, useFeedMeta, type HostFeed } from "./hostFeeds";
+import {
+  deriveHostFeeds,
+  feedMetaKey,
+  setFeedMeta,
+  useFeedMeta,
+  type FeedMeta,
+  type HostFeed,
+} from "./hostFeeds";
+import { DEVICE_FEEDS, PINNED_FEEDS, USER_FEED_PREFIX } from "../compiler/mquickjsTranspiler";
 import {
   FEED_SERVER_PORT,
   feedServerEndpoint,
@@ -67,6 +75,66 @@ function parseFieldInt(raw: string): number | null {
   const n = Number.parseInt(text, 10);
   if (!Number.isFinite(n) || n < INT32_MIN || n > INT32_MAX) return null;
   return n;
+}
+
+// ── What to CALL a feed ──────────────────────────────────────────────────────
+// One channel has up to three spellings and only one of them belongs to the
+// designer: the name they typed on the card, the name they wrote in the
+// script, and the raw channel number. Every surface a person reads — card
+// labels, screen-reader names, the simulator's picker, timeline rows — runs
+// through here, so the number is the LAST resort and never the identity.
+//
+// The pinned and device feeds keep fixed channel numbers that predate the
+// name-derives-the-channel scheme, so deriveHostFeeds cannot recover their
+// names by hashing the slug. Reading the compiler's own tables (read-only, the
+// same accepted pattern hostFeeds.ts already uses) puts "weather-now" on the
+// card even in a widget whose saved metadata was never seeded — and keeps it
+// there after the designer renames the widget, which retires those seeds.
+const PLATFORM_FEED_SELECTORS = new Map<number, string>(
+  [...Object.entries(DEVICE_FEEDS), ...Object.entries(PINNED_FEEDS)].map(
+    ([selector, feed]) => [feed.id, selector] as [number, string],
+  ),
+);
+
+/** The script's own word for this feed. Deliberately independent of the name
+ *  the designer is typing, so a screen reader never renames a field mid-edit. */
+export function feedScriptName(feed: HostFeed): string {
+  const selector = feed.name ? `${USER_FEED_PREFIX}${feed.name}` : PLATFORM_FEED_SELECTORS.get(feed.id);
+  if (!selector) return feed.hex;
+  // "feed." is plumbing the designer never has to say out loud; "device." is
+  // load-bearing (it says the keyboard publishes this one) and stays.
+  return selector.startsWith(USER_FEED_PREFIX) ? selector.slice(USER_FEED_PREFIX.length) : selector;
+}
+
+/** What the designer calls this feed: the name they typed, then the name they
+ *  wrote in the script, and only then the raw channel. */
+export function feedDisplayName(feed: HostFeed, meta: FeedMeta | undefined): string {
+  return meta?.name?.trim() || feedScriptName(feed);
+}
+
+/** Every spelling of this feed a feeder's JSON key might legitimately use. */
+function feedKeySpellings(feed: HostFeed): string[] {
+  const out = [feed.hex, feed.selector];
+  const platform = PLATFORM_FEED_SELECTORS.get(feed.id);
+  if (platform) out.push(platform);
+  if (feed.name) out.push(`${USER_FEED_PREFIX}${feed.name}`);
+  return out.map((s) => s.toLowerCase());
+}
+
+/** Resolve one key of a feeder's `feeds` object to a channel.
+ *
+ *  Named feeds made the numeric-only reading of these keys a dead end: the
+ *  generated feeder keys its entries by the author's own spelling, which for
+ *  `widget.on("feed.room-temp", …)` is "feed.room-temp" and parses as NaN. So
+ *  both spellings a person could reasonably write are accepted — the feed's
+ *  NAME, and the raw channel as decimal or 0x hex ("0xb241" and "0xB241" alike).
+ *  Anything else still resolves to null and is skipped, exactly as before. */
+function feedKeyId(key: string, feeds: HostFeed[]): number | null {
+  const text = key.trim().toLowerCase();
+  const named = feeds.find((f) => feedKeySpellings(f).includes(text));
+  if (named) return named.id;
+  const n = Number.parseInt(text, text.startsWith("0x") ? 16 : 10);
+  return Number.isFinite(n) ? n >>> 0 : null;
 }
 
 export function HostFeedsPanel({
@@ -228,6 +296,11 @@ function FeedCard({
   const meta = useFeedMeta()[metaKey] ?? {};
   const valueLabel = meta.valueLabel || "value";
   const auxLabel = meta.auxLabel || "auxiliary";
+  // `label` follows the name field as it is typed (so every other control on
+  // the card renames with it); `scriptName` is the fixed identity from the
+  // source, used where a moving accessible name would be disorienting.
+  const label = feedDisplayName(feed, meta);
+  const scriptName = feedScriptName(feed);
   const value = meta.value ?? "0";
   const auxiliary = meta.auxiliary ?? "0";
 
@@ -249,8 +322,12 @@ function FeedCard({
       id: feed.id,
       value: v,
       auxiliary: a,
-      displayName: `${feed.hex} ← ${v}${a !== 0 ? ` · ${a}` : ""}`,
-      description: meta.name || undefined,
+      // The timeline row leads with the designer's own word for the feed; the
+      // channel spelling rides along as the secondary line, where it is
+      // evidence for whoever is debugging a feeder and not an identity anyone
+      // has to recognise.
+      displayName: `${label} ← ${v}${a !== 0 ? ` · ${a}` : ""}`,
+      description: feed.hex,
     });
     setFlash(true);
     window.clearTimeout(flashTimer.current);
@@ -260,13 +337,13 @@ function FeedCard({
   const inputId = (part: string) => `feed-${feed.id.toString(16)}-${part}`;
 
   return (
-    <div className="wd-well wd-feed">
+    <div className="wd-well wd-feed" role="group" aria-label={`${label} feed`}>
       <div className="wd-feed-head">
         <input
           className="wd-feed-name"
           value={meta.name ?? ""}
           placeholder="Name this feed"
-          aria-label={`Friendly name for feed ${feed.hex}`}
+          aria-label={`Friendly name for the ${scriptName} feed`}
           onChange={(e) => setFeedMeta(metaKey, { name: e.target.value })}
         />
         <Tooltip label="Jump to this handler in the editor">
@@ -274,7 +351,10 @@ function FeedCard({
             type="button"
             className="wd-feed-chip"
             onClick={() => onReveal(feed.selector)}
-            aria-label={`Jump to the ${feed.selector} handler in the source`}
+            /* The selector stays inside the spoken name because it is also the
+               visible text of the chip — a name that omitted it would leave
+               voice-control users with nothing to say. */
+            aria-label={`Jump to the ${label} handler (${feed.selector}) in the source`}
           >
             {feed.selector}
           </button>
@@ -286,7 +366,7 @@ function FeedCard({
             className="wd-feed-fieldlabel"
             value={meta.valueLabel ?? ""}
             placeholder="value"
-            aria-label={`Plain-language label for ${feed.hex}'s value field`}
+            aria-label={`Plain-language label for the ${label} feed's first number`}
             onChange={(e) => setFeedMeta(metaKey, { valueLabel: e.target.value })}
           />
           <Input
@@ -294,7 +374,7 @@ function FeedCard({
             mono
             inputMode="numeric"
             value={value}
-            aria-label={`${valueLabel} — the value payload for ${feed.hex}`}
+            aria-label={`${valueLabel} — the first number sent to ${label}`}
             aria-invalid={errors.value ? true : undefined}
             aria-describedby={errors.value ? `${inputId("value")}-err` : undefined}
             onChange={(e) => {
@@ -315,7 +395,7 @@ function FeedCard({
             className="wd-feed-fieldlabel"
             value={meta.auxLabel ?? ""}
             placeholder="auxiliary"
-            aria-label={`Plain-language label for ${feed.hex}'s auxiliary field`}
+            aria-label={`Plain-language label for the ${label} feed's second number`}
             onChange={(e) => setFeedMeta(metaKey, { auxLabel: e.target.value })}
           />
           <Input
@@ -323,7 +403,7 @@ function FeedCard({
             mono
             inputMode="numeric"
             value={auxiliary}
-            aria-label={`${auxLabel} — the auxiliary payload for ${feed.hex}`}
+            aria-label={`${auxLabel} — the second number sent to ${label}`}
             aria-invalid={errors.auxiliary ? true : undefined}
             aria-describedby={errors.auxiliary ? `${inputId("aux")}-err` : undefined}
             onChange={(e) => {
@@ -356,8 +436,12 @@ function feedsForServer(widgetName: string, feeds: HostFeed[], meta: ReturnType<
   return feeds.map((feed) => {
     const m = meta[feedMetaKey(widgetName, feed.id)] ?? {};
     return {
+      // `hex` is the JSON key the feeder writes and the Designer matches on —
+      // it stays the author's own spelling. Only the comment above it is
+      // renamed, and it now falls back to the script's name rather than
+      // repeating the key.
       hex: feed.hex,
-      name: m.name || feed.hex,
+      name: m.name?.trim() || feedScriptName(feed),
       valueLabel: m.valueLabel || "value",
       auxLabel: m.auxLabel || "auxiliary",
       value: parseFieldInt(m.value ?? "") ?? 0,
@@ -416,7 +500,7 @@ function FeederSection({
       </div>
       <CodeBlock label={`Feeder · GET /feeds on port ${FEED_SERVER_PORT}`}>{source}</CodeBlock>
       <RunWell source={source} />
-      <FeedConnectWell feeds={feeds} dispatch={dispatch} />
+      <FeedConnectWell feeds={feeds} widgetName={state.displayName} dispatch={dispatch} />
     </div>
   );
 }
@@ -426,12 +510,16 @@ function FeederSection({
  *  sent so a wrong shape names the missing feed instead of half-applying. */
 function FeedConnectWell({
   feeds,
+  widgetName,
   dispatch,
 }: {
   feeds: HostFeed[];
+  widgetName: string;
   dispatch: (event: SimulatedEvent) => void;
 }) {
   const toast = useToast();
+  const meta = useFeedMeta();
+  const nameOf = (feed: HostFeed) => feedDisplayName(feed, meta[feedMetaKey(widgetName, feed.id)]);
   const [url, setUrl] = React.useState(() => feedServerEndpoint());
   const [error, setError] = React.useState<string | null>(null);
   const [busy, setBusy] = React.useState(false);
@@ -440,27 +528,48 @@ function FeedConnectWell({
     setBusy(true);
     setError(null);
     try {
-      const response = await fetch(url.trim());
-      if (!response.ok) throw new Error(`Server returned HTTP ${response.status}`);
+      // The fetch is separated from the parsing so a feeder that simply is not
+      // running produces a sentence about starting it, rather than the
+      // browser's bare "Failed to fetch".
+      let response: Response;
+      try {
+        response = await fetch(url.trim());
+      } catch {
+        throw new Error(
+          `Nothing answered at ${url.trim()}. Start the feeder on your computer — download it above and run it — then try again.`,
+        );
+      }
+      if (!response.ok) {
+        throw new Error(
+          `The server at ${url.trim()} answered HTTP ${response.status}. Check the address, then check the feeder is still running.`,
+        );
+      }
       const payload = await response.json();
       const raw = payload?.feeds;
-      if (!raw || typeof raw !== "object") throw new Error("Response has no `feeds` object.");
-      // Keys match by numeric id, so "0xb241" and "0xB241" both land.
+      if (!raw || typeof raw !== "object") {
+        throw new Error(
+          "That response has no `feeds` object. The feeder must answer { feeds: { … } } — the downloadable one above already does.",
+        );
+      }
       const byId = new Map<number, { value: number; auxiliary: number }>();
       for (const [key, entry] of Object.entries(raw as Record<string, unknown>)) {
-        const id = Number.parseInt(key, key.trim().toLowerCase().startsWith("0x") ? 16 : 10);
-        if (!Number.isFinite(id) || !entry || typeof entry !== "object") continue;
+        const id = feedKeyId(key, feeds);
+        if (id === null || !entry || typeof entry !== "object") continue;
         const v = (entry as Record<string, unknown>).value;
         const a = (entry as Record<string, unknown>).auxiliary ?? 0;
         if (!Number.isInteger(v) || !Number.isInteger(a)) {
-          throw new Error(`Feed "${key}" must carry integer \`value\` and \`auxiliary\`.`);
+          throw new Error(
+            `Feed "${key}" must carry whole numbers for \`value\` and \`auxiliary\` — edit readFeeds() in your feeder.`,
+          );
         }
-        byId.set(id >>> 0, { value: v as number, auxiliary: a as number });
+        byId.set(id, { value: v as number, auxiliary: a as number });
       }
       const matched = feeds.filter((f) => byId.has(f.id));
       if (matched.length === 0) {
         throw new Error(
-          `Response has no feeds this widget handles (expected ${feeds.map((f) => f.hex).join(", ")}).`,
+          `That feeder answered, but none of its feeds belong to this widget. Key each entry in readFeeds() after a feed this widget listens for: ${feeds
+            .map((f) => nameOf(f))
+            .join(", ")}.`,
         );
       }
       for (const feed of matched) {
@@ -470,7 +579,8 @@ function FeedConnectWell({
           id: feed.id,
           value: entry.value,
           auxiliary: entry.auxiliary,
-          displayName: `${feed.hex} live`,
+          displayName: `${nameOf(feed)} ← ${entry.value}${entry.auxiliary !== 0 ? ` · ${entry.auxiliary}` : ""} (live)`,
+          description: feed.hex,
         });
       }
       toast({
@@ -503,7 +613,10 @@ function FeedConnectWell({
           {busy ? "Fetching…" : "Fetch and send"}
         </Button>
       </div>
-      {error && <Callout tone="danger">Fetch failed: {error}</Callout>}
+      {/* Each thrown message above is already a whole sentence that ends in the
+          next move, so the callout adds no "Fetch failed:" preamble in front
+          of it. */}
+      {error && <Callout tone="danger">{error}</Callout>}
     </div>
   );
 }

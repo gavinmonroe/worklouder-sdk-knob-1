@@ -14,7 +14,7 @@ import type { SlotBankModel } from "./device/widget-upload";
 import "./styles/index.css";
 
 const NAMES: Record<string, string> = {
-  "1a2b3c4d5e6f70819a0b1c2d3e4f5061": "Weather (device DSL)",
+  "1a2b3c4d5e6f70819a0b1c2d3e4f5061": "Weather",
   "aabbccddeeff00112233445566778899": "WPM Pet",
   "5566778899aabbccddeeff0011223344": "Clock face",
 };
