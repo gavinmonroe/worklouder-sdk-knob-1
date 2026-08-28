@@ -53,6 +53,21 @@ widget.on("input.chord.down", function (event) {
 `;
 
 describe("mquickjs transpiler", () => {
+  it("accepts a zero-argument handler when the event is unused", () => {
+    const out = transpileWidgetScript(`var a = 0;
+var b = 0;
+var c = 0;
+widget.on("tick.1s", function () {
+  a = mod(a + 1, 5);
+  b = mod(b + 1, 6);
+  c = mod(c + 1, 7);
+});
+`);
+    expect(out.diagnostics).toEqual([]);
+    expect(out.events["tick.1s"]).toBe(true);
+    expect(out.deviceSource).toContain('widget.on("tick.1s", function (event) {');
+  });
+
   it("transpiles the fixture with clean diagnostics, slots, tables, and events", () => {
     const out = transpileWidgetScript(FIXTURE);
     expect(out.diagnostics).toEqual([]);

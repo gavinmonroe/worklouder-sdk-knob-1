@@ -99,27 +99,33 @@ function ask<T extends { type: string }>(
  * replies — instantly, with stale markup. Capturing then yields the previous
  * widget, or a blank frame when the two disagree about which CSS applies.
  *
- * So readiness is defined by content: both the srcdoc React has applied and the
- * body the frame reports must contain the current widget's marker.
+ * So readiness is defined by revision identity: buildWidgetSrcdoc stamps the
+ * applied srcdoc and the frame's bridge reply with the same source-derived
+ * token. An old document can still answer, but it cannot claim the new token.
  */
 export async function waitForPreview(
   iframe: HTMLIFrameElement,
-  marker: string,
   timeoutMs = 5_000,
 ): Promise<void> {
+  const tokenMatch = (iframe.srcdoc ?? "").match(
+    /<meta name="widget-preview-token" content="([^"]+)" \/>/u,
+  );
+  const expectedToken = tokenMatch?.[1];
+  if (!expectedToken) {
+    throw new Error("The preview source has no revision token; wait for it to recompile and try again.");
+  }
+
   const deadline = Date.now() + timeoutMs;
   let lastError: unknown = null;
   while (Date.now() < deadline) {
     try {
-      if ((iframe.srcdoc ?? "").includes(marker)) {
-        const reply = await ask<{ type: string; body: string; imagesReady?: boolean; brokenImages?: string[] }>(
-          iframe, { type: "widget:snapshot" }, "widget:snapshot:result", 500,
-        );
-        if ((reply.brokenImages?.length ?? 0) > 0) {
-          throw new Error(`The preview could not decode image ${reply.brokenImages![0]}.`);
-        }
-        if (reply.body.includes(marker) && reply.imagesReady !== false) return;
+      const reply = await ask<PreviewSnapshotReply>(
+        iframe, { type: "widget:snapshot" }, "widget:snapshot:result", 500,
+      );
+      if ((reply.brokenImages?.length ?? 0) > 0) {
+        throw new Error(`The preview could not decode image ${reply.brokenImages![0]}.`);
       }
+      if (previewSnapshotMatches(reply, expectedToken) && reply.imagesReady !== false) return;
     } catch (cause) {
       lastError = cause;
     }
@@ -127,7 +133,23 @@ export async function waitForPreview(
   }
   throw lastError instanceof Error
     ? lastError
-    : new Error(`The preview never showed the current widget (looking for "${marker}").`);
+    : new Error("The preview did not finish loading the current widget source.");
+}
+
+export interface PreviewSnapshotReply {
+  type: string;
+  body: string;
+  previewToken?: string;
+  imagesReady?: boolean;
+  brokenImages?: string[];
+}
+
+/** Pure revision check kept separate so stale-frame admission is regression-testable. */
+export function previewSnapshotMatches(
+  reply: Pick<PreviewSnapshotReply, "previewToken">,
+  expectedToken: string,
+): boolean {
+  return reply.previewToken === expectedToken;
 }
 
 /** Ask the preview for its live body markup, already serialized as XHTML. */
@@ -161,11 +183,11 @@ export async function dispatchToPreview(
  * initial values. That is the only true reset available from outside an opaque
  * origin.
  */
-export async function resetPreview(iframe: HTMLIFrameElement, marker: string): Promise<void> {
+export async function resetPreview(iframe: HTMLIFrameElement): Promise<void> {
   const srcdoc = iframe.srcdoc;
   if (!srcdoc) throw new Error("The preview has no document to reload.");
   iframe.srcdoc = srcdoc;          // reassignment forces a reload
-  await waitForPreview(iframe, marker);
+  await waitForPreview(iframe);
 }
 
 /**

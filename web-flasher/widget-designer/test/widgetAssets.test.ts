@@ -6,7 +6,8 @@ import {
   widgetAssetReference,
   widgetAssetTotalBytes,
 } from "../src/compiler/widgetAssets";
-import { buildWidgetSrcdoc } from "../src/compiler/widgetRuntime";
+import { buildWidgetSrcdoc, widgetPreviewToken } from "../src/compiler/widgetRuntime";
+import { previewSnapshotMatches } from "../src/compiler/snapshot";
 
 const assets = {
   cloud: {
@@ -38,6 +39,31 @@ describe("widget image assets", () => {
     });
     expect(srcdoc).not.toContain("asset://cloud");
     expect(srcdoc.match(/data:image\/png;base64,AQID/gu)).toHaveLength(2);
+  });
+
+  it("admits the current source revision without requiring an inherited root class", () => {
+    const source = {
+      html: '<div class="custom-clouds">Clouds</div>',
+      css: ".custom-clouds{color:white}",
+      script: "",
+      rootClass: "weather-v2",
+      assets,
+    };
+    const token = widgetPreviewToken(source);
+    const srcdoc = buildWidgetSrcdoc(source);
+
+    expect(srcdoc).toContain(`<meta name="widget-preview-token" content="${token}" />`);
+    expect(previewSnapshotMatches({ previewToken: token }, token)).toBe(true);
+    expect(previewSnapshotMatches({ previewToken: "stale" }, token)).toBe(false);
+  });
+
+  it("changes the preview revision when an attached image changes", () => {
+    const source = { html: '<img src="asset://cloud">', css: "", script: "", rootClass: "cloud", assets };
+    const replacement = {
+      ...source,
+      assets: { cloud: { ...assets.cloud, data: "BAUG", bytes: 3 } },
+    };
+    expect(widgetPreviewToken(source)).not.toBe(widgetPreviewToken(replacement));
   });
 
   it("leaves missing refs intact so diagnostics can name them", () => {

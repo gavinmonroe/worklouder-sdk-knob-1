@@ -233,7 +233,7 @@ export async function buildEventProgram({
   rootClass: string;
   assets?: WidgetAssetMap;
 }): Promise<F2epBuildResult> {
-  await waitForPreview(iframe, rootClass);
+  await waitForPreview(iframe);
 
   const prepared = prepareRenderV2({ html, css, script, rootClass });
   const bindings = prepared.logicalBindings ?? [];

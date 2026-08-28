@@ -60,6 +60,7 @@ import {
 } from "../compiler/widgetAssembler";
 import { F2TF_CANVAS } from "../compiler/f2tfPackage";
 import { isPendingEditorDirty, matchesAnyPreset, saveSourceDraft } from "./sourceDraft";
+import { retireWidgetUploadDiagnostics } from "./diagnosticLifecycle";
 import {
   importWidgetImageAsset,
   referencedWidgetAssetIds,
@@ -519,7 +520,7 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
     // widget holding its old state, so "Reset sim" appeared to do nothing.
     const previewFrame = previewIframeRef.current;
     if (previewFrame) {
-      resetPreview(previewFrame, widgetRef.current.rootClass).catch((cause) => {
+      resetPreview(previewFrame).catch((cause) => {
         logEvent(`reset (preview: ${(cause as Error).message})`);
       });
     }
@@ -637,7 +638,7 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
         // A preset switch reloads the iframe, and until the new document loads
         // the OLD one still answers the bridge. Wait for the preview to be
         // showing THIS widget before capturing.
-        await waitForPreview(iframe, widgetRef.current.rootClass);
+        await waitForPreview(iframe);
         frames = await captureFrames({
           iframe,
           css: widgetRef.current.css,
@@ -777,6 +778,11 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
    */
   const assembleWidgetUploadAction = useCallback<DesignerActions["assembleWidgetUpload"]>(
     async ({ generation, renderMode = "raster" }) => {
+      // Upload diagnostics belong to one attempt. A retry must retire the
+      // previous attempt before it can add current failures or warnings;
+      // otherwise a successful retry leaves an obsolete red error behind.
+      setDiagnostics(retireWidgetUploadDiagnostics);
+
       const w = widgetRef.current;
       const note = (message: string, severity: "error" | "warning" = "error") =>
         setDiagnostics((prev) => [...prev, { severity, source: "compilation", message }]);
@@ -789,7 +795,7 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
         note(message);
         throw new Error(message);
       }
-      await waitForPreview(iframe, w.rootClass);
+      await waitForPreview(iframe);
 
       // Transpile first: the target inventory drives the measurement pass, and
       // a script that does not transpile should fail before touching the preview.
@@ -989,7 +995,7 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
       } finally {
         // Reloading the srcdoc is the only true undo across an opaque origin;
         // it leaves the widget state exactly as a fresh load would.
-        if (mutated) await resetPreview(iframe, w.rootClass).catch(() => {});
+        if (mutated) await resetPreview(iframe).catch(() => {});
       }
     },
     [],

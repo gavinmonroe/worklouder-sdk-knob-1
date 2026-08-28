@@ -419,7 +419,8 @@ window.addEventListener("message", function (event) {
       for (var j = 0; j < clone.childNodes.length; j += 1) {
         markup += serializer.serializeToString(clone.childNodes[j]);
       }
-      reply({ type: "widget:snapshot:result", body: markup, imagesReady: imagesReady,
+      reply({ type: "widget:snapshot:result", body: markup, previewToken: __previewToken,
+        imagesReady: imagesReady,
         brokenImages: brokenImages, error: window.__widgetError || null });
     }
   } catch (e) {
@@ -428,7 +429,7 @@ window.addEventListener("message", function (event) {
 });
 `;
 
-export function buildWidgetSrcdoc(opts: {
+export interface WidgetPreviewSource {
   html: string;
   css: string;
   script: string;
@@ -437,14 +438,69 @@ export function buildWidgetSrcdoc(opts: {
   hostData?: Record<string, SnapshotSchema>;
   /** Portable image bank resolved into self-contained data URLs for preview. */
   assets?: WidgetAssetMap;
-}): string {
+}
+
+/**
+ * Stable identity for one exact preview source revision.
+ *
+ * Image data is fed into two incremental 32-bit hashes instead of first being
+ * concatenated into another multi-megabyte string. This is a revision marker,
+ * not a security boundary; the two independent hashes plus source length make
+ * accidental stale-preview collisions vanishingly unlikely.
+ */
+export function widgetPreviewToken(opts: WidgetPreviewSource): string {
+  let hashA = 0x811c9dc5;
+  let hashB = 0x9e3779b9;
+  let length = 0;
+
+  const feed = (value: string) => {
+    length += value.length;
+    for (let i = 0; i < value.length; i += 1) {
+      const code = value.charCodeAt(i);
+      hashA = Math.imul(hashA ^ code, 0x01000193) >>> 0;
+      hashB = (Math.imul(hashB ^ code, 0x5bd1e995) + 0x6d2b79f5) >>> 0;
+    }
+  };
+  const field = (name: string, value: string) => {
+    feed(name);
+    feed(":");
+    feed(String(value.length));
+    feed(":");
+    feed(value);
+    feed(";");
+  };
+
+  field("html", opts.html);
+  field("css", opts.css);
+  field("script", opts.script);
+  field("rootClass", opts.rootClass);
+  field("hostData", JSON.stringify(opts.hostData ?? {}));
+
+  const assets = opts.assets ?? {};
+  for (const id of Object.keys(assets).sort()) {
+    const asset = assets[id];
+    field("asset.id", id);
+    field("asset.name", asset.name);
+    field("asset.mimeType", asset.mimeType);
+    field("asset.bytes", String(asset.bytes));
+    field("asset.width", String(asset.width));
+    field("asset.height", String(asset.height));
+    field("asset.data", asset.data);
+  }
+
+  return `wdp-${length.toString(36)}-${hashA.toString(36)}-${hashB.toString(36)}`;
+}
+
+export function buildWidgetSrcdoc(opts: WidgetPreviewSource): string {
   const { html, css, script, hostData = {}, assets = {} } = opts;
   const resolvedHtml = resolveWidgetAssetReferences(html, assets);
   const resolvedCss = resolveWidgetAssetReferences(css, assets);
+  const previewToken = widgetPreviewToken(opts);
   return `<!doctype html>
 <html>
 <head>
 <meta charset="utf-8" />
+<meta name="widget-preview-token" content="${previewToken}" />
 <style>
   html, body { margin: 0; padding: 0; width: 100px; height: 310px; overflow: hidden; background: #000; }
   ${resolvedCss}
@@ -453,6 +509,7 @@ export function buildWidgetSrcdoc(opts: {
 <body>
 ${resolvedHtml}
 <script>
+var __previewToken = ${JSON.stringify(previewToken)};
 ${INTRINSICS}
 ${WIDGET_SHIM.replace("__SCHEMAS__", JSON.stringify(hostData))}
 try {

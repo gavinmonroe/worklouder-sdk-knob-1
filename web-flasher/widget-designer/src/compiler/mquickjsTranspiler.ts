@@ -1195,7 +1195,7 @@ const TOP_LEVEL_KEYS_FORM = {
 const TOP_LEVEL_HANDLER_FORM = {
   example: 'widget.on("tick.1s", function (event) { … });',
   pattern:
-    /^widget\.on\(\s*(["'])([^"'\\]*)\1\s*,\s*(?:function\s*\(\s*event\s*\)\s*\{|\(\s*event\s*\)\s*=>\s*\{)/,
+    /^widget\.on\(\s*(["'])([^"'\\]*)\1\s*,\s*(?:function\s*\(\s*(?:event\s*)?\)\s*\{|\(\s*(?:event\s*)?\)\s*=>\s*\{)/,
 };
 const TOP_LEVEL_FORMS = [
   TOP_LEVEL_STATE_FORM,

@@ -278,11 +278,14 @@ Switching presets replaces the iframe's srcdoc, and **until the new document
 loads the OLD one still answers the postMessage bridge — instantly, with stale
 markup**. "Does the bridge reply" is therefore not a readiness test.
 
-`waitForPreview(iframe, marker)` polls until both the applied srcdoc and the
-body the frame reports contain the current widget's `rootClass`. Measured on
-back-to-back preset switches with no settle time, it waits ~1 s and then
-captures correctly; without it the capture returned the previous widget or a
-blank frame.
+`buildWidgetSrcdoc()` stamps each source revision with a token derived from its
+HTML, CSS, JS, metadata, host-data schema, and attached image assets.
+`waitForPreview(iframe)` polls until the sandbox bridge reports the same token
+as the currently applied srcdoc. The token is deliberately independent of the
+widget's authored class names: a custom widget may start from Weather and then
+remove `weather-v2` without making itself impossible to push. On back-to-back
+preset switches the old frame may still answer, but its stale token is rejected
+until the new frame loads.
 
 If capture fails and the box-model fallback has **no boxes**, the build is now
 refused rather than shipped. The fallback only understands the F1SC subset —
