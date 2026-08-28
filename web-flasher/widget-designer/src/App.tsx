@@ -212,6 +212,7 @@ export default function App() {
         js: draft.js,
         name: draft.displayName,
         rootClass: draft.rootClass,
+        assets: draft.assets ?? {},
       });
     } else {
       pickPreset(BOOT_PRESET);

@@ -18,6 +18,7 @@
 import { PRESETS } from "../presets/widgets";
 import { RENDER_V2_MQUICKJS_SOURCE_PREFIX } from "../compiler/constants";
 import { presetStageCss } from "../components/presetFidelity";
+import { validateWidgetAssets, type WidgetAssetMap } from "../compiler/widgetAssets";
 
 export interface SourceDraft {
   displayName: string;
@@ -25,6 +26,7 @@ export interface SourceDraft {
   html: string;
   css: string;
   js: string;
+  assets?: WidgetAssetMap;
 }
 
 const STORAGE_KEY = "wd-source-draft";
@@ -62,6 +64,7 @@ export function loadSourceDraft(): SourceDraft | null {
       html: parsed.html,
       css: parsed.css,
       js: parsed.js,
+      ...(parsed.assets === undefined ? {} : { assets: validateWidgetAssets(parsed.assets) }),
     };
   } catch {
     return null;

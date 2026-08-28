@@ -44,6 +44,35 @@ describe("widget file round trip", () => {
     expect(json.startsWith('{\n  "format": "f1widget"')).toBe(true);
     expect(json.endsWith("\n")).toBe(true);
   });
+
+  it("carries attached images and upgrades them through the v2 format", () => {
+    const assets = {
+      cloud: {
+        id: "cloud",
+        name: "cloud.png",
+        mimeType: "image/png" as const,
+        data: "AQID",
+        bytes: 3,
+        width: 24,
+        height: 12,
+      },
+    };
+    const json = serializeWidgetFile({
+      name: "Cloud", rootClass: "cloud", html: '<img src="asset://cloud">', css: "", js: "", assets,
+    });
+    expect(parseWidgetFile(json).assets).toEqual(assets);
+  });
+
+  it("still opens v1 source-only widget files", () => {
+    const file = JSON.parse(serializeWidgetFile({
+      name: "Old", rootClass: "old", html: "<div/>", css: "", js: "",
+    }));
+    file.version = 1;
+    delete file.assets;
+    const parsed = parseWidgetFile(JSON.stringify(file));
+    expect(parsed.version).toBe(WIDGET_FILE_VERSION);
+    expect(parsed.assets).toBeUndefined();
+  });
 });
 
 describe("widget file rejection", () => {
@@ -88,6 +117,12 @@ describe("widget file rejection", () => {
     const f = valid();
     f.hostData = [1];
     expect(() => parseWidgetFile(JSON.stringify(f))).toThrow(/hostData/);
+  });
+
+  it("rejects malformed or mismatched asset records", () => {
+    const f = valid();
+    f.assets = { cloud: { id: "other", name: "cloud.png", mimeType: "image/png", data: "AQID", bytes: 3, width: 1, height: 1 } };
+    expect(() => parseWidgetFile(JSON.stringify(f))).toThrow(/mismatched id/);
   });
 });
 

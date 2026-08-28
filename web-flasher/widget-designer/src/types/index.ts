@@ -1,4 +1,5 @@
 import type { SnapshotSchema } from "../data/schemas";
+import type { WidgetAssetMap } from "../compiler/widgetAssets";
 
 // Core domain types for the Widget Designer.
 // Mirrors the bounded render-v2 + mquickjs contract enforced by f1-widget-sdk.
@@ -19,6 +20,8 @@ export interface DesignerWidget {
   css: string;
   /** Widget JS source. Will be parsed for `var name = N;` + `widget.on(…)`. */
   script: string;
+  /** Original compressed images used by asset:// references in HTML/CSS. */
+  assets?: WidgetAssetMap;
   /** Whether the firmware's first paint should start from a non-default background. */
   hasRasterBase?: boolean;
   /**

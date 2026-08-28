@@ -41,6 +41,7 @@ import type { EventReferenceEntry } from "./eventReference";
 import { HostFeedsPanel } from "./HostFeedsPanel";
 import { SimulatorCard, useSimDispatch } from "./SimulatorCard";
 import { setPendingEditorDirty } from "../designer/sourceDraft";
+import { AssetsPanel } from "./AssetsPanel";
 
 import type { SourceLanguage as Language } from "../types";
 type RecompileMode = "auto" | "apply";
@@ -425,6 +426,8 @@ export function SourceWorkspace({ state, actions }: { state: DesignerState; acti
           onReveal={revealInJs}
           containerRef={hostDataRef}
         />
+
+        <AssetsPanel state={state} actions={actions} />
       </div>
 
       {/* ─── Live preview + simulator + buffer rail ────────────────────── */}

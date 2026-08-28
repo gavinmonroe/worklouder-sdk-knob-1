@@ -31,6 +31,7 @@ import {
   type RenderV2Package,
 } from "./renderV2Package";
 import { setPreviewText, snapshotIframe, waitForPreview } from "./snapshot";
+import type { WidgetAssetMap } from "./widgetAssets";
 
 export interface Span {
   pixelOffset: number;
@@ -156,6 +157,7 @@ export async function captureBindingPatches(
   iframe: HTMLIFrameElement,
   css: string,
   prepared: any,
+  assets: WidgetAssetMap = {},
 ): Promise<{ patches: Record<string, BindingPatch>; baseFrame: Uint16Array; empty: string[] }> {
   const runs: { id: string | null; initial: string[] }[] = prepared.runs ?? [];
   const runFor = (targetId: string) => runs.find((run) => run.id === targetId);
@@ -163,7 +165,7 @@ export async function captureBindingPatches(
   for (const run of runs) {
     if (typeof run.id === "string" && run.id) await setPreviewText(iframe, run.id, run.initial.join(""));
   }
-  const baseFrame = await snapshotIframe(iframe, css);
+  const baseFrame = await snapshotIframe(iframe, css, assets);
 
   // Pass 1: render every variant and find where each binding actually changes.
   const measured: { name: string; rect: Rect; frames: Uint16Array[] }[] = [];
@@ -179,7 +181,7 @@ export async function captureBindingPatches(
       const glyphs = run.initial.slice();
       glyphs[position] = variant.glyphs.join("");
       await setPreviewText(iframe, binding.targetId, glyphs.join(""));
-      frames.push(await snapshotIframe(iframe, css));
+      frames.push(await snapshotIframe(iframe, css, assets));
     }
     await setPreviewText(iframe, binding.targetId, run.initial.join(""));
 
@@ -222,13 +224,14 @@ function frameToBuffer(frame: Uint16Array): Uint8Array {
  * falling back to frames, because the two behave very differently on device.
  */
 export async function buildEventProgram({
-  iframe, html, css, script, rootClass,
+  iframe, html, css, script, rootClass, assets = {},
 }: {
   iframe: HTMLIFrameElement;
   html: string;
   css: string;
   script: string;
   rootClass: string;
+  assets?: WidgetAssetMap;
 }): Promise<F2epBuildResult> {
   await waitForPreview(iframe, rootClass);
 
@@ -241,7 +244,7 @@ export async function buildEventProgram({
     );
   }
 
-  const { patches, baseFrame, empty } = await captureBindingPatches(iframe, css, prepared);
+  const { patches, baseFrame, empty } = await captureBindingPatches(iframe, css, prepared, assets);
   if (empty.length > 0) {
     throw new Error(
       `No rendered pixels change for ${empty.join(", ")}. The device would run the ` +
@@ -287,7 +290,7 @@ export const DEVICE_PIXEL_COUNT = DEVICE_WIDTH * DEVICE_HEIGHT;
  * createSceneUpload sends.
  */
 export async function buildEventDrivenPackage({
-  iframe, html, css, script, rootClass, name, generation = 1,
+  iframe, html, css, script, rootClass, name, generation = 1, assets = {},
 }: {
   iframe: HTMLIFrameElement;
   html: string;
@@ -296,8 +299,9 @@ export async function buildEventDrivenPackage({
   rootClass: string;
   name: string;
   generation?: number;
+  assets?: WidgetAssetMap;
 }): Promise<RenderV2Package & { programBytes: number; bindings: F2epBuildResult["bindings"] }> {
-  const built = await buildEventProgram({ iframe, html, css, script, rootClass });
+  const built = await buildEventProgram({ iframe, html, css, script, rootClass, assets });
 
   // One frame: the program patches this base rather than replaying frames.
   const bundle = await buildRenderV2RasterPackage({

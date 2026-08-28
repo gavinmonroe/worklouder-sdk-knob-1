@@ -21,6 +21,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { SnapshotSchema } from "../data/schemas";
+import { resolveWidgetAssetReferences, type WidgetAssetMap } from "./widgetAssets";
 
 export const INTRINSICS = `
 function mod(a, b) {
@@ -403,6 +404,13 @@ window.addEventListener("message", function (event) {
       }
       reply({ type: "widget:measure:result", boxes: boxes });
     } else if (message.type === "widget:snapshot") {
+      var imagesReady = true;
+      var brokenImages = [];
+      for (var imageIndex = 0; imageIndex < document.images.length; imageIndex += 1) {
+        var sourceImage = document.images[imageIndex];
+        if (!sourceImage.complete) imagesReady = false;
+        else if (sourceImage.naturalWidth === 0) brokenImages.push(sourceImage.getAttribute("src") || "<img>");
+      }
       var clone = document.body.cloneNode(true);
       var scripts = clone.querySelectorAll("script");
       for (var i = 0; i < scripts.length; i += 1) scripts[i].parentNode.removeChild(scripts[i]);
@@ -411,7 +419,8 @@ window.addEventListener("message", function (event) {
       for (var j = 0; j < clone.childNodes.length; j += 1) {
         markup += serializer.serializeToString(clone.childNodes[j]);
       }
-      reply({ type: "widget:snapshot:result", body: markup, error: window.__widgetError || null });
+      reply({ type: "widget:snapshot:result", body: markup, imagesReady: imagesReady,
+        brokenImages: brokenImages, error: window.__widgetError || null });
     }
   } catch (e) {
     reply({ type: (message.type || "widget") + ":error", error: String((e && e.message) || e) });
@@ -426,19 +435,23 @@ export function buildWidgetSrcdoc(opts: {
   rootClass: string;
   /** The widget's own host-data schemas, injected for widget.snapshot(). */
   hostData?: Record<string, SnapshotSchema>;
+  /** Portable image bank resolved into self-contained data URLs for preview. */
+  assets?: WidgetAssetMap;
 }): string {
-  const { html, css, script, hostData = {} } = opts;
+  const { html, css, script, hostData = {}, assets = {} } = opts;
+  const resolvedHtml = resolveWidgetAssetReferences(html, assets);
+  const resolvedCss = resolveWidgetAssetReferences(css, assets);
   return `<!doctype html>
 <html>
 <head>
 <meta charset="utf-8" />
 <style>
   html, body { margin: 0; padding: 0; width: 100px; height: 310px; overflow: hidden; background: #000; }
-  ${css}
+  ${resolvedCss}
 </style>
 </head>
 <body>
-${html}
+${resolvedHtml}
 <script>
 ${INTRINSICS}
 ${WIDGET_SHIM.replace("__SCHEMAS__", JSON.stringify(hostData))}
@@ -463,4 +476,3 @@ __loading = false;
  * long time. Use dispatchToPreview()/requestWidgetBody() in compiler/snapshot.ts
  * — the postMessage bridge is the only channel that crosses an opaque origin.
  */
-

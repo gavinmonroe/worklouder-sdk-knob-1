@@ -314,6 +314,48 @@ Four additive authoring features, no firmware or contract change:
 Slots: every feature rides existing value slots (≤14 total unchanged).
 Budget guard itemizes per-feature raster costs as today.
 
+## Portable image assets (`asset://`)
+
+The Designer treats images as first-class widget source instead of remote page
+dependencies. **Assets → Add images** accepts PNG, JPEG, and WebP and gives each
+file a stable URL such as `asset://cloud` or `asset://sprites`:
+
+```html
+<img id="cloud" src="asset://cloud" alt="">
+```
+
+```css
+.character { background-image: url("asset://sprites"); }
+```
+
+The asset bank is serialized into `.f1widget.json` v2, so Share/Open retains
+every image. Version-1 source-only files remain readable. Identical attached
+files are deduplicated; missing asset references and remote HTTP image URLs are
+source diagnostics rather than late black-frame/fallback failures. Inline
+`data:image/...` sources remain self-contained and continue to work, but the
+asset bank avoids inflating HTML/CSS buffers and makes reuse explicit.
+
+The memory rule is **flatten once, never ship twice**:
+
+- original compressed files exist only in the Designer and shared authoring
+  file; they are not copied into F2UP/F1WB;
+- static image pixels become part of the already-required 100×310 base frame,
+  which LZSS compresses for storage and expands into the one 62,000-byte
+  framebuffer the runtime already owns;
+- dynamic images become RGB565 raster tables for only the measured changing
+  rect. The assembler reports each target as
+  `variants × width × height × 2 B`, includes it in F2TF/container size, and
+  refuses the build before upload if the 65,536-byte raster or 96 KiB container
+  ceiling is crossed.
+
+This is also the sprite/animation path. `widget.animate("#cloud", 12)` samples
+the real CSS keyframes at 10 fps, unions transformed bounds across all samples,
+and drives those variants from the device's `tick.100ms`. A sprite sheet can
+use `background-position` in class variants; a tick, key, knob, or host event
+can select those classes through the existing `className = pick(...)` lowering.
+No DOM, PNG decoder, image object, or second sprite framebuffer is required on
+the keyboard.
+
 ## Shared-slot digits (formatter 13 in practice) — revision of feature 4
 
 `digits(value, N)` now costs ONE mailbox slot per number, not N. The

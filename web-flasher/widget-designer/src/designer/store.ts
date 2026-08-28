@@ -60,6 +60,11 @@ import {
 } from "../compiler/widgetAssembler";
 import { F2TF_CANVAS } from "../compiler/f2tfPackage";
 import { isPendingEditorDirty, matchesAnyPreset, saveSourceDraft } from "./sourceDraft";
+import {
+  importWidgetImageAsset,
+  referencedWidgetAssetIds,
+  type WidgetAssetMap,
+} from "../compiler/widgetAssets";
 
 const DEMO_PRESET: DesignerWidget = PRESETS.counter;
 
@@ -78,6 +83,7 @@ export interface DesignerState {
   html: string;
   css: string;
   js: string;
+  assets: WidgetAssetMap;
   // Inferred
   states: { slot: number; name: string; init: number }[];
   handlers: { kind: string; detail?: string }[];
@@ -122,6 +128,9 @@ export interface DesignerActions {
   setHtml: (v: string) => void;
   setCss: (v: string) => void;
   setJs: (v: string) => void;
+  /** Attach portable image files for asset:// references in HTML/CSS. */
+  addAssets: (files: File[]) => Promise<void>;
+  removeAsset: (id: string) => void;
   /** Replace the widget's host-data schemas. */
   setHostData: (next: Record<string, SnapshotSchema>) => void;
   recompile: (next: {
@@ -130,6 +139,7 @@ export interface DesignerActions {
     js?: string;
     name?: string;
     rootClass?: string;
+    assets?: WidgetAssetMap;
   }) => void;
   loadPreset: (id: keyof typeof PRESETS) => void;
   dispatch: (event: SimulatedEvent) => void;
@@ -222,6 +232,39 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
       source: "css",
     }));
 
+    // Asset URLs are part of source correctness. Unknown asset:// references
+    // would otherwise turn into a broken image only during SVG capture, while
+    // remote images taint the readable canvas. Name both at edit time.
+    const assets = w.assets ?? {};
+    for (const id of referencedWidgetAssetIds(w.html, w.css)) {
+      if (!assets[id]) {
+        diags.push({
+          severity: "error",
+          source: w.html.includes(`asset://${id}`) ? "html" : "css",
+          message: `Image asset "${id}" is not attached. Add it in Assets, then keep the asset://${id} reference.`,
+        });
+      }
+    }
+    const imgSources = [...w.html.matchAll(/<img\b[^>]*\bsrc\s*=\s*["']([^"']+)["']/giu)]
+      .map((match) => match[1]);
+    const externalImg = imgSources.find((source) => !/^(?:asset:\/\/|data:image\/)/iu.test(source));
+    if (externalImg || /<img\b[^>]*\bsrcset\s*=/iu.test(w.html)) {
+      diags.push({
+        severity: "error",
+        source: "html",
+        message: "External or responsive <img> sources cannot be captured safely. Attach each image and use one asset:// URL in src instead.",
+      });
+    }
+    const cssUrls = [...w.css.matchAll(/url\(\s*["']?([^"')]+)["']?\s*\)/giu)].map((match) => match[1].trim());
+    const externalCssImage = cssUrls.find((source) => !/^(?:asset:\/\/|data:image\/|#)/iu.test(source));
+    if (externalCssImage) {
+      diags.push({
+        severity: "error",
+        source: "css",
+        message: "External CSS image URLs cannot be captured safely. Attach the image and use url(\"asset://…\") instead.",
+      });
+    }
+
     // 2. Script + simulator
     try {
       const sim = createMquickjsSimulator(w.script);
@@ -297,7 +340,7 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
   useEffect(() => {
     recompute(widget);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [widget.html, widget.css, widget.script]);
+  }, [widget.html, widget.css, widget.script, widget.assets]);
 
   // ── Draft persistence (additive UI state) ────────────────────────────────
   // Every edit debounce-writes the committed source to localStorage; App
@@ -316,10 +359,11 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
         html: w.html,
         css: w.css,
         js: w.script,
+        assets: w.assets,
       });
     }, 400);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [widget.html, widget.css, widget.script, widget.name, widget.rootClass]);
+  }, [widget.html, widget.css, widget.script, widget.name, widget.rootClass, widget.assets]);
 
   // Unload guard: flush the pending draft write, then warn only when leaving
   // would actually lose work — the draft could not be persisted and the
@@ -338,6 +382,7 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
         html: w.html,
         css: w.css,
         js: w.script,
+        assets: w.assets,
       });
       const committedAtRisk =
         !persisted && !matchesAnyPreset({ html: w.html, css: w.css, js: w.script });
@@ -362,6 +407,25 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
   const setCss = useCallback<DesignerActions["setCss"]>((v) => setSource({ css: v }), [setSource]);
   const setJs = useCallback<DesignerActions["setJs"]>((v) => setSource({ script: v }), [setSource]);
 
+  const addAssets = useCallback<DesignerActions["addAssets"]>(async (files) => {
+    if (files.length === 0) return;
+    const next: WidgetAssetMap = { ...(widgetRef.current.assets ?? {}) };
+    for (const file of files) {
+      const asset = await importWidgetImageAsset(file, next);
+      next[asset.id] = asset;
+    }
+    setWidget((prev) => ({ ...prev, assets: next }));
+  }, []);
+
+  const removeAsset = useCallback<DesignerActions["removeAsset"]>((id) => {
+    setWidget((prev) => {
+      if (!prev.assets?.[id]) return prev;
+      const next = { ...prev.assets };
+      delete next[id];
+      return { ...prev, assets: next };
+    });
+  }, []);
+
   const recompile = useCallback<DesignerActions["recompile"]>((next) => {
     setWidget((prev) => ({
       ...prev,
@@ -370,6 +434,7 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
       script: next.js ?? prev.script,
       name: next.name ?? prev.name,
       rootClass: next.rootClass ?? prev.rootClass,
+      assets: next.assets ?? prev.assets,
     }));
     // Always reset simulator state — a recompile invalidates the simulator.
     slotRef.current = Array(16).fill(0);
@@ -381,7 +446,7 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
   }, []);
 
   const loadPreset = useCallback<DesignerActions["loadPreset"]>((id) => {
-    setWidget(PRESETS[id]);
+    setWidget({ ...PRESETS[id], assets: {} });
   }, []);
 
   const logEvent = useCallback((label: string) => {
@@ -576,6 +641,7 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
         frames = await captureFrames({
           iframe,
           css: widgetRef.current.css,
+          assets: widgetRef.current.assets ?? {},
           frameCount: requested,
           // Frames replay on the device at a 1s cadence, so advance the widget
           // by the matching tick — otherwise the captured motion would not
@@ -678,6 +744,7 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
         rootClass: w.rootClass,
         name: name || "widget",
         generation: 1,
+        assets: w.assets ?? {},
       });
       setRenderV2(pkg);
       setEventProgram({ programBytes: pkg.programBytes, bindings: pkg.bindings.length });
@@ -737,7 +804,7 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
       // be captured before the measurement pass mutates anything. Raster mode
       // never pre-captures: the assembler takes its own blanked base.
       const baseFrame =
-        renderMode === "glyphs" ? rgb565FrameToBytes(await snapshotIframe(iframe, w.css)) : undefined;
+        renderMode === "glyphs" ? rgb565FrameToBytes(await snapshotIframe(iframe, w.css, w.assets)) : undefined;
 
       const layouts: Record<string, WidgetTargetLayout> = {};
       let mutated = false;
@@ -902,7 +969,7 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
                   probeAnimation: (id: string) => probePreviewAnimation(iframe, id),
                   freezeAnimation: (id: string, delay: string | null) =>
                     freezePreviewAnimation(iframe, id, delay),
-                  captureFrame: () => snapshotIframe(iframe, w.css),
+                  captureFrame: () => snapshotIframe(iframe, w.css, w.assets),
                 },
               }),
         });
@@ -945,6 +1012,7 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
         css: w.css,
         js: w.script,
         hostData: w.hostData,
+        assets: w.assets,
       }),
       widgetFileName(w.name),
     );
@@ -960,6 +1028,7 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
       js: parsed.js,
       name: parsed.name,
       rootClass: parsed.rootClass,
+      assets: parsed.assets ?? {},
     });
     setHostData(parsed.hostData ?? {});
   }, [recompile, setHostData]);
@@ -1006,6 +1075,7 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
     html: widget.html,
     css: widget.css,
     js: widget.script,
+    assets: widget.assets ?? {},
     states: inferred.states,
     handlers: inferred.handlers,
     targets: inferred.targets,
@@ -1027,7 +1097,7 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
   return {
     state,
     actions: {
-      setMeta, setHtml, setCss, setJs, setHostData, recompile, loadPreset,
+      setMeta, setHtml, setCss, setJs, addAssets, removeAsset, setHostData, recompile, loadPreset,
       dispatch: dispatchEvent,
       registerPreview,
       setAutoTick,

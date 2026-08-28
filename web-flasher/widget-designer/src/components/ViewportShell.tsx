@@ -88,8 +88,9 @@ export function ViewportShell({
         script: guardWidgetScript(state.js),
         rootClass: state.rootClass,
         hostData: state.hostData,
+        assets: state.assets,
       }),
-    [state.html, state.css, state.js, state.rootClass, state.hostData],
+    [state.html, state.css, state.js, state.rootClass, state.hostData, state.assets],
   );
 
   // Re-dispatch the last event whenever the source changes (so a recompile

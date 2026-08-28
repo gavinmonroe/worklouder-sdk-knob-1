@@ -124,8 +124,11 @@ actually ran.) The shim now exposes a postMessage bridge — `widget:snapshot`,
 `widget:dispatch`, `widget:reset` — the one channel that crosses an opaque
 origin. The designer asks for serialized body markup, wraps it in
 `<svg><foreignObject>`, and draws it to a canvas. The srcdoc references no
-external resource, so the canvas is never tainted and `getImageData` stays
-readable.
+remote resource: attached `asset://` PNG/JPEG/WebP URLs are resolved to
+self-contained data URLs before preview/capture, so the canvas is never tainted
+and `getImageData` stays readable. Original asset files remain authoring-only;
+the package contains the resulting base/delta RGB565 pixels and counts their
+exact device cost.
 
 `cssScene`'s box model remains only as a fallback, and a lossy one:
 `compileWidget()` never receives simulator slots or runtime DOM writes, so it

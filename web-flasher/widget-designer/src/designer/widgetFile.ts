@@ -14,12 +14,13 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import type { SnapshotSchema } from "../data/schemas";
+import { validateWidgetAssets, type WidgetAssetMap } from "../compiler/widgetAssets";
 
 export const WIDGET_FILE_FORMAT = "f1widget";
-export const WIDGET_FILE_VERSION = 1;
+export const WIDGET_FILE_VERSION = 2;
 export const WIDGET_FILE_EXTENSION = ".f1widget.json";
 
-export interface WidgetFileV1 {
+export interface WidgetFileV2 {
   format: typeof WIDGET_FILE_FORMAT;
   version: typeof WIDGET_FILE_VERSION;
   name: string;
@@ -27,6 +28,7 @@ export interface WidgetFileV1 {
   html: string;
   css: string;
   js: string;
+  assets?: WidgetAssetMap;
   hostData?: Record<string, SnapshotSchema>;
 }
 
@@ -45,9 +47,10 @@ export function serializeWidgetFile(widget: {
   html: string;
   css: string;
   js: string;
+  assets?: WidgetAssetMap;
   hostData?: Record<string, SnapshotSchema>;
 }): string {
-  const file: WidgetFileV1 = {
+  const file: WidgetFileV2 = {
     format: WIDGET_FILE_FORMAT,
     version: WIDGET_FILE_VERSION,
     name: widget.name,
@@ -55,6 +58,9 @@ export function serializeWidgetFile(widget: {
     html: widget.html,
     css: widget.css,
     js: widget.js,
+    ...(widget.assets && Object.keys(widget.assets).length > 0
+      ? { assets: widget.assets }
+      : {}),
     ...(widget.hostData && Object.keys(widget.hostData).length > 0
       ? { hostData: widget.hostData }
       : {}),
@@ -75,7 +81,7 @@ function requireString(value: unknown, field: string, maxBytes: number): string 
   return value;
 }
 
-export function parseWidgetFile(text: string): WidgetFileV1 {
+export function parseWidgetFile(text: string): WidgetFileV2 {
   let raw: unknown;
   try {
     raw = JSON.parse(text);
@@ -91,12 +97,14 @@ export function parseWidgetFile(text: string): WidgetFileV1 {
       'Not a widget file: missing the "f1widget" format marker. Share widgets with the Share button so the file carries it.',
     );
   }
-  if (record.version !== WIDGET_FILE_VERSION) {
+  // v1 had the same source fields but no asset bank. Keep it readable; every
+  // new Share writes v2 so an attached image can never be silently omitted.
+  if (record.version !== 1 && record.version !== WIDGET_FILE_VERSION) {
     throw new Error(
       `This widget file is version ${String(record.version)}, but this Designer reads version ${WIDGET_FILE_VERSION}. Update the Designer to open it.`,
     );
   }
-  const file: WidgetFileV1 = {
+  const file: WidgetFileV2 = {
     format: WIDGET_FILE_FORMAT,
     version: WIDGET_FILE_VERSION,
     name: requireString(record.name, "name", 200),
@@ -105,6 +113,7 @@ export function parseWidgetFile(text: string): WidgetFileV1 {
     css: requireString(record.css, "css", 200_000),
     js: requireString(record.js, "js", 200_000),
   };
+  if (record.assets !== undefined) file.assets = validateWidgetAssets(record.assets);
   if (record.hostData !== undefined) {
     if (record.hostData === null || typeof record.hostData !== "object" || Array.isArray(record.hostData)) {
       throw new Error('Not a widget file: "hostData" must be an object when present.');

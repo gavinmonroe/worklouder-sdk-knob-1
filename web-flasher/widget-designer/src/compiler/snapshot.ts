@@ -19,6 +19,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { DEVICE_HEIGHT, DEVICE_WIDTH, rgbaToRgb565 } from "./renderV2Package";
+import { resolveWidgetAssetReferences, type WidgetAssetMap } from "./widgetAssets";
 
 /** The backdrop buildWidgetSrcdoc paints before any author CSS. */
 const BASE_CSS = `html,body{margin:0;padding:0;width:${DEVICE_WIDTH}px;height:${DEVICE_HEIGHT}px;overflow:hidden;background:#000;}`;
@@ -111,10 +112,13 @@ export async function waitForPreview(
   while (Date.now() < deadline) {
     try {
       if ((iframe.srcdoc ?? "").includes(marker)) {
-        const reply = await ask<{ type: string; body: string }>(
+        const reply = await ask<{ type: string; body: string; imagesReady?: boolean; brokenImages?: string[] }>(
           iframe, { type: "widget:snapshot" }, "widget:snapshot:result", 500,
         );
-        if (reply.body.includes(marker)) return;
+        if ((reply.brokenImages?.length ?? 0) > 0) {
+          throw new Error(`The preview could not decode image ${reply.brokenImages![0]}.`);
+        }
+        if (reply.body.includes(marker) && reply.imagesReady !== false) return;
       }
     } catch (cause) {
       lastError = cause;
@@ -294,8 +298,15 @@ function loadSvgImage(svg: string): Promise<HTMLImageElement> {
  * Throws if the iframe is cross-origin, not yet loaded, or the markup cannot be
  * rasterized. Callers should fall back to the box-model rasterizer.
  */
-export async function snapshotIframe(iframe: HTMLIFrameElement, css: string): Promise<Uint16Array> {
-  const svg = buildSnapshotSvg(await requestWidgetBody(iframe), css);
+export async function snapshotIframe(
+  iframe: HTMLIFrameElement,
+  css: string,
+  assets: WidgetAssetMap = {},
+): Promise<Uint16Array> {
+  const svg = buildSnapshotSvg(
+    await requestWidgetBody(iframe),
+    resolveWidgetAssetReferences(css, assets),
+  );
   const image = await loadSvgImage(svg);
   const { ctx } = createContext();
   // Paint the backdrop first: foreignObject content may be transparent where
@@ -309,6 +320,7 @@ export async function snapshotIframe(iframe: HTMLIFrameElement, css: string): Pr
 export interface CaptureOptions {
   iframe: HTMLIFrameElement;
   css: string;
+  assets?: WidgetAssetMap;
   /** How many frames to capture. 1 produces a still. */
   frameCount: number;
   /** Advance the widget one step between snapshots. */
@@ -330,13 +342,14 @@ export interface CaptureOptions {
 export async function captureFrames({
   iframe,
   css,
+  assets = {},
   frameCount,
   advance,
 }: CaptureOptions): Promise<Uint16Array[]> {
   const frames: Uint16Array[] = [];
   for (let index = 0; index < frameCount; index += 1) {
     if (index > 0 && advance) await advance();
-    frames.push(await snapshotIframe(iframe, css));
+    frames.push(await snapshotIframe(iframe, css, assets));
   }
   return frames;
 }
