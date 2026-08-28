@@ -48,6 +48,18 @@ node bin/f1-readonly.mjs bubble \
   --label "Input Lab" --value "Hide" --d 0 --s 0
 ```
 
+## Knob 1 on macOS
+
+The Knob 1 (`deviceType: "knob"`, PID `0x8296`/`0x82e3`) is discovered by default
+alongside the Framer F1, but macOS denies HID output reports to it, so every RPC fails
+with `Cannot write to hid device` until the command is re-run with `sudo`. The cause,
+the measured `IOReturn` codes, and a reproduction script
+(`tools/macos-hid-probe.py`) are in
+[`docs/21-knob1-macos-hid-access.md`](../docs/21-knob1-macos-hid-access.md).
+
+The transient display bubble remains Framer-F1-only; it is a display RPC that has not
+been exercised on a Knob 1.
+
 If multiple matching keyboards are attached, add `--device 0` (or the index
 shown by `inspect --discover-only`). `--all-devices` opts into inspecting other
 recognized Work Louder models; the default is strictly `knob_f1`. Add `--json`

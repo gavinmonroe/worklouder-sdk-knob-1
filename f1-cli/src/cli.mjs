@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import { BUBBLE_METHOD, validateBubblePayload } from "./bubble.mjs";
 import {
   backupConnectedDevice,
+  BUBBLE_DEVICE_TYPES,
   createFreshBackupDirectory,
   discoverDevices,
   inspectConnectedDevice,
@@ -141,12 +142,14 @@ async function runBackup(options) {
   const manifest = await withReadOnlyDevice(sdk, device, (api) =>
     backupConnectedDevice(api, backupRoot, deviceInfo),
   );
-  const failed = manifest.files.filter((file) => !file.saved);
+  const skipped = manifest.files.filter((file) => file.skipped !== undefined);
+  const failed = manifest.files.filter((file) => !file.saved && file.skipped === undefined);
   print(
     {
       mode: "read-only",
       backupDirectory: backupRoot,
-      filesSaved: manifest.files.length - failed.length,
+      filesSaved: manifest.files.length - failed.length - skipped.length,
+      filesSkipped: skipped.length,
       filesFailed: failed.length,
       manifest,
     },
@@ -187,7 +190,7 @@ async function runBubble(options) {
     throw new Error("Input Monitoring / HID permission is not granted; refusing to connect.");
   }
   const device = selectDevice(discovery.devices, options.deviceIndex);
-  if (device.deviceType !== "knob_f1") {
+  if (!BUBBLE_DEVICE_TYPES.has(device.deviceType)) {
     throw new Error("Bubble is restricted to a Framer F1 (knob_f1) device.");
   }
 
