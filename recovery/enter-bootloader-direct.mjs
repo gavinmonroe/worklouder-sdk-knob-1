@@ -4,8 +4,11 @@
  *
  * The repository's recovery/enter-bootloader.mjs drives this same SDK call from inside
  * the installed Input app. This does it directly against the extracted SDK, so no Input
- * install is needed. On macOS it must run under sudo: the Knob 1's vendor HID collection
- * shares the keyboard interface, so IOHIDDeviceSetReport is denied at uid 501.
+ * install is needed. On macOS a Knob 1 must run this under sudo, because
+ * IOHIDDeviceSetReport is denied there at uid 501 and succeeds at uid 0 — measured, but
+ * not yet explained; see docs/21-knob1-macos-hid-access.md. (An earlier note here blamed
+ * the vendor collection sharing the keyboard interface. A Framer F1 shares one too and is
+ * written unprivileged, so that is not the cause.) An F1 does not need sudo.
  *
  * This is a STATE-CHANGING call. It is NOT routed through f1-cli's ReadOnlyTransport,
  * because sys.bootloader is deliberately not in that allowlist. Nothing is written to
