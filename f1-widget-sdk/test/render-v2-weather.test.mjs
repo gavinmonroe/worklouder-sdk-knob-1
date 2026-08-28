@@ -4,6 +4,7 @@ import test from "node:test";
 
 import { ChromiumRasterCaptureProvider } from "../input-lab/lib/chromium-raster-capture.mjs";
 import { compileInputLabRenderV2 } from "../input-lab/lib/render-v2.mjs";
+import { missingPinnedChrome } from "../test-support/pinned-inputs.mjs";
 import {
   createOpenMeteoForecastUrl,
   createOpenMeteoGeocodingUrl,
@@ -97,7 +98,7 @@ test("incremental weather contract is one revisioned six-record batch that fits 
   assert.equal(WEATHER_WIDGET_EDGE_REQUIREMENTS.recordsPerSnapshot, 6);
 });
 
-test("weather snapshot fallback compiles as a rich RGB565 package and knob selection stays event-driven", async () => {
+test("weather snapshot fallback compiles as a rich RGB565 package and knob selection stays event-driven", { skip: missingPinnedChrome() }, async () => {
   const snapshot = weatherSnapshotFromOpenMeteo(await fixture(), config);
   const source = createWeatherWidgetSource(snapshot);
   assert.equal(source.delivery.mode, "snapshot-package-recompile");

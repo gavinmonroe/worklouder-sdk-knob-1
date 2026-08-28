@@ -5,6 +5,7 @@ import test from "node:test";
 import { createRenderV2Runtime } from "../../src/render-v2/index.mjs";
 import { ChromiumRasterCaptureProvider } from "../lib/chromium-raster-capture.mjs";
 import { compileInputLabRenderV2, serializeInputLabRenderV2 } from "../lib/render-v2.mjs";
+import { missingPinnedChrome } from "../../test-support/pinned-inputs.mjs";
 
 const GRADIENT_HTML = `<div class="render-v2">
   <header><small>FRAMER F1</small><b>LIVE</b></header>
@@ -133,7 +134,7 @@ test("Chromium Render v2 rejects obfuscated and cross-target CSS mutation depend
   assert.equal(captures, 0);
 });
 
-test("Chromium Render v2 compiles a nested large-gradient layout with deterministic composability proof", async () => {
+test("Chromium Render v2 compiles a nested large-gradient layout with deterministic composability proof", { skip: missingPinnedChrome() }, async () => {
   const provider = new ChromiumRasterCaptureProvider();
   const source = { html: GRADIENT_HTML, css: GRADIENT_CSS, script: GRADIENT_SCRIPT,
     rootClass: "render-v2", renderMode: "raster", name: "gradient-v2" };
@@ -166,7 +167,7 @@ test("Chromium Render v2 compiles a nested large-gradient layout with determinis
   assert.notDeepEqual(host.frame, dial.frame);
 });
 
-test("Chromium Render v2 captures every reachable formatTime digit and proves combined clock parity", async () => {
+test("Chromium Render v2 captures every reachable formatTime digit and proves combined clock parity", { skip: missingPinnedChrome() }, async () => {
   const provider = new ChromiumRasterCaptureProvider();
   const html = `<div class="render-v2"><div class="sky"></div><span id="clock">12:34:56</span></div>`;
   const css = `.render-v2{position:relative;width:100px;height:310px;overflow:hidden;` +
@@ -226,7 +227,7 @@ test("Cartesian proof catches a long+long flex reflow omitted by representative 
     { captureProvider }), (error) => error.code === "RENDER_V2_RASTER_REFLOW" && /state:2:2/u.test(error.message));
 });
 
-test("Chromium Render v2 rejects text mutations that cause layout reflow", async () => {
+test("Chromium Render v2 rejects text mutations that cause layout reflow", { skip: missingPinnedChrome() }, async () => {
   const provider = new ChromiumRasterCaptureProvider();
   const html = `<div class="render-v2"><span id="label">W</span></div>`;
   const css = `.render-v2{width:100px;height:310px;background:#001;color:white}` +
@@ -237,7 +238,7 @@ test("Chromium Render v2 rejects text mutations that cause layout reflow", async
     { captureProvider: provider }), (error) => error.code === "RENDER_V2_RASTER_REFLOW");
 });
 
-test("Chromium Render v2 rejects overlapping absolute patch bindings", async () => {
+test("Chromium Render v2 rejects overlapping absolute patch bindings", { skip: missingPinnedChrome() }, async () => {
   const provider = new ChromiumRasterCaptureProvider();
   const html = `<div class="render-v2"><span id="a">0</span><span id="b">0</span></div>`;
   const css = `.render-v2{position:relative;width:100px;height:310px;background:#001;color:white}` +

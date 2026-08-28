@@ -8,6 +8,7 @@ import { buildAssetBank } from "../src/assets.mjs";
 import { buildWidget, inspectImage } from "../src/firmware.mjs";
 import { initProject } from "../src/scaffold.mjs";
 import { loadWidgetSpec } from "../src/spec.mjs";
+import { missingToolchain } from "../test-support/pinned-inputs.mjs";
 
 test("project generator creates an offline-composable six-species roster project", async (context) => {
   const temporary = await mkdtemp(path.join(os.tmpdir(), "f1-sdk-init-test-"));
@@ -69,7 +70,7 @@ test("DROM growth is a deterministic ceiling, not a hardcoded page count", async
   assert.equal(assets.dromGrowth.pages, 2);
 });
 
-test("sample builds deterministically with reviewed shifts and stock callbacks preserved", async (context) => {
+test("sample builds deterministically with reviewed shifts and stock callbacks preserved", { skip: missingToolchain() }, async (context) => {
   const temporary = await mkdtemp(path.join(os.tmpdir(), "f1-sdk-build-test-"));
   context.after(() => rm(temporary, { recursive: true, force: true }));
   const sample = new URL("../examples/night-cat/", import.meta.url).pathname;

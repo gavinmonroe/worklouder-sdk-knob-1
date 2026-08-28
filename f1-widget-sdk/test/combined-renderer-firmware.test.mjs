@@ -10,13 +10,14 @@ import {
   LIVE_RENDERER_BASE,
 } from "../src/combined-renderer-firmware.mjs";
 import { PINNED } from "../src/constants.mjs";
+import { missingRecoveryBackup } from "../test-support/pinned-inputs.mjs";
 
 const APP_SHA256 = "49cbf8801e3d86b20e0df21f41a2410b3e4d8547f8f64021ca6ed4bd85168840";
 const CODE_SHA256 = "29ab7e856deea7bc4d87df784ecceb8e9c66210674a14264f277d801cb8c5276";
 const MODULE_SHA256 = "4241be7b22d9b9198c2e4247a6daec3299557fe8fe424588ddff5702d2a79d5e";
 const MERGED_SHA256 = "d2f62725d20859db26142927b5f18f1e9db82c48928cb1d8a6fecae61253fd97";
 
-test("combined renderer ID26 preserves the accepted Music/WPM image and appends one registration module", async (context) => {
+test("combined renderer ID26 preserves the accepted Music/WPM image and appends one registration module", { skip: missingRecoveryBackup() }, async (context) => {
   const output = await mkdtemp(path.join(os.tmpdir(), "f1-sdk-renderer-combined-test-"));
   context.after(() => rm(output, { recursive: true, force: true }));
   const result = await buildCombinedRendererFirmware({ outputDirectory: output });
@@ -101,7 +102,7 @@ test("combined renderer ID26 preserves the accepted Music/WPM image and appends 
   assert.equal(manifest.safety.newDromAssets, false);
 });
 
-test("combined renderer mutation is exactly one live-wrapper call plus append-only IROM", async (context) => {
+test("combined renderer mutation is exactly one live-wrapper call plus append-only IROM", { skip: missingRecoveryBackup() }, async (context) => {
   const output = await mkdtemp(path.join(os.tmpdir(), "f1-sdk-renderer-byte-test-"));
   context.after(() => rm(output, { recursive: true, force: true }));
   const result = await buildCombinedRendererFirmware({ outputDirectory: output });
@@ -128,7 +129,7 @@ test("combined renderer mutation is exactly one live-wrapper call plus append-on
   }
 });
 
-test("embedded JP Matrix F1WB is copied into separate retained RAM before RPC generation seeding", async (context) => {
+test("embedded JP Matrix F1WB is copied into separate retained RAM before RPC generation seeding", { skip: missingRecoveryBackup() }, async (context) => {
   const output = await mkdtemp(path.join(os.tmpdir(), "f1-sdk-renderer-startup-test-"));
   context.after(() => rm(output, { recursive: true, force: true }));
   const result = await buildCombinedRendererFirmware({ outputDirectory: output });
@@ -153,7 +154,7 @@ test("embedded JP Matrix F1WB is copied into separate retained RAM before RPC ge
   assert.doesNotMatch(stage, /s32i\.n a8,a5,(?:4|8)/u);
 });
 
-test("renderer smoke approval is app-only while runtime acceptance remains pending", async (context) => {
+test("renderer smoke approval is app-only while runtime acceptance remains pending", { skip: missingRecoveryBackup() }, async (context) => {
   const output = await mkdtemp(path.join(os.tmpdir(), "f1-sdk-renderer-approval-test-"));
   context.after(() => rm(output, { recursive: true, force: true }));
   const result = await buildCombinedRendererFirmware({ outputDirectory: output });

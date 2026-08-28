@@ -18,6 +18,7 @@ import { DEFAULT_INPUT_LAB_CSS, DEFAULT_INPUT_LAB_HTML, DEFAULT_INPUT_LAB_SLOTS,
 import { createInputLabCliTransport, createInputLabServer, parseInputLabServerArgs } from "../server.mjs";
 import { buildLabEditorApp, createLabEditorLauncher } from "../tools/build-lab-app.mjs";
 import { patchLabMainSource } from "../tools/prepare-lab-app.mjs";
+import { missingPinnedChrome } from "../../test-support/pinned-inputs.mjs";
 
 function memoryStorage() {
   const values = new Map();
@@ -305,7 +306,7 @@ test("mixed semantic and captured raster slots encode one deterministic F1WB bun
   ]);
 });
 
-test("Generating uses a deterministic maximum-cadence screen-perimeter animation within the live bundle cap", async () => {
+test("Generating uses a deterministic maximum-cadence screen-perimeter animation within the live bundle cap", { skip: missingPinnedChrome() }, async () => {
   const provider = new ChromiumRasterCaptureProvider();
   const input = { html: GENERATING_PERIMETER_HTML, css: GENERATING_PERIMETER_CSS,
     settings: GENERATING_PERIMETER_SETTINGS };
@@ -353,7 +354,7 @@ test("Generating uses a deterministic maximum-cadence screen-perimeter animation
   assert.ok(compiled.bundle.binary.length <= WIDGET_SCENE_RPC_LIMITS.maxBundleBytes);
 });
 
-test("pasted loader captures ten deterministic frames and fits the live three-slot bundle", async () => {
+test("pasted loader captures ten deterministic frames and fits the live three-slot bundle", { skip: missingPinnedChrome() }, async () => {
   const provider = new ChromiumRasterCaptureProvider();
   const settings = { fps: 5, loopDurationMs: 2000, maxFrames: 10, maxBytes: 131072, interaction: "none" };
   const captured = await provider.capture({ html: LOADER_HTML, css: LOADER_CSS, settings });

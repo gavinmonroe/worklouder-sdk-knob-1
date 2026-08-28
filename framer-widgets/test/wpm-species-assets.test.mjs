@@ -10,6 +10,17 @@ import {
   cellBounds,
 } from "../tools/extract-wpm-species-frames.mjs";
 
+// ImageMagick is an external host tool, not a repository input. Skipping with a reason
+// keeps a fresh clone honest: an absent `magick` is a missing prerequisite, not a defect.
+const missingImageMagick = (() => {
+  try {
+    execFileSync("magick", ["-version"], { stdio: "ignore" });
+    return false;
+  } catch {
+    return "ImageMagick `magick` is not on PATH. See docs/20-local-development-setup.md.";
+  }
+})();
+
 const root = new URL("../../", import.meta.url);
 const normalizedRoot = new URL("../assets/wpm-pet-species-frames-v1/", import.meta.url);
 const deviceRoot = new URL("../assets/device-lvgl-v3-species/", import.meta.url);
@@ -40,7 +51,8 @@ test("six-species extractor pins exact roster, states, and nonoverlapping 4x2 ce
   }
 });
 
-test("all 48 normalized frames are exact 68x56 RGBA with real transparency", async () => {
+test("all 48 normalized frames are exact 68x56 RGBA with real transparency",
+  { skip: missingImageMagick }, async () => {
   const manifest = JSON.parse(await readFile(new URL("manifest.json", normalizedRoot)));
   for (const species of manifest.species) {
     for (const frame of species.frames) {

@@ -11,6 +11,7 @@ import {
 } from "../src/combined-renderer-v2-firmware.mjs";
 import { validateDeviceApproval } from "../src/device-workflow.mjs";
 import { PINNED } from "../src/constants.mjs";
+import { missingRecoveryBackup } from "../test-support/pinned-inputs.mjs";
 import {
   buildRenderV2HostEventExpression,
   normalizeRenderV2HostEvent,
@@ -38,7 +39,7 @@ async function fixture(context) {
   return result;
 }
 
-test("clock+blue-timer build starts from accepted 7838 and passes exact ID26+ID27 paths", async (context) => {
+test("clock+blue-timer build starts from accepted 7838 and passes exact ID26+ID27 paths", { skip: missingRecoveryBackup() }, async (context) => {
   const result = await fixture(context);
   const { manifest, approval } = result;
   assert.equal(manifest.status, "DEVICE_SMOKE_CANDIDATE");
@@ -112,7 +113,7 @@ test("clock+blue-timer build starts from accepted 7838 and passes exact ID26+ID2
     /push-focus-timer-package\.mjs --confirm-live-rpc$/u);
 });
 
-test("combined mutation replaces only the renderer cavity plus bounded call and preserves 7838 DROM", async (context) => {
+test("combined mutation replaces only the renderer cavity plus bounded call and preserves 7838 DROM", { skip: missingRecoveryBackup() }, async (context) => {
   const result = await fixture(context);
   const [liveApp, candidateApp, module, compressedAssets] = await Promise.all([
     readFile(rollbackPath), readFile(result.appPath), readFile(result.modulePath),
@@ -159,7 +160,7 @@ test("combined mutation replaces only the renderer cavity plus bounded call and 
   assert.equal(result.approval.runtime.dromMutationBytes, 0);
 });
 
-test("receipt-backed current-live rollback validates and rejects any receipt mutation", async (context) => {
+test("receipt-backed current-live rollback validates and rejects any receipt mutation", { skip: missingRecoveryBackup() }, async (context) => {
   const result = await fixture(context);
   const [app, rollback, receipt] = await Promise.all([
     readFile(result.appPath), readFile(rollbackPath), readFile(receiptPath),

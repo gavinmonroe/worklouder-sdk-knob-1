@@ -14,11 +14,12 @@ import {
   validateNormalDeviceReport,
 } from "../src/device-workflow.mjs";
 import { prepareStage3e3, STAGE3E3_SDK_PROFILE, validateStage3e3Manifest } from "../src/stage3e3.mjs";
+import { missingRecoveryBackup } from "../test-support/pinned-inputs.mjs";
 
 const expectedApp = "e7af67227d3969e3fefb5e9d3cc093fc20509f81c0426a4442ea87100f3dae44";
 const expectedRollback = "dd8edaaa2c3aa98a1cbdbda319255cc7d1a0e02d0069f543dd574ef040db4b83";
 
-test("Stage-3E.3 SDK pipeline composes exact I4 app then reuses ABI/build cache", async (context) => {
+test("Stage-3E.3 SDK pipeline composes exact I4 app then reuses ABI/build cache", { skip: missingRecoveryBackup() }, async (context) => {
   const output = await mkdtemp(path.join(os.tmpdir(), "f1-sdk-fast-test-"));
   context.after(() => rm(output, { recursive: true, force: true }));
   const first = await prepareStage3e3({ outputDirectory: output });
@@ -104,7 +105,7 @@ test("read-only Input health gate requires exact USB knob_f1 firmware 0.4.1", ()
   assert.throws(() => validateNormalDeviceReport({ ...report, version: "0.4.2" }), /0.4.1/u);
 });
 
-test("fast smoke workflow is fully injectable and emits only one guarded app write", async (context) => {
+test("fast smoke workflow is fully injectable and emits only one guarded app write", { skip: missingRecoveryBackup() }, async (context) => {
   const temporary = await mkdtemp(path.join(os.tmpdir(), "f1-sdk-device-sim-"));
   context.after(() => rm(temporary, { recursive: true, force: true }));
   const appPath = new URL("../../custom-firmware/build/framer-0.4.1-stage3e3-wpm-pet-full-app.bin", import.meta.url);
