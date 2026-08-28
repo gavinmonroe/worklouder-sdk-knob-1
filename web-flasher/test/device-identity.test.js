@@ -55,7 +55,7 @@ describe("Framer identity gates", () => {
         productId: 33428,
         collections: [{ usagePage: 0xff00 }],
       }),
-    ).toThrow(/not a supported/u);
+    ).toThrow(/this app doesn.t know yet/u);
   });
 
   it("uses an explicit single-device identity when Chrome omits the HID serial", () => {

@@ -227,7 +227,7 @@ export interface F2tfPackage {
 
 /** One line per raster target, for over-budget diagnostics. */
 export function describeRasterCosts(
-  costs: { id: string; variants: number; width: number; height: number; bytes: number }[],
+  costs: F2tfPackage["rasterCosts"],
 ): string {
   return costs
     .map((cost) =>

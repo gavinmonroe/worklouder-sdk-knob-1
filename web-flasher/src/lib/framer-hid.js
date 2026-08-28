@@ -135,7 +135,9 @@ export class FramerHidClient {
 }
 
 export async function requestFramerHid() {
-  const devices = await navigator.hid.requestDevice({ filters: framerHidFilters });
+  const devices = await navigator.hid.requestDevice({
+    filters: [{ vendorId: WORK_LOUDER_USB_VENDOR_ID }],
+  });
   if (devices.length !== 1) throw new Error("Select exactly one Framer F1 in the Chrome device chooser.");
   return assertNormalFramerDevice(devices[0]);
 }

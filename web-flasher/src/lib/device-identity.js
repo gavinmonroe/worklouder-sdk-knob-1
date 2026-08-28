@@ -45,9 +45,27 @@ export function serialMatchesMac(serialNumber, macAddress) {
   return serial.length === 12 && serial === mac;
 }
 
+export function describeUsbDevice(device) {
+  if (!device) return "no device";
+  const vid = `0x${(device.vendorId ?? 0).toString(16).padStart(4, "0")}`;
+  const pid = `0x${(device.productId ?? 0).toString(16).padStart(4, "0")}`;
+  const name = device.productName ? `${device.productName} ` : "";
+  return `${name}(USB ${vid}:${pid})`;
+}
+
 export function assertNormalFramerDevice(device) {
-  if (!device || device.vendorId !== WORK_LOUDER_USB_VENDOR_ID || !isFramerProductId(device.productId)) {
-    throw new Error("The selected USB device is not a supported Framer F1 / Knob F1.");
+  if (!device || device.vendorId !== WORK_LOUDER_USB_VENDOR_ID) {
+    throw new Error(
+      `That device isn't a Work Louder keyboard — it reports ${describeUsbDevice(device)}. ` +
+        "Pick your Framer F1 or Knob 1 in the chooser.",
+    );
+  }
+  if (!isFramerProductId(device.productId)) {
+    throw new Error(
+      `This looks like a Work Louder keyboard, but it reports ${describeUsbDevice(device)}, ` +
+        "which this app doesn't know yet. Send that USB id to the project and it can be added — " +
+        "the keyboard itself is probably fine.",
+    );
   }
   const hasVendorCollection = device.collections?.some(
     (collection) => collection.usagePage === FRAMER_USAGE_PAGE,

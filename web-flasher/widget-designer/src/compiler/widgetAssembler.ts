@@ -95,7 +95,7 @@ export interface VariantCaptureBridge {
   captureFrame(): Promise<Uint16Array> | Uint16Array;
   /** v3 class variants: apply one variant class ON TOP of the element's
    *  authored className; "" restores the authored value. */
-  setClass?(id: string, variantClass: string): Promise<void> | void;
+  setClass?(id: string, variantClass: string): Promise<unknown> | unknown;
   /** v3 hidden: blank (true) / restore (false) the element's pixels via
    *  inline visibility, so the base holds what is BEHIND the element. */
   setHidden?(id: string, hidden: boolean): Promise<void> | void;

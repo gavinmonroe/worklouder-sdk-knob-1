@@ -532,6 +532,10 @@ export function useDevice() {
 
   return {
     state,
+    /** The open HID client, for callers that need a raw device command the
+     *  hook does not wrap — firmware install uses it to ask the keyboard to
+     *  restart into its bootloader. Null whenever nothing is connected. */
+    client: () => clientRef.current,
     connect,
     identify,
     selectScreen,
