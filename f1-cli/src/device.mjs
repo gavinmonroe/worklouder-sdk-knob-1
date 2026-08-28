@@ -107,19 +107,21 @@ export async function sendTransientBubble(sdk, device, input) {
   }
 }
 
-// macOS refuses HID output reports to a device whose vendor collection shares an
-// interface with a keyboard collection, which is exactly the Knob 1's descriptor:
-// IOHIDDeviceOpen succeeds, then IOHIDDeviceSetReport returns kIOReturnNotPermitted
-// (0xe00002e2) and seizing returns kIOReturnNotPrivileged (0xe00002c1). Both succeed as
-// root. Input Monitoring governs reading input reports, not sending output reports, so
-// granting it is necessary but not sufficient. See docs/21-knob1-macos-hid-access.md.
+// A Knob 1 refuses HID output reports on macOS at uid 501 and accepts them at uid 0:
+// IOHIDDeviceOpen succeeds, IOHIDDeviceSetReport returns kIOReturnNotPermitted
+// (0xe00002e2), and seizing returns kIOReturnNotPrivileged (0xe00002c1). All succeed as
+// root. That is measured but not yet explained -- see docs/21-knob1-macos-hid-access.md.
+// (An earlier version of this comment blamed the vendor collection sharing the keyboard
+// interface. A Framer F1 shares one too and is written unprivileged, so that is not the
+// cause.) Input Monitoring governs reading input reports, not sending output ones, so
+// granting it is necessary but not sufficient. An F1 needs no sudo.
 export function explainWriteFailure(message) {
   if (process.platform !== "darwin" || !/cannot write to hid device/iu.test(message)) {
     return message;
   }
-  return `${message}. On macOS the kernel denies HID output reports to this device ` +
-    "because its vendor interface shares the keyboard interface; re-run the same command " +
-    "with sudo. See docs/21-knob1-macos-hid-access.md.";
+  return `${message}. On macOS this device's HID writes are denied at uid 501 and ` +
+    "succeed as root, so re-run the same command with sudo. The refusal is measured but " +
+    "not yet explained. See docs/21-knob1-macos-hid-access.md.";
 }
 
 async function capture(label, operation) {
