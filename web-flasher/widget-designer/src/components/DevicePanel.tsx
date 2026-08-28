@@ -235,6 +235,44 @@ function InstallFirmwareButton({ device }: { device: ReturnType<typeof useDevice
   );
 }
 
+/** macOS blocks writes to any HID device that also acts as a keyboard until
+ *  Chrome is granted Input Monitoring. The device connects, so nothing looks
+ *  wrong, and then every write is refused — a dead end nobody can guess their
+ *  way out of. When the transport reports that exact cause, show the fix as
+ *  steps rather than burying it in an error string.
+ *
+ *  The quit-and-reopen step is the one people miss: the permission only takes
+ *  effect in a freshly launched Chrome, so a reload leaves it still failing. */
+function InputMonitoringHelp({ detail, onRetry }: { detail: string; onRetry: () => void }) {
+  return (
+    <Callout tone="warning">
+      <div className="space-y-2">
+        <div className="font-medium">macOS is blocking Chrome from talking to your keyboard</div>
+        <div className="text-xs">
+          Your keyboard is also a keyboard, and macOS protects those. Chrome can see it but
+          can't send to it until you allow this — it takes about 20 seconds:
+        </div>
+        <ol className="text-xs space-y-1" style={{ listStyle: "decimal", paddingLeft: "1.2em" }}>
+          <li>Open <strong className="font-medium">System Settings → Privacy &amp; Security → Input Monitoring</strong></li>
+          <li>Turn on <strong className="font-medium">Google Chrome</strong> (not listed? click + and add it)</li>
+          <li><strong className="font-medium">Quit Chrome completely</strong> (⌘Q) and open it again — reloading isn't enough</li>
+          <li>Come back and connect</li>
+        </ol>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Button variant="primary" size="sm" onClick={onRetry}>
+            <Icon name="cable" size={14} />
+            Try connecting again
+          </Button>
+        </div>
+        <details className="text-xs text-tertiary">
+          <summary>What the keyboard reported</summary>
+          <div className="wd-nums" style={{ wordBreak: "break-word" }}>{detail}</div>
+        </details>
+      </div>
+    </Callout>
+  );
+}
+
 export function DevicePanel({ state, actions, device }: {
   state: DesignerState;
   actions: DesignerActions;
@@ -625,9 +663,11 @@ export function DevicePanel({ state, actions, device }: {
                     )
                   }
                 />
-                {connectionError && (
+                {connectionError && dev.errorCode === "macos-input-monitoring" ? (
+                  <InputMonitoringHelp detail={connectionError} onRetry={startConnect} />
+                ) : connectionError ? (
                   <IssueBlock tone="danger" summary={`Connection failed: ${humanizeDiagnostic(connectionError)}`} detail={connectionError} />
-                )}
+                ) : null}
               </>
             ) : (
               <>

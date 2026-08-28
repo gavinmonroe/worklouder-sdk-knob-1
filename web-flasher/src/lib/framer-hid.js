@@ -38,10 +38,19 @@ export const framerHidFilters = FRAMER_F1_PRODUCT_IDS.map((productId) => ({
  * behaviour.
  */
 export function resolveVendorOutputReport(device) {
-  const vendorCollections = (device?.collections ?? []).filter(
-    (collection) => collection.usagePage === FRAMER_USAGE_PAGE,
-  );
-  for (const collection of vendorCollections) {
+  const collections = device?.collections ?? [];
+  // Vendor-defined usage pages are 0xff00..0xffff. The Framer F1 speaks on
+  // 0xff00, but that is a choice, not a rule: a Knob 1 reported a 0xff00
+  // collection with NO writable report and refused report 0x06, which means
+  // its writable endpoint lives on another vendor page (QMK's raw-HID sits on
+  // 0xff60). Prefer 0xff00 for continuity, then take any other vendor page,
+  // rather than assuming one number for every keyboard Work Louder ships.
+  const isVendorPage = (page) => typeof page === "number" && page >= 0xff00 && page <= 0xffff;
+  const ordered = [
+    ...collections.filter((c) => c.usagePage === FRAMER_USAGE_PAGE),
+    ...collections.filter((c) => c.usagePage !== FRAMER_USAGE_PAGE && isVendorPage(c.usagePage)),
+  ];
+  for (const collection of ordered) {
     for (const report of collection.outputReports ?? []) {
       const bits = (report.items ?? []).reduce(
         (total, item) => total + (item.reportCount ?? 0) * (item.reportSize ?? 0),
@@ -51,11 +60,63 @@ export function resolveVendorOutputReport(device) {
       // Two bytes are the channel and length header, so anything smaller than
       // three could not carry a single payload byte.
       if (dataBytes >= 3 && Number.isInteger(report.reportId)) {
-        return { reportId: report.reportId, dataBytes };
+        return { reportId: report.reportId, dataBytes, usagePage: collection.usagePage };
       }
     }
   }
-  return { reportId: REPORT_ID, dataBytes: REPORT_DATA_BYTES };
+  return { reportId: REPORT_ID, dataBytes: REPORT_DATA_BYTES, usagePage: null };
+}
+
+/** A compact, copy-pasteable description of what a device declares. When a
+ *  write is refused this is the only thing that identifies the variant, so it
+ *  goes in the error rather than sitting in a console somewhere. */
+/** macOS treats any HID device that exposes keyboard or consumer-control
+ *  collections as protected input hardware. Chrome can enumerate and OPEN such
+ *  a device, and then every write is refused until the user grants Chrome
+ *  "Input Monitoring" — which is why this fails after a connection that looked
+ *  successful, with no other program holding the keyboard. Every Work Louder
+ *  keyboard carries those collections, so this is the first thing to check on
+ *  a Mac. */
+export const HID_WRITE_BLOCKED_MACOS = "macos-input-monitoring";
+export const HID_WRITE_BLOCKED_BUSY = "device-busy";
+
+function looksLikeMac() {
+  if (typeof navigator === "undefined") return false;
+  const platform = navigator.userAgentData?.platform || navigator.platform || "";
+  return /mac/i.test(platform) || /Mac OS X/i.test(navigator.userAgent || "");
+}
+
+function hasProtectedCollection(device) {
+  return (device?.collections ?? []).some(
+    (collection) => collection.usagePage === 0x01 || collection.usagePage === 0x0c,
+  );
+}
+
+export function describeHidDescriptor(device) {
+  const parts = [];
+  for (const collection of device?.collections ?? []) {
+    const page = `0x${(collection.usagePage ?? 0).toString(16)}`;
+    const out = (collection.outputReports ?? [])
+      .map((r) => {
+        const bits = (r.items ?? []).reduce(
+          (t, i) => t + (i.reportCount ?? 0) * (i.reportSize ?? 0),
+          0,
+        );
+        return `out 0x${(r.reportId ?? 0).toString(16)}/${Math.floor(bits / 8)}B`;
+      })
+      .join(" ");
+    const inp = (collection.inputReports ?? [])
+      .map((r) => {
+        const bits = (r.items ?? []).reduce(
+          (t, i) => t + (i.reportCount ?? 0) * (i.reportSize ?? 0),
+          0,
+        );
+        return `in 0x${(r.reportId ?? 0).toString(16)}/${Math.floor(bits / 8)}B`;
+      })
+      .join(" ");
+    parts.push(`page ${page}[${[out, inp].filter(Boolean).join(" ") || "no reports"}]`);
+  }
+  return parts.join(", ") || "no collections";
 }
 
 function randomRpcId() {
@@ -142,14 +203,41 @@ export class FramerHidClient {
       report.set(chunk, 2);
       try {
         await this.device.sendReport(reportId, report);
-      } catch (cause) {
+      } catch (firstCause) {
+        try {
+          if (this.device.opened) await this.device.close();
+          await this.device.open();
+          await this.device.sendReport(reportId, report);
+          continue;
+        } catch (cause) {
+          void firstCause;
         // WebHID's own message ("Failed to write the report") names nothing a
         // person can act on. Say which device refused, and what we sent it.
-        throw new Error(
-          `${describeUsbDevice(this.device)} refused the ${dataBytes}-byte report ` +
-            `0x${reportId.toString(16)} this app speaks. If this is a keyboard variant ` +
-            `we haven't seen, send those numbers to the project. (${(cause && cause.message) || cause})`,
-        );
+          const name = (cause && cause.name) || "Error";
+          const detail = (cause && cause.message) || String(cause);
+          const blockedByMac = looksLikeMac() && hasProtectedCollection(this.device);
+          const macGuidance =
+            looksLikeMac() && hasProtectedCollection(this.device)
+              ? " On macOS this is almost always a permission: your keyboard also acts as a " +
+                "keyboard, and macOS blocks writes to those until Chrome is allowed to see " +
+                "input. Open System Settings > Privacy & Security > Input Monitoring, turn ON " +
+                "Google Chrome, then QUIT and reopen Chrome (a reload is not enough) and try " +
+                "again. If Chrome is not in that list, click + and add it."
+              : " Most often another program is holding the keyboard: quit Work Louder Input, " +
+                "VIA, or QMK Toolbox and try again.";
+          const failure = new Error(
+            `${describeUsbDevice(this.device)} connected, but refused report ` +
+              `0x${reportId.toString(16)} (${dataBytes} bytes) twice — ${name}: ${detail}.` +
+              macGuidance +
+              ` [declares: ${describeHidDescriptor(this.device)}]`,
+          );
+          // The code is what the UI keys off: prose is for humans, this is for
+          // showing the right remedy without parsing sentences.
+          failure.code = blockedByMac ? HID_WRITE_BLOCKED_MACOS : HID_WRITE_BLOCKED_BUSY;
+          failure.deviceDescriptor = describeHidDescriptor(this.device);
+          failure.cause = cause;
+          throw failure;
+        }
       }
     }
   }

@@ -59,6 +59,10 @@ export type DevicePhase =
 export interface DeviceState {
   phase: DevicePhase;
   error: string;
+  /** Why the last failure happened, when the transport could tell us — e.g.
+   *  "macos-input-monitoring". The UI shows the matching remedy instead of
+   *  leaving someone to interpret a device error. */
+  errorCode: string;
   connected: ConnectedFramer | null;
   mquickjs: MQuickJsCapability | null;
   renderV2: RenderV2Capability | null;
@@ -96,6 +100,7 @@ export function useDevice() {
   const [state, setState] = useState<DeviceState>({
     phase: "idle",
     error: "",
+    errorCode: "",
     connected: null,
     mquickjs: null,
     renderV2: null,
@@ -127,7 +132,7 @@ export function useDevice() {
   }, []);
 
   const connect = useCallback(async () => {
-    setState((s) => ({ ...s, phase: "connecting", error: "", log: [] }));
+    setState((s) => ({ ...s, phase: "connecting", error: "", errorCode: "", log: [] }));
     try {
       // Close any client still open from a previous connect before opening a
       // new one, so a re-connect never leaves two sessions on the endpoint.
@@ -151,7 +156,12 @@ export function useDevice() {
         selectedScreen: null,
       }));
     } catch (cause) {
-      setState((s) => ({ ...s, phase: "error", error: (cause as Error).message }));
+      setState((s) => ({
+        ...s,
+        phase: "error",
+        error: (cause as Error).message,
+        errorCode: String((cause as { code?: unknown }).code ?? ""),
+      }));
     }
   }, [appendLog, closeClient]);
 
@@ -206,7 +216,12 @@ export function useDevice() {
         committedGeneration: renderV2.committedGeneration ?? s.committedGeneration,
       }));
     } catch (cause) {
-      setState((s) => ({ ...s, phase: "error", error: (cause as Error).message }));
+      setState((s) => ({
+        ...s,
+        phase: "error",
+        error: (cause as Error).message,
+        errorCode: String((cause as { code?: unknown }).code ?? ""),
+      }));
     }
   }, [appendLog]);
 
