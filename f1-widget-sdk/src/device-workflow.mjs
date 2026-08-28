@@ -9,7 +9,7 @@ import { inspectEsp32AppImage } from "../../custom-firmware/lib/esp-app-image.mj
 import { PINNED, SDK_ROOT, WORKSPACE_ROOT } from "./constants.mjs";
 import { inspectImage } from "./firmware.mjs";
 import { STAGE3E3_PATHS, verifyRecoveryGate } from "./stage3e3.mjs";
-import { assert, sha256, stableJson } from "./util.mjs";
+import { assert, recordedPathMatches, resolveRecordedPath, sha256, stableJson } from "./util.mjs";
 
 const exec = promisify(execFile);
 const EXPECTED_MAC = "a4:cb:8f:af:32:10";
@@ -100,7 +100,7 @@ function validateAcceptedLiveRollback(approval, rollbackBytes, receiptBytes) {
   const pinned = ACCEPTED_LIVE_ROLLBACKS[selected.receipt.sha256];
   assert(pinned, "Accepted-live rollback receipt is not in the immutable SDK proof registry.");
   if (pinned.receiptFile !== undefined) {
-    assert(path.resolve(selected.receipt.file) === pinned.receiptFile &&
+    assert(recordedPathMatches(selected.receipt.file, pinned.receiptFile) &&
       selected.receipt.bytes === pinned.receiptBytes &&
       selected.receipt.sha256 === pinned.receiptSha256,
     "Accepted-live rollback receipt path/bytes/SHA differ from the immutable SDK proof.");
@@ -716,9 +716,9 @@ function validateRendererV2GenericStructuralReuse(approval, appBytes, rollbackBy
     exactObjectKeys(approval.rollback, ["mode", "file", "bytes", "sha256", "receipt"]) &&
     exactObjectKeys(approval.rollback.receipt, ["file", "bytes", "sha256"]) &&
     exactObjectKeys(approval.recovery, ["file", "bytes", "sha256"]) &&
-    path.resolve(approval.app.file) === expectedAppFile &&
-    path.resolve(approval.rollback.file) === expectedRollbackFile &&
-    path.resolve(approval.recovery.file) === expectedRecoveryFile &&
+    recordedPathMatches(approval.app.file, expectedAppFile) &&
+    recordedPathMatches(approval.rollback.file, expectedRollbackFile) &&
+    recordedPathMatches(approval.recovery.file, expectedRecoveryFile) &&
     approval.recovery.bytes === 16_777_216 && approval.recovery.sha256 ===
       "aa6042310d075c9cbd3b992044511c064bb4b84713d0740a3adafcbdb3028fdd",
   "Generic Render-v2 approval changed its exact document shape or artifact paths.");

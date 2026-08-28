@@ -12,7 +12,7 @@ import { auditRendererV1Abi, RENDERER_V1_SCREEN_ID } from
 import { PINNED, SDK_ROOT, WORKSPACE_ROOT } from "./constants.mjs";
 import { inspectImage } from "./firmware.mjs";
 import { STAGE3E3_PATHS } from "./stage3e3.mjs";
-import { assert, sha256, stableJson } from "./util.mjs";
+import { assert, resolveRecordedPath, sha256, stableJson } from "./util.mjs";
 
 const run = promisify(execFile);
 const LIVE_DIRECTORY = path.join(SDK_ROOT, "build/combined-music-fast-gradient");
@@ -376,8 +376,8 @@ export async function buildCombinedRendererFirmware({
     receipt.write?.appOnly === true && receipt.write?.hashVerifiedByEsptool === true &&
     receipt.postBoot?.device?.deviceType === "knob_f1" && receipt.postBoot?.version === "0.4.1",
   "Renderer live-base receipt is not a healthy app-only Framer F1 proof.");
-  const rollback = await readFile(receipt.rollback.file);
-  const recovery = await readFile(receipt.recovery.fullFlash);
+  const rollback = await readFile(resolveRecordedPath(receipt.rollback.file));
+  const recovery = await readFile(resolveRecordedPath(receipt.recovery.fullFlash));
   assert(sha256(rollback) === receipt.rollback.sha256 && recovery.length === receipt.recovery.bytes &&
     sha256(recovery) === receipt.recovery.sha256,
   "Renderer live-base rollback/recovery bytes changed.");

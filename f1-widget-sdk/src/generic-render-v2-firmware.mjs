@@ -19,7 +19,7 @@ import {
 import { encodeWidgetBundle } from "./render/index.mjs";
 import { PINNED, SDK_ROOT, WORKSPACE_ROOT } from "./constants.mjs";
 import { STAGE3E3_PATHS } from "./stage3e3.mjs";
-import { assert, sha256, stableJson } from "./util.mjs";
+import { assert, resolveRecordedPath, sha256, stableJson } from "./util.mjs";
 
 const run = promisify(execFile);
 
@@ -423,7 +423,7 @@ export async function buildGenericRenderV2Firmware({
     sha256(scene) === FROZEN.v1Scene && sha256(atlas) === FROZEN.v1Atlas,
   "Generic deterministic V1/V2 host fixtures changed.");
   const receipt = JSON.parse(receiptBytes);
-  const recovery = await readFile(receipt.recovery.fullFlash);
+  const recovery = await readFile(resolveRecordedPath(receipt.recovery.fullFlash));
   assert(receipt.app?.sha256 === FROZEN.app.sha256 && receipt.write?.appOnly === true &&
     receipt.write?.hashVerifiedByEsptool === true &&
     receipt.postBoot?.device?.deviceType === "knob_f1" &&
