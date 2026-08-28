@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   FramerHidClient,
   findGrantedFramer,
+  openWritableFramer,
   resolveFramerIdentity,
 } from "../src/lib/framer-hid.js";
 
@@ -52,5 +53,74 @@ describe("Framer WebHID framing", () => {
     vi.stubGlobal("navigator", { hid: { getDevices: async () => [first, second] } });
     await expect(findGrantedFramer({ mode: "single-device", productId: 0x8396 }))
       .rejects.toThrow(/ambiguous/u);
+  });
+});
+
+// The failure message these produce is the only thing a stranger with a
+// keyboard we cannot reproduce ever sees. It is the diagnosis, so it is tested
+// like one.
+describe("choosing an interface Chrome will let us write to", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  function candidate(overrides = {}) {
+    const device = fakeFramer();
+    return Object.assign(device, { opened: false, async open() { this.opened = true; } }, overrides);
+  }
+
+  it("keeps the entry the chooser returned when it answers", async () => {
+    const picked = candidate();
+    vi.stubGlobal("navigator", { hid: { getDevices: async () => [picked] } });
+    const result = await openWritableFramer(picked, { verify: async () => "0.4.1" });
+    expect(result.device).toBe(picked);
+    expect(result.verified).toBe("0.4.1");
+  });
+
+  it("falls through to another interface for the same keyboard", async () => {
+    const picked = candidate();
+    const sibling = candidate();
+    vi.stubGlobal("navigator", { hid: { getDevices: async () => [picked, sibling] } });
+    const result = await openWritableFramer(picked, {
+      verify: async (client) => {
+        if (client.device === picked) throw new Error("Failed to write the report.");
+        return "0.4.1";
+      },
+    });
+    expect(result.device).toBe(sibling);
+    expect(result.alternates).toBe(1);
+  });
+
+  it("reports what was tried and Chrome's verdict per report id when none accepts a write", async () => {
+    const refuse = (name) => {
+      const error = new Error("Failed to write the report.");
+      error.name = name;
+      return error;
+    };
+    const picked = candidate({
+      // NotAllowedError = Chrome knows this id and refuses it (a protected
+      // collection claims it). NotFoundError = the descriptor has no such id.
+      // Telling those apart is the whole point of the probe.
+      async sendReport(reportId) {
+        throw refuse(reportId === 0x06 ? "NotAllowedError" : "NotFoundError");
+      },
+    });
+    vi.stubGlobal("navigator", { hid: { getDevices: async () => [picked] } });
+
+    const failure = await openWritableFramer(picked, {
+      verify: async () => { throw refuse("NotAllowedError"); },
+    }).catch((error) => error);
+
+    expect(failure.code).toBe("no-writable-interface");
+    expect(failure.message).toMatch(/Tried 1:/u);
+    expect(failure.message).toMatch(/0x6=NotAllowedError/u);
+    expect(failure.message).toMatch(/0x5=NotFoundError/u);
+  });
+
+  it("still fails with the real error if the diagnostic probe itself throws", async () => {
+    const picked = candidate({
+      async open() { throw new Error("Failed to open the device."); },
+      async sendReport() { throw new Error("probe exploded"); },
+    });
+    vi.stubGlobal("navigator", { hid: { getDevices: async () => { throw new Error("no permission"); } } });
+    await expect(openWritableFramer(picked)).rejects.toThrow(/Failed to open the device/u);
   });
 });

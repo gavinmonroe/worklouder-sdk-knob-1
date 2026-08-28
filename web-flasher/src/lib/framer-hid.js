@@ -95,7 +95,7 @@ function hasProtectedCollection(device) {
 export function describeHidDescriptor(device) {
   const parts = [];
   for (const collection of device?.collections ?? []) {
-    const page = `0x${(collection.usagePage ?? 0).toString(16)}`;
+    const page = `0x${(collection.usagePage ?? 0).toString(16)}/u0x${(collection.usage ?? 0).toString(16)}`;
     const out = (collection.outputReports ?? [])
       .map((r) => {
         const bits = (r.items ?? []).reduce(
@@ -295,6 +295,37 @@ export class FramerHidClient {
  * candidate is recorded, so a failure reports what was tried instead of
  * blaming the one device the user happened to pick.
  */
+/**
+ * Ask Chrome which report ids it will actually let us write, and report what it
+ * says about each one.
+ *
+ * Chrome HIDES the report ids of protected collections — a keyboard collection
+ * shows as "no reports" — so a descriptor dump cannot tell us whether the
+ * vendor report id is ALSO claimed by a protected collection. The error names
+ * distinguish it: NotAllowedError means Chrome knows this id and refuses it
+ * (protected), NotFoundError means the id is not in the descriptor at all.
+ * Running both across a range therefore reveals Chrome's own view of the
+ * device, which is the thing we have been guessing at.
+ *
+ * Only writes zero-filled reports, and Chrome rejects ids the descriptor does
+ * not declare before anything reaches the keyboard.
+ */
+export async function probeWritableReportIds(device, ids = [1, 2, 3, 4, 5, 6, 7, 8]) {
+  const results = [];
+  const opened = device.opened;
+  if (!opened) await device.open();
+  for (const id of ids) {
+    try {
+      await device.sendReport(id, new Uint8Array(REPORT_DATA_BYTES));
+      results.push(`0x${id.toString(16)}=WRITABLE`);
+    } catch (cause) {
+      results.push(`0x${id.toString(16)}=${(cause && cause.name) || "Error"}`);
+    }
+  }
+  if (!opened) await device.close().catch(() => {});
+  return results.join(" ");
+}
+
 export async function openWritableFramer(preferred, { verify } = {}) {
   const check = verify ?? ((client) => client.verifyVersion());
   let siblings = [];
@@ -323,9 +354,15 @@ export async function openWritableFramer(preferred, { verify } = {}) {
       await client.close().catch(() => {});
     }
   }
+  let probe = "";
+  try {
+    probe = ` Chrome's verdict per report id: ${await probeWritableReportIds(preferred)}.`;
+  } catch {
+    /* the probe is diagnostic only; never let it mask the real failure */
+  }
   const failure = new Error(
     `${describeUsbDevice(preferred)} connected, but no interface accepted a write. ` +
-      `Tried ${tried.length}: ${tried.join(" | ")}. ` +
+      `Tried ${tried.length}: ${tried.join(" | ")}.${probe} ` +
       ((lastError && lastError.message) || ""),
   );
   failure.code = (lastError && lastError.code) || "no-writable-interface";

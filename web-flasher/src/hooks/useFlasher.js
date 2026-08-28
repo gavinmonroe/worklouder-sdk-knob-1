@@ -5,6 +5,7 @@ import { framerLayout, framerModelName } from "../lib/device-identity.js";
 import { formatRegionAddress, loadFlashPlan } from "../lib/firmware.js";
 import {
   FramerHidClient,
+  openWritableFramer,
   requestFramerHid,
   resolveFramerIdentity,
   waitForHealthyFramer,
@@ -23,6 +24,10 @@ const MAX_LOG_LINES = 240;
 
 function errorMessage(error, { writeStarted = false } = {}) {
   if (error?.name === "NotFoundError") return "Device selection was cancelled.";
+  // openWritableFramer already tried every interface and asked Chrome which
+  // report ids it will accept. That answer is far more actionable than the
+  // generic "quit the other app" advice below, so it is passed through intact.
+  if (error?.code === "no-writable-interface") return error.message;
   if (
     ["NetworkError", "NotAllowedError"].includes(error?.name) ||
     /failed to open the device/iu.test(error?.message ?? "")
@@ -39,6 +44,7 @@ function errorMessage(error, { writeStarted = false } = {}) {
 
 function sceneErrorMessage(error) {
   if (error?.name === "NotFoundError") return "Device selection was cancelled.";
+  if (error?.code === "no-writable-interface") return error.message;
   if (
     ["NetworkError", "NotAllowedError"].includes(error?.name) ||
     /failed to open the device/iu.test(error?.message ?? "")
@@ -80,11 +86,18 @@ export function useFlasher() {
     setPhase("identifying");
     let client;
     try {
-      const nextDevice = existingDevice ?? (await requestFramerHid());
+      const picked = existingDevice ?? (await requestFramerHid());
+      // Chrome can hand back an entry for this keyboard that it will not let us
+      // write to (a Knob 1 exposes several). Take whichever interface actually
+      // answers, and report Chrome's own verdict per report id when none does.
+      const opened = await openWritableFramer(picked);
+      const nextDevice = opened.device;
+      client = opened.client;
+      const nextVersion = opened.verified;
       const nextIdentity = await resolveFramerIdentity(nextDevice);
-      client = new FramerHidClient(nextDevice);
-      await client.open();
-      const nextVersion = await client.verifyVersion();
+      if (opened.alternates > 0 && nextDevice !== picked) {
+        appendLog(`The first interface Chrome offered would not accept writes; using another one it exposes for the same keyboard.`);
+      }
       setDevice(nextDevice);
       setNormalIdentity(nextIdentity);
       setSingleDeviceConfirmed(false);
