@@ -11,8 +11,23 @@ import { evaluateInInput } from "../../../framer-widgets/lib/input-inspector.mjs
 export const DEFAULT_INPUT_DEBUG_PORT = 9230;
 export const DEFAULT_INPUT_MEDIA_SCRIPT =
   "/Applications/input.app/Contents/Resources/scripts/media-info-retriever.scpt";
+// Compiled-file digest for Input 0.18.2. RETAINED FOR EVIDENCE ONLY — it is no
+// longer what the gate checks. Observed compiled digests on one 0.18.4 install
+// were 3de48446…, 16213c17… and 4448e577…, all decompiling to identical source:
+// macOS resaves the compiled .scpt container without changing the AppleScript,
+// so a compiled-byte pin rotates and fails closed on every run.
 export const INPUT_MEDIA_SCRIPT_SHA256 =
   "1d3262dff8bdf70b1b3140ab7ac556f622783d21d1c05ba0bb4ec6302f555090";
+// What the gate actually pins: sha256 of `osadecompile <script>` output, which
+// is stable across resaves and still detects a substituted script. Reviewed
+// source reads now-playing state from Spotify, Apple Music and the MediaRemote
+// private framework, with no shell, network or filesystem side effects. A digest
+// may only be added here after decompiling and re-reviewing the source.
+export const INPUT_MEDIA_SOURCE_SHA256_0_18_4 =
+  "643b22830696df87835e0ab5625424f00fde6c5d6630bacf97662ebf06513dbf";
+export const INPUT_MEDIA_SCRIPT_SHA256_ALLOWLIST = Object.freeze([
+  INPUT_MEDIA_SOURCE_SHA256_0_18_4,
+]);
 export const INPUT_MEDIA_PROBE_STATUS = Object.freeze({
   active: "active-media",
   inactive: "no-active-media",
@@ -76,14 +91,19 @@ function secondsToMilliseconds(value, field, { unknownAsZero = false } = {}) {
  */
 export function buildInputMediaProbeExpression({
   scriptPath = DEFAULT_INPUT_MEDIA_SCRIPT,
-  expectedScriptSha256 = INPUT_MEDIA_SCRIPT_SHA256,
+  expectedScriptSha256 = INPUT_MEDIA_SCRIPT_SHA256_ALLOWLIST,
   timeoutMs = 8_000,
   maxOutputBytes = DEFAULT_MAX_APPLESCRIPT_BYTES,
 } = {}) {
   boundedString(scriptPath, "scriptPath", 1024);
   invariant(scriptPath.startsWith("/") && scriptPath.endsWith("/media-info-retriever.scpt"),
     "scriptPath must be an absolute media-info-retriever.scpt path.");
-  invariant(typeof expectedScriptSha256 === "string" && /^[0-9a-f]{64}$/u.test(expectedScriptSha256),
+  const expectedHashes = Object.freeze(
+    Array.isArray(expectedScriptSha256) ? [...expectedScriptSha256] : [expectedScriptSha256],
+  );
+  invariant(expectedHashes.length >= 1 && expectedHashes.length <= 8,
+    "expectedScriptSha256 must name 1..8 accepted digests.");
+  invariant(expectedHashes.every((hash) => typeof hash === "string" && /^[0-9a-f]{64}$/u.test(hash)),
     "expectedScriptSha256 must be a lowercase SHA-256 digest.");
   boundedInteger(timeoutMs, "timeoutMs", 250, 30_000);
   boundedInteger(maxOutputBytes, "maxOutputBytes", 1024, 16 * 1024 * 1024);
@@ -91,11 +111,21 @@ export function buildInputMediaProbeExpression({
   return `(async () => {
     const { execFile } = process.getBuiltinModule("node:child_process");
     const { createHash } = process.getBuiltinModule("node:crypto");
-    const { readFile } = process.getBuiltinModule("node:fs/promises");
     const scriptPath = ${JSON.stringify(scriptPath)};
-    const scriptHash = createHash("sha256").update(await readFile(scriptPath)).digest("hex");
-    if (scriptHash !== ${JSON.stringify(expectedScriptSha256)}) {
-      throw new Error("Input media provider hash mismatch: " + scriptHash);
+    // Integrity is pinned on the DECOMPILED AppleScript source, not on the
+    // compiled .scpt bytes. macOS resaves the compiled container while the
+    // source is unchanged, so a compiled-byte pin rotates and fails closed on
+    // every run. The source digest is stable and still detects substitution.
+    const decompiled = await new Promise((resolve, reject) => {
+      execFile("/usr/bin/osadecompile", [scriptPath], {
+        encoding: "utf8",
+        timeout: ${timeoutMs},
+        maxBuffer: ${maxOutputBytes}
+      }, (error, stdout) => (error ? reject(error) : resolve(stdout)));
+    });
+    const scriptHash = createHash("sha256").update(decompiled).digest("hex");
+    if (!${JSON.stringify(expectedHashes)}.includes(scriptHash)) {
+      throw new Error("Input media provider source hash mismatch: " + scriptHash);
     }
     const result = await new Promise((resolve, reject) => {
       execFile("/usr/bin/osascript", [scriptPath], {
@@ -491,7 +521,7 @@ export class InputLocalhostMediaSource {
     evaluate = evaluateInInput,
     port = DEFAULT_INPUT_DEBUG_PORT,
     scriptPath = DEFAULT_INPUT_MEDIA_SCRIPT,
-    expectedScriptSha256 = INPUT_MEDIA_SCRIPT_SHA256,
+    expectedScriptSha256 = INPUT_MEDIA_SCRIPT_SHA256_ALLOWLIST,
     providerTimeoutMs = 8_000,
     debuggerTimeoutMs = 12_000,
     maxOutputBytes = DEFAULT_MAX_APPLESCRIPT_BYTES,

@@ -218,7 +218,7 @@ export type InputLocalhostMediaSourceOptions = Readonly<{
   evaluate?: (expression: string, options: { port: number; timeoutMs: number }) => Promise<unknown>;
   port?: number;
   scriptPath?: string;
-  expectedScriptSha256?: string;
+  expectedScriptSha256?: string | readonly string[];
   providerTimeoutMs?: number;
   debuggerTimeoutMs?: number;
   maxOutputBytes?: number;
@@ -403,6 +403,8 @@ export class InputWlrpcMediaTransport implements FramerMediaRuntimeTransport {
 export const DEFAULT_INPUT_DEBUG_PORT: number;
 export const DEFAULT_INPUT_MEDIA_SCRIPT: string;
 export const INPUT_MEDIA_SCRIPT_SHA256: string;
+export const INPUT_MEDIA_SOURCE_SHA256_0_18_4: string;
+export const INPUT_MEDIA_SCRIPT_SHA256_ALLOWLIST: readonly string[];
 export const INPUT_MEDIA_PROBE_STATUS: Readonly<{
   active: "active-media";
   inactive: "no-active-media";
