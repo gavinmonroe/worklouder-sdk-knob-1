@@ -41,6 +41,9 @@ import {
 } from "./deviceBuild";
 import { formatArtifact, usePackageFreshness } from "./pipeline";
 import { canInstallFirmware, installWidgetFirmware } from "../device/firmwareInstall";
+// The literal used to be spelled out here, which let it drift out of step with
+// the transport when the code was renamed. Import the constant instead.
+import { HID_WRITE_BLOCKED_MACOS } from "@flasher/src/lib/framer-hid.js";
 import { useLegacyTools } from "./legacyTools";
 import { useToast } from "./toast";
 
@@ -153,8 +156,20 @@ function describeScreen(
  *
  *  Consent is explicit and the risky window is named. The browser's own port
  *  picker is the second gate — nothing is written until the user chooses the
- *  keyboard there. */
-function InstallFirmwareButton({ device }: { device: ReturnType<typeof useDevice> }) {
+ *  keyboard there.
+ *
+ *  `viaKeyboard={false}` is the path for a keyboard we cannot write to over HID
+ *  at all. installWidgetFirmware takes a nullable client precisely for this: with
+ *  no client it skips the restart-into-update-mode RPC and goes straight to the
+ *  port picker, so someone who put the keyboard in update mode BY HAND can still
+ *  install. A Knob 1 on macOS is the case that needs it — the two buttons beside
+ *  its spacebar reach ROM download mode without any HID write (docs/22), while
+ *  every write we could send is refused (docs/21). Flashing itself runs over Web
+ *  Serial, which that block does not touch. */
+function InstallFirmwareButton({ device, viaKeyboard = true }: {
+  device: ReturnType<typeof useDevice>;
+  viaKeyboard?: boolean;
+}) {
   const [phase, setPhase] = useState<"idle" | "installing" | "done" | "failed">("idle");
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
@@ -171,7 +186,7 @@ function InstallFirmwareButton({ device }: { device: ReturnType<typeof useDevice
     setError("");
     setWriting(false);
     try {
-      await installWidgetFirmware(device.client(), {
+      await installWidgetFirmware(viaKeyboard ? device.client() : null, {
         onProgress: setProgress,
         onLog: (line) => device.appendLog(line),
         onWriteStart: () => setWriting(true),
@@ -210,7 +225,9 @@ function InstallFirmwareButton({ device }: { device: ReturnType<typeof useDevice
               : "Preparing…"
             : phase === "failed"
               ? "Try updating again"
-              : "Update this keyboard"}
+              : viaKeyboard
+                ? "Update this keyboard"
+                : "Install without connecting"}
         </Button>
         {phase === "installing" && writing && (
           <span className="text-xs text-tertiary">
@@ -220,8 +237,9 @@ function InstallFirmwareButton({ device }: { device: ReturnType<typeof useDevice
       </div>
       {phase === "idle" && (
         <div className="text-xs text-tertiary">
-          Your keyboard restarts into update mode, then the browser asks which
-          device to write to — pick the keyboard when the prompt appears.
+          {viaKeyboard
+            ? "Your keyboard restarts into update mode, then the browser asks which device to write to — pick the keyboard when the prompt appears."
+            : "Put the keyboard in update mode yourself first — on a Knob 1, hold the two small buttons beside the spacebar while plugging it in. Then click above and pick the keyboard in the browser's prompt."}
         </div>
       )}
       {error && (
@@ -235,34 +253,44 @@ function InstallFirmwareButton({ device }: { device: ReturnType<typeof useDevice
   );
 }
 
-/** macOS blocks writes to any HID device that also acts as a keyboard until
- *  Chrome is granted Input Monitoring. The device connects, so nothing looks
- *  wrong, and then every write is refused — a dead end nobody can guess their
- *  way out of. When the transport reports that exact cause, show the fix as
- *  steps rather than burying it in an error string.
+/** The keyboard connects, and then every write is refused — a dead end nobody
+ *  can guess their way out of. When the transport reports that exact cause,
+ *  show what is actually known instead of burying it in an error string.
  *
- *  The quit-and-reopen step is the one people miss: the permission only takes
- *  effect in a freshly launched Chrome, so a reload leaves it still failing. */
-function InputMonitoringHelp({ detail, onRetry }: { detail: string; onRetry: () => void }) {
+ *  This used to prescribe granting Chrome "Input Monitoring". That was wrong:
+ *  the permission governs READING input reports, not SENDING output ones, and a
+ *  Knob 1 owner granted it, quit and reopened Chrome, and was still refused
+ *  (docs/21). Carrying keyboard collections is not the cause either — a Framer
+ *  F1 puts Keyboard, Consumer Control, Mouse and the vendor 0xff00 collection on
+ *  one HID interface whose primary usage is Keyboard, and Chrome writes to it
+ *  unprivileged all day. So this offers the two things that DO work: rule out a
+ *  contending app, and failing that, install the firmware without the HID write
+ *  at all, over Web Serial, from a keyboard put into update mode by hand. */
+function HidWriteBlockedHelp({ detail, onRetry, device }: {
+  detail: string;
+  onRetry: () => void;
+  device: ReturnType<typeof useDevice>;
+}) {
   return (
     <Callout tone="warning">
       <div className="space-y-2">
-        <div className="font-medium">macOS won't let Chrome talk to your keyboard</div>
+        <div className="font-medium">Your computer is blocking writes to this keyboard</div>
         <div className="text-xs">
-          Your keyboard is also a keyboard, and macOS guards those. Two things fix this — try
-          them in order:
+          The keyboard connected fine, but the operating system refuses every message we send
+          it. This is not a permission you can grant — on macOS, Input Monitoring covers reading
+          your keypresses, not sending messages, so turning it on does not help here.
         </div>
         <ol className="text-xs space-y-1" style={{ listStyle: "decimal", paddingLeft: "1.2em" }}>
           <li>
-            <strong className="font-medium">Allow Chrome to see input.</strong> System Settings →
-            Privacy &amp; Security → Input Monitoring → turn on Google Chrome (not listed? click +
-            and add it). Then <strong className="font-medium">quit Chrome with ⌘Q</strong> and open
-            it again — reloading isn't enough.
+            <strong className="font-medium">Rule out another program.</strong> Quit Work Louder
+            Input, VIA, or QMK Toolbox if any are running, unplug the keyboard, plug it back in,
+            and connect again.
           </li>
           <li>
-            <strong className="font-medium">Already allowed?</strong> Then it's Chrome picking the
-            wrong connection to your keyboard, not a setting. Unplug the keyboard, plug it back in,
-            and connect again — this app now tries every connection your keyboard offers.
+            <strong className="font-medium">Still refused?</strong> Then nothing in the browser
+            will reach it, and you have one route left: put the keyboard in update mode by hand
+            and install the firmware over the other connection, which is not blocked. On a Knob
+            1, hold the two small buttons beside the spacebar while you plug it in.
           </li>
         </ol>
         <div className="flex items-center gap-2 flex-wrap">
@@ -270,6 +298,9 @@ function InputMonitoringHelp({ detail, onRetry }: { detail: string; onRetry: () 
             <Icon name="cable" size={14} />
             Try connecting again
           </Button>
+        </div>
+        <div style={{ paddingTop: "0.5rem", borderTop: "1px solid var(--wd-border-subtle)" }}>
+          <InstallFirmwareButton device={device} viaKeyboard={false} />
         </div>
         <details className="text-xs text-tertiary">
           <summary>Details to send if neither works</summary>
@@ -307,7 +338,7 @@ export function DevicePanel({ state, actions, device }: {
     js: state.js,
     rootClass: state.rootClass,
   });
-  const sourceKey = `${state.rootClass} ${state.html} ${state.css} ${state.js}`;
+  const sourceKey = `${state.rootClass}\0${state.html}\0${state.css}\0${state.js}`;
   const sourceKeyRef = useRef(sourceKey);
   sourceKeyRef.current = sourceKey;
   const [modeChoice, setModeChoice] = useState<{ key: string; mode: DeviceBuildMode } | null>(null);
@@ -670,8 +701,8 @@ export function DevicePanel({ state, actions, device }: {
                     )
                   }
                 />
-                {connectionError && dev.errorCode === "macos-input-monitoring" ? (
-                  <InputMonitoringHelp detail={connectionError} onRetry={startConnect} />
+                {connectionError && dev.errorCode === HID_WRITE_BLOCKED_MACOS ? (
+                  <HidWriteBlockedHelp detail={connectionError} onRetry={startConnect} device={device} />
                 ) : connectionError ? (
                   <IssueBlock tone="danger" summary={`Connection failed: ${humanizeDiagnostic(connectionError)}`} detail={connectionError} />
                 ) : null}
