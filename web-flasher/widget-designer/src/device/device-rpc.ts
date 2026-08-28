@@ -19,7 +19,12 @@
 // device state and negotiates capability.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { FramerHidClient, requestFramerHid, resolveFramerIdentity } from "@flasher/src/lib/framer-hid.js";
+import {
+  FramerHidClient,
+  openWritableFramer,
+  requestFramerHid,
+  resolveFramerIdentity,
+} from "@flasher/src/lib/framer-hid.js";
 import { framerLayout } from "@flasher/src/lib/device-identity.js";
 import { FIRMWARE_CATALOG, identifyFirmware, type FirmwareEntry } from "./firmware-catalog";
 
@@ -93,10 +98,12 @@ export const GENERIC_RENDER_V2_PACKAGE_FORMAT = "framer-render-v2-package-v1";
  * docs/04-recovery-and-restore.md — but there is no reason to add churn on top.
  */
 export async function connectFramer(): Promise<ConnectedFramer & { client: FramerHidClient }> {
-  const device = await requestFramerHid();
+  const picked = await requestFramerHid();
+  // Chrome can expose several entries for one keyboard and refuse writes on
+  // the wrong one, so take whichever interface actually answers rather than
+  // the one the chooser happened to hand back.
+  const { client, device } = await openWritableFramer(picked);
   const identity = await resolveFramerIdentity(device);
-  const client = new FramerHidClient(device);
-  await client.open();
   try {
     const version = await client.verifyVersion();
     return {

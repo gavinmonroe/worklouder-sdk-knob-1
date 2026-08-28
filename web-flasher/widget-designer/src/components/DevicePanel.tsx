@@ -247,16 +247,23 @@ function InputMonitoringHelp({ detail, onRetry }: { detail: string; onRetry: () 
   return (
     <Callout tone="warning">
       <div className="space-y-2">
-        <div className="font-medium">macOS is blocking Chrome from talking to your keyboard</div>
+        <div className="font-medium">macOS won't let Chrome talk to your keyboard</div>
         <div className="text-xs">
-          Your keyboard is also a keyboard, and macOS protects those. Chrome can see it but
-          can't send to it until you allow this — it takes about 20 seconds:
+          Your keyboard is also a keyboard, and macOS guards those. Two things fix this — try
+          them in order:
         </div>
         <ol className="text-xs space-y-1" style={{ listStyle: "decimal", paddingLeft: "1.2em" }}>
-          <li>Open <strong className="font-medium">System Settings → Privacy &amp; Security → Input Monitoring</strong></li>
-          <li>Turn on <strong className="font-medium">Google Chrome</strong> (not listed? click + and add it)</li>
-          <li><strong className="font-medium">Quit Chrome completely</strong> (⌘Q) and open it again — reloading isn't enough</li>
-          <li>Come back and connect</li>
+          <li>
+            <strong className="font-medium">Allow Chrome to see input.</strong> System Settings →
+            Privacy &amp; Security → Input Monitoring → turn on Google Chrome (not listed? click +
+            and add it). Then <strong className="font-medium">quit Chrome with ⌘Q</strong> and open
+            it again — reloading isn't enough.
+          </li>
+          <li>
+            <strong className="font-medium">Already allowed?</strong> Then it's Chrome picking the
+            wrong connection to your keyboard, not a setting. Unplug the keyboard, plug it back in,
+            and connect again — this app now tries every connection your keyboard offers.
+          </li>
         </ol>
         <div className="flex items-center gap-2 flex-wrap">
           <Button variant="primary" size="sm" onClick={onRetry}>
@@ -265,7 +272,7 @@ function InputMonitoringHelp({ detail, onRetry }: { detail: string; onRetry: () 
           </Button>
         </div>
         <details className="text-xs text-tertiary">
-          <summary>What the keyboard reported</summary>
+          <summary>Details to send if neither works</summary>
           <div className="wd-nums" style={{ wordBreak: "break-word" }}>{detail}</div>
         </details>
       </div>

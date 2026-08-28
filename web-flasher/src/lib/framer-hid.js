@@ -218,11 +218,12 @@ export class FramerHidClient {
           const blockedByMac = looksLikeMac() && hasProtectedCollection(this.device);
           const macGuidance =
             looksLikeMac() && hasProtectedCollection(this.device)
-              ? " On macOS this is almost always a permission: your keyboard also acts as a " +
-                "keyboard, and macOS blocks writes to those until Chrome is allowed to see " +
-                "input. Open System Settings > Privacy & Security > Input Monitoring, turn ON " +
-                "Google Chrome, then QUIT and reopen Chrome (a reload is not enough) and try " +
-                "again. If Chrome is not in that list, click + and add it."
+              ? " On macOS, check in this order: (1) if Chrome is NOT yet allowed under " +
+                "System Settings > Privacy & Security > Input Monitoring, turn it on, then " +
+                "QUIT and reopen Chrome (a reload is not enough); (2) if it IS already " +
+                "allowed, this is Chrome refusing the interface rather than a setting — " +
+                "unplug and replug the keyboard, then reconnect, and send this whole message " +
+                "to the project."
               : " Most often another program is holding the keyboard: quit Work Louder Input, " +
                 "VIA, or QMK Toolbox and try again.";
           const failure = new Error(
@@ -276,6 +277,60 @@ export class FramerHidClient {
       navigator.hid.removeEventListener("disconnect", onDisconnect);
     }
   }
+}
+
+/**
+ * Open the keyboard entry that can actually be WRITTEN to.
+ *
+ * Chrome can expose several HIDDevice entries for one physical keyboard, and
+ * more than one of them may advertise the vendor collection — a Knob 1 owner
+ * reported two connection attempts whose collection lists differed, with the
+ * write refused as NotAllowedError even though the report it declared
+ * (0x06/63B) was exactly what we send, and even with macOS Input Monitoring
+ * granted. Chrome refuses writes on an entry it considers protected, so the
+ * entry the chooser happens to return can be the wrong one.
+ *
+ * Rather than trusting the first entry, try each granted entry for the same
+ * keyboard and keep the first that accepts a real RPC. Every rejected
+ * candidate is recorded, so a failure reports what was tried instead of
+ * blaming the one device the user happened to pick.
+ */
+export async function openWritableFramer(preferred, { verify } = {}) {
+  const check = verify ?? ((client) => client.verifyVersion());
+  let siblings = [];
+  try {
+    siblings = (await navigator.hid.getDevices()).filter(
+      (candidate) =>
+        candidate !== preferred &&
+        candidate.vendorId === preferred.vendorId &&
+        candidate.productId === preferred.productId &&
+        (candidate.collections ?? []).some((c) => c.usagePage === FRAMER_USAGE_PAGE),
+    );
+  } catch {
+    /* getDevices can reject in odd permission states; the preferred entry still stands. */
+  }
+  const tried = [];
+  let lastError;
+  for (const candidate of [preferred, ...siblings]) {
+    const client = new FramerHidClient(candidate);
+    try {
+      await client.open();
+      const result = await check(client);
+      return { client, device: candidate, verified: result, alternates: siblings.length };
+    } catch (cause) {
+      lastError = cause;
+      tried.push(`${describeHidDescriptor(candidate)} -> ${(cause && cause.name) || "Error"}`);
+      await client.close().catch(() => {});
+    }
+  }
+  const failure = new Error(
+    `${describeUsbDevice(preferred)} connected, but no interface accepted a write. ` +
+      `Tried ${tried.length}: ${tried.join(" | ")}. ` +
+      ((lastError && lastError.message) || ""),
+  );
+  failure.code = (lastError && lastError.code) || "no-writable-interface";
+  failure.cause = lastError;
+  throw failure;
 }
 
 export async function requestFramerHid() {
