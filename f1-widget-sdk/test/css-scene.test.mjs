@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { missingPinnedFont } from "../test-support/pinned-inputs.mjs";
 
 import {
   compileCssWidget,
@@ -103,7 +104,7 @@ test("three named scene slots round-trip with independent SHA-256 validation", a
   assert.throws(() => decodeSceneBundle(corrupt), /atlas SHA-256 failed/u);
 });
 
-test("pinned Hiragino atlas and software preview produce a pixel-exact golden frame", async () => {
+test("pinned Hiragino atlas and software preview produce a pixel-exact golden frame", { skip: missingPinnedFont() }, async () => {
   const { scene } = await compileExample();
   const atlas = await rasterizeGlyphAtlasWithMagick(scene.glyphs);
   assert.equal(atlas.testOnly, false);

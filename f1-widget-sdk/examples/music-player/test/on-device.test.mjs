@@ -6,10 +6,11 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { buildMusicId1Candidate } from "../on-device/build-candidate.mjs";
+import { missingToolchain } from "../../../test-support/pinned-inputs.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-test("ID1 module builds twice deterministically without creating an app image", async (context) => {
+test("ID1 module builds twice deterministically without creating an app image", { skip: missingToolchain() }, async (context) => {
   const temporary = await mkdtemp(path.join(os.tmpdir(), "f1-music-test-"));
   context.after(() => rm(temporary, { recursive: true, force: true }));
   const result = await buildMusicId1Candidate({ output: temporary });

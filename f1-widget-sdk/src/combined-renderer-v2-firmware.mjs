@@ -12,7 +12,7 @@ import { decodeWidgetBundle, encodeWidgetBundle } from "./render/index.mjs";
 import { PINNED, SDK_ROOT, WORKSPACE_ROOT } from "./constants.mjs";
 import { inspectImage } from "./firmware.mjs";
 import { STAGE3E3_PATHS } from "./stage3e3.mjs";
-import { assert, sha256, stableJson } from "./util.mjs";
+import { assert, resolveRecordedPath, sha256, stableJson } from "./util.mjs";
 
 const run = promisify(execFile);
 
@@ -883,7 +883,7 @@ export async function buildCombinedRendererV2Firmware({
     receipt.target?.mac === "a4:cb:8f:af:32:10" &&
     receipt.postBoot?.device?.deviceType === "knob_f1" && receipt.postBoot?.version === "0.4.1",
   "Render-v2 rollback receipt is not the accepted healthy 7838 app-only proof.");
-  const recovery = await readFile(receipt.recovery.fullFlash);
+  const recovery = await readFile(resolveRecordedPath(receipt.recovery.fullFlash));
   assert(recovery.length === receipt.recovery.bytes && sha256(recovery) === receipt.recovery.sha256,
     "Render-v2 secondary full-flash recovery changed.");
   assert(secondary49cb.length === 2_062_912 &&

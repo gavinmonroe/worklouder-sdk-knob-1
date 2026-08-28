@@ -10,6 +10,7 @@ import { fileURLToPath } from "node:url";
 
 import { encodeRasterAnimation } from "../src/render/raster-animation.mjs";
 import { encodeWidgetBundle } from "../src/render/widget-bundle.mjs";
+import { missingToolchain } from "../test-support/pinned-inputs.mjs";
 
 const run = promisify(execFile);
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -135,7 +136,7 @@ test("Framer callback bridge exposes six RAM-built methods and the stock callbac
   ]);
 });
 
-test("ESP32-S3 callback/core objects compile and final harness has zero relocations", async () => {
+test("ESP32-S3 callback/core objects compile and final harness has zero relocations", { skip: missingToolchain() }, async () => {
   const asmObject = path.join(temporary, "rpc.o");
   const coreObject = path.join(temporary, "core.o");
   const stubSource = path.join(temporary, "stage.S");

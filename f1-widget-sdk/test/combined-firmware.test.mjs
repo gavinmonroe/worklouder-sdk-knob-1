@@ -6,13 +6,14 @@ import test from "node:test";
 
 import { buildCombinedFirmware, renderStage3e34RegistrationOnly } from "../src/combined-firmware.mjs";
 import { validateDeviceApproval } from "../src/device-workflow.mjs";
+import { missingRecoveryBackup, missingToolchain } from "../test-support/pinned-inputs.mjs";
 
 const APP_SHA256 = "b9b8eec6250392f593ae664fa8b8cba64bf861f5ef49a427c65be79e6f355817";
 const MERGED_SHA256 = "dbc29e0d74b30c8244fbe5e04960781ed58945e23cea525de0d44428434ebf54";
 const CODE_SHA256 = "0f979d32f1a9b1203287cb71518b66367c66a1fa9e51a2c5f06be71bd15a804b";
 const REGISTER_SHA256 = "6862764da34424285799e5c91796cd6080fca1adc1374f60f5b171b8d34c6c12";
 
-test("real combined Music ID1 plus WPM ID7 app builds deterministically under one setup wrapper", async (context) => {
+test("real combined Music ID1 plus WPM ID7 app builds deterministically under one setup wrapper", { skip: missingRecoveryBackup() || missingToolchain() }, async (context) => {
   const output = await mkdtemp(path.join(os.tmpdir(), "f1-sdk-combined-test-"));
   context.after(() => rm(output, { recursive: true, force: true }));
   const result = await buildCombinedFirmware({ outputDirectory: output });
@@ -74,7 +75,7 @@ test("combined linker uses original WPM source and owner-reviewed setup-section 
   assert.match(source, /\.global stage3e34_register_wpm/u);
 });
 
-test("generated approval is a non-deployable draft until main approval", async (context) => {
+test("generated approval is a non-deployable draft until main approval", { skip: missingRecoveryBackup() || missingToolchain() }, async (context) => {
   const output = await mkdtemp(path.join(os.tmpdir(), "f1-sdk-combined-draft-test-"));
   context.after(() => rm(output, { recursive: true, force: true }));
   const result = await buildCombinedFirmware({ outputDirectory: output });
