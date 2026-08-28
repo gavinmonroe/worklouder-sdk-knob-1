@@ -42,8 +42,11 @@ test("localhost probe is bounded and contains no device discovery or RPC", () =>
   const expression = buildInputMediaProbeExpression({ timeoutMs: 1200, maxOutputBytes: 4096 });
   assert.match(expression, /\/usr\/bin\/osascript/u);
   assert.match(expression, /maxBuffer: 4096/u);
-  assert.match(expression, /Input media provider hash mismatch/u);
-  assert.match(expression, /1d3262dff8bdf70b1b3140ab7ac556f622783d21d1c05ba0bb4ec6302f555090/u);
+  // Integrity is pinned on decompiled source, not the compiled .scpt bytes,
+  // which macOS resaves between runs.
+  assert.match(expression, /\/usr\/bin\/osadecompile/u);
+  assert.match(expression, /Input media provider source hash mismatch/u);
+  assert.match(expression, /643b22830696df87835e0ab5625424f00fde6c5d6630bacf97662ebf06513dbf/u);
   assert.doesNotMatch(expression, /WLDevice|HID|serial|sendRpcCall|mp\.write|fs\.write/u);
 });
 

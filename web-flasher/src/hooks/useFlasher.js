@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 
 import { defaultFirmwareId, firmwareCatalog } from "../data/firmware.js";
-import { framerLayout } from "../lib/device-identity.js";
+import { framerLayout, framerModelName } from "../lib/device-identity.js";
 import { formatRegionAddress, loadFlashPlan } from "../lib/firmware.js";
 import {
   FramerHidClient,
@@ -92,7 +92,7 @@ export function useFlasher() {
       setBootloaderReady(false);
       setWriteStarted(false);
       setPhase("identified");
-      appendLog(`Identified Framer F1 ${framerLayout(nextDevice.productId)} on firmware ${nextVersion}.`);
+      appendLog(`Identified ${framerModelName(nextDevice.productId)} ${framerLayout(nextDevice.productId)} on firmware ${nextVersion}.`);
       if (nextIdentity.mode === "single-device") {
         appendLog("Chrome did not expose the HID serial. Single-device confirmation is required before bootloader entry.");
       }

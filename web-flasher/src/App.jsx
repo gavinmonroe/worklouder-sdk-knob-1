@@ -1,5 +1,5 @@
 import { firmwareCatalog } from "./data/firmware.js";
-import { framerLayout } from "./lib/device-identity.js";
+import { framerLayout, framerModelName } from "./lib/device-identity.js";
 import { useFlasher } from "./hooks/useFlasher.js";
 
 function formatBytes(bytes) {
@@ -82,7 +82,7 @@ function DeviceSummary({ device, version, identity }) {
         <span className="device-keys" />
       </div>
       <div>
-        <strong>Framer F1 · {framerLayout(device.productId)}</strong>
+        <strong>{framerModelName(device.productId)} · {framerLayout(device.productId)}</strong>
         <span>Firmware {version}</span>
         <span>{identity.mode === "hid-serial" ? `Serial ${identity.serialNumber}` : "Identity: single connected device"}</span>
       </div>

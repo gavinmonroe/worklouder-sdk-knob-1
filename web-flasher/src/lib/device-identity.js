@@ -1,5 +1,15 @@
 export const WORK_LOUDER_USB_VENDOR_ID = 0x303a;
-export const FRAMER_F1_PRODUCT_IDS = Object.freeze([0x8396, 0x8397]);
+// Work Louder ships one firmware image for two product variants; the 0.4.1
+// image in artifacts/firmware carries both "Framer F1" and "knob1" identity
+// strings (app offset 0x12c), and Input maps both types to knob-fw-releases
+// with identical feature flags. Product IDs come from the vendor device kit's
+// DEVICE_REGISTRY (@worklouder/wl-device-kit dist/index.js:5036-5040).
+export const KNOB_F1_PRODUCT_IDS = Object.freeze([0x8396, 0x8397]);
+export const KNOB_PRODUCT_IDS = Object.freeze([0x8296, 0x82e3]);
+export const FRAMER_F1_PRODUCT_IDS = Object.freeze([
+  ...KNOB_F1_PRODUCT_IDS,
+  ...KNOB_PRODUCT_IDS,
+]);
 export const FRAMER_USAGE_PAGE = 0xff00;
 export const EXPECTED_FIRMWARE_VERSION = "0.4.1";
 export const ESP32_S3_CHIP_NAME = "ESP32-S3";
@@ -12,9 +22,15 @@ export function isFramerProductId(productId) {
 }
 
 export function framerLayout(productId) {
-  if (productId === 0x8396) return "ANSI";
-  if (productId === 0x8397) return "ISO";
+  if (productId === 0x8396 || productId === 0x8296) return "ANSI";
+  if (productId === 0x8397 || productId === 0x82e3) return "ISO";
   return "Unknown";
+}
+
+export function framerModelName(productId) {
+  if (KNOB_F1_PRODUCT_IDS.includes(productId)) return "Framer F1";
+  if (KNOB_PRODUCT_IDS.includes(productId)) return "Knob1";
+  return "Unknown Work Louder device";
 }
 
 export function normalizeSerial(value) {
