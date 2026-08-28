@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import {
   FramerHidClient,
   findGrantedFramer,
+  HID_WRITE_BLOCKED_MACOS,
   openWritableFramer,
   resolveFramerIdentity,
 } from "../src/lib/framer-hid.js";
@@ -122,5 +123,56 @@ describe("choosing an interface Chrome will let us write to", () => {
     });
     vi.stubGlobal("navigator", { hid: { getDevices: async () => { throw new Error("no permission"); } } });
     await expect(openWritableFramer(picked)).rejects.toThrow(/Failed to open the device/u);
+  });
+});
+
+// The macOS advice used to say "grant Input Monitoring". That was wrong twice
+// over: the permission covers reading input reports, not sending output ones,
+// and a Framer F1 carries the same keyboard-plus-vendor collections on one
+// interface yet is written from Chrome every day. Wrong advice sends strangers
+// into System Settings for an hour, so the correction is pinned here.
+describe("what a refused write tells a macOS user", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  async function refusalMessage() {
+    const device = fakeFramer();
+    device.collections = [{ usagePage: 0x01 }, { usagePage: 0xff00 }];
+    device.opened = false;
+    device.open = async function open() { this.opened = true; };
+    device.sendReport = async () => {
+      const error = new Error("Failed to write the report.");
+      error.name = "NotAllowedError";
+      throw error;
+    };
+    vi.stubGlobal("navigator", { platform: "MacIntel", userAgent: "Mac OS X" });
+    return new FramerHidClient(device).sendMessage("x").catch((error) => error);
+  }
+
+  it("does not prescribe Input Monitoring as the remedy", async () => {
+    const failure = await refusalMessage();
+    // What must never come back: a instruction to go turn the permission on.
+    expect(failure.message).not.toMatch(/System Settings|Privacy & Security|turn it on/iu);
+    expect(failure.message).toMatch(/Input Monitoring covers reading keypresses/u);
+    expect(failure.message).toMatch(/NotAllowedError/u);
+  });
+
+  it("names the blocked write rather than an unrelated permission", async () => {
+    const failure = await refusalMessage();
+    expect(failure.code).toBe(HID_WRITE_BLOCKED_MACOS);
+    expect(HID_WRITE_BLOCKED_MACOS).not.toMatch(/input-monitoring/u);
+    // The descriptor is what identifies the variant, so it must survive.
+    expect(failure.message).toMatch(/declares:/u);
+  });
+
+  it("still blames a contending app when the platform is not macOS", async () => {
+    const device = fakeFramer();
+    device.collections = [{ usagePage: 0x01 }, { usagePage: 0xff00 }];
+    device.opened = false;
+    device.open = async function open() { this.opened = true; };
+    device.sendReport = async () => { throw new Error("Failed to write the report."); };
+    vi.stubGlobal("navigator", { platform: "Win32", userAgent: "Windows NT" });
+    const failure = await new FramerHidClient(device).sendMessage("x").catch((error) => error);
+    expect(failure.message).toMatch(/quit Work Louder Input/u);
+    expect(failure.code).toBe("device-busy");
   });
 });

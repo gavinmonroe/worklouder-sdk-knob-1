@@ -61,9 +61,10 @@ The transient display bubble remains Framer-F1-only; it is a display RPC that ha
 been exercised on a Knob 1.
 
 If multiple matching keyboards are attached, add `--device 0` (or the index
-shown by `inspect --discover-only`). `--all-devices` opts into inspecting other
-recognized Work Louder models; the default is strictly `knob_f1`. Add `--json`
-for explicitly machine-oriented output.
+shown by `inspect --discover-only`). The default accepts both keyboards this CLI
+is audited against — `knob_f1` (Framer F1) and `knob` (Knob 1); `--all-devices`
+opts into inspecting other recognized Work Louder models beyond those. Add
+`--json` for explicitly machine-oriented output.
 
 `backup` only reads the keyboard. It saves raw bytes locally, records the SDK's
 reported size/checksum, and adds a local SHA-256 for each copied file. A partial

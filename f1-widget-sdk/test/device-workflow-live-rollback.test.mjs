@@ -171,14 +171,22 @@ test("7838 blue-timer profile accepts only the frozen image, package, and visual
     rollbackBytes: rollback, rollbackReceiptBytes: receipt }), /frozen candidate/u);
 });
 
-test("generic structural profile pins exact bytes but fails closed on its capability ABI", async () => {
+test("generic structural profile pins exact bytes and accepts the re-pinned candidate", async () => {
   const [app, rollback, receipt, approvalText, focusDial, clockTimer] = await Promise.all([
     readFile(genericAppPath), readFile(blueTimerAppPath), readFile(genericReceiptPath),
     readFile(genericApprovalPath, "utf8"), readFile(focusDialAppPath), readFile(focusTimerAppPath),
   ]);
   const approval = JSON.parse(approvalText);
-  assert.throws(() => validateDeviceApproval(approval, { appBytes: app, rollbackBytes: rollback,
-    rollbackReceiptBytes: receipt }), /fails the exact capability ABI/u);
+  // This asserted /fails the exact capability ABI/ until the approval was re-pinned on
+  // 2026-08-18. The capability blacklist in device-workflow.mjs refuses one exact hash,
+  // 371ee26e, "until a rebuilt module gives protocol and v1Packages independent JSON
+  // storage" -- and that rebuild landed as 4e045ec2, which the pin below now requires.
+  // So the profile validates, and the blacklist can no longer fire for any approval that
+  // reaches it. The expectation was never updated and had been failing ever since; the
+  // refusal it was guarding is now carried by the exact app pin, which the substitution
+  // loop below exercises.
+  assert.doesNotThrow(() => validateDeviceApproval(approval, { appBytes: app,
+    rollbackBytes: rollback, rollbackReceiptBytes: receipt }));
 
   for (const substituted of [focusDial, clockTimer, rollback]) {
     const changed = structuredClone(approval);

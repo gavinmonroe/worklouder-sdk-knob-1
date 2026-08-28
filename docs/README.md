@@ -7,7 +7,9 @@ path. The goal is not merely to make a desktop card appear: the end state is a
 Pomodoro that runs on the keyboard and survives disconnecting the Mac.
 
 Setting up a clone to run the test suites is covered in
-[Local development setup](./20-local-development-setup.md).
+[Local development setup](./20-local-development-setup.md). Reaching a Knob 1 from
+macOS has its own appendix:
+[Knob 1 HID access on macOS](./21-knob1-macos-hid-access.md).
 
 ## Current status — 2026-08-15
 

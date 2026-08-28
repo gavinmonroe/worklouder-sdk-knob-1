@@ -70,14 +70,28 @@ export function resolveVendorOutputReport(device) {
 /** A compact, copy-pasteable description of what a device declares. When a
  *  write is refused this is the only thing that identifies the variant, so it
  *  goes in the error rather than sitting in a console somewhere. */
-/** macOS treats any HID device that exposes keyboard or consumer-control
- *  collections as protected input hardware. Chrome can enumerate and OPEN such
- *  a device, and then every write is refused until the user grants Chrome
- *  "Input Monitoring" — which is why this fails after a connection that looked
- *  successful, with no other program holding the keyboard. Every Work Louder
- *  keyboard carries those collections, so this is the first thing to check on
- *  a Mac. */
-export const HID_WRITE_BLOCKED_MACOS = "macos-input-monitoring";
+/** A write refused on macOS while the device is open and nothing else holds it.
+ *
+ *  This used to be reported as an Input Monitoring problem. It is not, and the
+ *  measurements say so twice over:
+ *
+ *  - Input Monitoring governs READING input reports, not SENDING output ones.
+ *    A Knob 1 owner granted it, quit and reopened Chrome, and the write was
+ *    still refused. Direct IOKit calls on that device return NotPermitted for
+ *    IOHIDDeviceSetReport as the logged-in user and succeed as root, with the
+ *    permission granted either way. See docs/21-knob1-macos-hid-access.md.
+ *  - Carrying keyboard collections is not the cause either. A Framer F1 puts
+ *    Keyboard (report 1), Consumer Control (2), Mouse (3) and the vendor 0xff00
+ *    collection (report 6, 63-byte output) on ONE HID interface whose primary
+ *    usage is Keyboard — and Chrome writes report 6 to it, unprivileged, on
+ *    macOS, which is how this very app talks to an F1.
+ *
+ *  Same descriptor shape, opposite outcome, so the difference is not the
+ *  collections a device exposes but which REPORT IDS a protected collection
+ *  claims: macOS refuses a write to an id the keyboard collection also owns,
+ *  and Chrome hides protected collections' report ids, so a descriptor dump
+ *  cannot show it. probeWritableReportIds() asks Chrome directly instead. */
+export const HID_WRITE_BLOCKED_MACOS = "macos-hid-write-blocked";
 export const HID_WRITE_BLOCKED_BUSY = "device-busy";
 
 function looksLikeMac() {
@@ -218,12 +232,12 @@ export class FramerHidClient {
           const blockedByMac = looksLikeMac() && hasProtectedCollection(this.device);
           const macGuidance =
             looksLikeMac() && hasProtectedCollection(this.device)
-              ? " On macOS, check in this order: (1) if Chrome is NOT yet allowed under " +
-                "System Settings > Privacy & Security > Input Monitoring, turn it on, then " +
-                "QUIT and reopen Chrome (a reload is not enough); (2) if it IS already " +
-                "allowed, this is Chrome refusing the interface rather than a setting — " +
-                "unplug and replug the keyboard, then reconnect, and send this whole message " +
-                "to the project."
+              ? " On macOS, first quit anything else holding the keyboard (Work Louder Input, " +
+                "VIA, QMK Toolbox), unplug and replug it, and reconnect. If it still refuses, " +
+                "this is the operating system blocking the write, not a setting you can " +
+                "change: Input Monitoring covers reading keypresses, not sending reports, so " +
+                "granting it does not help. Send this whole message to the project — the " +
+                "report ids below are what identify the variant."
               : " Most often another program is holding the keyboard: quit Work Louder Input, " +
                 "VIA, or QMK Toolbox and try again.";
           const failure = new Error(
