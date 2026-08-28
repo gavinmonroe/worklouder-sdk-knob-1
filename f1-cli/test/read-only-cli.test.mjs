@@ -6,6 +6,9 @@ import test from "node:test";
 
 import {
   backupConnectedDevice,
+  explainWriteFailure,
+  F1_DEVICE_TYPES,
+  BUBBLE_DEVICE_TYPES,
   safeRelativeDevicePath,
   sendTransientBubble,
 } from "../src/device.mjs";
@@ -184,4 +187,54 @@ test("offline SDK protocol self-test does not access hardware", async () => {
   assert.equal(result.hardwareAccessed, false);
   assert.equal(result.blockedRequest, "fs.write");
   assert.ok(!result.allowedRequestsObserved.includes("fs.write"));
+});
+
+test("default discovery accepts the Knob 1 while the bubble stays Framer F1 only", () => {
+  // The Knob 1 reports deviceType "knob"; every audited read-only RPC works on it, so it
+  // must not need --all-devices. The display bubble has never run on one, so it does not
+  // widen with it.
+  assert.ok(F1_DEVICE_TYPES.has("knob_f1"));
+  assert.ok(F1_DEVICE_TYPES.has("knob"));
+  assert.ok(BUBBLE_DEVICE_TYPES.has("knob_f1"));
+  assert.ok(!BUBBLE_DEVICE_TYPES.has("knob"));
+});
+
+test("backup skips directory entries instead of recording a read failure", async () => {
+  const backupRoot = await mkdtemp(path.join(os.tmpdir(), "f1-readonly-test-"));
+  const reads = [];
+  const api = {
+    async getFileList() {
+      // fs.list reports a directory without a checksum, as the Knob 1's "wallpapers" is.
+      return [
+        { name: "keymap.json", size: 2, checksum: "device-sum" },
+        { name: "wallpapers", size: 0 },
+      ];
+    },
+    async readFileChunked(name) {
+      reads.push(name);
+      return Buffer.from([7, 8]);
+    },
+  };
+
+  const manifest = await backupConnectedDevice(api, backupRoot, { deviceType: "knob" });
+  const byName = Object.fromEntries(manifest.files.map((file) => [file.name, file]));
+  assert.equal(byName["keymap.json"].saved, true);
+  assert.equal(byName.wallpapers.saved, false);
+  assert.equal(byName.wallpapers.skipped, "directory");
+  assert.equal(byName.wallpapers.error, undefined);
+  // The directory is never read, so it cannot fail the backup.
+  assert.deepEqual(reads, ["keymap.json"]);
+});
+
+test("a macOS HID write refusal explains the sudo requirement", () => {
+  const raw = "firmware version: Cannot write to hid device";
+  const explained = explainWriteFailure(raw);
+  if (process.platform === "darwin") {
+    assert.match(explained, /sudo/u);
+    assert.match(explained, /docs\/21-knob1-macos-hid-access\.md/u);
+  } else {
+    assert.equal(explained, raw);
+  }
+  // Unrelated errors are passed through untouched on every platform.
+  assert.equal(explainWriteFailure("device status: timeout"), "device status: timeout");
 });

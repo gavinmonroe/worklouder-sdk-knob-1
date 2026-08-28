@@ -5,7 +5,16 @@ import path from "node:path";
 import { BUBBLE_METHOD, validateBubblePayload } from "./bubble.mjs";
 import { ReadOnlyTransport } from "./read-only-transport.mjs";
 
-export const F1_DEVICE_TYPES = Object.freeze(new Set(["knob_f1"]));
+// Work Louder ships one firmware line for both variants: the 0.4.1 image carries both
+// "Framer F1" and "knob1" identity strings, and wl-device-kit maps each to
+// knob-fw-releases. The Knob 1 reports deviceType "knob" (PID 0x8296/0x82e3), so
+// filtering to "knob_f1" alone hid it behind --all-devices even though every read-only
+// RPC below works on it.
+export const F1_DEVICE_TYPES = Object.freeze(new Set(["knob_f1", "knob"]));
+
+// The transient display bubble stays restricted to the Framer F1: it is a display RPC
+// and has never been exercised on a Knob 1.
+export const BUBBLE_DEVICE_TYPES = Object.freeze(new Set(["knob_f1"]));
 
 const noop = () => {};
 export const quietLogger = Object.freeze({
@@ -42,7 +51,7 @@ export async function discoverDevices(sdk, { allDevices = false } = {}) {
 
 export function selectDevice(devices, requestedIndex) {
   if (devices.length === 0) {
-    throw new Error("No matching Framer F1 / Knob F1 device was found.");
+    throw new Error("No matching Framer F1 / Knob 1 device was found.");
   }
 
   if (requestedIndex === undefined && devices.length > 1) {
@@ -79,7 +88,7 @@ export async function withReadOnlyDevice(sdk, device, operation) {
  * separate from inspection/backup so their transports never allow it.
  */
 export async function sendTransientBubble(sdk, device, input) {
-  if (device?.deviceType !== "knob_f1") {
+  if (!BUBBLE_DEVICE_TYPES.has(device?.deviceType)) {
     throw new Error("Bubble is restricted to a Framer F1 (knob_f1) device.");
   }
   const payload = validateBubblePayload(input);
@@ -98,11 +107,26 @@ export async function sendTransientBubble(sdk, device, input) {
   }
 }
 
+// macOS refuses HID output reports to a device whose vendor collection shares an
+// interface with a keyboard collection, which is exactly the Knob 1's descriptor:
+// IOHIDDeviceOpen succeeds, then IOHIDDeviceSetReport returns kIOReturnNotPermitted
+// (0xe00002e2) and seizing returns kIOReturnNotPrivileged (0xe00002c1). Both succeed as
+// root. Input Monitoring governs reading input reports, not sending output reports, so
+// granting it is necessary but not sufficient. See docs/21-knob1-macos-hid-access.md.
+export function explainWriteFailure(message) {
+  if (process.platform !== "darwin" || !/cannot write to hid device/iu.test(message)) {
+    return message;
+  }
+  return `${message}. On macOS the kernel denies HID output reports to this device ` +
+    "because its vendor interface shares the keyboard interface; re-run the same command " +
+    "with sudo. See docs/21-knob1-macos-hid-access.md.";
+}
+
 async function capture(label, operation) {
   try {
     return { ok: true, value: await operation() };
   } catch (error) {
-    return { ok: false, error: `${label}: ${error.message}` };
+    return { ok: false, error: `${label}: ${explainWriteFailure(error.message)}` };
   }
 }
 
@@ -152,6 +176,14 @@ export async function backupConnectedDevice(api, backupRoot, deviceInfo) {
       relativePath = safeRelativeDevicePath(summary.name);
     } catch (error) {
       manifestFiles.push({ ...summary, saved: false, error: error.message });
+      continue;
+    }
+
+    // fs.list reports directories without a checksum (the Knob 1's "wallpapers" is one).
+    // Reading one as a file always fails, which used to turn a complete backup into a
+    // partial one and exit 3. Record it as skipped instead.
+    if (summary.checksum === undefined || summary.checksum === null) {
+      manifestFiles.push({ ...summary, saved: false, skipped: "directory" });
       continue;
     }
 
