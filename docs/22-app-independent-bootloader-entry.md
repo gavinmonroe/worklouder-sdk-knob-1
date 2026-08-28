@@ -29,8 +29,9 @@ allowlist. It writes nothing to flash.
 sudo node recovery/enter-bootloader-direct.mjs --confirm
 ```
 
-`sudo` is required on macOS for the reason in
-[docs/21](./21-knob1-macos-hid-access.md). Observed: `{"status":"ok"}`, then
+A Knob 1 needs `sudo` on macOS: `IOHIDDeviceSetReport` is denied at uid 501 and succeeds
+at uid 0. That is measured but not yet explained — see
+[docs/21](./21-knob1-macos-hid-access.md). An F1 needs no `sudo`. Observed: `{"status":"ok"}`, then
 `/dev/cu.usbmodem31101` about two seconds later. The suffix changes between sessions;
 never copy an example port.
 
@@ -111,7 +112,36 @@ esptool --chip esp32s3 --port $PORT --before no-reset --after watchdog-reset chi
 Verified round trip: normal firmware to bootloader and back, twice, by both routes. HID
 re-enumerates with fresh registry IDs and `f1-cli` discovers the device again.
 
-## Still untested
+## Restore
 
-Entry is proven and a byte-exact 16 MiB image exists, but **no restore write has been
-performed**. The write half of the recovery path remains unverified.
+The write half is verified too, so the recovery path is proven end to end.
+
+```sh
+esptool --chip esp32s3 --port $PORT --before no-reset --after no-reset \
+  write-flash --flash-mode keep --flash-freq keep --flash-size keep \
+  0 full-flash-16mb.bin
+esptool --chip esp32s3 --port $PORT --before no-reset --after no-reset \
+  verify-flash 0 full-flash-16mb.bin
+```
+
+Observed: all 16,777,216 bytes (1,200,202 compressed) written in 57s with `Hash of data
+verified`, then `Verification successful (digest matched)`. After `--after watchdog-reset`
+the unit booted normally, re-enumerated as `knob`/`ansi`, and reported firmware `0.4.1`
+with battery over RPC. The device's own `fs.list` checksums for `keymap.json`
+(`6e3e42b7...`) and `smart_actions.json` (`a99ff018...`) were unchanged from before the
+restore, confirming the spiffs partition returned byte-exact independently of esptool.
+
+**Pass the `keep` flags.** Without `--flash-mode keep --flash-freq keep --flash-size keep`,
+esptool may rewrite the bootloader's flash mode/frequency/size header while writing, which
+silently breaks byte-exact verification of a whole-chip image.
+
+**Expect `verify-flash` to fail against an older backup, and do not read that as
+corruption.** Runtime state lives in NVS. Two captures taken about twenty minutes and
+several reboots apart differed by 617 bytes of 16,777,216 (0.0037%), every one inside
+`nvs` in one contiguous run at `0x812000`-`0x81319d`; the bootloader, `phy_init`, the 8 MiB
+factory app, `fs`, and `coredump` were byte-for-byte identical. Diff per partition before
+concluding anything about a backup. Differences confined to `nvs` or `coredump` are
+ordinary firmware bookkeeping; differences elsewhere are not.
+
+Restoring an older image reverts NVS, so boot counters and the selected profile/layer go
+back to their captured values. The keymap lives in `fs` and is unaffected.
