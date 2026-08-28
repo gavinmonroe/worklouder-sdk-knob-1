@@ -15,13 +15,40 @@
 /* Digit raster KIND: same pixel encoding, count fixed at exactly 10, record
  * divisor (u32le@30, power of ten 1..1000) picks (slot/divisor) % 10. */
 #define TF_DIGIT 252u
+/* v4 compact image motion: one RGB565 plane, one alpha8 plane and 1..32
+ * signed canvas positions. */
+#define TF_SPRITE 251u
+/* v5 smooth image motion: the same single-copy sprite table with a linear
+ * transition duration, interpolated once per display render. */
+#define TF_TWEEN 250u
+
+static const uint8_t TF_CONTRACT_V3_SHA256[32] = {
+    0x45, 0x5e, 0x02, 0x81, 0x95, 0x95, 0xf8, 0x10,
+    0x90, 0x9a, 0x11, 0xaf, 0xdc, 0xda, 0x7e, 0xb5,
+    0xaa, 0x0b, 0x4d, 0x6e, 0x79, 0x2b, 0x15, 0x4d,
+    0x29, 0x71, 0x1e, 0xbe, 0xa9, 0x06, 0x63, 0x1b
+};
+static const uint8_t TF_CONTRACT_V4_SHA256[32] = {
+    0xf7, 0x2d, 0x90, 0xe8, 0x00, 0x9f, 0x5d, 0x29,
+    0xde, 0xca, 0x6a, 0xf5, 0x1e, 0xc0, 0x5c, 0x98,
+    0xc4, 0x05, 0xf6, 0x5f, 0x9b, 0xa8, 0x8c, 0xd8,
+    0x79, 0x4c, 0x14, 0x20, 0x8b, 0x18, 0x58, 0xc9
+};
+static const uint8_t TF_CONTRACT_V5_SHA256[32] = {
+    0x87, 0x93, 0xb8, 0x0a, 0x3c, 0x83, 0xaf, 0xc8,
+    0xf5, 0xf2, 0x8a, 0x82, 0xe0, 0x17, 0x48, 0x94,
+    0x3f, 0xa5, 0xd2, 0x96, 0x70, 0xcb, 0x98, 0xa9,
+    0x2e, 0xd5, 0x22, 0x12, 0x86, 0x49, 0x13, 0xec
+};
 
 typedef struct {
     uint8_t bytes[FRAMER_TF_MAX_TEXT_BYTES];
     uint8_t length;
     uint8_t palette;
     uint8_t hidden;
-    uint8_t raster; /* variantRaster: clamped variant pick (0..15) */
+    uint8_t raster; /* raster pick (0..15) or sprite position pick (0..31) */
+    int16_t sprite_x;
+    int16_t sprite_y;
 } tf_text;
 
 typedef struct {
@@ -40,6 +67,11 @@ static uint32_t read_u32(const uint8_t *bytes)
            ((uint32_t)bytes[2] << 16) | ((uint32_t)bytes[3] << 24);
 }
 
+static int16_t read_i16(const uint8_t *bytes)
+{
+    return (int16_t)read_u16(bytes);
+}
+
 static int bytes_equal(const uint8_t *left, const uint8_t *right, size_t count)
 {
     size_t i;
@@ -48,6 +80,20 @@ static int bytes_equal(const uint8_t *left, const uint8_t *right, size_t count)
             return 0;
     }
     return 1;
+}
+
+static int contract_supported(const uint8_t *asset_contract,
+                              const uint8_t *expected_contract)
+{
+    if (bytes_equal(asset_contract, expected_contract, 32u))
+        return 1;
+    /* A v4 firmware is additive: it keeps admitting already-installed v3
+     * packages. A v3 firmware never receives this code and cannot admit v4. */
+    if (bytes_equal(expected_contract, TF_CONTRACT_V4_SHA256, 32u))
+        return bytes_equal(asset_contract, TF_CONTRACT_V3_SHA256, 32u);
+    return bytes_equal(expected_contract, TF_CONTRACT_V5_SHA256, 32u) &&
+           (bytes_equal(asset_contract, TF_CONTRACT_V4_SHA256, 32u) ||
+            bytes_equal(asset_contract, TF_CONTRACT_V3_SHA256, 32u));
 }
 
 static void zero_bytes(void *value, size_t count)
@@ -153,6 +199,8 @@ static uint8_t expected_properties(uint8_t format)
     case 11u: return TF_INLINE;
     case 12u: return TF_PROP_TEXT; /* value slot only; pixels carry colour */
     case 13u: return TF_PROP_TEXT; /* digitRaster: one slot, divisor metadata */
+    case 14u: return TF_PROP_TEXT; /* spriteMotion: one position-pick slot */
+    case 15u: return TF_PROP_TEXT; /* spriteTween: one position-pick slot */
     default: return 0u;
     }
 }
@@ -166,6 +214,8 @@ static uint8_t used_slots(uint8_t format)
     case 9u: return 3u;
     case 12u: return 1u;
     case 13u: return 1u;
+    case 14u: return 1u;
+    case 15u: return 1u;
     default: return 0xffu;
     }
 }
@@ -186,6 +236,8 @@ static uint8_t expected_table_count(uint8_t format)
     case 11u: return TF_INLINE;
     case 12u: return TF_RASTER;
     case 13u: return TF_DIGIT;
+    case 14u: return TF_SPRITE;
+    case 15u: return TF_TWEEN;
     default: return 0xffu;
     }
 }
@@ -205,6 +257,42 @@ static int validate_raster_table(const framer_tf_context *context,
         return 0;
     return table_bytes >= variant_bytes && table_bytes % variant_bytes == 0u &&
            table_bytes <= variant_bytes * 16u;
+}
+
+static int validate_sprite_table(const framer_tf_context *context,
+                                 const uint8_t *record,
+                                 uint8_t tweened)
+{
+    uint32_t relative = read_u16(record + 36u);
+    uint32_t table_bytes = read_u16(record + 38u);
+    uint32_t width = read_u16(record + 20u);
+    uint32_t height = read_u16(record + 22u);
+    uint32_t pixels = width * height;
+    const uint8_t *table;
+    uint8_t count;
+    uint32_t expected_bytes;
+    uint8_t index;
+    if (relative > context->literal_bytes ||
+        table_bytes > context->literal_bytes - relative || table_bytes < 12u)
+        return 0;
+    table = context->asset + context->literals_at + relative;
+    count = table[2];
+    expected_bytes = 8u + (uint32_t)count * 4u + pixels * 3u;
+    if (table[0] != 1u || table[1] != (tweened ? 1u : 0u) ||
+        count == 0u || count > 32u || table[3] != 1u ||
+        (tweened
+             ? (read_u16(table + 4u) == 0u || table[6] != 0u || table[7] != 0u)
+             : (read_i16(table + 4u) != 0 || read_i16(table + 6u) != 0)) ||
+        table_bytes != expected_bytes)
+        return 0;
+    for (index = 0u; index < count; ++index) {
+        int32_t x = read_i16(table + 8u + (uint32_t)index * 4u);
+        int32_t y = read_i16(table + 10u + (uint32_t)index * 4u);
+        if (x < -(int32_t)width || x > (int32_t)FRAMER_TF_CANVAS_WIDTH ||
+            y < -(int32_t)height || y > (int32_t)FRAMER_TF_CANVAS_HEIGHT)
+            return 0;
+    }
+    return 1;
 }
 
 static int table_entry(const framer_tf_context *context,
@@ -261,6 +349,8 @@ static int validate_table(const framer_tf_context *context,
         return validate_raster_table(context, record) &&
                read_u16(record + 38u) == variant_bytes * 10u;
     }
+    if (expected == TF_SPRITE || expected == TF_TWEEN)
+        return validate_sprite_table(context, record, expected == TF_TWEEN);
     if (record[39] != 0u || relative > context->literal_bytes ||
         count_bytes > context->literal_bytes - relative)
         return 0;
@@ -301,7 +391,7 @@ static int target_valid(const framer_tf_context *context,
     uint8_t format = record[25];
     uint8_t slots;
     unsigned int index;
-    if (!target_id_valid(record) || format < 1u || format > 13u ||
+    if (!target_id_valid(record) || format < 1u || format > 15u ||
         (expected_properties(format) == TF_INLINE
              ? record[24] != TF_PROP_TEXT &&
                    record[24] != (TF_PROP_TEXT | TF_PROP_COLOR)
@@ -327,7 +417,7 @@ static int target_valid(const framer_tf_context *context,
             (index >= slots && record[26u + index] != TF_UNUSED))
             return 0;
     }
-    if (format == 1u || format == 12u) {
+    if (format == 1u || format == 12u || format == 14u || format == 15u) {
         /* rootVisibility and variantRaster carry no text metadata: raster
          * pixels arrive pre-coloured, so palette/font/align/chars/scale must
          * all stay at their unused encodings. */
@@ -400,7 +490,7 @@ framer_tf_result framer_tf_admit(framer_tf_context *context,
         asset[31] != 0u || read_u32(asset + 32u) == 0u ||
         read_u32(asset + 32u) > FRAMER_TF_MAX_OVERLAY_WRITES ||
         !bytes_equal(asset + 128u, expected_f2js_sha256, 32u) ||
-        !bytes_equal(asset + 160u, expected_contract_sha256, 32u))
+        !contract_supported(asset + 160u, expected_contract_sha256))
         return FRAMER_TF_ERR_MALFORMED;
     if (framer_tf_crc32((const uint8_t *)base, base_pixels * 2u) != read_u32(asset + 68u))
         return FRAMER_TF_ERR_BASE;
@@ -447,7 +537,8 @@ framer_tf_result framer_tf_admit(framer_tf_context *context,
         for (i = 0u; i < FRAMER_TF_TARGET_COUNT; ++i) {
             const uint8_t *record = asset + targets_at +
                                     i * FRAMER_TF_TARGET_BYTES;
-            if (record[25] == 12u || record[25] == 13u)
+            if (record[25] == 12u || record[25] == 13u ||
+                record[25] == 14u || record[25] == 15u)
                 raster_writes += (uint32_t)read_u16(record + 20u) *
                                  (uint32_t)read_u16(record + 22u);
         }
@@ -606,10 +697,64 @@ static int valid_day_meta(uint32_t meta)
     return (meta & ~0x3fu) == 0u && (meta & 7u) <= 6u && ((meta >> 3) & 15u) <= 7u;
 }
 
-static int prepare_target(const framer_tf_context *context,
+static void tween_sprite_position(framer_tf_context *context,
+                                  const uint8_t *record,
+                                  unsigned int target_index,
+                                  uint8_t pick,
+                                  uint32_t now_ms,
+                                  tf_text *text)
+{
+    const uint8_t *table = context->asset + context->literals_at +
+                           read_u16(record + 36u);
+    framer_tf_tween_state *state = &context->tweens[target_index];
+    int32_t desired_x = read_i16(table + 8u + (uint32_t)pick * 4u);
+    int32_t desired_y = read_i16(table + 10u + (uint32_t)pick * 4u);
+    int32_t prior_x;
+    int32_t prior_y;
+    uint32_t duration = read_u16(table + 4u);
+    uint32_t elapsed;
+    int32_t current_x;
+    int32_t current_y;
+    if (state->initialized == 0u) {
+        state->initialized = 1u;
+        state->pick = pick;
+        state->from_x = desired_x; state->from_y = desired_y;
+        state->started_ms = now_ms;
+    }
+    prior_x = read_i16(table + 8u + (uint32_t)state->pick * 4u);
+    prior_y = read_i16(table + 10u + (uint32_t)state->pick * 4u);
+    elapsed = now_ms - state->started_ms;
+    if (elapsed >= duration) {
+        current_x = prior_x;
+        current_y = prior_y;
+    } else {
+        current_x = state->from_x +
+            ((prior_x - state->from_x) * (int32_t)elapsed) / (int32_t)duration;
+        current_y = state->from_y +
+            ((prior_y - state->from_y) * (int32_t)elapsed) / (int32_t)duration;
+    }
+    if ((int32_t)pick != state->pick) {
+        /* A decreasing class index is the loop seam (p31 -> p0): respawn off
+         * the left edge immediately instead of tweening backwards through the
+         * entire sky. Every forward step begins from the currently rendered
+         * coordinate, so a late event remains continuous. */
+        if ((int32_t)pick < state->pick) {
+            current_x = desired_x; current_y = desired_y;
+        }
+        state->pick = pick;
+        state->from_x = current_x; state->from_y = current_y;
+        state->started_ms = now_ms;
+    }
+    text->sprite_x = (int16_t)current_x;
+    text->sprite_y = (int16_t)current_y;
+}
+
+static int prepare_target(framer_tf_context *context,
                           const uint8_t *record,
                           const int32_t slots[FRAMER_TF_MAILBOX_SLOTS],
-                          tf_text *text)
+                          tf_text *text,
+                          unsigned int target_index,
+                          uint32_t now_ms)
 {
     uint8_t format = record[25];
     uint32_t flags;
@@ -626,7 +771,8 @@ static int prepare_target(const framer_tf_context *context,
     }
     if (format == 9u)
         flags = (uint32_t)slots[record[28]];
-    else if (format == 2u || format == 11u || format == 12u || format == 13u)
+    else if (format == 2u || format == 11u || format == 12u ||
+             format == 13u || format == 14u || format == 15u)
         flags = (uint32_t)slots[15]; /* none of these bind the flags slot */
     else
         flags = (uint32_t)slots[record[27]];
@@ -736,6 +882,24 @@ static int prepare_target(const framer_tf_context *context,
         int32_t value = slots[record[26]];
         uint32_t unsigned_value = value < 0 ? 0u : (uint32_t)value;
         text->raster = (uint8_t)((unsigned_value / divisor) % 10u);
+    } else if (format == 14u) {
+        const uint8_t *table = context->asset + context->literals_at +
+                               read_u16(record + 36u);
+        int32_t pick = slots[record[26]];
+        if (pick < 0) pick = 0;
+        if (pick >= (int32_t)table[2]) pick = (int32_t)table[2] - 1;
+        text->raster = (uint8_t)pick;
+        text->sprite_x = read_i16(table + 8u + (uint32_t)pick * 4u);
+        text->sprite_y = read_i16(table + 10u + (uint32_t)pick * 4u);
+    } else if (format == 15u) {
+        const uint8_t *table = context->asset + context->literals_at +
+                               read_u16(record + 36u);
+        int32_t pick = slots[record[26]];
+        if (pick < 0) pick = 0;
+        if (pick >= (int32_t)table[2]) pick = (int32_t)table[2] - 1;
+        text->raster = (uint8_t)pick;
+        tween_sprite_position(context, record, target_index, (uint8_t)pick,
+                              now_ms, text);
     } else {
         return 0;
     }
@@ -745,6 +909,24 @@ static int prepare_target(const framer_tf_context *context,
 static uint16_t palette_color(const framer_tf_context *context, uint8_t index)
 {
     return read_u16(context->asset + context->palette_at + (uint32_t)index * 2u);
+}
+
+static uint16_t blend_rgb565(uint16_t source, uint16_t destination, uint8_t alpha)
+{
+    uint32_t inverse;
+    uint32_t red;
+    uint32_t green;
+    uint32_t blue;
+    if (alpha == 0u) return destination;
+    if (alpha == 255u) return source;
+    inverse = 255u - alpha;
+    red = ((((uint32_t)source >> 11) & 31u) * alpha +
+           (((uint32_t)destination >> 11) & 31u) * inverse + 127u) / 255u;
+    green = ((((uint32_t)source >> 5) & 63u) * alpha +
+             (((uint32_t)destination >> 5) & 63u) * inverse + 127u) / 255u;
+    blue = (((uint32_t)source & 31u) * alpha +
+            ((uint32_t)destination & 31u) * inverse + 127u) / 255u;
+    return (uint16_t)((red << 11) | (green << 5) | blue);
 }
 
 static uint32_t target_pixels(const framer_tf_context *context,
@@ -788,6 +970,46 @@ static uint32_t target_pixels(const framer_tf_context *context,
             }
         }
         return (uint32_t)target_width * (uint32_t)target_height;
+    }
+    if (record[25] == 14u || record[25] == 15u) {
+        const uint8_t *table = context->asset + context->literals_at +
+                               read_u16(record + 36u);
+        uint32_t count = table[2];
+        uint32_t pixels = (uint32_t)target_width * (uint32_t)target_height;
+        uint32_t colors_at = 8u + count * 4u;
+        const uint8_t *colors = table + colors_at;
+        const uint8_t *alpha = colors + pixels * 2u;
+        int32_t sprite_x = text->sprite_x;
+        int32_t sprite_y = text->sprite_y;
+        int32_t row;
+        int32_t column;
+        for (row = 0; row < target_height; ++row) {
+            int32_t pixel_y = sprite_y + row;
+            if (pixel_y < 0 || pixel_y >= (int32_t)FRAMER_TF_CANVAS_HEIGHT)
+                continue;
+            for (column = 0; column < target_width; ++column) {
+                int32_t pixel_x = sprite_x + column;
+                uint32_t source_index;
+                uint8_t source_alpha;
+                uint32_t frame_index;
+                if (pixel_x < 0 || pixel_x >= (int32_t)FRAMER_TF_CANVAS_WIDTH)
+                    continue;
+                source_index = (uint32_t)row * (uint32_t)target_width +
+                               (uint32_t)column;
+                source_alpha = alpha[source_index];
+                if (source_alpha == 0u)
+                    continue;
+                ++writes;
+                if (draw) {
+                    frame_index = (uint32_t)pixel_y * FRAMER_TF_CANVAS_WIDTH +
+                                  (uint32_t)pixel_x;
+                    framebuffer[frame_index] = blend_rgb565(
+                        read_u16(colors + source_index * 2u),
+                        framebuffer[frame_index], source_alpha);
+                }
+            }
+        }
+        return writes;
     }
     if (record[33] == 1u)
         x += (target_width - text_width) / 2;
@@ -835,6 +1057,7 @@ static framer_tf_result render_internal(framer_tf_context *context,
                                         uint16_t *framebuffer,
                                         size_t framebuffer_pixels,
                                         uintptr_t current_thread_token,
+                                        uint32_t now_ms,
                                         framer_tf_metrics *metrics,
                                         framer_tf_snapshot_probe probe,
                                         void *probe_opaque)
@@ -868,7 +1091,8 @@ static framer_tf_result render_internal(framer_tf_context *context,
         return FRAMER_TF_ERR_REVISION;
     for (index = 0u; index < FRAMER_TF_TARGET_COUNT; ++index) {
         const uint8_t *record = context->asset + context->targets_at + index * FRAMER_TF_TARGET_BYTES;
-        if (!prepare_target(context, record, snapshot.slots, &text[index]))
+        if (!prepare_target(context, record, snapshot.slots, &text[index],
+                            index, now_ms))
             return FRAMER_TF_ERR_FORMAT;
     }
     if (text[0].hidden) {
@@ -909,7 +1133,20 @@ framer_tf_result framer_tf_render(framer_tf_context *context,
                                   framer_tf_metrics *metrics)
 {
     return render_internal(context, mailbox, framebuffer, framebuffer_pixels,
-                           current_thread_token, metrics,
+                           current_thread_token, 0u, metrics,
+                           (framer_tf_snapshot_probe)0, (void *)0);
+}
+
+framer_tf_result framer_tf_render_at(framer_tf_context *context,
+                                     const framer_tf_mailbox *mailbox,
+                                     uint16_t *framebuffer,
+                                     size_t framebuffer_pixels,
+                                     uintptr_t current_thread_token,
+                                     uint32_t now_ms,
+                                     framer_tf_metrics *metrics)
+{
+    return render_internal(context, mailbox, framebuffer, framebuffer_pixels,
+                           current_thread_token, now_ms, metrics,
                            (framer_tf_snapshot_probe)0, (void *)0);
 }
 
@@ -923,5 +1160,5 @@ framer_tf_result framer_tf_render_probe(framer_tf_context *context,
                                         void *probe_opaque)
 {
     return render_internal(context, mailbox, framebuffer, framebuffer_pixels,
-                           current_thread_token, metrics, probe, probe_opaque);
+                           current_thread_token, 0u, metrics, probe, probe_opaque);
 }

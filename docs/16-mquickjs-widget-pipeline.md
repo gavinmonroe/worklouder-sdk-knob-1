@@ -348,11 +348,10 @@ The memory rule is **flatten once, never ship twice**:
 - static image pixels become part of the already-required 100×310 base frame,
   which LZSS compresses for storage and expands into the one 62,000-byte
   framebuffer the runtime already owns;
-- dynamic images become RGB565 raster tables for only the measured changing
-  rect. The assembler reports each target as
-  `variants × width × height × 2 B`, includes it in F2TF/container size, and
-  refuses the build before upload if the 65,536-byte raster or 96 KiB container
-  ceiling is crossed.
+- arbitrary dynamic image changes remain RGB565 raster tables for only the
+  measured changing rect. Pure translated attached images use the v4 compact
+  sprite path below. Both encodings are itemized and refused before upload if
+  the 65,536-byte F2TF or 96 KiB container ceiling is crossed.
 
 This is also the sprite/animation path. `widget.animate("#cloud", 12)` samples
 the real CSS keyframes at 10 fps, unions transformed bounds across all samples,
@@ -361,6 +360,63 @@ use `background-position` in class variants; a tick, key, knob, or host event
 can select those classes through the existing `className = pick(...)` lowering.
 No DOM, PNG decoder, image object, or second sprite framebuffer is required on
 the keyboard.
+
+## Facade contract v4 — compact translated images (formatter 14)
+
+Class-driven `<img src="asset://…">` motion no longer duplicates the union rect
+for every state. The Designer pauses event/tick delivery, reloads the preview,
+and proves across every class that the element is the same attached image with
+the same size and visual styling and only its translation changes. Eligible
+targets lower to `spriteMotion` (formatter 14):
+
+- one device-sized RGB565 plane and one alpha8 plane (`width*height*3` bytes);
+- 1..32 signed `(x,y)` positions (`4` bytes each), selected by the target's
+  existing mailbox value slot;
+- clipped alpha blending directly into the normal base framebuffer, with no
+  image decoder, heap allocation, or extra framebuffer on device.
+
+The three-cloud 32-state test uses 44×44, 58×23, and 40×23 sprites. Their
+motion tables cost 12,978 bytes total instead of hundreds of kilobytes of union
+rasters, and the complete real Designer build is 17,429 bytes. Unsupported
+styling or non-image class changes fall back to v3's design-true rasters and
+retain its 16-variant ceiling; the compact path alone raises class authoring to
+32 states. Firmware pinned to v4 continues admitting installed v3 packages.
+
+Capture is transactional: auto-ticks are stopped, manual dispatch is gated,
+the preview is reset before measurement/capture, and its prior tick rate is
+restored afterward. This prevents live 1 ms handlers from moving an element
+between class application and measurement—the race that previously produced
+different target widths on consecutive builds.
+
+## Facade contract v5 — smooth translated images (formatter 15)
+
+A compact translated image can opt into native linear interpolation with an
+ordinary CSS transition:
+
+```css
+#cloud { transition: transform 180ms linear; }
+.p0 { transform: translateX(0); transition: none !important; }
+.p1 { transform: translateX(8px); }
+```
+
+The Designer verifies that every forward class uses the same zero-delay linear
+`transform` transition, then records its duration beside the v4 sprite and
+position table. Formatter 15 therefore uses the same image bytes and 32
+positions as formatter 14; it does not store intermediate frames. At display
+refresh time, the native facade interpolates signed `(x,y)` coordinates between
+the last and current mailbox picks. A decreasing pick, such as `p31` back to
+`p0`, snaps immediately so an off-right cloud respawns off-left instead of
+crossing the display backward.
+
+Keep class writes inside the condition that advances the state. For example,
+with `tick.1ms`, update the class only after the 180 ms accumulator expires.
+The transpiler lowers these conditional writes directly, so the VM does not
+publish thousands of unchanged mailbox revisions per second while the native
+renderer supplies the smooth in-between motion.
+
+V5 firmware continues to admit v4 and v3 assets under their own frozen contract
+hashes. Older firmware rejects v5 packages before activation rather than
+rendering them incorrectly.
 
 ## Shared-slot digits (formatter 13 in practice) — revision of feature 4
 

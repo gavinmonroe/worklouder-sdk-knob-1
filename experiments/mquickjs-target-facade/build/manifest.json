@@ -243,16 +243,101 @@
       }
     ]
   },
+  "spriteProof": {
+    "contractV4Sha256": "f72d90e8009f5d29deca6af51ec05c98c405f65f9ba88cd8794c14208b1858c9",
+    "assetSha256": "cdee52955d9c87a6315bd0369f4e2cd11cdebe58bf16ff28a5ca6360a379b6a8",
+    "assetBytes": 6832,
+    "positions": 32,
+    "sprite": {
+      "width": 10,
+      "height": 6
+    },
+    "hostVsCFrames": "PIXEL_EXACT",
+    "v3NativeCompatibility": true,
+    "cases": [
+      {
+        "name": "sprite-position-0",
+        "result": 0,
+        "frameSha256": "3bb31ac22c53de9491a1a53c8daa8c5547910fcf2cc9dd70a27a06638cfc4ab6",
+        "overlayWrites": 1077
+      },
+      {
+        "name": "sprite-position-1",
+        "result": 0,
+        "frameSha256": "c662ba78bbe243d6dc6e5b5428a5c47a6da76b3691a72628f48ce4b0bf8aa70f",
+        "overlayWrites": 1093
+      },
+      {
+        "name": "sprite-position-15",
+        "result": 0,
+        "frameSha256": "b6f75bcbfa6b6e14bc708ce7f655ead182eba2be68c52aa33640e689debe1e14",
+        "overlayWrites": 1117
+      },
+      {
+        "name": "sprite-position-31",
+        "result": 0,
+        "frameSha256": "3bb31ac22c53de9491a1a53c8daa8c5547910fcf2cc9dd70a27a06638cfc4ab6",
+        "overlayWrites": 1077
+      }
+    ]
+  },
+  "tweenProof": {
+    "contractV5Sha256": "8793b80a3c83afc8f5f28a82e01748943fa5d29670cb98a92ed52212864913ec",
+    "assetSha256": "efb173bd3e0e8271c81985038fdb786374dc2b9322de4094169119ce4b9d3bb9",
+    "assetBytes": 6832,
+    "durationMs": 100,
+    "hostVsCFrames": "PIXEL_EXACT",
+    "v4NativeCompatibility": true,
+    "loopSeam": "SNAP_ON_DECREASING_PICK",
+    "cases": [
+      {
+        "name": "sprite-tween-0-0",
+        "result": 0,
+        "frameSha256": "3bb31ac22c53de9491a1a53c8daa8c5547910fcf2cc9dd70a27a06638cfc4ab6",
+        "overlayWrites": 1077
+      },
+      {
+        "name": "sprite-tween-1-15",
+        "result": 0,
+        "frameSha256": "3bb31ac22c53de9491a1a53c8daa8c5547910fcf2cc9dd70a27a06638cfc4ab6",
+        "overlayWrites": 1077
+      },
+      {
+        "name": "sprite-tween-2-15",
+        "result": 0,
+        "frameSha256": "4cf0e7b9b58cda639e935a28b980840035f03e939eac902563206771c249014e",
+        "overlayWrites": 1117
+      },
+      {
+        "name": "sprite-tween-3-31",
+        "result": 0,
+        "frameSha256": "b6f75bcbfa6b6e14bc708ce7f655ead182eba2be68c52aa33640e689debe1e14",
+        "overlayWrites": 1117
+      },
+      {
+        "name": "sprite-tween-4-31",
+        "result": 0,
+        "frameSha256": "58f7989034755f217324558279911dec66ac6d6c6e43c0c74ce0dd5963657d77",
+        "overlayWrites": 1117
+      },
+      {
+        "name": "sprite-tween-5-0",
+        "result": 0,
+        "frameSha256": "3bb31ac22c53de9491a1a53c8daa8c5547910fcf2cc9dd70a27a06638cfc4ab6",
+        "overlayWrites": 1077
+      }
+    ]
+  },
   "xtensa": {
     "compiler": "xtensa-esp-elf-gcc (crosstool-NG esp-13.2.0_20240530) 13.2.0",
-    "objectBytes": 24840,
-    "objectSha256": "8f66f46205a687a6339dfa6c6b1f604b5bc0deeefd0d273e1bcb48b40e380978",
-    "textBytes": 5289,
-    "rodataBytes": 90,
+    "objectBytes": 28432,
+    "objectSha256": "dd09be51961c17d7cc5bbb0f1239c6e13d37c65e84313a189f0c3a9f87a00b77",
+    "textBytes": 6264,
+    "rodataBytes": 198,
     "writableGlobalBytes": 0,
     "undefinedSymbols": 0,
-    "maxCompilerReportedFrameBytes": 592,
-    "conservativeAllStaticFramesBytes": 1376
+    "maxCompilerReportedFrameBytes": 672,
+    "conservativeAllStaticFramesBytes": 1696
   },
   "timingEstimate": {
     "kind": "analytic-not-device-measured",

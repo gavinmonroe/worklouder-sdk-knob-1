@@ -531,11 +531,14 @@ export function ScreensPanel({
         name: state.displayName,
         generation: res.result.generation,
       });
+      const activated = wroteToLiveScreen ? await device.activateSlot(slot) : false;
       toast({
-        tone: "success",
+        tone: wroteToLiveScreen && !activated ? "warning" : "success",
         title: `Sent to screen ${screenNumber(slot)}`,
         body: wroteToLiveScreen
-          ? "Saved on your keyboard — it stays there after you unplug."
+          ? activated
+            ? "The screen reloaded the new version immediately, and it stays there after you unplug."
+            : "Saved, but the screen could not reload it immediately; power-cycle the keyboard to adopt it."
           : 'Saved on your keyboard. Choose "Put on screen" on that card to show it now.',
       });
     }

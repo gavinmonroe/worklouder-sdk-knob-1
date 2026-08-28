@@ -87,7 +87,7 @@ const substitutions = [
      * adoption arena pointer, net of padding.  The exact figure is pinned so
      * any future in-block growth must come back to this comment and justify
      * itself. */
-    to: "const widgetUploadBlockBytes = 1904;\n" + /* +864: 2026-08-26 ONE WIDGET = ONE SCREEN — per-slot resident assets (slot_assets 176 + arena ptrs 16 + slot_sha 128 + per-screen facade contexts 240 + admit/resident/visible flags 12) and a proxy storage per slot (2 -> 4 screens, +296). The 98 KiB asset arenas themselves live in PSRAM, not here. */
+    to: "const widgetUploadBlockBytes = 2864;\n" + /* +864: 2026-08-26 ONE WIDGET = ONE SCREEN — per-slot resident assets (slot_assets 176 + arena ptrs 16 + slot_sha 128 + per-screen facade contexts 240 + admit/resident/visible flags 12) and a proxy storage per slot (2 -> 4 screens, +296). +960: 2026-08-28 smooth sprite tween state — five facade contexts x sixteen targets x twelve bytes; raster assets remain in PSRAM. */
        /* +32: 2026-08-26 proxy lifecycle forensics counters extended to all 4 screen slots (op 7, paginated by slot) + visible_tick_ms for tick-derived visibility, padding-rounded */
        /* +80: 2026-08-27 ANY-KEY stream proof (proven/cycle fields, 12 B) + module-computed WPM (60 B second-bucket ring + ring cursor + value + keys_60s), padding-rounded */
       
@@ -184,6 +184,13 @@ invariant(patched.includes(`const output = path.join(here, ${JSON.stringify(outp
   "Patched build script lost its pinned PSRAM output directory.");
 invariant(patched.includes("psram-module-src/physical_integration.c"),
   "Patched build script does not reference the PSRAM module source.");
+const moduleText = await readFile(moduleSource, "utf8");
+invariant(
+  moduleText.includes("zero_bytes(&block->slot_target[desired],") &&
+    moduleText.includes("block->slot_target_admitted[desired] = 0u;"),
+  "Slot activation must reset its facade revision context before the fresh " +
+    "VM mailbox starts again at revision zero.",
+);
 
 await writeFile(generated, patched);
 const { stdout } = await execute(process.execPath, [generated], {

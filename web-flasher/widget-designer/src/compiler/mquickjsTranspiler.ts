@@ -25,8 +25,9 @@
 // side builds against:
 //
 //   el.className = pick(i, "a", "b", …)  → `classSlot` joins slotMap and the
-//     class strings land in `classTables[id]` (≤16 variants, the raster-table
-//     cap). A target combining className with textContent / style.color must
+//     class strings land in `classTables[id]` (≤32 variants; compact translated
+//     image motion uses all 32, while ordinary raster capture stays capped at
+//     16 in the assembler). A target combining className with textContent / style.color must
 //     drive EVERY property from one pick index; the proof is the same lockstep
 //     rule as sharedPickIndex, and an unprovable combination is an ERROR here
 //     rather than an assembler refusal, because class variants only exist as
@@ -81,7 +82,7 @@ export interface TranspiledWidget {
   tables: Record<string, string[]>;
   /** Per target id: CSS color literals in slot-value order. */
   colorTables: Record<string, string[]>;
-  /** Per target id: className literals in slot-value order (≤16 variants). */
+  /** Per target id: className literals in slot-value order (≤32 variants). */
   classTables: Record<string, string[]>;
   /**
    * Per target id that writes TWO OR MORE of textContent / style.color /
@@ -164,9 +165,10 @@ function liveValueBudgetMessage(subject: string): string {
 // with a diagnostic the Designer can show instead of a load-time crash.
 const HANDLER_BUDGET = 16;
 
-// Class variants and animation frames both materialize as raster variants, so
-// both inherit the facade's per-target raster cap (F2TF_MAX_RASTER_VARIANTS).
-const CLASS_VARIANT_BUDGET = 16;
+// A translated attached image can use v4 spriteMotion (32 compact positions).
+// Ordinary class rasters remain capped at 16 by the assembler after it knows
+// whether the target qualifies for the compact path.
+const CLASS_VARIANT_BUDGET = 32;
 const ANIMATION_MIN_FRAMES = 2;
 const ANIMATION_MAX_FRAMES = 16;
 const DIGITS_MIN_COUNT = 1;
@@ -453,6 +455,19 @@ export function transpileWidgetScript(dslSource: string): TranspiledWidget {
     let statementAt = -1;
     for (const statement of splitStatements(body)) {
       statementAt += 1;
+      const conditional = /^if\s*\(([^{}]+)\)\s*\{([\s\S]*)\}$/u.exec(statement.normalized);
+      if (conditional && DOCUMENT_TOKEN.test(statement.masked)) {
+        // Conditional screen writes are important for high-rate sources such
+        // as tick.1ms: lowering the write in-place lets __wrote stay zero on
+        // the ticks where nothing changed, so the VM does not publish an
+        // identical mailbox revision hundreds of times per second. Reuse the
+        // same statement transformer recursively so every existing DOM-write
+        // validation and slot-allocation rule remains authoritative.
+        statementIsDomWrite.push(false);
+        const nested = transformBody(selector, conditional[2]);
+        emitted.push(`if (${conditional[1].trim()}) { ${nested.join(" ")} }`);
+        continue;
+      }
       const domWrite = DOM_WRITE.exec(statement.normalized);
       statementIsDomWrite.push(Boolean(domWrite));
       if (domWrite) {
@@ -601,8 +616,8 @@ export function transpileWidgetScript(dslSource: string): TranspiledWidget {
                 severity: "error",
                 message:
                   `Target "#${id}" className lists ${variants.length} variants; class ` +
-                  `variants are captured rasters and the facade renders at most ` +
-                  `${CLASS_VARIANT_BUDGET} per target.`,
+                  `variants support at most ${CLASS_VARIANT_BUDGET} states per target ` +
+                  `(translated attached images use the compact motion encoding).`,
               });
               continue;
             }

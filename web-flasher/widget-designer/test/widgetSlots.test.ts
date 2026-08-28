@@ -184,7 +184,7 @@ function slotDevice(opts: {
   inventory?: Record<number, { present: boolean; g: number; sha?: string }>;
 } = {}) {
   const running = opts.running ?? 4;
-  const activeSlot = opts.activeSlot ?? 0;
+  let activeSlot = opts.activeSlot ?? 0;
   const slotCount = opts.slotCount ?? 4;
   const inventory = opts.inventory ?? {};
   const calls: { method: string; params: any }[] = [];
@@ -214,7 +214,9 @@ function slotDevice(opts: {
       };
     }
     if (op === 6) {
-      return { status: status(6, inventory[params.slot]?.present ? 0 : -1) };
+      const occupied = inventory[params.slot]?.present;
+      if (occupied) activeSlot = params.slot;
+      return { status: status(6, occupied ? 0 : -1) };
     }
     if (op === 1) {
       st.txState = 1; st.received = 0; st.beginGen = params.generation;

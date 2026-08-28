@@ -8,9 +8,9 @@ import weatherAppUrl from "../../../experiments/mquickjs-esp32s3-physical-canary
 import weatherTextPageUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-18-id28-persist-btp1/mqjs-id28-text-page.bin?url";
 import weatherRodataPageUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-18-id28-persist-btp1/mqjs-id28-rodata-page.bin?url";
 import weatherSceneSlotBUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-18-id28-persist-btp1/scene-slot-b.bin?url";
-import multiWidgetAppUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-27-id28-multi-widget/framer-0.4.1-mqjs-id28-multi-widget-app.bin?url";
-import multiWidgetTextPageUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-27-id28-multi-widget/mqjs-id28-text-page.bin?url";
-import multiWidgetRodataPageUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-27-id28-multi-widget/mqjs-id28-rodata-page.bin?url";
+import multiWidgetAppUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/framer-0.4.1-mqjs-id28-PSRAM-module-app.bin?url";
+import multiWidgetTextPageUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/mqjs-id28-text-page-psram.bin?url";
+import multiWidgetRodataPageUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram/mqjs-id28-rodata-page-psram.bin?url";
 import multiWidgetSceneSlotBUrl from "../../../experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-27-id28-multi-widget/scene-slot-b.bin?url";
 import inputLabGenericUrl from "../../../f1-widget-sdk/build/combined-renderer-v2-generic-input-lab/framer-0.4.1-input-lab-renderer-v2-generic-id26-app.bin?url";
 import inputLabGenericManifest from "../../../f1-widget-sdk/build/combined-renderer-v2-generic-input-lab/combined-renderer-v2-generic-input-lab-manifest.json";
@@ -207,11 +207,11 @@ export const firmwareCatalog = Object.freeze([
     description:
       "The Widget Designer firmware: store up to four of your own widgets, each on its own keyboard screen, pushed over USB from the Designer.",
     detail: "Widget screens 28-31 \u00b7 Clock ID 26 \u00b7 Timer ID 27 \u00b7 Music ID 1 \u00b7 WPM ID 7",
-    evidence: "Live tested 2026-08-27",
+    evidence: "Smooth-motion candidate 2026-08-28",
     evidenceTone: "caution",
     flashable: true,
     notice:
-      "The firmware behind the Widget Designer: a 4-slot widget bank in flash, one keyboard screen per stored widget (rotate the knob between them), instant activation, and the full event path (ticks, keys, chords, Fn+knob, host RPC) verified end-to-end on hardware on 2026-08-27. Widgets are built and pushed from the Widget Designer over normal-mode USB \u2014 no reflash per widget. The boot weather widget is baked in; pushed widgets persist across power cycles. Live-tested on one unit; it has not been through the audited release pipeline.",
+      "Candidate firmware for live testing of native smooth image motion. It keeps the four persistent widget screens and adds v5 sprite tweening: one image plus up to 32 positions, interpolated by the display renderer with no duplicate raster frames. The compiler and deterministic firmware proofs pass, but this exact image has not yet completed live acceptance and has not been through the audited release pipeline.",
     // The persisted clock+timer scene slot first, then the two MicroQuickJS
     // module pages, then the app that loads them, written last.
     regions: Object.freeze([
@@ -229,7 +229,7 @@ export const firmwareCatalog = Object.freeze([
         label: "MicroQuickJS text page",
         url: multiWidgetTextPageUrl,
         bytes: 131_072,
-        sha256: "bac18adcb4402ccd4f250507541bcc9ad2ef95eb25ea35c8f6afe4c87a474ec2",
+        sha256: "51a13ab4e0583d62e46acd7764fea4a896c1d9506c937bcc33789b344b3ee97f",
       }),
       Object.freeze({
         address: 0x230000,
@@ -237,7 +237,7 @@ export const firmwareCatalog = Object.freeze([
         label: "MicroQuickJS rodata page",
         url: multiWidgetRodataPageUrl,
         bytes: 65_536,
-        sha256: "f6c4dab4db51925bccc23aebe761a9471fc9ec553335c0aa68ee2d11bcd37d0f",
+        sha256: "2eabd5afc626b9198559a42cb2b9269a6816067039d640f39c86324cd8c5ac85",
       }),
       Object.freeze({
         address: 0x10000,
@@ -245,12 +245,12 @@ export const firmwareCatalog = Object.freeze([
         label: "Widget Designer app",
         url: multiWidgetAppUrl,
         bytes: 2_062_912,
-        sha256: "01251fce47c3451172e8cd4c4f7da618136845f1278b0855c823d1c7b5d2a26c",
+        sha256: "2062c22f110c616e91ad5d3a7368fefd79eb10f24bc372b00f7c661f223c9649",
       }),
     ]),
     url: multiWidgetAppUrl,
     bytes: 2_062_912,
-    sha256: "01251fce47c3451172e8cd4c4f7da618136845f1278b0855c823d1c7b5d2a26c",
+    sha256: "2062c22f110c616e91ad5d3a7368fefd79eb10f24bc372b00f7c661f223c9649",
     accent: "purple",
     hostCompanion: weatherHostCompanion,
   }),

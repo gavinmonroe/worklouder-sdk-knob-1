@@ -380,11 +380,23 @@ export async function probeWidgetInventory(
 export async function activateWidgetSlot(
   rpc: WidgetRpc,
   slot: number,
+  pollIntervalMs = 50,
+  pollLimit = 80,
 ): Promise<WidgetUploadReply | null> {
   try {
-    return parseWidgetUploadReply(
+    const acknowledged = parseWidgetUploadReply(
       statusString(await rpc(WIDGET_UPLOAD_METHOD, { op: WIDGET_UPLOAD_OP.activate, slot })),
     );
+    if (!acknowledged || acknowledged.rc !== 0) return acknowledged;
+    // Op 6 is level-triggered: its immediate reply only acknowledges the
+    // request. Do not tell the UI the screen changed until the owner task has
+    // quiesced/rebooted the VM and op 0 reports the requested live slot.
+    for (let attempt = 0; attempt < pollLimit; attempt += 1) {
+      const status = await probeWidgetUploadStatus(rpc);
+      if (status?.rc === 0 && status.sl === slot) return status;
+      if (attempt + 1 < pollLimit) await delay(pollIntervalMs);
+    }
+    return null;
   } catch {
     return null;
   }

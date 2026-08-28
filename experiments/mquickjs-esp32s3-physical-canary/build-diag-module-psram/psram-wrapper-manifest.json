@@ -3,9 +3,9 @@
   "hardwareTouched": false,
   "generatedFrom": {
     "script": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module.mjs",
-    "sha256": "96bd74c7decd69c9b136fffb54e2c91e31136f82e2befb714893ce3ec5ab224d",
+    "sha256": "066a3394fb8aa72b677ecff36a9fcecbc42f078167be0256e2c0ee45fc334ef5",
     "generatedScript": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram.generated.mjs",
-    "generatedSha256": "5da88ccf9cb56d9e49ea45ef3cd2ac6fa3ca3bdde5846097caa356f848d9163f",
+    "generatedSha256": "fe557f46e352f481ecfa9d4bdc6515bec1a0161b9cabe4ffd4324818e1ab8435",
     "substitutions": [
       "output directory",
       "module translation unit",
@@ -27,9 +27,9 @@
   },
   "moduleSource": {
     "file": "experiments/mquickjs-esp32s3-physical-canary/psram-module-src/physical_integration.c",
-    "sha256": "475f4db5b530f8758a039aee7fdf04cd54ecaad240c6260fd8d1132b78fc4d06",
+    "sha256": "0cc13259fabcdcb7742c894cc13d4f4866270c9df86263f9783e1dc44f7a6247",
     "baseline": "experiments/mquickjs-esp32s3-physical-canary/physical_integration.c",
-    "baselineSha256": "6b79962ae0b38e441eb14de10d2162f02c6d741a29acb4b467e50040b85e9a40"
+    "baselineSha256": "2669c5d54fd449dc29ad141530b161425e9be5fbedaba00a8537cb26a06d6391"
   },
   "diagnosticExtension": {
     "methods": {
@@ -83,23 +83,23 @@
   },
   "build": {
     "status": "PASS_PSRAM_MODULE_BUILT_NO_HARDWARE",
-    "textSha256": "1ed9e8e48ea70f302561d3ab3559ed38ae5945736aee1f0fe544651bbf072c05",
-    "rodataSha256": "14d82f816fee8e55c67cb260af62c49471b92d7d2c2d949168874551118ad4d0",
-    "slotSha256": "8e5b92fef948e2c588394a843e5b4c361918a37242d4391c64a97cc50c8e9555",
-    "appSha256": "abb145f687aacf897103dc22e9a94cd2f1119e08d6779b9e714fb60e2196cc45",
-    "loaderBytes": 5004,
-    "loaderSha256": "914170dbde19389b48807b5f168b66a149a556b71426335c096bf38ff90b0d3a",
-    "blockBytes": 31952,
-    "startupVaddr": "0x423e59c0",
-    "keyWrapper": "0x4211e64c",
-    "lastErrorOffset": 8216,
+    "textSha256": "51a13ab4e0583d62e46acd7764fea4a896c1d9506c937bcc33789b344b3ee97f",
+    "rodataSha256": "2eabd5afc626b9198559a42cb2b9269a6816067039d640f39c86324cd8c5ac85",
+    "slotSha256": "7de1da24ebb449d03583b9eb4f64740fb0ffbbc797a742d19152d1c3a4a2b19f",
+    "appSha256": "2062c22f110c616e91ad5d3a7368fefd79eb10f24bc372b00f7c661f223c9649",
+    "loaderBytes": 5012,
+    "loaderSha256": "ca1e512c076e09e4a67eb351f536233bf70f47b9cd8726620289f7d20d025ccc",
+    "blockBytes": 32912,
+    "startupVaddr": "0x423e5f0c",
+    "keyWrapper": "0x4211e650",
+    "lastErrorOffset": 9176,
     "customAssets": false,
     "assetSource": "experiments/mquickjs-esp32s3-physical-canary/releases/2026-08-17-id28-abi3-674054a6",
     "f2jsSha256": "7aeeecde59bd686b3455feadc74b4b7705ca0c8ea933f9b0669cb8dc656c284e",
-    "f2tfSha256": "2c35b99782915c5b52178f0a8ba56dd8888f97bbc0b821e3712989a10dad41a2",
+    "f2tfSha256": "f0d9cf799cf89017c80116e97eef81d58bc2fc3158f53e5d5a87622e468e39ed",
     "f2tfSourceSha256": "c436eea7ec9bfc85bbb9514923ea5bf4084ecbcb712ab5c183b9dd2adfd75743",
     "lzssSha256": "dbf16d41750555b7a3403b4b568530a0b5cab1d6b3bf0558c836823749293a12",
-    "targetContractSha256": "455e02819595f810909a11afdcda7eb5aa0b4d6e792b154d29711ebea906631b",
+    "targetContractSha256": "8793b80a3c83afc8f5f28a82e01748943fa5d29670cb98a92ed52212864913ec",
     "out": "/Users/gavin/Documents/ChatGPT/worklouder-sdk-knob-1/experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram"
   },
   "flashPlan": [

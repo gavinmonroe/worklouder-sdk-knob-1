@@ -58,9 +58,12 @@ import {
   F2TF_FORMATTER,
   F2TF_MAX_PALETTE,
   F2TF_MAX_RASTER_VARIANTS,
+  F2TF_MAX_SPRITE_POSITIONS,
   F2TF_MAX_TARGETS,
   F2TF_PROPERTY,
   TARGET_FACADE_CONTRACT_V3_SHA256,
+  TARGET_FACADE_CONTRACT_V4_SHA256,
+  TARGET_FACADE_CONTRACT_V5_SHA256,
   type F2tfPackage,
   type F2tfTarget,
 } from "./f2tfPackage";
@@ -149,6 +152,21 @@ export interface AssembleWidgetUploadOptions {
   renderMode?: WidgetRenderMode;
   /** Live-preview bridge; required when any target renders as raster. */
   capture?: VariantCaptureBridge;
+  /** Designer-proven translated image targets. The browser has already
+   * rasterized the attached image once and measured one signed canvas
+   * position for every class pick state. */
+  motionTargets?: Record<string, WidgetMotionTargetSource>;
+}
+
+export interface WidgetMotionTargetSource {
+  width: number;
+  height: number;
+  colors: Uint16Array;
+  alpha: Uint8Array;
+  positions: { x: number; y: number }[];
+  /** Linear CSS transition duration. When present, v5 interpolates positions
+   * at physical display cadence and snaps a decreasing index at the loop seam. */
+  tweenMs?: number;
 }
 
 export interface AssembledWidgetUpload {
@@ -208,7 +226,7 @@ function parseCssColor(text: string, owner: string): number {
 
 /** The raster feature kind of one facade record, for budget itemization.
  *  Plain text-pick targets stay unlabeled (the pre-v3 format). */
-type RasterCostLabel = "class" | "animation" | "digit" | "hidden" | "class+hidden" | "animation+hidden";
+type RasterCostLabel = "class" | "motion" | "animation" | "digit" | "hidden" | "class+hidden" | "animation+hidden";
 
 /** One line per raster target, labeled per v3 feature, for over-budget
  *  diagnostics — the same shape as f2tfPackage's describeRasterCosts with
@@ -220,8 +238,11 @@ function describeLabeledRasterCosts(
   return costs
     .map((cost) => {
       const label = labels.get(cost.id);
-      return `"#${cost.id}"${label ? ` [${label}]` : ""} ${cost.variants} variant${cost.variants === 1 ? "" : "s"} × ` +
-        `${cost.width}×${cost.height}px × 2 B = ${cost.bytes} bytes`;
+      return cost.encoding === "sprite-motion"
+        ? `"#${cost.id}"${label ? ` [${label}]` : ""} one ${cost.width}×${cost.height}px ` +
+          `RGB565+alpha sprite + ${cost.variants} positions = ${cost.bytes} bytes`
+        : `"#${cost.id}"${label ? ` [${label}]` : ""} ${cost.variants} variant${cost.variants === 1 ? "" : "s"} × ` +
+          `${cost.width}×${cost.height}px × 2 B = ${cost.bytes} bytes`;
     })
     .join("; ");
 }
@@ -230,6 +251,7 @@ export async function assembleWidgetUpload(
   options: AssembleWidgetUploadOptions,
 ): Promise<AssembledWidgetUpload> {
   const { dsl, baseFrame, generation, layouts, capture } = options;
+  const motionTargets = options.motionTargets ?? {};
   const defaultMode: WidgetRenderMode = options.renderMode ?? "raster";
   const diagnostics: WidgetDiagnostic[] = [];
   const fail = (message: string): never => {
@@ -462,7 +484,10 @@ export async function assembleWidgetUpload(
           `for every target the script writes (it never invents positioning).`,
       );
     }
-    const { x, y, width, height } = layout;
+    const motion = motionTargets[id];
+    const { x, y, width, height } = motion
+      ? { x: 0, y: 0, width: motion.width, height: motion.height }
+      : layout;
     if (![x, y, width, height].every((v) => Number.isInteger(v)) || width < 1 || height < 1 ||
         x < 0 || y < 0 || x + width > F2TF_CANVAS.width || y + height > F2TF_CANVAS.height) {
       fail(
@@ -502,6 +527,11 @@ export async function assembleWidgetUpload(
     /** Append the blanked-base crop as variant [variants.length]. */
     hidden: boolean;
   }
+  interface MotionPlan {
+    id: string;
+    bindSlot: number;
+    source: WidgetMotionTargetSource;
+  }
   /** content+hidden per-target ceiling, with the split named. */
   const requireVariantBudget = (id: string, contentCount: number, hidden: boolean): void => {
     const total = contentCount + (hidden ? 1 : 0);
@@ -526,6 +556,7 @@ export async function assembleWidgetUpload(
     }
   };
   const rasterPlans: RasterPlan[] = [];
+  const motionPlans: MotionPlan[] = [];
   for (const id of scriptTargetIds) {
     if (renderModes[id] !== "raster") continue;
     const alloc = slotMap[id];
@@ -533,6 +564,27 @@ export async function assembleWidgetUpload(
     const classes = classTables[id] ?? [];
     if (table.length === 0 && classes.length === 0) {
       fail(`Target "#${id}" has a text slot but no variant table; this is a transpiler bug.`);
+    }
+    const motion = motionTargets[id];
+    if (motion) {
+      const slot = alloc.classSlot ?? alloc.textSlot;
+      const colours = colorTables[id] ?? [];
+      if (table.length > 0 || classes.length === 0 || colours.length > 0 ||
+          hiddenVariant[id] !== undefined || slot === undefined) {
+        fail(
+          `Target "#${id}" was offered as compact image motion, but that encoding requires ` +
+            `a className-only image target with no text, colour, or hidden writes.`,
+        );
+      }
+      if (classes.length !== motion.positions.length || classes.length > F2TF_MAX_SPRITE_POSITIONS) {
+        fail(
+          `Target "#${id}" compact image motion needs one position per class variant ` +
+            `(1..${F2TF_MAX_SPRITE_POSITIONS}); got ${classes.length} classes and ` +
+            `${motion.positions.length} positions.`,
+        );
+      }
+      motionPlans.push({ id, bindSlot: slot, source: motion });
+      continue;
     }
     let bindSlot: number;
     let variants: RasterVariantSpec[];
@@ -689,8 +741,10 @@ export async function assembleWidgetUpload(
   let baseFrameBytes: Uint8Array;
   const rasterTables = new Map<string, Uint16Array[]>();
   const rasterPlanById = new Map(rasterPlans.map((plan) => [plan.id, plan]));
+  const motionPlanById = new Map(motionPlans.map((plan) => [plan.id, plan]));
   const capturedIds = [
     ...rasterPlans.map((plan) => plan.id),
+    ...motionPlans.map((plan) => plan.id),
     ...animationPlans.map((plan) => plan.id),
     ...digitPlans.map((plan) => plan.id),
   ];
@@ -723,7 +777,8 @@ export async function assembleWidgetUpload(
     if (rasterPlans.some((plan) => plan.variants.some((variant) => variant.className !== undefined))) {
       requireOp(capture.setClass, "setClass()", "className-variant capture requires");
     }
-    if (rasterPlans.some((plan) => plan.hidden) || animationPlans.some((plan) => plan.hidden)) {
+    if (rasterPlans.some((plan) => plan.hidden) || animationPlans.some((plan) => plan.hidden) ||
+        motionPlans.length > 0) {
       requireOp(capture.setHidden, "setHidden()", "hidden-variant base blanking requires");
     }
     if (animationPlans.length > 0) {
@@ -756,6 +811,7 @@ export async function assembleWidgetUpload(
       for (const plan of rasterPlans) {
         if (plan.hidden) await capture!.setHidden!(plan.id, true);
       }
+      for (const plan of motionPlans) await capture!.setHidden!(plan.id, true);
       for (const plan of animationPlans) {
         if (plan.hidden) await capture!.setHidden!(plan.id, true);
       }
@@ -912,6 +968,26 @@ export async function assembleWidgetUpload(
     const layout = layouts[id];
     const { x, y, width, height } = rects[id];
     if (renderModes[id] === "raster") {
+      const motion = motionPlanById.get(id);
+      if (motion) {
+        rasterLabels.set(id, "motion");
+        targets.push({
+          id,
+          x: 0, y: 0, width: motion.source.width, height: motion.source.height,
+          format: motion.source.tweenMs
+            ? F2TF_FORMATTER.spriteTween
+            : F2TF_FORMATTER.spriteMotion,
+          properties: F2TF_PROPERTY.text,
+          slots: [motion.bindSlot],
+          sprite: {
+            colors: motion.source.colors,
+            alpha: motion.source.alpha,
+            positions: motion.source.positions,
+            tweenMs: motion.source.tweenMs,
+          },
+        });
+        continue;
+      }
       const plan = rasterPlanById.get(id)!;
       const label = plan.kind === "class"
         ? (plan.hidden ? "class+hidden" : "class")
@@ -1024,7 +1100,11 @@ export async function assembleWidgetUpload(
         targets,
         palette,
         glyphs,
-        contractSha256: TARGET_FACADE_CONTRACT_V3_SHA256,
+        contractSha256: motionPlans.some((plan) => Boolean(plan.source.tweenMs))
+          ? TARGET_FACADE_CONTRACT_V5_SHA256
+          : motionPlans.length > 0
+            ? TARGET_FACADE_CONTRACT_V4_SHA256
+            : TARGET_FACADE_CONTRACT_V3_SHA256,
       }),
     "F2TF", diagnostics,
   );

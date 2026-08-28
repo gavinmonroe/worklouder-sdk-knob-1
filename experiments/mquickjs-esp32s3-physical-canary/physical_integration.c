@@ -1244,10 +1244,10 @@ static void proxy_tick(physical_proxy *proxy)
         }
         block->target_admitted = 1u;
     }
-    result = framer_tf_render(
+    result = framer_tf_render_at(
         &block->target, (const framer_tf_mailbox *)(const void *)&block->owner.mailbox,
         (uint16_t *)(void *)framebuffer, FRAMER_TF_CANVAS_PIXELS,
-        current_task_token(), &block->target_metrics);
+        current_task_token(), now_ms(), &block->target_metrics);
     if (result == FRAMER_TF_OK) {
         framer_runtime_visibility_publish(
             &block->visibility, block->generation,

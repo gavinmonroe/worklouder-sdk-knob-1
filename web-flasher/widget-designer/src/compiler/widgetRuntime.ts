@@ -328,16 +328,58 @@ window.addEventListener("message", function (event) {
       // first touch; an empty string restores it verbatim. Mirrors
       // widget:setText's applied contract.
       var classNode = document.getElementById(String(message.elementId));
+      var transitionProbe = null;
       if (classNode) {
         if (classNode.__authoredClassName === undefined) classNode.__authoredClassName = classNode.className;
         var variantClass = String(message.className == null ? "" : message.className);
-        classNode.className = variantClass === ""
-          ? classNode.__authoredClassName
-          : (classNode.__authoredClassName === ""
-              ? variantClass
-              : classNode.__authoredClassName + " " + variantClass);
+        if (variantClass === "") {
+          classNode.className = classNode.__authoredClassName;
+          if (classNode.__authoredTransitionInline) {
+            classNode.__authoredTransitionInline.forEach(function (saved) {
+              if (saved.value === "") classNode.style.removeProperty(saved.name);
+              else classNode.style.setProperty(saved.name, saved.value, saved.priority);
+            });
+            delete classNode.__authoredTransitionInline;
+          }
+        } else {
+          if (classNode.__authoredTransitionInline) {
+            classNode.__authoredTransitionInline.forEach(function (saved) {
+              if (saved.value === "") classNode.style.removeProperty(saved.name);
+              else classNode.style.setProperty(saved.name, saved.value, saved.priority);
+            });
+          }
+          classNode.className = classNode.__authoredClassName === ""
+            ? variantClass
+            : classNode.__authoredClassName + " " + variantClass;
+          var transitionStyle = getComputedStyle(classNode);
+          var toMs = function (value) {
+            var text = String(value || "0s").trim();
+            if (/ms$/u.test(text)) return Number(text.slice(0, -2)) || 0;
+            if (/s$/u.test(text)) return (Number(text.slice(0, -1)) || 0) * 1000;
+            return 0;
+          };
+          transitionProbe = {
+            property: String(transitionStyle.transitionProperty || "all").split(",")[0].trim(),
+            durationMs: toMs(String(transitionStyle.transitionDuration || "0s").split(",")[0]),
+            delayMs: toMs(String(transitionStyle.transitionDelay || "0s").split(",")[0]),
+            timing: String(transitionStyle.transitionTimingFunction || "ease").split(",")[0].trim()
+          };
+          if (!classNode.__authoredTransitionInline) {
+            classNode.__authoredTransitionInline = [
+              "transition-property", "transition-duration",
+              "transition-timing-function", "transition-delay"
+            ].map(function (name) { return { name: name,
+              value: classNode.style.getPropertyValue(name),
+              priority: classNode.style.getPropertyPriority(name) }; });
+          }
+          // Capture the destination coordinate, never a compositor in-between
+          // frame. The authored transition metadata above is retained for the
+          // native tween contract, then temporarily disabled until restore.
+          classNode.style.setProperty("transition-property", "none", "important");
+          void classNode.offsetWidth;
+        }
       }
-      reply({ type: "widget:setClass:result", applied: Boolean(classNode) });
+      reply({ type: "widget:setClass:result", applied: Boolean(classNode), transition: transitionProbe });
     } else if (message.type === "widget:setHidden") {
       // Pixel-true blanking for hidden-capable targets (v3): the hidden
       // variant ships the blanked-base pixels of the rect, so the base must
@@ -383,6 +425,52 @@ window.addEventListener("message", function (event) {
         elementBox = { x: bounds.left, y: bounds.top, width: bounds.width, height: bounds.height };
       }
       reply({ type: "widget:measureRect:result", applied: Boolean(rectNode), box: elementBox });
+    } else if (message.type === "widget:probeMotionImage") {
+      // Conservative v4 eligibility proof. Only the element's translation may
+      // change between classes; every visual-affecting style is returned in a
+      // stable key and the parent compares it across all states. Anything we
+      // cannot reproduce by drawing one resized image falls back to v3 raster
+      // capture rather than changing the design.
+      var motionNode = document.getElementById(String(message.elementId));
+      var motionProbe = null;
+      if (motionNode) {
+        var style = getComputedStyle(motionNode);
+        var numbersAreZero = function (names) {
+          for (var n = 0; n < names.length; n += 1) {
+            if (Math.abs(parseFloat(style.getPropertyValue(names[n])) || 0) > 0.001) return false;
+          }
+          return true;
+        };
+        var transform = String(style.transform || "none");
+        var translationOnly = transform === "none";
+        var matrix = /^matrix\\(([-+0-9.e]+), ([-+0-9.e]+), ([-+0-9.e]+), ([-+0-9.e]+), ([-+0-9.e]+), ([-+0-9.e]+)\\)$/u.exec(transform);
+        if (matrix) {
+          translationOnly = Math.abs(Number(matrix[1]) - 1) < 0.0001 &&
+            Math.abs(Number(matrix[2])) < 0.0001 && Math.abs(Number(matrix[3])) < 0.0001 &&
+            Math.abs(Number(matrix[4]) - 1) < 0.0001;
+        }
+        var zeroBox = numbersAreZero([
+          "padding-top", "padding-right", "padding-bottom", "padding-left",
+          "border-top-width", "border-right-width", "border-bottom-width", "border-left-width",
+          "border-top-left-radius", "border-top-right-radius", "border-bottom-right-radius", "border-bottom-left-radius"
+        ]);
+        var opacity = Number(style.opacity || 1);
+        var visualValues = [
+          style.objectFit, style.objectPosition, style.filter, style.mixBlendMode,
+          style.boxShadow, style.clipPath, style.maskImage, style.backgroundColor,
+          style.backgroundImage, style.imageRendering, String(opacity)
+        ];
+        var eligible = motionNode.tagName === "IMG" && translationOnly && zeroBox &&
+          style.objectFit === "fill" && style.filter === "none" && style.mixBlendMode === "normal" &&
+          style.boxShadow === "none" && style.clipPath === "none" && style.maskImage === "none" &&
+          style.backgroundColor === "rgba(0, 0, 0, 0)" && style.backgroundImage === "none" &&
+          style.imageRendering === "auto" && style.visibility === "visible" &&
+          opacity >= 0 && opacity <= 1;
+        motionProbe = { tagName: motionNode.tagName, eligible: eligible,
+          reason: eligible ? "" : "the image classes change more than translation or use unsupported image styling",
+          opacity: opacity, visualKey: visualValues.join("|") };
+      }
+      reply({ type: "widget:probeMotionImage:result", applied: Boolean(motionNode), probe: motionProbe });
     } else if (message.type === "widget:measure") {
       // Per-character boxes for a text run. Capturing a glyph in its own advance
       // box makes the pixels position-independent, so the same glyph at any

@@ -15,7 +15,7 @@
       "asmReadIntegerFrameBytes": 32
     },
     "ui": {
-      "moduleOwnedRenderChainBytes": 848,
+      "moduleOwnedRenderChainBytes": 928,
       "physicalHeadroomClaimed": false
     }
   },
@@ -3593,7 +3593,7 @@
     {
       "object": "target.o",
       "function": "framer_tf_admit",
-      "bytes": 176,
+      "bytes": 368,
       "kind": "static"
     },
     {
@@ -3605,12 +3605,18 @@
     {
       "object": "target.o",
       "function": "render_internal",
-      "bytes": 592,
+      "bytes": 672,
       "kind": "static"
     },
     {
       "object": "target.o",
       "function": "framer_tf_render",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "object": "target.o",
+      "function": "framer_tf_render_at",
       "bytes": 48,
       "kind": "static"
     },

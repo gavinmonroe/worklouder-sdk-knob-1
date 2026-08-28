@@ -14,7 +14,9 @@ import { decodeRenderV2MQuickJsPackage } from "../../f1-widget-sdk/src/render-v2
 import {
   buildWeatherTargetFacadeAsset, crc32, decodeTargetFacadeAsset, packTemperatureAscii,
   renderTargetFacadeHost, TARGET_FACADE_CONTRACT_SHA256, TARGET_FACADE_CONTRACT_V2_SHA256,
-  TARGET_FACADE_CONTRACT_V3_SHA256, TARGET_FACADE_HEADER_BYTES, TARGET_FACADE_MAX_ASSET_BYTES,
+  TARGET_FACADE_CONTRACT_V3_SHA256, TARGET_FACADE_CONTRACT_V4_SHA256,
+  TARGET_FACADE_CONTRACT_V5_SHA256,
+  TARGET_FACADE_HEADER_BYTES, TARGET_FACADE_MAX_ASSET_BYTES,
   TARGET_FACADE_RESULT, WEATHER_TARGET_FACADE_TARGETS,
 } from "./contract.mjs";
 
@@ -431,6 +433,141 @@ try {
   invariant(await cRejectsRaster(TARGET_FACADE_CONTRACT_V2_SHA256),
     "C admission must reject the v3 asset under the frozen v2 contract sha.");
 
+  /* ---- contract v4: formatter 14 (spriteMotion) through JS and C ----------
+   * Replace rasterEdge with one 10x6 alpha sprite and 32 positions. The old
+   * raster bytes remain harmless unreferenced literals; only the compact
+   * sprite table is appended. Cases cover fully clipped, edge-clipped and
+   * fully visible positions plus 0/128/255 alpha. */
+  const spriteWidth = 10; const spriteHeight = 6; const spriteCount = 32;
+  const spriteTable = Buffer.alloc(8 + spriteCount * 4 + spriteWidth * spriteHeight * 3);
+  spriteTable[0] = 1; spriteTable[1] = 0; spriteTable[2] = spriteCount; spriteTable[3] = 1;
+  const spritePositions = Array.from({ length: spriteCount }, (_, index) => ({
+    x: Math.round(-spriteWidth + (100 + spriteWidth) * index / (spriteCount - 1)),
+    y: 286 + index % 3,
+  }));
+  spritePositions.forEach((position, index) => {
+    spriteTable.writeInt16LE(position.x, 8 + index * 4);
+    spriteTable.writeInt16LE(position.y, 10 + index * 4);
+  });
+  const spriteColorsAt = 8 + spriteCount * 4;
+  for (let pixel = 0; pixel < spriteWidth * spriteHeight; pixel++) {
+    spriteTable.writeUInt16LE((0x1823 + pixel * 0x0311) & 0xffff, spriteColorsAt + pixel * 2);
+    spriteTable[spriteColorsAt + spriteWidth * spriteHeight * 2 + pixel] =
+      pixel % 3 === 0 ? 0 : pixel % 3 === 1 ? 128 : 255;
+  }
+  const spriteAsset = Buffer.concat([rasterAsset, spriteTable]);
+  const spriteRecord = spriteAsset.subarray(decoded.header.targetsAt + 14 * 40,
+    decoded.header.targetsAt + 15 * 40);
+  spriteRecord.fill(0); spriteRecord.write("spriteEdge", 0, "ascii");
+  spriteRecord.writeUInt16LE(0, 16); spriteRecord.writeUInt16LE(0, 18);
+  spriteRecord.writeUInt16LE(spriteWidth, 20); spriteRecord.writeUInt16LE(spriteHeight, 22);
+  spriteRecord[24] = 1; spriteRecord[25] = 14; spriteRecord[26] = 11;
+  spriteRecord[27] = 0xff; spriteRecord[28] = 0xff; spriteRecord[29] = 0xff;
+  spriteRecord[30] = 0xff; spriteRecord[31] = 0xff; spriteRecord[32] = 0xff;
+  spriteRecord.writeUInt16LE(rasterAsset.readUInt32LE(64), 36);
+  spriteRecord.writeUInt16LE(spriteTable.length, 38);
+  spriteAsset.writeUInt32LE(spriteAsset.length, 8);
+  spriteAsset.writeUInt32LE(rasterAsset.readUInt32LE(64) + spriteTable.length, 64);
+  Buffer.from(TARGET_FACADE_CONTRACT_V4_SHA256, "hex").copy(spriteAsset, 160);
+  spriteAsset.writeUInt32LE(crc32(spriteAsset.subarray(TARGET_FACADE_HEADER_BYTES)), 72);
+  spriteAsset.writeUInt32LE(crc32(spriteAsset.subarray(0, TARGET_FACADE_HEADER_BYTES),
+    { zeroFrom: 76, zeroBytes: 4 }), 76);
+  const decodedSprite = decodeTargetFacadeAsset(spriteAsset, { expectedGeneration: 18,
+    expectedF2jsSha256: asset.f2jsSha256,
+    expectedContractSha256: TARGET_FACADE_CONTRACT_V4_SHA256, baseFrame: base });
+  invariant(decodedSprite.targets[14].format === 14 &&
+    decodedSprite.targets[14].sprite.positions.length === 32,
+  "Decoded spriteMotion asset shape is wrong.");
+  const spriteCases = [0, 1, 15, 31].map((pick, index) => ({
+    name: `sprite-position-${pick}`, sequence: 2 + index * 2, admittedGeneration: 18,
+    slots: rasterSlots({ revision: 2 + index * 2, v9: 42, v11: pick, v14: 1 }),
+  }));
+  const spriteState = { lastAppliedRevision: 0 };
+  const spriteHost = spriteCases.map((mailbox) => renderTargetFacadeHost({
+    decoded: decodedSprite, baseFrame: base, mailbox, state: spriteState }));
+  invariant(spriteHost.every(({ result }) => result === TARGET_FACADE_RESULT.ok),
+    "spriteMotion host cases must all render.");
+  const spriteHostFrames = Buffer.concat(spriteHost.map(({ frame }) => rawFrame(frame)));
+  await Promise.all([
+    writeFile(path.join(output, "sprite-gen18.f2tf"), spriteAsset),
+    writeFile(path.join(output, "sprite-cases.bin"), encodeCases(spriteCases)),
+  ]);
+  const spriteFramesPath = path.join(temporary, "sprite-c-frames.bin");
+  const spriteNative = JSON.parse((await run(native, [path.join(output, "sprite-gen18.f2tf"),
+    path.join(output, "weather-gen18-base.rgb565le"), path.join(output, "sprite-cases.bin"),
+    spriteFramesPath, asset.f2jsSha256, TARGET_FACADE_CONTRACT_V4_SHA256])).stdout);
+  invariant((await readFile(spriteFramesPath)).equals(spriteHostFrames),
+    "Host and freestanding C spriteMotion RGB565 frames differ.");
+  invariant(spriteNative.results.map(({ writes }) => writes).join() ===
+    spriteHost.map(({ metrics }) => metrics.overlayWrites).join(),
+  "spriteMotion overlay write counts differ between C and the host oracle.");
+  const compatFramesPath = path.join(temporary, "raster-v4-compat-frames.bin");
+  const compatNative = JSON.parse((await run(native, [path.join(output, "raster-gen18.f2tf"),
+    path.join(output, "weather-gen18-base.rgb565le"), path.join(output, "raster-cases.bin"),
+    compatFramesPath, asset.f2jsSha256, TARGET_FACADE_CONTRACT_V4_SHA256])).stdout);
+  invariant(compatNative.results.map(({ result }) => result).join() === rasterExpected.join() &&
+    (await readFile(compatFramesPath)).equals(rasterHostFrames),
+  "A v4 native facade must keep admitting and rendering v3 packages.");
+
+  /* ---- contract v5: formatter 15 (spriteTween) through JS and C ----------
+   * Reuse the exact v4 sprite bytes and positions; only the formatter, table
+   * mode and 100 ms duration change. Repeated mailbox picks prove that render
+   * time—not publication frequency—moves the sprite, and the final decreasing
+   * pick proves the off-right -> off-left loop seam snaps instead of flying
+   * backwards through the sky. */
+  const tweenAsset = Buffer.from(spriteAsset);
+  const tweenRecord = tweenAsset.subarray(decoded.header.targetsAt + 14 * 40,
+    decoded.header.targetsAt + 15 * 40);
+  tweenRecord[25] = 15;
+  const tweenTableAt = decoded.header.literalsAt + tweenRecord.readUInt16LE(36);
+  tweenAsset[tweenTableAt + 1] = 1;
+  tweenAsset.writeUInt16LE(100, tweenTableAt + 4);
+  tweenAsset[tweenTableAt + 6] = 0; tweenAsset[tweenTableAt + 7] = 0;
+  Buffer.from(TARGET_FACADE_CONTRACT_V5_SHA256, "hex").copy(tweenAsset, 160);
+  tweenAsset.writeUInt32LE(crc32(tweenAsset.subarray(TARGET_FACADE_HEADER_BYTES)), 72);
+  tweenAsset.writeUInt32LE(crc32(tweenAsset.subarray(0, TARGET_FACADE_HEADER_BYTES),
+    { zeroFrom: 76, zeroBytes: 4 }), 76);
+  const decodedTween = decodeTargetFacadeAsset(tweenAsset, { expectedGeneration: 18,
+    expectedF2jsSha256: asset.f2jsSha256,
+    expectedContractSha256: TARGET_FACADE_CONTRACT_V5_SHA256, baseFrame: base });
+  invariant(decodedTween.targets[14].format === 15 &&
+    decodedTween.targets[14].sprite.durationMs === 100,
+  "Decoded spriteTween asset shape is wrong.");
+  const tweenPicks = [0, 15, 15, 31, 31, 0];
+  const tweenCases = tweenPicks.map((pick, index) => ({
+    name: `sprite-tween-${index}-${pick}`, sequence: 2 + index * 2,
+    admittedGeneration: 18,
+    slots: rasterSlots({ revision: 2 + index * 2, v9: 42, v11: pick, v14: 1 }),
+  }));
+  const tweenState = { lastAppliedRevision: 0 };
+  const tweenHost = tweenCases.map((mailbox, index) => renderTargetFacadeHost({
+    decoded: decodedTween, baseFrame: base, mailbox, state: tweenState,
+    nowMs: index * 50,
+  }));
+  invariant(tweenHost.every(({ result }) => result === TARGET_FACADE_RESULT.ok),
+    "spriteTween host cases must all render.");
+  const tweenHostFrames = Buffer.concat(tweenHost.map(({ frame }) => rawFrame(frame)));
+  await Promise.all([
+    writeFile(path.join(output, "tween-gen18.f2tf"), tweenAsset),
+    writeFile(path.join(output, "tween-cases.bin"), encodeCases(tweenCases)),
+  ]);
+  const tweenFramesPath = path.join(temporary, "tween-c-frames.bin");
+  const tweenNative = JSON.parse((await run(native, [path.join(output, "tween-gen18.f2tf"),
+    path.join(output, "weather-gen18-base.rgb565le"), path.join(output, "tween-cases.bin"),
+    tweenFramesPath, asset.f2jsSha256, TARGET_FACADE_CONTRACT_V5_SHA256])).stdout);
+  invariant((await readFile(tweenFramesPath)).equals(tweenHostFrames),
+    "Host and freestanding C spriteTween RGB565 frames differ.");
+  invariant(tweenNative.results.map(({ writes }) => writes).join() ===
+    tweenHost.map(({ metrics }) => metrics.overlayWrites).join(),
+  "spriteTween overlay write counts differ between C and the host oracle.");
+  const v4UnderV5Frames = path.join(temporary, "sprite-v5-compat-frames.bin");
+  const v4UnderV5 = JSON.parse((await run(native, [path.join(output, "sprite-gen18.f2tf"),
+    path.join(output, "weather-gen18-base.rgb565le"), path.join(output, "sprite-cases.bin"),
+    v4UnderV5Frames, asset.f2jsSha256, TARGET_FACADE_CONTRACT_V5_SHA256])).stdout);
+  invariant(v4UnderV5.results.every(({ result }) => result === TARGET_FACADE_RESULT.ok) &&
+    (await readFile(v4UnderV5Frames)).equals(spriteHostFrames),
+  "A v5 native facade must keep admitting and rendering v4 packages.");
+
   /* The exact v3 asset-cap boundary through the compiled C: a copy padded with
    * unreferenced table bytes to exactly 65536 admits and renders the very same
    * frames; one byte more must fail admission. */
@@ -514,6 +651,22 @@ try {
         result: rasterExpected[index],
         frameSha256: sha256(rasterHostFrames.subarray(index * 62_000, (index + 1) * 62_000)),
         overlayWrites: rasterHost[index].metrics.overlayWrites })) },
+    spriteProof: { contractV4Sha256: TARGET_FACADE_CONTRACT_V4_SHA256,
+      assetSha256: sha256(spriteAsset), assetBytes: spriteAsset.length,
+      positions: spriteCount, sprite: { width: spriteWidth, height: spriteHeight },
+      hostVsCFrames: "PIXEL_EXACT", v3NativeCompatibility: true,
+      cases: spriteCases.map((entry, index) => ({ name: entry.name,
+        result: spriteHost[index].result,
+        frameSha256: sha256(spriteHostFrames.subarray(index * 62_000, (index + 1) * 62_000)),
+        overlayWrites: spriteHost[index].metrics.overlayWrites })) },
+    tweenProof: { contractV5Sha256: TARGET_FACADE_CONTRACT_V5_SHA256,
+      assetSha256: sha256(tweenAsset), assetBytes: tweenAsset.length,
+      durationMs: 100, hostVsCFrames: "PIXEL_EXACT",
+      v4NativeCompatibility: true, loopSeam: "SNAP_ON_DECREASING_PICK",
+      cases: tweenCases.map((entry, index) => ({ name: entry.name,
+        result: tweenHost[index].result,
+        frameSha256: sha256(tweenHostFrames.subarray(index * 62_000, (index + 1) * 62_000)),
+        overlayWrites: tweenHost[index].metrics.overlayWrites })) },
     xtensa: { compiler: compiler.stdout.split("\n")[0], objectBytes: object.length,
       objectSha256: sha256(object), textBytes: sectionBytes(sections.stdout, ".text"),
       rodataBytes: sectionBytes(sections.stdout, ".rodata"), writableGlobalBytes: writableBytes,
@@ -530,7 +683,8 @@ try {
   };
   await writeFile(path.join(output, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
   console.log(JSON.stringify({ status: manifest.status, asset: manifest.asset, proof: manifest.proof,
-    variantProof: manifest.variantProof, rasterProof: manifest.rasterProof, xtensa: manifest.xtensa,
+    variantProof: manifest.variantProof, rasterProof: manifest.rasterProof,
+    spriteProof: manifest.spriteProof, tweenProof: manifest.tweenProof, xtensa: manifest.xtensa,
     timingEstimate: manifest.timingEstimate }, null, 2));
 } finally {
   await rm(temporary, { recursive: true, force: true });

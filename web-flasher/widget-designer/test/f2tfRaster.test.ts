@@ -23,6 +23,8 @@ import {
   F2TF_PROPERTY,
   TARGET_FACADE_CONTRACT_V2_SHA256,
   TARGET_FACADE_CONTRACT_V3_SHA256,
+  TARGET_FACADE_CONTRACT_V4_SHA256,
+  TARGET_FACADE_CONTRACT_V5_SHA256,
   crc32,
   type F2tfTarget,
 } from "../src/compiler/f2tfPackage";
@@ -116,9 +118,11 @@ describe("v3 contract sha mirror", () => {
     });
     const sha = (text: string) => createHash("sha256").update(text).digest("hex");
     // v2 froze BEFORE variantRaster and digitRaster joined the formatter map.
-    const { variantRaster: _raster, digitRaster: _digit, ...v2Formatters } = contract.TARGET_FACADE_FORMATTER;
+    const { variantRaster: _raster, digitRaster: _digit, spriteMotion: _sprite,
+      spriteTween: _tween, ...v2Formatters } =
+      contract.TARGET_FACADE_FORMATTER;
     expect(sha(canonical(2, v2Formatters))).toBe(TARGET_FACADE_CONTRACT_V2_SHA256);
-    const v3Formatters = { ...contract.TARGET_FACADE_FORMATTER, variantRaster: 12, digitRaster: 13 };
+    const v3Formatters = { ...v2Formatters, variantRaster: 12, digitRaster: 13 };
     const v3Extension = {
       rasterTable: {
         pixelFormat: "rgb565-le", order: "row-major",
@@ -145,6 +149,14 @@ describe("v3 contract sha mirror", () => {
     expect(sha(canonical(3, v3Formatters, v3Extension))).toBe(TARGET_FACADE_CONTRACT_V3_SHA256);
   });
 
+  it("matches contract.mjs's additive v4 SHA", () => {
+    expect(TARGET_FACADE_CONTRACT_V4_SHA256).toBe(contract.TARGET_FACADE_CONTRACT_V4_SHA256);
+  });
+
+  it("matches contract.mjs's additive v5 SHA", () => {
+    expect(TARGET_FACADE_CONTRACT_V5_SHA256).toBe(contract.TARGET_FACADE_CONTRACT_V5_SHA256);
+  });
+
   it.runIf(HAS_V3_CONTRACT)("matches contract.mjs's own TARGET_FACADE_CONTRACT_V3_SHA256", () => {
     expect(TARGET_FACADE_CONTRACT_V3_SHA256).toBe(contract.TARGET_FACADE_CONTRACT_V3_SHA256);
     expect(F2TF_MAX_ASSET_BYTES).toBe(contract.TARGET_FACADE_MAX_ASSET_BYTES);
@@ -154,6 +166,87 @@ describe("v3 contract sha mirror", () => {
     // When the contract agent lands TARGET_FACADE_CONTRACT_V3_SHA256, the
     // direct comparison above takes over and this placeholder skips.
     expect(HAS_V3_CONTRACT).toBe(false);
+  });
+});
+
+describe("spriteMotion wire format", () => {
+  it("stores one alpha-aware sprite plus 32 signed positions and renders it", async () => {
+    const width = 3; const height = 2;
+    const colors = Uint16Array.from([0xf800, 0x07e0, 0x001f, 0xffff, 0, 0xffff]);
+    const alpha = Uint8Array.from([255, 128, 0, 255, 255, 255]);
+    const positions = Array.from({ length: 32 }, (_, index) => ({ x: -width + index * 3, y: 4 }));
+    const built = await buildF2tfPackage({
+      generation: 22,
+      baseFrame: new Uint16Array(31_000).fill(0x001f),
+      f2jsBinary: Uint8Array.from([4, 2]),
+      palette: [0], glyphs: GLYPHS,
+      contractSha256: TARGET_FACADE_CONTRACT_V4_SHA256,
+      targets: [ROOT_TARGET, {
+        id: "cloud", x: 0, y: 0, width, height,
+        format: F2TF_FORMATTER.spriteMotion, properties: F2TF_PROPERTY.text,
+        slots: [1], sprite: { colors, alpha, positions },
+      }],
+    });
+    expect(built.rasterCosts).toEqual([{
+      id: "cloud", variants: 32, width, height,
+      bytes: 8 + 32 * 4 + width * height * 3,
+      encoding: "sprite-motion",
+    }]);
+    const decoded = contract.decodeTargetFacadeAsset(Buffer.from(built.binary), {
+      expectedGeneration: 22,
+      expectedF2jsSha256: built.f2jsSha256,
+      expectedContractSha256: contract.TARGET_FACADE_CONTRACT_V4_SHA256,
+    });
+    expect(decoded.targets[1].sprite.positions).toHaveLength(32);
+    expect(decoded.targets[1].sprite.positions[0]).toEqual({ x: -3, y: 4 });
+    const state = { lastAppliedRevision: 0 };
+    const rendered = contract.renderTargetFacadeHost({
+      decoded,
+      baseFrame: new Uint16Array(31_000).fill(0x001f),
+      mailbox: { sequence: 2, admittedGeneration: 22,
+        slots: [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+      state, expectedGeneration: 22,
+    });
+    expect(rendered.result).toBe(contract.TARGET_FACADE_RESULT.ok);
+    expect(rendered.frame[4 * 100]).not.toBe(0x001f);
+  });
+
+  it("interpolates spriteTween positions at render cadence and snaps the loop seam", async () => {
+    const built = await buildF2tfPackage({
+      generation: 23,
+      baseFrame: new Uint16Array(31_000),
+      f2jsBinary: Uint8Array.from([5, 2]),
+      palette: [0], glyphs: GLYPHS,
+      contractSha256: TARGET_FACADE_CONTRACT_V5_SHA256,
+      targets: [ROOT_TARGET, {
+        id: "cloud", x: 0, y: 0, width: 1, height: 1,
+        format: F2TF_FORMATTER.spriteTween, properties: F2TF_PROPERTY.text,
+        slots: [1], sprite: {
+          colors: Uint16Array.of(0xffff), alpha: Uint8Array.of(255),
+          positions: [{ x: -1, y: 4 }, { x: 9, y: 4 }, { x: 19, y: 4 }],
+          tweenMs: 100,
+        },
+      }],
+    });
+    expect(built.rasterCosts[0].encoding).toBe("sprite-tween");
+    const decoded = contract.decodeTargetFacadeAsset(Buffer.from(built.binary), {
+      expectedGeneration: 23,
+      expectedF2jsSha256: built.f2jsSha256,
+      expectedContractSha256: TARGET_FACADE_CONTRACT_V5_SHA256,
+    });
+    const state = { lastAppliedRevision: 0 };
+    const render = (revision: number, pick: number, nowMs: number) => contract.renderTargetFacadeHost({
+      decoded, baseFrame: new Uint16Array(31_000),
+      mailbox: { sequence: 2, admittedGeneration: 23,
+        slots: [revision, pick, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },
+      state, expectedGeneration: 23, nowMs,
+    }).frame;
+    render(1, 0, 0);
+    render(2, 1, 100);
+    expect(render(2, 1, 150)[4 * 100 + 4]).toBe(0xffff); // halfway: -1 -> 9 = x4
+    render(3, 2, 200);
+    expect(render(3, 2, 250)[4 * 100 + 14]).toBe(0xffff);
+    expect(render(4, 0, 300)[4 * 100]).toBe(0); // decreasing pick snaps off-left
   });
 });
 

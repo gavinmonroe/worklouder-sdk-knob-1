@@ -3,7 +3,7 @@
   "candidateApp": {
     "file": "experiments/mquickjs-esp32s3-physical-canary/build/framer-0.4.1-mqjs-id28-canary-NO-GO-app.bin",
     "bytes": 2062912,
-    "sha256": "25ab1b8808ce1269c364dd88a89d3502e77f4cc3ae6bfe64c894036c7aa31e10",
+    "sha256": "e424b8c7ae26ab951e78ecc0668a9f50834941df33f06c0550bb39a7316e4ce1",
     "addedScreenId": 28,
     "deterministicRebuilds": 2,
     "segmentCount": 6,
@@ -28,7 +28,7 @@
         ],
         "bytes": 2736,
         "beforeAllZero": true,
-        "sha256": "acb2663013065cbb3d47e2ffe6234039c70d52ae4cbe861f32d849c43fb3d033"
+        "sha256": "f4b6d3b1b1d317ea15709209a9ca1bf509184ceabf5fd59b913938299f4d5ce9"
       }
     ]
   },
@@ -43,34 +43,34 @@
         "0x240000"
       ],
       "bytes": 196608,
-      "sha256": "2e67c2c1cfaab716bf7e3846229d2ab0bfe7b947f9259a0d5654b874e64ab8a5",
+      "sha256": "a5203199611b6c667d14d1ce8bfad1871be1ef840412a4ff5fe5c9bc06d77fd5",
       "identitySemantics": "SHA-256 of padded text[0x20000] concatenated with padded rodata[0x10000]; binary digest is embedded only in resident loader and passed to startup"
     },
     "text": {
       "paddr": "0x210000",
       "vaddr": "0x423d0000",
-      "usedBytes": 93104,
+      "usedBytes": 94032,
       "capacityBytes": 131072,
-      "sha256": "453e72ca1c1051dd6e16764dbde8ab86b666003eb1ff959a7852bd6836c4ce41"
+      "sha256": "4cddc4bf9aa8facae934859f2de887e3c68954a8668a18d0b79e647d3f7c5341"
     },
     "rodata": {
       "paddr": "0x230000",
       "vaddr": "0x3c3f0000",
-      "usedBytes": 23568,
+      "usedBytes": 23664,
       "capacityBytes": 65536,
-      "sha256": "b10c15b32862067581d8245a971ee6515f3425132bd871b8e611eb16877b6120"
+      "sha256": "2f5ffd1667ddaff037ec848a692e740f0133be54a61dd6b26756af46182c4d18"
     },
     "relocations": 0,
     "undefinedSymbols": 0,
     "writableStaticBytes": 0,
-    "residentBlockBytes": 95920,
-    "startupVaddr": "0x423e3950",
-    "id28IdentityVaddr": "0x423e626c",
-    "keySinkVaddr": "0x423e37cc",
+    "residentBlockBytes": 96112,
+    "startupVaddr": "0x423e3ce4",
+    "id28IdentityVaddr": "0x423e6608",
+    "keySinkVaddr": "0x423e3b60",
     "deterministicRebuilds": 2,
     "stackUsage": {
       "file": "experiments/mquickjs-esp32s3-physical-canary/build/module-stack-usage.json",
-      "sha256": "c54a086b55238d7ab53ab64d6ef4484dae8d37f2f2dc7c0b1d456822ab5bd566",
+      "sha256": "edd20487c84f481c1eea5a7943f803e9d91b00ef37a51a5066d152dc6d88514e",
       "compilerFlag": "-fstack-usage",
       "allFramesStatic": true,
       "rpc": {
@@ -86,15 +86,15 @@
         "asmReadIntegerFrameBytes": 32
       },
       "ui": {
-        "moduleOwnedRenderChainBytes": 848,
+        "moduleOwnedRenderChainBytes": 928,
         "physicalHeadroomClaimed": false
       }
     },
     "loader": {
       "file": "experiments/mquickjs-esp32s3-physical-canary/build/mqjs-id28-resident-loader.bin",
       "bytes": 2736,
-      "sha256": "acb2663013065cbb3d47e2ffe6234039c70d52ae4cbe861f32d849c43fb3d033",
-      "preMapAdmissionBytes": 132784,
+      "sha256": "f4b6d3b1b1d317ea15709209a9ca1bf509184ceabf5fd59b913938299f4d5ce9",
+      "preMapAdmissionBytes": 132976,
       "allocationBeforeFirstMap": true,
       "startupAdoptsExactBlock": true,
       "rollbackBeforeOwnerTask": "map failure frees the owned block but a failed internal cleanup may retain a mapping handle until reset; successful-map/startup-failure attempts unmap then frees exactly once; any unmap failure is a reset/rollback hardware gate",
@@ -189,7 +189,7 @@
     "identity": {
       "baseAppSha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
       "baseAppMeaning": "accepted healthy ancestry, not final candidate app SHA",
-      "moduleSlotSha256": "2e67c2c1cfaab716bf7e3846229d2ab0bfe7b947f9259a0d5654b874e64ab8a5",
+      "moduleSlotSha256": "a5203199611b6c667d14d1ce8bfad1871be1ef840412a4ff5fe5c9bc06d77fd5",
       "packageSha256": "7aeeecde59bd686b3455feadc74b4b7705ca0c8ea933f9b0669cb8dc656c284e"
     },
     "eventFields": [

@@ -1053,6 +1053,7 @@ static void scene_persist_step(physical_block *block);
 static void widget_persist_step(physical_block *block);
 static void widget_slot_adopt(physical_block *block);
 static int widget_slot_adopt_from(physical_block *block, uint32_t slot);
+static int widget_slot_refresh_resident(physical_block *block, uint32_t slot);
 static void proxy_build(physical_proxy *proxy);
 static void proxy_cleanup(physical_proxy *proxy);
 static void proxy_tick(physical_proxy *proxy);
@@ -2614,14 +2615,19 @@ static void owner_task(void *opaque)
         {
             uint32_t desired = __atomic_load_n(&block->widget_desired_slot,
                                                __ATOMIC_ACQUIRE);
+            uint32_t active = __atomic_load_n(&block->widget_active_slot,
+                                              __ATOMIC_ACQUIRE);
+            uint32_t refresh = desired < FRAMER_F2UP_SLOT_COUNT &&
+                block->slot_resident[desired] != 0u &&
+                block->slot_assets[desired].generation !=
+                    block->widget_slot_generations[desired];
             if (desired < FRAMER_F2UP_SLOT_COUNT &&
                 block->slot_resident[desired] != 0u &&
-                __atomic_load_n(&block->widget_active_slot,
-                                __ATOMIC_ACQUIRE) != desired) {
+                (active != desired || refresh != 0u)) {
                 uint32_t attempts;
                 uint32_t boot_failed;
-                uint32_t previous = __atomic_load_n(&block->widget_active_slot,
-                                                    __ATOMIC_ACQUIRE);
+                uint32_t previous = active;
+                int adopt_failed = 0;
                 __atomic_store_n(&block->widget_switching, 1u,
                                  __ATOMIC_RELEASE);
                 (void)framer_resident_owner_begin_quiesce(
@@ -2632,7 +2638,11 @@ static void owner_task(void *opaque)
                      !framer_resident_owner_stop_on_task(&block->owner);
                      ++attempts)
                     STOCK_TASK_DELAY(1u);
-                if (widget_slot_adopt_from(block, desired) != 0) {
+                if (refresh != 0u &&
+                    widget_slot_refresh_resident(block, desired) != 0)
+                    adopt_failed = 1;
+                if (adopt_failed != 0 ||
+                    widget_slot_adopt_from(block, desired) != 0) {
                     if (widget_slot_adopt_from(block, previous) != 0)
                         widget_assets_set_baked(block);
                     __atomic_store_n(&block->widget_desired_slot,
@@ -2647,6 +2657,15 @@ static void owner_task(void *opaque)
                 __atomic_store_n(&block->boot_state,
                                  boot_failed == 0u ? 7u : boot_failed,
                                  __ATOMIC_RELEASE);
+                /* A rebooted widget starts its publication revision at zero.
+                 * Its per-slot facade context may still remember a much later
+                 * revision from the previous activation; retaining it makes
+                 * every new frame fail FRAMER_TF_ERR_REVISION until the new VM
+                 * catches up (effectively forever for a long-running animated
+                 * widget). Re-admit the active slot against its fresh mailbox. */
+                zero_bytes(&block->slot_target[desired],
+                           sizeof(block->slot_target[desired]));
+                block->slot_target_admitted[desired] = 0u;
                 zero_bytes(&block->target, sizeof(block->target));
                 block->target_admitted = 0u;
                 __atomic_store_n(&block->widget_switching, 0u,
@@ -2937,31 +2956,18 @@ static void proxy_tick(physical_proxy *proxy)
         uint8_t *admitted = &block->target_admitted;
         const framer_tf_mailbox *mailbox =
             (const framer_tf_mailbox *)(const void *)&block->owner.mailbox;
-        framer_tf_mailbox idle_mailbox;
         uint32_t active = __atomic_load_n(&block->widget_active_slot,
                                           __ATOMIC_ACQUIRE);
-        /* THIS screen renders ITS OWN slot's widget from ITS OWN resident
-         * assets and facade context.  Only the ACTIVE slot is driven by the
-         * live VM mailbox; every other screen renders its widget's authored
-         * default state, so a screen never shows another screen's widget. */
-        if (screen_slot < FRAMER_F2UP_SLOT_COUNT &&
-            block->slot_resident[screen_slot] != 0u) {
-            assets = &block->slot_assets[screen_slot];
-            target = &block->slot_target[screen_slot];
-            admitted = &block->slot_target_admitted[screen_slot];
-            if (screen_slot != active) {
-                uint32_t index;
-                zero_bytes(&idle_mailbox, sizeof(idle_mailbox));
-                idle_mailbox.sequence = 2u;
-                idle_mailbox.admitted_generation = assets->generation;
-                idle_mailbox.slots[0] = 1;
-                for (index = 1u; index < FRAMER_TF_MAILBOX_SLOTS; ++index)
-                    idle_mailbox.slots[index] = 0;
-                /* Rewound so the overlay re-applies over the base frame this
-                 * tick re-decodes. */
-                target->last_applied_revision = 0u;
-                mailbox = &idle_mailbox;
-            }
+        /* Render the ACTIVE slot on the proxy the stock UI is currently
+         * ticking. This makes upload op 6 an actual visible switch even on
+         * firmware where the stock navigation roster exposes only ID 28. A
+         * real knob navigation edge updates desired_slot above, so the owner
+         * converges active and the same path then renders that screen's slot. */
+        if (active < FRAMER_F2UP_SLOT_COUNT &&
+            block->slot_resident[active] != 0u) {
+            assets = &block->slot_assets[active];
+            target = &block->slot_target[active];
+            admitted = &block->slot_target_admitted[active];
         }
         old_tick(proxy->backend);
         framebuffer = (uint8_t *)proxy->backend + 160u;
@@ -2985,9 +2991,9 @@ static void proxy_tick(physical_proxy *proxy)
             }
             *admitted = 1u;
         }
-        result = framer_tf_render(
+        result = framer_tf_render_at(
             target, mailbox, (uint16_t *)(void *)framebuffer,
-            FRAMER_TF_CANVAS_PIXELS, current_task_token(),
+            FRAMER_TF_CANVAS_PIXELS, current_task_token(), now_ms(),
             &block->target_metrics);
         if (result == FRAMER_TF_OK || result == FRAMER_TF_HIDDEN) {
             /* The present is mandatory per-tick work for a live screen. */
@@ -3000,7 +3006,7 @@ static void proxy_tick(physical_proxy *proxy)
                 proxy->source_published = 1u;
             }
         }
-        if (result == FRAMER_TF_OK && screen_slot == active) {
+        if (result == FRAMER_TF_OK) {
             framer_runtime_visibility_publish(
                 &block->visibility, assets->generation,
                 block->target_metrics.applied_revision);
@@ -3194,6 +3200,66 @@ finished:
     if (mapped != (void *)0)
         (void)STOCK_MMU_UNMAP(mapped);
     return result;
+}
+
+/* Reload a slot that was replaced after boot without allocating. The spare
+ * boot-adoption arena receives and admits the new flash record first; only a
+ * complete success swaps it with the slot's old resident arena. The old arena
+ * becomes the next spare, so repeated replacements stay allocation-free and a
+ * failed read/admission leaves the running widget's bytes untouched. Owner-task
+ * only, after the VM has quiesced. */
+static int widget_slot_refresh_resident(physical_block *block, uint32_t slot)
+{
+    void *mapped = (void *)0;
+    void *old_raw;
+    uint8_t *old_arena;
+    uint8_t *next_arena;
+    framer_f2up_admission admission;
+    int32_t detail = 0;
+    uint32_t index;
+    if (block == (physical_block *)0 || slot >= FRAMER_F2UP_SLOT_COUNT ||
+        block->slot_resident[slot] == 0u ||
+        block->slot_arena_raw[slot] == (void *)0 ||
+        block->widget_arena == (uint8_t *)0 ||
+        block->widget_arena_raw == (void *)0)
+        return 1;
+    if (!widget_slot_window_map(slot, &mapped))
+        return 1;
+    if (framer_f2up_adopt_decide((const uint8_t *)mapped,
+                                 FRAMER_F2UP_SLOT_BYTES, 0u, &admission,
+                                 &detail) != FRAMER_F2UP_ADOPT_OK ||
+        admission.generation != block->widget_slot_generations[slot]) {
+        (void)STOCK_MMU_UNMAP(mapped);
+        return 1;
+    }
+    next_arena = block->widget_arena;
+    scene_copy(next_arena, (const uint8_t *)mapped, admission.total_bytes);
+    (void)STOCK_MMU_UNMAP(mapped);
+    if (framer_f2up_admit(next_arena, (size_t)admission.total_bytes,
+                         &admission) != FRAMER_F2UP_OK ||
+        admission.generation != block->widget_slot_generations[slot])
+        return 1;
+
+    old_raw = block->slot_arena_raw[slot];
+    old_arena = (uint8_t *)(((uintptr_t)old_raw + 15u) & ~(uintptr_t)15u);
+    for (index = 0u; index < 32u; ++index)
+        block->slot_sha[slot][index] = admission.f2js_sha256[index];
+    block->slot_arena_raw[slot] = block->widget_arena_raw;
+    block->slot_assets[slot].f2js = next_arena + admission.f2js_offset;
+    block->slot_assets[slot].f2js_bytes = admission.f2js_bytes;
+    block->slot_assets[slot].f2tf = next_arena + admission.f2tf_offset;
+    block->slot_assets[slot].f2tf_bytes = admission.f2tf_bytes;
+    block->slot_assets[slot].lzss = next_arena + admission.lzss_offset;
+    block->slot_assets[slot].lzss_bytes = admission.lzss_bytes;
+    block->slot_assets[slot].f2js_sha256 = block->slot_sha[slot];
+    block->slot_assets[slot].generation = admission.generation;
+    block->slot_assets[slot].source = 1u;
+    block->slot_assets[slot].adopt_detail = detail;
+    zero_bytes(&block->slot_target[slot], sizeof(block->slot_target[slot]));
+    block->slot_target_admitted[slot] = 0u;
+    block->widget_arena_raw = old_raw;
+    block->widget_arena = old_arena;
+    return 0;
 }
 
 /* Point the VM's asset set at a RESIDENT slot.  No copy and no flash access:

@@ -60,6 +60,15 @@ export const TARGET_FACADE_CONTRACT_V2_SHA256 =
  */
 export const TARGET_FACADE_CONTRACT_V3_SHA256 =
   "455e02819595f810909a11afdcda7eb5aa0b4d6e792b154d29711ebea906631b";
+/** Additive v4 contract: formatter 14 stores one alpha-aware sprite plus up
+ * to 32 signed canvas positions instead of duplicating a full raster for
+ * every translated state. */
+export const TARGET_FACADE_CONTRACT_V4_SHA256 =
+  "f72d90e8009f5d29deca6af51ec05c98c405f65f9ba88cd8794c14208b1858c9";
+/** Additive v5 contract: formatter 15 interpolates compact sprite positions
+ * at display cadence using the authored linear CSS transition duration. */
+export const TARGET_FACADE_CONTRACT_V5_SHA256 =
+  "8793b80a3c83afc8f5f28a82e01748943fa5d29670cb98a92ed52212864913ec";
 
 export const F2TF_HEADER_BYTES = 192;
 export const F2TF_TARGET_BYTES = 40;
@@ -91,12 +100,16 @@ export const F2TF_FORMATTER = Object.freeze({
    * multi-digit number therefore costs ONE slot across its per-digit
    * subtargets. */
   digitRaster: 13,
+  spriteMotion: 14,
+  spriteTween: 15,
 });
 export const F2TF_PROPERTY = Object.freeze({ text: 1, color: 2, hidden: 4 });
 /** digitRaster tables hold exactly the ten digits. */
 export const F2TF_DIGIT_RASTER_VARIANTS = 10;
 /** digitRaster divisors the contract admits (so ≤4 cells share one slot). */
 export const F2TF_DIGIT_DIVISORS = Object.freeze([1, 10, 100, 1000]);
+/** spriteMotion position tables carry 1..32 states. */
+export const F2TF_MAX_SPRITE_POSITIONS = 32;
 
 const UNUSED = 0xff;
 
@@ -128,6 +141,15 @@ export interface F2tfTarget {
   rasters?: Uint16Array[];
   /** digitRaster (13) only: power-of-ten digit extractor, 1|10|100|1000. */
   divisor?: number;
+  /** spriteMotion (14) / spriteTween (15): one source sprite and signed canvas
+   * positions. RGB565 and alpha are parallel row-major planes. tweenMs selects
+   * formatter 15's native linear interpolation and is absent for formatter 14. */
+  sprite?: {
+    colors: Uint16Array;
+    alpha: Uint8Array;
+    positions: { x: number; y: number }[];
+    tweenMs?: number;
+  };
 }
 
 export interface F2tfBuildOptions {
@@ -197,7 +219,10 @@ export interface F2tfPackage {
   /** Total bytes of the rasters section (0 when no variantRaster targets). */
   rasterBytes: number;
   /** Per-target raster table costs, in target order (variantRaster only). */
-  rasterCosts: { id: string; variants: number; width: number; height: number; bytes: number }[];
+  rasterCosts: {
+    id: string; variants: number; width: number; height: number; bytes: number;
+    encoding?: "sprite-motion" | "sprite-tween";
+  }[];
 }
 
 /** One line per raster target, for over-budget diagnostics. */
@@ -206,8 +231,11 @@ export function describeRasterCosts(
 ): string {
   return costs
     .map((cost) =>
-      `"#${cost.id}" ${cost.variants} variant${cost.variants === 1 ? "" : "s"} × ` +
-      `${cost.width}×${cost.height}px × 2 B = ${cost.bytes} bytes`)
+      cost.encoding === "sprite-motion" || cost.encoding === "sprite-tween"
+        ? `"#${cost.id}" one ${cost.width}×${cost.height}px RGB565+alpha sprite + ` +
+          `${cost.variants} positions${cost.encoding === "sprite-tween" ? " with native tweening" : ""} = ${cost.bytes} bytes`
+        : `"#${cost.id}" ${cost.variants} variant${cost.variants === 1 ? "" : "s"} × ` +
+          `${cost.width}×${cost.height}px × 2 B = ${cost.bytes} bytes`)
     .join("; ");
 }
 
@@ -406,9 +434,71 @@ export async function buildF2tfPackage(options: F2tfBuildOptions): Promise<F2tfP
         width: target.width, height: target.height, bytes: tableBytes.length,
       });
       rasterBytesTotal += tableBytes.length;
+    } else if (target.format === F2TF_FORMATTER.spriteMotion ||
+               target.format === F2TF_FORMATTER.spriteTween) {
+      const tweened = target.format === F2TF_FORMATTER.spriteTween;
+      invariant(target.properties === F2TF_PROPERTY.text,
+        `compact sprite target ${target.id} must declare exactly the text property (1).`);
+      invariant(target.slots.length === 1,
+        `compact sprite target ${target.id} binds exactly one value slot; got ${target.slots.length}.`);
+      targetSection[at + 30] = UNUSED;
+      targetSection[at + 31] = UNUSED;
+      targetSection[at + 32] = UNUSED;
+      targetSection[at + 33] = 0;
+      targetSection[at + 34] = 0;
+      targetSection[at + 35] = 0;
+      const sprite = target.sprite;
+      const pixels = target.width * target.height;
+      invariant(sprite && sprite.colors instanceof Uint16Array && sprite.colors.length === pixels &&
+        sprite.alpha instanceof Uint8Array && sprite.alpha.length === pixels,
+      `compact sprite target ${target.id} needs exact ${target.width}×${target.height} RGB565 and alpha planes.`);
+      invariant(Array.isArray(sprite.positions) && sprite.positions.length >= 1 &&
+        sprite.positions.length <= F2TF_MAX_SPRITE_POSITIONS,
+      `compact sprite target ${target.id} needs 1..${F2TF_MAX_SPRITE_POSITIONS} positions; ` +
+        `got ${Array.isArray(sprite.positions) ? sprite.positions.length : typeof sprite.positions}.`);
+      invariant(!tweened || Number.isInteger(sprite.tweenMs) && sprite.tweenMs! >= 1 && sprite.tweenMs! <= 0xffff,
+        `spriteTween target ${target.id} needs an integer 1..65535 ms transition duration.`);
+      const tableBytes = new Uint8Array(8 + sprite.positions.length * 4 + pixels * 3);
+      const tableView = new DataView(tableBytes.buffer);
+      tableBytes[0] = 1; // table version
+      tableBytes[1] = tweened ? 1 : 0;
+      tableBytes[2] = sprite.positions.length;
+      tableBytes[3] = 1; // RGB565 + alpha8 planes
+      if (tweened) {
+        tableView.setUint16(4, sprite.tweenMs!, true);
+        tableBytes[6] = 0; // linear easing
+        tableBytes[7] = 0;
+      } else {
+        tableView.setInt16(4, 0, true);
+        tableView.setInt16(6, 0, true);
+      }
+      sprite.positions.forEach((position, positionIndex) => {
+        invariant(Number.isInteger(position.x) && position.x >= -target.width && position.x <= F2TF_CANVAS.width &&
+          Number.isInteger(position.y) && position.y >= -target.height && position.y <= F2TF_CANVAS.height,
+        `compact sprite target ${target.id} position ${positionIndex} escapes the bounded canvas range.`);
+        tableView.setInt16(8 + positionIndex * 4, position.x, true);
+        tableView.setInt16(10 + positionIndex * 4, position.y, true);
+      });
+      const colorsAt = 8 + sprite.positions.length * 4;
+      for (let pixel = 0; pixel < pixels; pixel += 1) {
+        tableView.setUint16(colorsAt + pixel * 2, sprite.colors[pixel], true);
+      }
+      tableBytes.set(sprite.alpha, colorsAt + pixels * 2);
+      invariant(tableBytes.length <= 0xffff,
+        `compact sprite target ${target.id} table exceeds its u16 byte range.`);
+      view.setUint16(at + 36, literalCursor, true);
+      view.setUint16(at + 38, tableBytes.length, true);
+      literalChunks.push(tableBytes);
+      literalCursor += tableBytes.length;
+      rasterCosts.push({
+        id: target.id, variants: sprite.positions.length,
+        width: target.width, height: target.height, bytes: tableBytes.length,
+        encoding: tweened ? "sprite-tween" : "sprite-motion",
+      });
+      rasterBytesTotal += tableBytes.length;
     } else {
       invariant(target.format === F2TF_FORMATTER.variantText,
-        `Target ${target.id}: the Designer emits only generic formatters (1, 11, 12, 13); got ${target.format}.`);
+        `Target ${target.id}: the Designer emits only generic formatters (1, 11, 12, 13, 14, 15); got ${target.format}.`);
       invariant(target.properties === F2TF_PROPERTY.text ||
         target.properties === (F2TF_PROPERTY.text | F2TF_PROPERTY.color),
         `variantText target ${target.id} must declare text, optionally with color.`);
@@ -449,7 +539,7 @@ export async function buildF2tfPackage(options: F2tfBuildOptions): Promise<F2tfP
   const literalsAt = glyphsAt + glyphSection.length;
   const totalBytes = literalsAt + literalSection.length;
   invariant(totalBytes <= F2TF_MAX_ASSET_BYTES,
-    `F2TF asset is ${totalBytes} bytes; the v3 cap is ${F2TF_MAX_ASSET_BYTES}. ` +
+    `F2TF asset is ${totalBytes} bytes; the v3/v4/v5 cap is ${F2TF_MAX_ASSET_BYTES}. ` +
       `Raster tables cost ${rasterBytesTotal} bytes: ${describeRasterCosts(rasterCosts)}. ` +
       `Shrink target rects or variant counts.`);
   const binary = new Uint8Array(totalBytes);
@@ -478,7 +568,8 @@ export async function buildF2tfPackage(options: F2tfBuildOptions): Promise<F2tfP
     // targets cannot fit this, so compute it honestly here and fail loudly
     // when the design simply cannot render within the frame ceiling.
     const rasterWrites = targets.reduce((sum, target) =>
-      target.format === 12 || target.format === 13 ? sum + target.width * target.height : sum, 0);
+      target.format === 12 || target.format === 13 || target.format === 14 || target.format === 15
+        ? sum + target.width * target.height : sum, 0);
     const overlayBudget = Math.min(F2TF_MAX_OVERLAY_WRITES_V3,
       F2TF_MAX_OVERLAY_WRITES + rasterWrites);
     invariant(rasterWrites <= overlayBudget,

@@ -48,6 +48,8 @@ import { decodeRenderV2MQuickJsPackage } from
   "../../f1-widget-sdk/src/render-v2/mquickjs.mjs";
 import { crc32, decodeTargetFacadeAsset, TARGET_FACADE_CONTRACT_SHA256,
   TARGET_FACADE_CONTRACT_V2_SHA256, TARGET_FACADE_CONTRACT_V3_SHA256,
+  TARGET_FACADE_CONTRACT_V4_SHA256,
+  TARGET_FACADE_CONTRACT_V5_SHA256,
   TARGET_FACADE_HEADER_BYTES } from "../mquickjs-target-facade/contract.mjs";
 
 const execute = promisify(execFile);
@@ -110,6 +112,8 @@ const expected = Object.freeze({
   /* Additive v3 (formatter 12 variantRaster): pre-rendered per-variant RGB565
    * blits, asset cap 65536.  The module pins THIS identity. */
   targetContractV3Sha256: "455e02819595f810909a11afdcda7eb5aa0b4d6e792b154d29711ebea906631b",
+  targetContractV4Sha256: "f72d90e8009f5d29deca6af51ec05c98c405f65f9ba88cd8794c14208b1858c9",
+  targetContractV5Sha256: "8793b80a3c83afc8f5f28a82e01748943fa5d29670cb98a92ed52212864913ec",
   // ID28 asset shape, enforced whether the assets come from the release or from
   // FRAMER_DIAG_ASSETS_DIR.  PHYSICAL_GENERATION / PHYSICAL_FRAME_BYTES /
   // FRAMER_TF_MAX_ASSET_BYTES in the module sources.
@@ -284,11 +288,15 @@ invariant(TARGET_FACADE_CONTRACT_V2_SHA256 === expected.targetContractV2Sha256,
   "F2TF v2 contract identity changed.");
 invariant(TARGET_FACADE_CONTRACT_V3_SHA256 === expected.targetContractV3Sha256,
   "F2TF v3 contract identity changed.");
+invariant(TARGET_FACADE_CONTRACT_V4_SHA256 === expected.targetContractV4Sha256,
+  "F2TF v4 contract identity changed.");
+invariant(TARGET_FACADE_CONTRACT_V5_SHA256 === expected.targetContractV5Sha256,
+  "F2TF v5 contract identity changed.");
 // The contract identity the MODULE pins.  The baked F2TF is resealed to
 // exactly this version below, and assets/target-contract.sha256.bin (what
 // assets.S embeds as framer_physical_target_contract_sha256) carries it.
 // Advance this single line when the facade contract gains a version.
-const TARGET_CONTRACT_SHA256 = TARGET_FACADE_CONTRACT_V3_SHA256;
+const TARGET_CONTRACT_SHA256 = TARGET_FACADE_CONTRACT_V5_SHA256;
 // Whatever the asset source, the module only boots if the base inflates to
 // exactly one 100x310 RGB565 frame and the facade admits against the exact
 // package digest it is bound to.  Prove both here rather than on the keyboard.
@@ -311,7 +319,9 @@ const facadeBaseFrame = new Uint16Array(baseFrameBytes.buffer.slice(
 const sourceContractSha = f2tf.subarray(160, 192).toString("hex");
 invariant(sourceContractSha === TARGET_FACADE_CONTRACT_SHA256 ||
   sourceContractSha === TARGET_FACADE_CONTRACT_V2_SHA256 ||
-  sourceContractSha === TARGET_FACADE_CONTRACT_V3_SHA256,
+  sourceContractSha === TARGET_FACADE_CONTRACT_V3_SHA256 ||
+  sourceContractSha === TARGET_FACADE_CONTRACT_V4_SHA256 ||
+  sourceContractSha === TARGET_FACADE_CONTRACT_V5_SHA256,
   `Source F2TF embeds an unknown contract identity ${sourceContractSha}.`);
 decodeTargetFacadeAsset(f2tf, {
   expectedGeneration: expected.generation, expectedF2jsSha256: assetSha.f2js,

@@ -546,14 +546,23 @@ widget.on("tick.1s", function (event) {
     expect(out.sharedPickIndex).toEqual({ z: false });
   });
 
-  it("caps className variants at 16 and refuses constant className strings", () => {
-    const variants = Array.from({ length: 17 }, (_, i) => `"c${i}"`).join(", ");
+  it("allows 32 compact-motion class states, caps at 32, and refuses constant className strings", () => {
+    const supported = Array.from({ length: 32 }, (_, i) => `"c${i}"`).join(", ");
+    const accepted = transpileWidgetScript(`var i = 0;
+widget.on("tick.1s", function (event) {
+  document.querySelector("#z").className = pick(i, ${supported});
+});
+`);
+    expect(errorsOf(accepted)).toEqual([]);
+    expect(accepted.classTables.z).toHaveLength(32);
+
+    const variants = Array.from({ length: 33 }, (_, i) => `"c${i}"`).join(", ");
     const over = transpileWidgetScript(`var i = 0;
 widget.on("tick.1s", function (event) {
   document.querySelector("#z").className = pick(i, ${variants});
 });
 `);
-    expect(errorsOf(over).some((d) => d.message.includes("at most 16"))).toBe(true);
+    expect(errorsOf(over).some((d) => d.message.includes("at most 32"))).toBe(true);
     expect(over.classTables).toEqual({});
 
     const constant = transpileWidgetScript(`var i = 0;
@@ -562,6 +571,29 @@ widget.on("tick.1s", function (event) {
 });
 `);
     expect(errorsOf(constant).some((d) => d.message.includes("Unsupported document write"))).toBe(true);
+  });
+});
+
+describe("conditional DOM writes", () => {
+  it("lowers class writes inside an if so unchanged 1ms ticks do not publish", () => {
+    const variants = Array.from({ length: 32 }, (_, index) => `"p${index}"`).join(", ");
+    const out = transpileWidgetScript(`var a = 0;
+var elapsed = 0;
+widget.on("tick.1ms", function (event) {
+  elapsed = elapsed + event.value;
+  if (elapsed >= 180) {
+    elapsed = elapsed - 180;
+    a = mod(a + 1, 32);
+    document.querySelector("#cloud1").className = pick(a, ${variants});
+  }
+});
+`);
+
+    expect(errorsOf(out)).toEqual([]);
+    expect(out.classTables.cloud1).toHaveLength(32);
+    expect(out.deviceSource).toContain("if (elapsed >= 180) {");
+    expect(out.deviceSource).toMatch(/if \(elapsed >= 180\) \{[^}]*__set\(1, mod\(a, 32\)\)/u);
+    expect(out.deviceSource).not.toContain("document.querySelector");
   });
 });
 

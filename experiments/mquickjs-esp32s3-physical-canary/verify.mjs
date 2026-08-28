@@ -139,10 +139,9 @@ const expected = Object.freeze({
   // digest, which shifted because the -m32 atom/library word-size fix
   // changed the module-loader build's generated atom header content.
   moduleLoaderManifestSha256: "d78f6763787d07223b811d6cf5071b2f047b866fe8c37819c2f7974b4d93f027",
-  // Re-recorded: sourceClosurePaths includes framer_mquickjs_canary.c/.h and
-  // loader_entry.c, which this change intentionally edits (load-deadline fix
-  // and 16-byte alignment / IROM byte-read fixes).
-  sourceClosureSha256: "666be918b8da884c6eb5fcfe1c21f50e4805c8004c4abf3914c33570fea2288e",
+  // Re-recorded for additive target-facade v5 spriteTween support; the closure
+  // includes contract.mjs and the freestanding target_facade.c/h renderer.
+  sourceClosureSha256: "6bd160cf9086cfe347b68304769562d33d85edae7d50701f802f2857c98a020c",
   baseSha256: "2f8263490c50631c3cdb7f992efde976ac794d8a3e599cc785a1e81bfa0e5c68",
   canonicalWeatherSourceSha256:
     "68db9d61fa38b0a396e46e88076d75d262a486f2ec4b41b4d398454d7d713e9b",
@@ -586,10 +585,13 @@ function proveStackUsage(records) {
     chains.event === 336 && chains.receipt === 192 && maximum <= 384,
   `RPC callback stack non-regression changed: ${JSON.stringify(chains)}.`);
   const uiModuleChainBytes = frame("physical.o", "proxy_tick") +
-    frame("target.o", "framer_tf_render") +
+    frame("target.o", "framer_tf_render_at") +
     frame("target.o", "render_internal") +
     frame("target.o", "target_pixels") + frame("target.o", "glyph_index");
-  invariant(uiModuleChainBytes === 848,
+  // V5 interpolation adds 80 static bytes to render_internal. The physical
+  // integration calls render_at directly; do not count the compatibility
+  // wrapper that is not on this callback path.
+  invariant(uiModuleChainBytes === 928,
     `UI module callback chain changed: ${uiModuleChainBytes}.`);
   return { compilerFlag: "-fstack-usage", allFramesStatic: true,
     rpc: { chains, maximumModuleOwnedChainBytes: maximum,

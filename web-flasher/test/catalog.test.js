@@ -13,6 +13,7 @@ describe("widget catalog policy", () => {
       "Custom HTML / CSS Preview",
       "Clock + Timer (render v2)",
       "Weather (MicroQuickJS canary)",
+      "Widget Designer (multi-widget)",
       "Input Lab custom widgets (render v2 generic)",
     ]);
     expect(defaultFirmwareId).toBe("wpm-pet");
@@ -22,6 +23,7 @@ describe("widget catalog policy", () => {
       ["WPM Pet", "Music", "Custom HTML / CSS Preview"],
       ["WPM Pet", "Music", "Clock", "Timer"],
       ["WPM Pet", "Music", "Clock", "Timer", "Weather"],
+      ["WPM Pet", "Music", "Clock", "Timer", "Widget screens 28-31"],
       ["WPM Pet", "Music", "Input Lab custom widgets"],
     ]);
     expect(byId["custom-html-css-preview"].compilerUrl).toBe("https://htmlcss-to-framerf1-widget.g-m.dev");
@@ -40,7 +42,8 @@ describe("widget catalog policy", () => {
   });
 
   it("exposes the smoke-approved renderers with explicit warnings", () => {
-    expect(firmwareCatalog.map(({ flashable }) => flashable)).toEqual([true, true, true, true, true, true]);
+    expect(firmwareCatalog.map(({ flashable }) => flashable))
+      .toEqual([true, true, true, true, true, true, true]);
     expect(byId["custom-html-css-preview"].evidence).toBe("Smoke candidate");
     expect(byId["custom-html-css-preview"].notice).toMatch(/not yet live accepted/u);
     expect(byId["input-lab-generic"].evidence).toBe("Smoke candidate");
@@ -48,7 +51,7 @@ describe("widget catalog policy", () => {
     expect(byId["input-lab-generic"].notice).toMatch(/clock, timer, and weather widgets are not in this image/iu);
     expect(byId["input-lab-generic"]).toMatchObject({
       bytes: 2_062_912,
-      sha256: "371ee26ebb74c37fde96213ace9f4c506ac98d5293ff09ffe3f863ced9c98f06",
+      sha256: "4e045ec270462754e8415c1e2d30181f500791db9d55cbeb98b8650621a78d1d",
     });
     expect(byId["input-lab-generic"].regions).toBeUndefined();
     expect(byId["input-lab-generic"].scenePackage).toBeUndefined();
@@ -132,6 +135,24 @@ describe("widget catalog policy", () => {
     expect(weather.bytes).toBe(weather.regions.at(-1).bytes);
   });
 
+  it("pins the smooth-motion multi-widget candidate as an ordered four-region write", () => {
+    const multi = byId["widget-designer-multi"];
+    expect(multi.evidence).toBe("Smooth-motion candidate 2026-08-28");
+    expect(multi.notice).toMatch(/v5 sprite tweening/u);
+    expect(multi.regions.map(({ address, bytes, sha256 }) => ({ address, bytes, sha256 })))
+      .toEqual([
+        { address: 0x240000, bytes: 95_599,
+          sha256: "599be673ca9aba43a1fc64ec73324137919df70d9475ff8477100aa57cf0008f" },
+        { address: 0x210000, bytes: 131_072,
+          sha256: "51a13ab4e0583d62e46acd7764fea4a896c1d9506c937bcc33789b344b3ee97f" },
+        { address: 0x230000, bytes: 65_536,
+          sha256: "2eabd5afc626b9198559a42cb2b9269a6816067039d640f39c86324cd8c5ac85" },
+        { address: 0x10000, bytes: 2_062_912,
+          sha256: "2062c22f110c616e91ad5d3a7368fefd79eb10f24bc372b00f7c661f223c9649" },
+      ]);
+    expect(() => assertRegionPlan(multi.regions)).not.toThrow();
+  });
+
   it("keeps the write-scope allowlist minimal and includes the new slot-B address", () => {
     expect(ALLOWED_REGION_ADDRESSES).toEqual([0x10000, 0x210000, 0x230000, 0x240000]);
   });
@@ -148,6 +169,7 @@ describe("widget catalog policy", () => {
 
   it("keeps every single-app card free of a region plan", () => {
     const multiRegion = firmwareCatalog.filter((firmware) => firmware.regions);
-    expect(multiRegion.map(({ id }) => id)).toEqual(["weather-mquickjs"]);
+    expect(multiRegion.map(({ id }) => id))
+      .toEqual(["weather-mquickjs", "widget-designer-multi"]);
   });
 });

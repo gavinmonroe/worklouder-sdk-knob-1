@@ -16,7 +16,7 @@ describe("catalog page", () => {
       expect(html).toContain(firmware.name);
       expect(html).toContain(firmware.evidence);
     }
-    expect(html).toContain("6 widgets");
+    expect(html).toContain("7 widgets");
   });
 });
 

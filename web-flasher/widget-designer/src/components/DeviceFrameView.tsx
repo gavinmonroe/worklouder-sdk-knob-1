@@ -8,7 +8,11 @@ import { decodeUploadContainer } from "../compiler/uploadContainer";
 import { decodeLzss } from "../compiler/lzss";
 import { BASE_FRAME_BYTES } from "../compiler/frameCapture";
 import { DEVICE_WIDTH, DEVICE_HEIGHT } from "../compiler/renderV2Package";
-import { TARGET_FACADE_CONTRACT_V3_SHA256 } from "../compiler/f2tfPackage";
+import {
+  TARGET_FACADE_CONTRACT_V3_SHA256,
+  TARGET_FACADE_CONTRACT_V4_SHA256,
+  TARGET_FACADE_CONTRACT_V5_SHA256,
+} from "../compiler/f2tfPackage";
 import {
   decodeTargetFacadeAsset,
   renderTargetFacadeHost,
@@ -108,10 +112,17 @@ export function DeviceFrameView({
         for (let i = 0; i < baseFrame.length; i += 1) {
           baseFrame[i] = baseBytes[i * 2] | (baseBytes[i * 2 + 1] << 8);
         }
+        const embeddedContract = [...container.f2tf.subarray(160, 192)]
+          .map((byte) => byte.toString(16).padStart(2, "0")).join("");
+        if (embeddedContract !== TARGET_FACADE_CONTRACT_V3_SHA256 &&
+            embeddedContract !== TARGET_FACADE_CONTRACT_V4_SHA256 &&
+            embeddedContract !== TARGET_FACADE_CONTRACT_V5_SHA256) {
+          throw new Error(`Unsupported target-facade contract ${embeddedContract.slice(0, 12)}…`);
+        }
         const facade = decodeTargetFacadeAsset(container.f2tf, {
           expectedGeneration: container.generation,
           expectedF2jsSha256: container.f2jsSha256,
-          expectedContractSha256: TARGET_FACADE_CONTRACT_V3_SHA256,
+          expectedContractSha256: embeddedContract,
         });
         if (cancelled) return;
         setDecoded({ facade, baseFrame, generation: container.generation });

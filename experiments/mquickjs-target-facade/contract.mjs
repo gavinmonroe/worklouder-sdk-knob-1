@@ -42,6 +42,14 @@ export const TARGET_FACADE_FORMATTER = Object.freeze({
    * consulted and no base pixel survives inside the rect. Flag-word
    * independent like variantText. */
   variantRaster: 12, digitRaster: 13,
+  /* One alpha-aware RGB565 sprite plus 1..32 signed canvas positions. The
+   * selected mailbox value chooses a position; the sprite pixels themselves
+   * are stored once. This is the compact path for translated image motion. */
+  spriteMotion: 14,
+  /* The same single-copy sprite/position table, with a linear transition
+   * duration. The native facade interpolates between mailbox-selected
+   * positions at display cadence instead of exposing the 32 authored steps. */
+  spriteTween: 15,
 });
 
 /* The v1 canonical is FROZEN: its sha is embedded in the flashed weather asset
@@ -59,6 +67,14 @@ const CONTRACT_FORMATTERS_V2 = Object.freeze({
   rootVisibility: 1, tableLiteral: 2, status: 3, packedTemperature: 4,
   currentCondition: 5, age: 6, weekday: 7, dayCondition: 8,
   temperaturePair: 9, retry: 10, variantText: 11,
+});
+/* v3 is frozen independently of the public formatter map so adding v4
+ * formatters cannot silently change the SHA already embedded in devices. */
+const CONTRACT_FORMATTERS_V3 = Object.freeze({
+  ...CONTRACT_FORMATTERS_V2, variantRaster: 12, digitRaster: 13,
+});
+const CONTRACT_FORMATTERS_V4 = Object.freeze({
+  ...CONTRACT_FORMATTERS_V3, spriteMotion: 14,
 });
 export const TARGET_FACADE_MAX_ASSET_BYTES = 65_536;
 /* v3 raises the per-render overlay budget to one full frame: variantRaster
@@ -86,6 +102,37 @@ const CONTRACT_V3_EXTENSION = Object.freeze({
   digitRaster: Object.freeze({ format: 13, divisor: "u32le@30 power-of-ten 1..1000",
     table: "exactly 10 raster variants", pick: "(max(slot,0)/divisor) % 10" }),
 });
+const CONTRACT_V4_EXTENSION = Object.freeze({
+  ...CONTRACT_V3_EXTENSION,
+  spriteMotion: Object.freeze({
+    format: 14,
+    table: Object.freeze({
+      version: "u8@0=1", mode: "u8@1=0", count: "u8@2 1..32", flags: "u8@3=1",
+      baseX: "i16le@4=0", baseY: "i16le@6=0",
+      positions: "count*(i16le x,i16le y)@8",
+      pixels: "rect.width*rect.height*(rgb565-le plane then alpha8 plane)",
+    }),
+    pick: "clamp(slot,0,count-1)",
+    clipping: "canvas bounds",
+    alpha: "rgb565 component blend with round-to-nearest /255",
+  }),
+});
+const CONTRACT_V5_EXTENSION = Object.freeze({
+  ...CONTRACT_V4_EXTENSION,
+  spriteTween: Object.freeze({
+    format: 15,
+    table: Object.freeze({
+      version: "u8@0=1", mode: "u8@1=1", count: "u8@2 1..32", flags: "u8@3=1",
+      durationMs: "u16le@4 1..65535", easing: "u8@6=0 linear", reserved: "u8@7=0",
+      positions: "count*(i16le x,i16le y)@8",
+      pixels: "rect.width*rect.height*(rgb565-le plane then alpha8 plane)",
+    }),
+    pick: "clamp(slot,0,count-1)",
+    interpolation: "signed integer linear interpolation at render time",
+    clipping: "canvas bounds",
+    alpha: "rgb565 component blend with round-to-nearest /255",
+  }),
+});
 const contractCanonical = (version, formatters, extension = {}) => JSON.stringify({
   format: TARGET_FACADE_FORMAT,
   profile: TARGET_FACADE_PROFILE,
@@ -105,7 +152,11 @@ const contractCanonical = (version, formatters, extension = {}) => JSON.stringif
 const CONTRACT_CANONICAL = contractCanonical(1, CONTRACT_FORMATTERS_V1);
 
 export const TARGET_FACADE_CONTRACT_V3_SHA256 = createHash("sha256")
-  .update(contractCanonical(3, TARGET_FACADE_FORMATTER, CONTRACT_V3_EXTENSION)).digest("hex");
+  .update(contractCanonical(3, CONTRACT_FORMATTERS_V3, CONTRACT_V3_EXTENSION)).digest("hex");
+export const TARGET_FACADE_CONTRACT_V4_SHA256 = createHash("sha256")
+  .update(contractCanonical(4, CONTRACT_FORMATTERS_V4, CONTRACT_V4_EXTENSION)).digest("hex");
+export const TARGET_FACADE_CONTRACT_V5_SHA256 = createHash("sha256")
+  .update(contractCanonical(5, TARGET_FACADE_FORMATTER, CONTRACT_V5_EXTENSION)).digest("hex");
 export const TARGET_FACADE_CONTRACT_V2_SHA256 = createHash("sha256")
   .update(contractCanonical(2, CONTRACT_FORMATTERS_V2)).digest("hex");
 export const TARGET_FACADE_CONTRACT_SHA256 = createHash("sha256")
@@ -306,16 +357,18 @@ function decodeTable(asset, header, targetRecord) {
   return values;
 }
 
-const EXPECTED_PROPERTIES = Object.freeze([0, 4, 1, 3, 1, 3, 1, 1, 3, 1, 7, -1, 1, 1]);
-const EXPECTED_TABLE_COUNTS = Object.freeze([0, 0, 1, 5, 1, 17, 3, 8, 17, 1, 1, -1, -2, -3]);
-const USED_SLOTS = Object.freeze([0, 1, 0, 2, 2, 2, 2, 2, 2, 3, 2, 2, 1, 1]);
+const EXPECTED_PROPERTIES = Object.freeze([0, 4, 1, 3, 1, 3, 1, 1, 3, 1, 7, -1, 1, 1, 1, 1]);
+const EXPECTED_TABLE_COUNTS = Object.freeze([0, 0, 1, 5, 1, 17, 3, 8, 17, 1, 1, -1, -2, -3, -4, -5]);
+const USED_SLOTS = Object.freeze([0, 1, 0, 2, 2, 2, 2, 2, 2, 3, 2, 2, 1, 1, 1, 1]);
 /* -1 marks per-format validation handled inline (variantText: properties may be
  * text or text|color; literal count is 1..16; the colour slot may be UNUSED).
  * -2 marks the raster table KIND (variantRaster): the range is raw pixels with
  * a u16 byte length, decoded by decodeRasterTable instead of decodeTable.
  * -3 marks the DIGIT raster KIND (digitRaster): same pixel encoding with the
  * count fixed at exactly 10 ("0".."9"); the record's divisor (u32le@30, a
- * power of ten 1..1000) selects the digit: variant = (slot/divisor) % 10. */
+ * power of ten 1..1000) selects the digit: variant = (slot/divisor) % 10.
+ * -4 marks spriteMotion: a coordinate table followed by one RGB565 plane and
+ * one alpha8 plane. -5 marks the same planes with native linear tweening. */
 
 function decodeRasterTable(asset, header, targetRecord, width, height, id) {
   const offset = u16(targetRecord, 36); const length = u16(targetRecord, 38);
@@ -327,6 +380,32 @@ function decodeRasterTable(asset, header, targetRecord, width, height, id) {
   return Object.freeze(Array.from({ length: length / variantBytes }, (_, index) =>
     Buffer.from(asset.subarray(header.literalsAt + offset + index * variantBytes,
       header.literalsAt + offset + (index + 1) * variantBytes))));
+}
+
+function decodeSpriteTable(asset, header, targetRecord, width, height, id, tweened) {
+  const offset = u16(targetRecord, 36); const length = u16(targetRecord, 38);
+  invariant(offset + length <= header.literalBytes, `Sprite table range is invalid for ${id}.`);
+  const table = asset.subarray(header.literalsAt + offset, header.literalsAt + offset + length);
+  invariant(table.length >= 12 && table[0] === 1 && table[1] === (tweened ? 1 : 0) &&
+    table[2] >= 1 && table[2] <= 32 && table[3] === 1 &&
+    (tweened
+      ? table.readUInt16LE(4) >= 1 && table[6] === 0 && table[7] === 0
+      : table.readInt16LE(4) === 0 && table.readInt16LE(6) === 0),
+  `Sprite table header is invalid for ${id}.`);
+  const count = table[2]; const pixels = width * height;
+  const pixelAt = 8 + count * 4;
+  invariant(table.length === pixelAt + pixels * 3,
+    `Sprite table byte length is invalid for ${id}.`);
+  const positions = Object.freeze(Array.from({ length: count }, (_, index) => {
+    const at = 8 + index * 4;
+    const x = table.readInt16LE(at); const y = table.readInt16LE(at + 2);
+    invariant(x >= -width && x <= 100 && y >= -height && y <= 310,
+      `Sprite position ${index} escapes the bounded canvas range for ${id}.`);
+    return Object.freeze({ x, y });
+  }));
+  return Object.freeze({ positions, durationMs: tweened ? table.readUInt16LE(4) : 0,
+    colors: Buffer.from(table.subarray(pixelAt, pixelAt + pixels * 2)),
+    alpha: Buffer.from(table.subarray(pixelAt + pixels * 2)) });
 }
 
 export function decodeTargetFacadeAsset(value, { expectedGeneration, expectedF2jsSha256,
@@ -391,7 +470,7 @@ export function decodeTargetFacadeAsset(value, { expectedGeneration, expectedF2j
     ids.add(id);
     const format = record[25]; const x = u16(record, 16); const y = u16(record, 18);
     const width = u16(record, 20); const height = u16(record, 22);
-    invariant(format >= 1 && format <= 13 &&
+    invariant(format >= 1 && format <= 15 &&
       (EXPECTED_PROPERTIES[format] === -1
         ? record[24] === 1 || record[24] === 3
         : record[24] === EXPECTED_PROPERTIES[format]) &&
@@ -412,15 +491,23 @@ export function decodeTargetFacadeAsset(value, { expectedGeneration, expectedF2j
       invariant([1, 10, 100, 1000].includes(record.readUInt32LE(30)) &&
         record[34] === 0 && record[35] === 0,
       `Digit raster divisor must be a power of ten 1..1000 for ${id}.`);
+    else if (format === TARGET_FACADE_FORMATTER.spriteMotion ||
+             format === TARGET_FACADE_FORMATTER.spriteTween)
+      invariant(record[30] === UNUSED && record[31] === UNUSED && record[32] === UNUSED &&
+        record[33] === 0 && record[34] === 0 && record[35] === 0,
+      `Sprite motion metadata must stay unused for ${id}.`);
     else invariant(record[30] < palette.length && record[31] < palette.length && record[32] === 0 &&
       record[33] <= 2 && record[34] >= 1 && record[34] <= TARGET_FACADE_MAX_TEXT_BYTES &&
       record[35] >= 1 && record[35] <= 3, `Target text metadata is invalid for ${id}.`);
-    let tables = Object.freeze([]); let rasters = null;
+    let tables = Object.freeze([]); let rasters = null; let sprite = null;
     if (EXPECTED_TABLE_COUNTS[format] === -2 || EXPECTED_TABLE_COUNTS[format] === -3) {
       rasters = decodeRasterTable(binary, header, record, width, height, id);
       if (EXPECTED_TABLE_COUNTS[format] === -3)
         invariant(rasters.length === 10,
           `Digit raster table must hold exactly 10 variants for ${id}.`);
+    } else if (EXPECTED_TABLE_COUNTS[format] === -4 || EXPECTED_TABLE_COUNTS[format] === -5) {
+      sprite = decodeSpriteTable(binary, header, record, width, height, id,
+        EXPECTED_TABLE_COUNTS[format] === -5);
     } else {
       tables = Object.freeze(decodeTable(binary, header, record));
       invariant(EXPECTED_TABLE_COUNTS[format] === -1
@@ -431,7 +518,7 @@ export function decodeTargetFacadeAsset(value, { expectedGeneration, expectedF2j
     }
     return Object.freeze({ id, x, y, width, height, properties: record[24], format, slots,
       palette0: record[30], palette1: record[31], font: record[32], align: record[33],
-      maxChars: record[34], scale: record[35], tables, rasters,
+      maxChars: record[34], scale: record[35], tables, rasters, sprite,
       divisor: record.readUInt32LE(30), paletteCount: binary[23] });
   });
   // Renderability at admit: a variantRaster blit writes exactly rect.w*rect.h
@@ -439,7 +526,7 @@ export function decodeTargetFacadeAsset(value, { expectedGeneration, expectedF2j
   // or the asset would admit and then fail every render (the black-screen
   // class).  Admit-pass now implies raster-render-cannot-overflow.
   const rasterWrites = targets.reduce((sum, target) =>
-    target.format === 12 || target.format === 13
+    target.format === 12 || target.format === 13 || target.format === 14 || target.format === 15
       ? sum + target.width * target.height : sum, 0);
   invariant(rasterWrites <= header.maxOverlayWrites,
     `Raster targets need ${rasterWrites} overlay writes per render; the asset declares ${header.maxOverlayWrites}.`);
@@ -473,7 +560,7 @@ function prepare(target, slots) {
   const output = []; const flags = slots[15] >>> 0;
   if ((flags & ~7) !== 0) throw new Error("flags");
   const hasGood = Boolean(flags & 1); let hidden = false; let palette = target.palette0;
-  let raster = null;
+  let raster = null; let spritePosition = null; let spritePick = null;
   if (target.format === 1) hidden = Boolean(slots[target.slots[0]] & 2);
   else if (target.format === 12) {
     /* variantRaster only clamps its value slot here; the blit happens in
@@ -487,6 +574,11 @@ function prepare(target, slots) {
     const value = slots[target.slots[0]] | 0;
     const unsignedValue = value < 0 ? 0 : value;
     raster = target.rasters[Math.floor(unsignedValue / target.divisor) % 10];
+  } else if (target.format === 14) {
+    const pick = Math.min(Math.max(slots[target.slots[0]] | 0, 0), target.sprite.positions.length - 1);
+    spritePosition = target.sprite.positions[pick];
+  } else if (target.format === 15) {
+    spritePick = Math.min(Math.max(slots[target.slots[0]] | 0, 0), target.sprite.positions.length - 1);
   } else if (target.format === 11) {
     /* Weather-flag independent by design: a generic widget has no `hasGood`. */
     const count = target.tables.length;
@@ -552,7 +644,44 @@ function prepare(target, slots) {
     if (!hidden) { pushBytes(output, tableValue(target, 0)); pushBytes(output, uintText(retry)); appendAscii(output, "S"); }
   }
   if (output.length > target.maxChars) throw new Error("text-overflow");
-  return Object.freeze({ bytes: Buffer.from(output), hidden, palette, raster });
+  return { bytes: Buffer.from(output), hidden, palette, raster, spritePosition, spritePick };
+}
+
+function tweenSpritePosition(target, prepared, tweenState, nowMs) {
+  const desired = target.sprite.positions[prepared.spritePick];
+  if (!tweenState.initialized) {
+    tweenState.initialized = true;
+    tweenState.pick = prepared.spritePick;
+    tweenState.fromX = desired.x; tweenState.fromY = desired.y;
+    tweenState.toX = desired.x; tweenState.toY = desired.y;
+    tweenState.startedMs = nowMs >>> 0;
+  }
+  const duration = target.sprite.durationMs;
+  const elapsed = ((nowMs >>> 0) - (tweenState.startedMs >>> 0)) >>> 0;
+  const current = elapsed >= duration
+    ? { x: tweenState.toX, y: tweenState.toY }
+    : {
+        x: tweenState.fromX + Math.trunc((tweenState.toX - tweenState.fromX) * elapsed / duration),
+        y: tweenState.fromY + Math.trunc((tweenState.toY - tweenState.fromY) * elapsed / duration),
+      };
+  if (prepared.spritePick !== tweenState.pick) {
+    tweenState.pick = prepared.spritePick;
+    tweenState.fromX = current.x; tweenState.fromY = current.y;
+    tweenState.toX = desired.x; tweenState.toY = desired.y;
+    tweenState.startedMs = nowMs >>> 0;
+    return { x: current.x, y: current.y };
+  }
+  return current;
+}
+
+function blend565(source, destination, alpha) {
+  if (alpha === 0) return destination;
+  if (alpha === 255) return source;
+  const inverse = 255 - alpha;
+  const red = ((((source >>> 11) & 31) * alpha + ((destination >>> 11) & 31) * inverse + 127) / 255) | 0;
+  const green = ((((source >>> 5) & 63) * alpha + ((destination >>> 5) & 63) * inverse + 127) / 255) | 0;
+  const blue = (((source & 31) * alpha + (destination & 31) * inverse + 127) / 255) | 0;
+  return (red << 11) | (green << 5) | blue;
 }
 
 function countOrDraw(frame, decoded, target, prepared, draw) {
@@ -568,6 +697,26 @@ function countOrDraw(frame, decoded, target, prepared, draw) {
       }
     }
     return target.width * target.height;
+  }
+  if (target.format === 14 || target.format === 15) {
+    const { x, y } = prepared.spritePosition;
+    let writes = 0;
+    for (let row = 0; row < target.height; row++) {
+      const py = y + row; if (py < 0 || py >= 310) continue;
+      for (let column = 0; column < target.width; column++) {
+        const px = x + column; if (px < 0 || px >= 100) continue;
+        const sourceIndex = row * target.width + column;
+        const alpha = target.sprite.alpha[sourceIndex];
+        if (alpha === 0) continue;
+        writes++;
+        if (draw) {
+          const frameIndex = py * 100 + px;
+          frame[frameIndex] = blend565(target.sprite.colors.readUInt16LE(sourceIndex * 2),
+            frame[frameIndex], alpha);
+        }
+      }
+    }
+    return writes;
   }
   const scale = target.scale; const fontWidth = 5 * scale; const fontHeight = 7 * scale;
   const textWidth = prepared.bytes.length ? prepared.bytes.length * 6 * scale - scale : 0;
@@ -595,7 +744,7 @@ function countOrDraw(frame, decoded, target, prepared, draw) {
 
 /** Pixel-exact host oracle for the freestanding consumer. */
 export function renderTargetFacadeHost({ decoded, baseFrame, mailbox, state, expectedGeneration = 18,
-  ownerThreadToken = 0x12345678, currentThreadToken = ownerThreadToken } = {}) {
+  ownerThreadToken = 0x12345678, currentThreadToken = ownerThreadToken, nowMs = 0 } = {}) {
   const frame = new Uint16Array(baseFrame);
   const metrics = { baseWrites: 0, overlayWrites: 0, formattedTargets: 0, sequenceAttempts: 0,
     appliedGeneration: 0, appliedRevision: state.lastAppliedRevision >>> 0 };
@@ -618,7 +767,15 @@ export function renderTargetFacadeHost({ decoded, baseFrame, mailbox, state, exp
     return { result: TARGET_FACADE_RESULT.revision, frame, metrics };
   }
   let prepared;
-  try { prepared = decoded.targets.map((target) => prepare(target, slots)); }
+  try {
+    prepared = decoded.targets.map((target) => prepare(target, slots));
+    state.tweens ??= {};
+    decoded.targets.forEach((target, index) => {
+      if (target.format !== 15) return;
+      const tween = state.tweens[index] ?? (state.tweens[index] = {});
+      prepared[index].spritePosition = tweenSpritePosition(target, prepared[index], tween, nowMs);
+    });
+  }
   catch { return { result: TARGET_FACADE_RESULT.format, frame, metrics }; }
   const rootHidden = prepared[0].hidden;
   if (rootHidden) {

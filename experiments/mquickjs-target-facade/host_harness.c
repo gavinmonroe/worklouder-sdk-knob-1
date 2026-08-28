@@ -75,8 +75,9 @@ int main(int argc, char **argv)
     for (index = 0u; index < count; ++index) {
         framer_tf_mailbox mailbox; framer_tf_metrics metrics; framer_tf_result result;
         memcpy(&mailbox, cases + 8u + index * 72u, 72u);
-        result = framer_tf_render(&context, &mailbox, frame, FRAMER_TF_CANVAS_PIXELS,
-                                  0x12345678u, &metrics);
+        result = framer_tf_render_at(&context, &mailbox, frame,
+                                     FRAMER_TF_CANVAS_PIXELS, 0x12345678u,
+                                     index * 50u, &metrics);
         assert(fwrite(frame, sizeof(uint16_t), FRAMER_TF_CANVAS_PIXELS, output) == FRAMER_TF_CANVAS_PIXELS);
         printf("%s{\"result\":%u,\"writes\":%u,\"revision\":%u}", index ? "," : "",
                (unsigned int)result, metrics.overlay_writes, metrics.applied_revision);
@@ -115,7 +116,8 @@ int main(int argc, char **argv)
             for (record_index = 0u; record_index < 16u; ++record_index) {
                 const uint8_t *record =
                     asset + FRAMER_TF_HEADER_BYTES + record_index * 40u;
-                if (record[25] == 12u)
+                if (record[25] == 12u || record[25] == 13u ||
+                    record[25] == 14u || record[25] == 15u)
                     raster_writes +=
                         (uint32_t)(record[20] | (record[21] << 8)) *
                         (uint32_t)(record[22] | (record[23] << 8));

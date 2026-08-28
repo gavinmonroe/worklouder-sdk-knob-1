@@ -111,6 +111,8 @@ if (existsSync(path.join(fixtures, "assembled-widget.f2up"))) {
     contract.TARGET_FACADE_CONTRACT_SHA256,
     contract.TARGET_FACADE_CONTRACT_V2_SHA256,
     contract.TARGET_FACADE_CONTRACT_V3_SHA256,
+    contract.TARGET_FACADE_CONTRACT_V4_SHA256,
+    contract.TARGET_FACADE_CONTRACT_V5_SHA256,
   ].filter(Boolean);
   if (!knownShas.includes(embeddedSha)) {
     fail(`assembled widget embeds unknown contract identity ${embeddedSha}`);

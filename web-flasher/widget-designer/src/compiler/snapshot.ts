@@ -20,6 +20,7 @@
 
 import { DEVICE_HEIGHT, DEVICE_WIDTH, rgbaToRgb565 } from "./renderV2Package";
 import { resolveWidgetAssetReferences, type WidgetAssetMap } from "./widgetAssets";
+import type { PreviewMotionProbe } from "./spriteMotion";
 
 /** The backdrop buildWidgetSrcdoc paints before any author CSS. */
 const BASE_CSS = `html,body{margin:0;padding:0;width:${DEVICE_WIDTH}px;height:${DEVICE_HEIGHT}px;overflow:hidden;background:#000;}`;
@@ -224,11 +225,23 @@ export async function setPreviewColor(iframe: HTMLIFrameElement, id: string, css
  * touch); an empty string restores the authored value verbatim. Same contract
  * and failure mode as setPreviewText.
  */
-export async function setPreviewClass(iframe: HTMLIFrameElement, id: string, variantClass: string): Promise<void> {
-  const reply = await ask<{ type: string; applied: boolean }>(
+export interface PreviewTransitionProbe {
+  property: string;
+  durationMs: number;
+  delayMs: number;
+  timing: string;
+}
+
+export async function setPreviewClass(
+  iframe: HTMLIFrameElement,
+  id: string,
+  variantClass: string,
+): Promise<PreviewTransitionProbe | null> {
+  const reply = await ask<{ type: string; applied: boolean; transition: PreviewTransitionProbe | null }>(
     iframe, { type: "widget:setClass", elementId: id, className: variantClass }, "widget:setClass:result",
   );
   if (!reply.applied) throw new Error(`The preview has no element #${id} to class.`);
+  return reply.transition ?? null;
 }
 
 /**
@@ -284,6 +297,19 @@ export async function measurePreviewRect(iframe: HTMLIFrameElement, id: string):
   );
   if (!reply.applied || !reply.box) throw new Error(`The preview has no element #${id} to measure.`);
   return reply.box;
+}
+
+/** Ask the sandboxed preview whether an attached <img> is visually reducible
+ * to one resized sprite plus translation coordinates. */
+export async function probePreviewMotionImage(
+  iframe: HTMLIFrameElement,
+  id: string,
+): Promise<PreviewMotionProbe> {
+  const reply = await ask<{ type: string; applied: boolean; probe: PreviewMotionProbe | null }>(
+    iframe, { type: "widget:probeMotionImage", elementId: id }, "widget:probeMotionImage:result",
+  );
+  if (!reply.applied || !reply.probe) throw new Error(`The preview has no element #${id} to probe for image motion.`);
+  return reply.probe;
 }
 
 /** Per-character boxes for a run, in device pixels. */

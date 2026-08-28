@@ -41,6 +41,7 @@ import {
   measurePreviewGlyphs,
   measurePreviewRect,
   probePreviewAnimation,
+  probePreviewMotionImage,
   resetPreview,
   setPreviewClass,
   setPreviewColor,
@@ -57,6 +58,7 @@ import {
   type AssembledWidgetUpload,
   type WidgetRenderMode,
   type WidgetTargetLayout,
+  type WidgetMotionTargetSource,
 } from "../compiler/widgetAssembler";
 import { F2TF_CANVAS } from "../compiler/f2tfPackage";
 import { isPendingEditorDirty, matchesAnyPreset, saveSourceDraft } from "./sourceDraft";
@@ -67,6 +69,7 @@ import {
   referencedWidgetAssetIds,
   type WidgetAssetMap,
 } from "../compiler/widgetAssets";
+import { attachedImageAssetForTarget, rasterizeMotionImage } from "../compiler/spriteMotion";
 
 const DEMO_PRESET: DesignerWidget = PRESETS.counter;
 
@@ -180,6 +183,8 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
   widgetRef.current = widget;
 
   const [autoTick, setAutoTickState] = useState<AutoTick>("off");
+  const autoTickRef = useRef<AutoTick>(autoTick);
+  autoTickRef.current = autoTick;
   const [lastFrame, setLastFrame] = useState<ViewportFrame | null>(null);
   const [lastEventKind, setLastEventKind] = useState<string | null>(null);
   const [eventLog, setEventLog] = useState<{ label: string; at: Date }[]>([]);
@@ -209,6 +214,9 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
   const tickHandleRef = useRef<number | null>(null);
   const slotRef = useRef<number[]>(Array(16).fill(0));
   const previewIframeRef = useRef<HTMLIFrameElement | null>(null);
+  /** Measurement/capture owns the preview while true; event ticks would race
+   * class mutations and previously produced nondeterministic target unions. */
+  const captureBusyRef = useRef(false);
 
   // Recompute viewport + simulator whenever source changes.
   const recompute = useCallback((w: DesignerWidget) => {
@@ -459,6 +467,7 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
   }, []);
 
   const dispatchEvent = useCallback<DesignerActions["dispatch"]>((event) => {
+    if (captureBusyRef.current) return;
     // Drive the real preview DOM through the postMessage bridge. bindWidgetRuntime
     // cannot work here — the iframe is an opaque origin — so runtimeDispatchRef is
     // always null and every injected event used to land only in the bare simulator,
@@ -813,18 +822,30 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
         throw new Error(`widget upload: ${scriptErrors[0].message}`);
       }
 
-      // Glyphs mode ships the preview EXACTLY as it stands, so its base must
-      // be captured before the measurement pass mutates anything. Raster mode
-      // never pre-captures: the assembler takes its own blanked base.
-      const baseFrame =
-        renderMode === "glyphs" ? rgb565FrameToBytes(await snapshotIframe(iframe, w.css, w.assets)) : undefined;
-
+      let baseFrame: Uint8Array | undefined;
       const layouts: Record<string, WidgetTargetLayout> = {};
-      let mutated = false;
+      const motionTargets: Record<string, WidgetMotionTargetSource> = {};
+      // Capture is a transaction over one mutable preview. Pause every event
+      // source, reload to authored state, and keep dispatch blocked until the
+      // final reload. This removes the auto-tick/class-measurement race.
+      const previousAutoTick = autoTickRef.current;
+      captureBusyRef.current = true;
+      if (tickHandleRef.current != null) {
+        window.clearInterval(tickHandleRef.current);
+        tickHandleRef.current = null;
+      }
+      if (previousAutoTick !== "off") setAutoTickState("off");
+      let mutated = true;
       const classTables = transpiled.classTables ?? {};
       const animations = transpiled.animations ?? {};
       const digitTargets = transpiled.digitTargets ?? {};
       try {
+        await resetPreview(iframe);
+        // Glyphs mode ships the fresh preview exactly as authored. Raster mode
+        // lets the assembler capture a base with every dynamic element blanked.
+        baseFrame = renderMode === "glyphs"
+          ? rgb565FrameToBytes(await snapshotIframe(iframe, w.css, w.assets))
+          : undefined;
         const measureGlyphBoxes = async (
           id: string,
         ): Promise<{ x: number; y: number; width: number; height: number }[]> => {
@@ -880,6 +901,16 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
             // own border box: backgrounds, borders and shadows a class paints
             // reach beyond the text run's glyph boxes.
             const classes = classTables[id] ?? [];
+            const motionAsset = table.length === 0 && classes.length > 0
+              ? attachedImageAssetForTarget(w.html, id, w.assets)
+              : null;
+            let motionEligible = motionAsset !== null;
+            let motionWidth = 0;
+            let motionHeight = 0;
+            let motionVisualKey = "";
+            let motionOpacity = 1;
+            const motionPositions: { x: number; y: number }[] = [];
+            const motionTransitions: { property: string; durationMs: number; delayMs: number; timing: string }[] = [];
             let minX = Infinity;
             let minY = Infinity;
             let maxX = -Infinity;
@@ -896,11 +927,37 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
               mutated = true;
               const text = table.length > 0 ? table[index % table.length] : undefined;
               if (text !== undefined) await setPreviewText(iframe, id, text);
-              if (classes.length > 0) await setPreviewClass(iframe, id, classes[index % classes.length]);
+              const transition = classes.length > 0
+                ? await setPreviewClass(iframe, id, classes[index % classes.length])
+                : null;
               if (text !== undefined && text.length > 0) {
                 for (const box of await measure()) unionBox(box);
               }
-              if (classes.length > 0) unionBox(await measurePreviewRect(iframe, id));
+              if (classes.length > 0) {
+                const elementBox = await measurePreviewRect(iframe, id);
+                unionBox(elementBox);
+                if (motionEligible) {
+                  const probe = await probePreviewMotionImage(iframe, id);
+                  const width = Math.ceil(elementBox.width);
+                  const height = Math.ceil(elementBox.height);
+                  if (!probe.eligible || width < 1 || height < 1 ||
+                      (motionPositions.length > 0 &&
+                        (width !== motionWidth || height !== motionHeight ||
+                          probe.visualKey !== motionVisualKey))) {
+                    motionEligible = false;
+                  } else {
+                    motionWidth = width;
+                    motionHeight = height;
+                    motionVisualKey = probe.visualKey;
+                    motionOpacity = probe.opacity;
+                    motionPositions.push({
+                      x: Math.max(-width, Math.min(F2TF_CANVAS.width, Math.round(elementBox.x))),
+                      y: Math.max(-height, Math.min(F2TF_CANVAS.height, Math.round(elementBox.y))),
+                    });
+                    if (transition) motionTransitions.push(transition);
+                  }
+                }
+              }
               if (text === undefined && classes.length === 0) break; // nothing to vary
             }
             if (classes.length > 0) await setPreviewClass(iframe, id, "");
@@ -909,9 +966,43 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
                 `widget upload: no variant of "#${id}" rendered any measurable pixels in the preview.`,
               );
             }
-            layouts[id] = alignRectToDevicePixels({
-              x: minX, y: minY, width: maxX - minX, height: maxY - minY,
-            });
+            if (motionEligible && motionAsset && motionPositions.length === classes.length) {
+              const forwardTransitions = motionTransitions.slice(1);
+              const positive = forwardTransitions.filter((item) => item.durationMs > 0);
+              let tweenMs: number | undefined;
+              if (positive.length > 0) {
+                const duration = Math.round(positive[0].durationMs);
+                const validTween = forwardTransitions.length === classes.length - 1 &&
+                  forwardTransitions.every((item) =>
+                    (item.property === "transform" || item.property === "all") &&
+                    item.timing === "linear" && item.delayMs === 0 &&
+                    Math.round(item.durationMs) === duration) &&
+                  duration >= 1 && duration <= 0xffff;
+                if (!validTween) motionEligible = false;
+                else tweenMs = duration;
+              }
+              if (!motionEligible) {
+                layouts[id] = alignRectToDevicePixels({
+                  x: minX, y: minY, width: maxX - minX, height: maxY - minY,
+                });
+                continue;
+              }
+              const planes = await rasterizeMotionImage(motionAsset, motionWidth, motionHeight, motionOpacity);
+              motionTargets[id] = {
+                width: motionWidth,
+                height: motionHeight,
+                positions: motionPositions,
+                tweenMs,
+                ...planes,
+              };
+              // The facade record describes the sprite dimensions; each
+              // signed table coordinate supplies its actual canvas position.
+              layouts[id] = { x: 0, y: 0, width: motionWidth, height: motionHeight };
+            } else {
+              layouts[id] = alignRectToDevicePixels({
+                x: minX, y: minY, width: maxX - minX, height: maxY - minY,
+              });
+            }
           }
         }
 
@@ -971,6 +1062,7 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
           generation,
           layouts,
           renderMode,
+          motionTargets,
           ...(renderMode === "glyphs"
             ? { baseFrame }
             : {
@@ -1003,6 +1095,8 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
         // Reloading the srcdoc is the only true undo across an opaque origin;
         // it leaves the widget state exactly as a fresh load would.
         if (mutated) await resetPreview(iframe).catch(() => {});
+        captureBusyRef.current = false;
+        if (previousAutoTick !== "off") setAutoTickState(previousAutoTick);
       }
     },
     [],

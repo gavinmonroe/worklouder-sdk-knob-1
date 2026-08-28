@@ -15,14 +15,12 @@ extern "C" {
 #define FRAMER_TF_TARGET_COUNT 16u
 #define FRAMER_TF_HEADER_BYTES 192u
 #define FRAMER_TF_TARGET_BYTES 40u
-/* Contract v3 raised this from 4096: variantRaster tables carry pre-rendered
- * RGB565 pixels inside the F2TF section, so the asset cap now matches the
- * space the frozen 96 KB upload container can devote to the facade. */
+/* Contract v3 raised this from 4096; v4/v5 keep the same cap while compact
+ * sprite motion stores one RGB565+alpha sprite plus coordinate states. */
 #define FRAMER_TF_MAX_ASSET_BYTES 65536u
 #define FRAMER_TF_MAX_TEXT_BYTES 23u
-/* v3: one full frame.  variantRaster blits write exactly rect.w*rect.h pixels
- * and realistic widgets exceed the glyph-era 4096; the base decode already
- * rewrites all 31,000 pixels per tick, so this is the physical ceiling. */
+/* v3/v4/v5: one full frame. Raster blits and bounded sprite boxes are admitted
+ * against this physical ceiling. */
 #define FRAMER_TF_MAX_OVERLAY_WRITES 31000u
 #define FRAMER_TF_SNAPSHOT_ATTEMPTS 3u
 
@@ -66,6 +64,14 @@ typedef struct {
 } framer_tf_metrics;
 
 typedef struct {
+    uint32_t started_ms;
+    int16_t from_x;
+    int16_t from_y;
+    uint8_t pick;
+    uint8_t initialized;
+} framer_tf_tween_state;
+
+typedef struct {
     const uint8_t *asset;
     size_t asset_bytes;
     const uint16_t *base;
@@ -82,6 +88,7 @@ typedef struct {
     uint16_t glyph_count;
     uint8_t palette_count;
     uint8_t admitted;
+    framer_tf_tween_state tweens[FRAMER_TF_TARGET_COUNT];
 } framer_tf_context;
 
 /* Test-only deterministic tear injection. Production callers pass NULL. */
@@ -113,6 +120,14 @@ framer_tf_result framer_tf_render(framer_tf_context *context,
                                   size_t framebuffer_pixels,
                                   uintptr_t current_thread_token,
                                   framer_tf_metrics *metrics);
+
+framer_tf_result framer_tf_render_at(framer_tf_context *context,
+                                     const framer_tf_mailbox *mailbox,
+                                     uint16_t *framebuffer,
+                                     size_t framebuffer_pixels,
+                                     uintptr_t current_thread_token,
+                                     uint32_t now_ms,
+                                     framer_tf_metrics *metrics);
 
 framer_tf_result framer_tf_render_probe(framer_tf_context *context,
                                         const framer_tf_mailbox *mailbox,
