@@ -48,6 +48,23 @@ node bin/f1-readonly.mjs bubble \
   --label "Input Lab" --value "Hide" --d 0 --s 0
 ```
 
+## Firmware read probes
+
+`probe` calls four read-only methods that exist in Knob 1 firmware 0.4.1 but not in the
+extracted SDK: `ui.wallpaper_list`, `sentry.get`, `sys.charger_diagnostic_summary`, and
+`fs.chksm`. They live in `FIRMWARE_PROBE_METHODS`, separate from the SDK-audited
+`READ_ONLY_RPC_METHODS` and off unless `probe` enables them, so `inspect` and `backup`
+still refuse them.
+
+```sh
+node bin/f1-readonly.mjs probe --file keymap.json
+```
+
+`sentry.get` returns uptime, CPU frequency, heap totals and a per-task table with
+`stack_min` -- useful for judging headroom. The full RPC surface, including what was
+excluded and why, is in
+[`docs/23-knob1-firmware-rpc-surface.md`](../docs/23-knob1-firmware-rpc-surface.md).
+
 ## Knob 1 on macOS
 
 The Knob 1 (`deviceType: "knob"`, PID `0x8296`/`0x82e3`) is discovered by default
