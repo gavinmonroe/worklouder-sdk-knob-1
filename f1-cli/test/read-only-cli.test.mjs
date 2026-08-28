@@ -13,7 +13,8 @@ import {
   sendTransientBubble,
 } from "../src/device.mjs";
 import { validateBubblePayload } from "../src/bubble.mjs";
-import { ReadOnlyTransport, ReadOnlyViolationError } from "../src/read-only-transport.mjs";
+import { FIRMWARE_PROBE_METHODS, READ_ONLY_RPC_METHODS, ReadOnlyTransport,
+  ReadOnlyViolationError } from "../src/read-only-transport.mjs";
 import { runCli, runSelfTest } from "../src/cli.mjs";
 
 test("transport forwards audited reads and blocks writes before the device", async () => {
@@ -237,4 +238,64 @@ test("a macOS HID write refusal explains the sudo requirement", () => {
   }
   // Unrelated errors are passed through untouched on every platform.
   assert.equal(explainWriteFailure("device status: timeout"), "device status: timeout");
+});
+
+test("firmware probe methods are refused unless explicitly enabled", async () => {
+  const seen = [];
+  const underlying = {
+    async sendJsonRpcRequest(raw) {
+      seen.push(JSON.parse(raw).method);
+      return JSON.stringify({ result: {} });
+    },
+  };
+  const probe = JSON.stringify({ method: "sentry.get" });
+
+  // Default transport: an unaudited method is refused exactly like a write.
+  await assert.rejects(
+    new ReadOnlyTransport(underlying).sendJsonRpcRequest(probe, "1"),
+    ReadOnlyViolationError,
+  );
+  // The bubble opt-in must not smuggle probes in with it.
+  await assert.rejects(
+    new ReadOnlyTransport(underlying, { allowTransientBubble: true })
+      .sendJsonRpcRequest(probe, "2"),
+    ReadOnlyViolationError,
+  );
+  assert.deepEqual(seen, []);
+
+  const enabled = new ReadOnlyTransport(underlying, { allowFirmwareProbes: true });
+  await enabled.sendJsonRpcRequest(probe, "3");
+  assert.deepEqual(seen, ["sentry.get"]);
+
+  // Enabling probes must not widen anything else.
+  await assert.rejects(
+    enabled.sendJsonRpcRequest(JSON.stringify({ method: "fs.format" }), "4"),
+    ReadOnlyViolationError,
+  );
+  await assert.rejects(
+    enabled.sendJsonRpcRequest(JSON.stringify({ method: "ui.wallpaper_select" }), "5"),
+    ReadOnlyViolationError,
+  );
+  assert.deepEqual(seen, ["sentry.get"]);
+});
+
+test("the probe set stays disjoint from the audited set and excludes actuating methods", () => {
+  for (const method of FIRMWARE_PROBE_METHODS) {
+    assert.ok(!READ_ONLY_RPC_METHODS.has(method),
+      `${method} must not be folded into the SDK-audited set`);
+  }
+  for (const method of ["sys.selftest", "sys.charger_diagnostic", "sentry.crash",
+    "sentry.coredump", "sentry.coredump_erase", "ui.wallpaper_select",
+    "ui.wallpaper_background", "ui.home_accent_color", "fs.format", "fs.delete",
+    "fs.write", "fs.writebin", "v.framer.hid"]) {
+    assert.ok(!FIRMWARE_PROBE_METHODS.has(method),
+      `${method} may actuate or destroy state and must stay out of the probe set`);
+  }
+});
+
+test("probe rejects --file without a value instead of failing at call time", async () => {
+  // The first version of this flag referenced an undefined variable and only blew up
+  // once a device was attached. Parsing is exercised here so it cannot regress.
+  const result = await runCli(["probe", "--file"]);
+  assert.notEqual(result, 0);
 });

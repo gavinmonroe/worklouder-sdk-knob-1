@@ -5,6 +5,7 @@ import { BUBBLE_METHOD, validateBubblePayload } from "./bubble.mjs";
 import {
   backupConnectedDevice,
   BUBBLE_DEVICE_TYPES,
+  probeFirmwareReads,
   createFreshBackupDirectory,
   discoverDevices,
   inspectConnectedDevice,
@@ -25,6 +26,7 @@ function usage() {
 Usage:
   node bin/f1-readonly.mjs inspect [--apps] [--discover-only] [--device N] [--all-devices] [--json]
   node bin/f1-readonly.mjs backup [--output PATH] [--device N] [--all-devices] [--json]
+  node bin/f1-readonly.mjs probe [--file NAME] [--device N] [--all-devices] [--json]
   node bin/f1-readonly.mjs bubble --label TEXT --value TEXT [--d 0|1] [--s 0|1] [--device N] [--dry-run] [--json]
   node bin/f1-readonly.mjs self-test [--json]
 
@@ -45,6 +47,7 @@ function parseArgs(argv) {
     output: undefined,
     label: undefined,
     value: undefined,
+    file: undefined,
     d: 1,
     s: 1,
     dryRun: false,
@@ -55,6 +58,11 @@ function parseArgs(argv) {
     if (arg === "--apps") options.apps = true;
     else if (arg === "--discover-only") options.discoverOnly = true;
     else if (arg === "--all-devices") options.allDevices = true;
+    else if (arg === "--file") {
+      const raw = rest[++i];
+      if (raw === undefined) throw new Error("--file requires a device file name.");
+      options.file = raw;
+    }
     else if (arg === "--json") options.json = true;
     else if (arg === "--dry-run") options.dryRun = true;
     else if (arg === "--label" || arg === "--l") {
@@ -156,6 +164,28 @@ async function runBackup(options) {
     options.json,
   );
   return failed.length === 0 ? 0 : 3;
+}
+
+async function runProbe(options) {
+  const sdk = loadExtractedSdk();
+  const discovery = await discoverDevices(sdk, options);
+  if (!discovery.permissionGranted) {
+    throw new Error("Input Monitoring / HID permission is not granted; refusing to connect.");
+  }
+  const device = selectDevice(discovery.devices, options.deviceIndex);
+  const probe = await probeFirmwareReads(sdk, device, { file: options.file });
+  print(
+    {
+      mode: "read-only",
+      note: "These methods exist in Knob 1 firmware 0.4.1 but are absent from the extracted SDK, "
+        + "so they are inferred read-only from the firmware's dispatch tables rather than audited. "
+        + "See docs/23-knob1-firmware-rpc-surface.md.",
+      device: publicDevice(device, options.deviceIndex ?? 0),
+      ...probe,
+    },
+    options.json,
+  );
+  return 0;
 }
 
 async function runBubble(options) {
@@ -282,6 +312,7 @@ export async function runCli(argv) {
     }
     if (command === "inspect") return await runInspect(options);
     if (command === "backup") return await runBackup(options);
+    if (command === "probe") return await runProbe(options);
     if (command === "bubble") return await runBubble(options);
     if (command === "self-test") {
       print(await runSelfTest(), options.json);

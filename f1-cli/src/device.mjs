@@ -3,7 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { BUBBLE_METHOD, validateBubblePayload } from "./bubble.mjs";
-import { ReadOnlyTransport } from "./read-only-transport.mjs";
+import { FIRMWARE_PROBE_METHODS, ReadOnlyTransport } from "./read-only-transport.mjs";
 
 // Work Louder ships one firmware line for both variants: the 0.4.1 image carries both
 // "Framer F1" and "knob1" identity strings, and wl-device-kit maps each to
@@ -223,4 +223,39 @@ export async function backupConnectedDevice(api, backupRoot, deviceInfo) {
     { flag: "wx" },
   );
   return manifest;
+}
+
+/**
+ * Calls the unaudited-but-read-only firmware methods behind FIRMWARE_PROBE_METHODS.
+ * Kept separate from inspect/backup so their transports never allow these, mirroring
+ * how the transient bubble is isolated. Every call is reported individually: a device
+ * on older firmware simply answers "Method not found", which is a result, not a fault.
+ */
+export async function probeFirmwareReads(sdk, device, { file } = {}) {
+  const comm = new sdk.WLDeviceCommImpl(quietLogger);
+  if (!(await comm.connect(device))) {
+    throw new Error("The device connection could not be opened.");
+  }
+  try {
+    const guarded = new ReadOnlyTransport(comm, { allowFirmwareProbes: true });
+    const rpc = new sdk.WLRPCClient(guarded, quietLogger);
+    const calls = [
+      ["ui.wallpaper_list", { offset: 0, limit: 20 }],
+      ["sentry.get", undefined],
+      ["sys.charger_diagnostic_summary", undefined],
+    ];
+    // The firmware's error is generated from "Missing %s parameter" with %s = "file",
+    // so the key is `file`. Note ui.wallpaper_select uses a different literal,
+    // "Missing name param", and really does take `name`.
+    if (file !== undefined) calls.push(["fs.chksm", { file }]);
+
+    const results = {};
+    for (const [method, params] of calls) {
+      results[method] = await capture(method, () =>
+        rpc.sendRpcCall(params === undefined ? { method } : { method, params }));
+    }
+    return { probed: [...FIRMWARE_PROBE_METHODS], results };
+  } finally {
+    await comm.disconnect();
+  }
 }
