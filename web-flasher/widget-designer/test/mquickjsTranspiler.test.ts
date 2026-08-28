@@ -53,6 +53,22 @@ widget.on("input.chord.down", function (event) {
 `;
 
 describe("mquickjs transpiler", () => {
+  it("transpiles the additive millisecond tick and preserves elapsed time", () => {
+    const out = transpileWidgetScript(`var elapsed = 0;
+widget.on("tick.1ms", function (event) {
+  elapsed = mod(elapsed + event.value, 4);
+  document.querySelector("#phase").textContent = pick(elapsed, "0", "1", "2", "3");
+});
+`);
+    expect(out.diagnostics).toEqual([]);
+    expect(out.events).toEqual({ "tick.1ms": true });
+    expect(out.deviceSource).toContain('widget.on("tick.1ms", function (event) {');
+    const sim = createMquickjsSimulator(out.deviceSource);
+    const tick = sim.dispatch({ kind: "tick.1ms", value: 3 } as any);
+    expect(tick.handled).toBe(true);
+    expect(tick.slots[out.slotMap.phase.textSlot!]).toBe(3);
+  });
+
   it("accepts a zero-argument handler when the event is unused", () => {
     const out = transpileWidgetScript(`var a = 0;
 var b = 0;

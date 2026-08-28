@@ -34,7 +34,7 @@ const invariant = (value, message) => { if (!value) throw new Error(message); };
 const sha256 = (bytes) => createHash("sha256").update(bytes).digest("hex");
 
 const expectedPackageAbi =
-  "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8";
+  "d536c61f83bfb862601af4ea659e32dcc0014ae98e6715b62ff32aae777d6940";
 const expectedHealthyApp =
   "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32";
 const healthyAppPath = path.join(repository,
@@ -63,6 +63,7 @@ function packageOptions(overrides = {}) {
     source: SOURCE,
     generation: 7,
     events: {
+      "tick.1ms": true,
       "tick.100ms": true,
       "input.fn-bottom-knob": true,
       hostRpcIds: [0x1234, 0xb201],

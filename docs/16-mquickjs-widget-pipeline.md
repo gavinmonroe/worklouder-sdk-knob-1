@@ -29,6 +29,12 @@ The device builds per-kind JS event objects (`build_event_object`,
 `type`/`sequence`/`timestampMs`/`heldMask`/`synthetic`. The Designer mirrors
 this exactly in `src/compiler/deviceEvent.ts` (tests: `test/deviceEvents.test.ts`).
 
+`tick.1ms` is a best-effort, coalesced logical clock. Its `value` is elapsed
+milliseconds since the prior delivered 1 ms tick (normally 1, greater after a
+busy iteration). Firmware permits at most one pending 1 ms tick, so slow widget
+code cannot flood the owner queue. Authors should advance state by
+`event.value`; neither the VM nor the LCD promises 1,000 physical repaints/s.
+
 Physically wired key tokens on this hardware: `0x2c` (key id 0) and `0xe1`
 (key id 1); the proven chord mask is `3`.
 
@@ -115,7 +121,7 @@ gate keys off exactly that flag.
 
 - Designer F2JS encoder rebuilds the flashed weather package **byte-for-byte**
   (`test/f2jsParity.test.ts`).
-- All nine event kinds flow through the simulator with device-exact objects;
+- All ten event kinds flow through the simulator with device-exact objects;
   the **exact flashed weather source runs unmodified** in the Designer
   simulator, including torn-snapshot rejection (`test/weatherWidgetParity.test.ts`).
 - F2TF encoder accepted by the SDK's strict decoder; oracle renders variants,

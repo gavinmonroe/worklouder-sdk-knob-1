@@ -26,8 +26,8 @@
     }
   },
   "companionCoreCanary": {
-    "sourceSha256": "98b92de03542d6fc382a6a293d9041ece7051c5bf4febda5c69f7635f5564e55",
-    "targetRawSha256": "581e8f6cfbaa1b6cc2e77b7c1ec29506f4d8bbab83a2559d577191c555d095ef",
+    "sourceSha256": "82157e156ba45f0b101d899b18ac77b09fe58e9eeb820dc4cc488e8e57a10406",
+    "targetRawSha256": "da1a51d7e107e816b6f7b91711d8126022a44e1b954554380670dea547e32f63",
     "runtimeStorageBytes": 4096,
     "minimumHeapBytes": 65536,
     "maxEventAttemptsPerOwnerCall": 3,
@@ -133,13 +133,13 @@
     "externalWritableStorageOnly": true,
     "publicAbi": {
       "version": 3,
-      "sha256": "105640d38d427fddae0617dbc3bcc7fdd00ba750d27c1edc156a1aea454b8948",
+      "sha256": "6e3bfee6c3a167f2e06f7f1c7b063e7c2b31977430d6b9303cfbf31a4c51338d",
       "wordEncoding": "digest bytes stored unchanged as eight little-endian u32 words",
       "upstreamCommit": "203d5bb79789bc47b74855d9207415dab71661a0",
       "generatedStdlibSha256": "0b6ed1dd634306b21d08ad68616968a9924624b4b05c69ab6cd6c11b88fac8c8",
       "sdkPackageAbi": {
         "version": 1,
-        "sha256": "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
+        "sha256": "d536c61f83bfb862601af4ea659e32dcc0014ae98e6715b62ff32aae777d6940",
         "source": "f1-widget-sdk/src/render-v2/mquickjs.mjs"
       },
       "exports": [
@@ -160,11 +160,11 @@
     "text": {
       "paddr": "0x210000",
       "vaddr": "0x423d0000",
-      "usedBytes": 68212,
+      "usedBytes": 68240,
       "capacityBytes": 131072,
-      "prefetchGuardBytes": 62860,
+      "prefetchGuardBytes": 62832,
       "guardFill": "zero",
-      "paddedSha256": "d43e90189f5a2de793bf234e3db180809024959c12af3bbbaa498c5653b5c003",
+      "paddedSha256": "7f000b308f52411187e91a6d0ed2eac974de94af11fda9b7c44c066759e665ff",
       "residentSha256Admission": true
     },
     "rodata": {
@@ -174,7 +174,7 @@
       "capacityBytes": 65536,
       "guardBytes": 54760,
       "guardFill": "zero",
-      "paddedSha256": "ef6727f34e888fa166744c5d261e5bf568efaa0306679b2e43e22855f5bf2270",
+      "paddedSha256": "7435f2fd308f898d7aa279be88de1d404db00cea54e7ba9a7f167e3de8a0daa4",
       "residentSha256Admission": true
     },
     "relocations": 0,
@@ -187,7 +187,7 @@
     "usedBytes": 1956,
     "capacityBytes": 6840,
     "remainingBridgeBytes": 4884,
-    "sha256": "8ebbd51ea4d36ae2356ee0427d7fe9dab94fbb5c7bbdc8fc662baeb67fe24c40",
+    "sha256": "4318b8035afe91eed7c5cbd26b4d15d0cbbed5f62a312907b097382ca4efa2de",
     "relocations": 0,
     "undefinedSymbols": 0,
     "rodataBytes": 0,

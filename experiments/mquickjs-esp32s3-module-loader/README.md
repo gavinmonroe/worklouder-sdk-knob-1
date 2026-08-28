@@ -114,7 +114,7 @@ terminal release-all, resumable focus release, drain, observation, telemetry,
 last-good slots, and destroy. Its
 loader/export ABI is distinct from SDK package ABI v1. The expected F2JS package
 ABI SHA-256 is
-`5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8`.
+`d536c61f83bfb862601af4ea659e32dcc0014ae98e6715b62ff32aae777d6940`.
 Admitted source must begin with the exact bytes `"use strict";\n`; this is a
 profile rule, not an implicit parser mode.
 The resident parser that admits that package format remains an integration

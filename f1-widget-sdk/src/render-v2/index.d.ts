@@ -134,7 +134,7 @@ export const RENDER_V2_MQUICKJS_ENGINE_COMMIT: "203d5bb79789bc47b74855d9207415da
 export const RENDER_V2_MQUICKJS_SOURCE_PREFIX: '"use strict";\n';
 export const RENDER_V2_MQUICKJS_EVENT_KINDS: Readonly<{
   "tick.100ms": 1; "tick.1s": 2; "input.fn-bottom-knob": 3;
-  "host.rpc": 4; key: 5; chord: 6;
+  "host.rpc": 4; key: 5; chord: 6; "tick.1ms": 7;
 }>;
 export const RENDER_V2_MQUICKJS_TARGET_WRITES: Readonly<{
   textContent: 1; color: 2; hidden: 4;
@@ -196,6 +196,7 @@ export function buildRenderV2MQuickJsPackage(options: {
   source: string;
   generation?: number;
   events?: {
+    "tick.1ms"?: boolean;
     "tick.100ms"?: boolean;
     "tick.1s"?: boolean;
     "input.fn-bottom-knob"?: boolean;

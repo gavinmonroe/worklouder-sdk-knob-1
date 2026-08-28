@@ -14,6 +14,7 @@ export const RENDER_V2_MQUICKJS_EVENT_KINDS = {
   "host.rpc": 4,
   key: 5,
   chord: 6,
+  "tick.1ms": 7,
 };
 
 // Authoritative target-write flags (mirrors RENDER_V2_MQUICKJS_TARGET_WRITES).
@@ -44,9 +45,10 @@ export const MQUICKJS_LIMITS = RENDER_V2_MQUICKJS_LIMITS;
 
 // Two facts pulled DIRECTLY from the SDK (so the IntelliSense matches runtime behaviour):
 //   * RENDER_V2_MQUICKJS_EVENT_KINDS (abi.mjs)
-//       tick.100ms=1, tick.1s=2, input.fn-bottom-knob=3, host.rpc=4, key=5, chord=6
+//       tick.100ms=1, tick.1s=2, input.fn-bottom-knob=3, host.rpc=4, key=5,
+//       chord=6, tick.1ms=7
 //   * RENDER_V2_MQUICKJS_PROFILE.events (mquickjs.mjs)
-//       tick.100ms, tick.1s, input.fn-bottom-knob, host.rpc:<1..65535>,
+//       tick.1ms, tick.100ms, tick.1s, input.fn-bottom-knob, host.rpc:<1..65535>,
 //       input.key.down, input.key.up, input.key.hold,
 //       input.chord.down, input.chord.up
 //
@@ -55,6 +57,14 @@ export const MQUICKJS_LIMITS = RENDER_V2_MQUICKJS_LIMITS;
 // Anything else is a compile error.
 
 export const ALL_EVENT_KINDS = [
+  {
+    canonical: "tick.1ms",
+    insertText: '"tick.1ms"',
+    detail: "Best-effort millisecond timer while the widget is on screen.",
+    doc:
+      "Provides a 1 ms logical timebase. Busy intervals are coalesced, and\n" +
+      "event.value reports the elapsed milliseconds since the prior delivery.",
+  },
   {
     canonical: "tick.100ms",
     insertText: '"tick.100ms"',

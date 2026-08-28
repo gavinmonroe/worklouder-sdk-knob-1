@@ -16,6 +16,7 @@ export const RENDER_V2_MQUICKJS_EVENT_KINDS = Object.freeze({
   "host.rpc": 4,
   key: 5,
   chord: 6,
+  "tick.1ms": 7,
 });
 
 export const RENDER_V2_MQUICKJS_TARGET_WRITES = Object.freeze({
@@ -97,7 +98,7 @@ export const RENDER_V2_MQUICKJS_PROFILE = Object.freeze({
   maxKeys: RENDER_V2_MQUICKJS_LIMITS.keys,
   maxChords: RENDER_V2_MQUICKJS_LIMITS.chords,
   events: Object.freeze([
-    "tick.100ms", "tick.1s", "input.fn-bottom-knob", "host.rpc:<1..65535>",
+    "tick.1ms", "tick.100ms", "tick.1s", "input.fn-bottom-knob", "host.rpc:<1..65535>",
     "input.key.down", "input.key.up", "input.key.hold",
     "input.chord.down", "input.chord.up",
   ]),
@@ -212,6 +213,12 @@ function normalizeEvents(events = {}) {
     records.push(Object.freeze({ kind: RENDER_V2_MQUICKJS_EVENT_KINDS.chord, id,
       nativeToken: 0, heldMask }));
   });
+  // Kind 7 is deliberately appended after key/chord declarations so the
+  // event section remains sorted by kind, as required by both decoders.
+  if (events["tick.1ms"] === true) {
+    records.push(Object.freeze({ kind: RENDER_V2_MQUICKJS_EVENT_KINDS["tick.1ms"],
+      id: 0, nativeToken: 0, heldMask: 0 }));
+  }
   invariant(records.length <= RENDER_V2_MQUICKJS_LIMITS.eventRecords,
     `F2JS admits at most ${RENDER_V2_MQUICKJS_LIMITS.eventRecords} event records.`);
   return Object.freeze({ records: Object.freeze(records), keyCount: keys.length,
@@ -388,7 +395,8 @@ function decodeEventRecords(binary, keyCount, chordCount) {
       "F2JS event record kind is unsupported.");
     invariant(record.kind >= lastKind, "F2JS event records must use canonical kind order.");
     lastKind = record.kind;
-    if (record.kind <= RENDER_V2_MQUICKJS_EVENT_KINDS["input.fn-bottom-knob"]) {
+    if (record.kind <= RENDER_V2_MQUICKJS_EVENT_KINDS["input.fn-bottom-knob"] ||
+        record.kind === RENDER_V2_MQUICKJS_EVENT_KINDS["tick.1ms"]) {
       invariant(record.id === 0 && record.nativeToken === 0 && record.heldMask === 0 &&
         !singleton.has(record.kind), "F2JS built-in event record is noncanonical.");
       singleton.add(record.kind);

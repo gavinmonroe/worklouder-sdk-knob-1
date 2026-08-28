@@ -6,16 +6,16 @@
       "chains": {
         "cap": 240,
         "telemetry": 256,
-        "event": 352,
+        "event": 336,
         "receipt": 192
       },
-      "maximumModuleOwnedChainBytes": 352,
+      "maximumModuleOwnedChainBytes": 336,
       "acceptedSceneHandlerModuleFrameCeilingBytes": 384,
       "comparator": "relative accepted-app non-regression; not absolute task headroom",
       "asmReadIntegerFrameBytes": 32
     },
     "ui": {
-      "moduleOwnedRenderChainBytes": 816,
+      "moduleOwnedRenderChainBytes": 848,
       "physicalHeadroomClaimed": false
     }
   },
@@ -706,6 +706,12 @@
     },
     {
       "object": "resident.o",
+      "function": "admission_needs_event_sources",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
       "function": "owner_publish_gate_unlock",
       "bytes": 32,
       "kind": "static"
@@ -767,7 +773,7 @@
     {
       "object": "resident.o",
       "function": "owner_enqueue_admitted",
-      "bytes": 64,
+      "bytes": 48,
       "kind": "static"
     },
     {
@@ -797,6 +803,12 @@
     {
       "object": "resident.o",
       "function": "framer_resident_capability_init",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "owner_shell_arm",
       "bytes": 32,
       "kind": "static"
     },
@@ -851,6 +863,12 @@
     {
       "object": "resident.o",
       "function": "framer_resident_owner_init_shell",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "object": "resident.o",
+      "function": "framer_resident_owner_reinit_shell",
       "bytes": 32,
       "kind": "static"
     },
@@ -3557,7 +3575,13 @@
     {
       "object": "target.o",
       "function": "target_pixels",
-      "bytes": 96,
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "object": "target.o",
+      "function": "validate_raster_table.constprop.isra",
+      "bytes": 32,
       "kind": "static"
     },
     {
@@ -3569,7 +3593,7 @@
     {
       "object": "target.o",
       "function": "framer_tf_admit",
-      "bytes": 160,
+      "bytes": 176,
       "kind": "static"
     },
     {
@@ -3581,7 +3605,7 @@
     {
       "object": "target.o",
       "function": "render_internal",
-      "bytes": 576,
+      "bytes": 592,
       "kind": "static"
     },
     {

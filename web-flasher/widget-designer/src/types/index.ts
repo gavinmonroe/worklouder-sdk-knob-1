@@ -89,14 +89,14 @@ export interface ViewportFrame {
 }
 
 // ── Event simulation ────────────────────────────────────────────────────────
-export type TickKind = "tick.100ms" | "tick.1s";
+export type TickKind = "tick.1ms" | "tick.100ms" | "tick.1s";
 export type KnobKind = "input.fn-bottom-knob";
 export type RpcKind = "host.rpc";
 export type KeyKind = "input.key.down" | "input.key.up" | "input.key.hold";
 export type ChordKind = "input.chord.down" | "input.chord.up";
 
 export type SimulatedEvent =
-  | { kind: TickKind; displayName?: string; description?: string }
+  | { kind: TickKind; value?: number; auxiliary?: number; displayName?: string; description?: string }
   | { kind: KnobKind; delta: number; displayName?: string; description?: string }
   | { kind: RpcKind; id: number; value: number; auxiliary?: number; displayName?: string; description?: string }
   | { kind: KeyKind; id: number; displayName?: string; description?: string }

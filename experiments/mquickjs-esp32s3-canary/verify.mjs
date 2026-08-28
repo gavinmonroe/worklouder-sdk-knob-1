@@ -79,7 +79,7 @@ async function buildAndRunHost(buildDirectory, generated) {
     result.oom === 1 && result.wrongThread === 2 && result.heapBytes === 65536 &&
     result.keyDown === 7 && result.keyUp === 7 && result.keyHold === 3 &&
     result.chordDown === 2 && result.chordUp === 2 && result.queueOverflows === 1 &&
-    result.resyncs === 2 && result.eventSequence === 36 &&
+    result.resyncs === 2 && result.eventSequence === 37 &&
     result.maxCallbacksPerIteration === 3 && result.maxPendingEvents >= 16 &&
     result.failureCallbacks === 4 && result.failureRecoveries === 1 &&
     result.failureMaxAttemptsPerIteration === 3,
@@ -99,7 +99,7 @@ async function runMovingGcAsan(buildDirectory) {
   const output = (await run(binary, [], { env: { ...process.env, ASAN_OPTIONS: "halt_on_error=1" } })).stdout;
   const result = JSON.parse(output);
   invariant(result.status === "PASS_HOST_MQUICKJS_CANARY" && result.oom === 1 &&
-    result.timeouts === 1 && result.resets === 7 && result.eventSequence === 36,
+    result.timeouts === 1 && result.resets === 7 && result.eventSequence === 37,
   "MicroQuickJS moving-GC/ASan proof changed.");
   return "PASS";
 }
@@ -193,12 +193,12 @@ async function inspectXtensa(first, second) {
   // (mquickjs_atom.h must be generated with -m32 for a -m32 library, or
   // JS_ATOM_* offsets no longer match the ROM table layout); this changes
   // the atom table content and therefore the freshly-built binary's bytes.
-  invariant(target.textBytes === 76468 && target.dataBytes === 0 && target.bssBytes === 69704 &&
-    target.linkedBytes === 146172 && target.rawBytes === 76508 &&
-    target.rawSha256 === "581e8f6cfbaa1b6cc2e77b7c1ec29506f4d8bbab83a2559d577191c555d095ef",
+  invariant(target.textBytes === 76492 && target.dataBytes === 0 && target.bssBytes === 69704 &&
+    target.linkedBytes === 146196 && target.rawBytes === 76508 &&
+    target.rawSha256 === "da1a51d7e107e816b6f7b91711d8126022a44e1b954554380670dea547e32f63",
     `MicroQuickJS Xtensa footprint changed: ${JSON.stringify(target)}.`);
   invariant(JSON.stringify(target.elfSections) === JSON.stringify({
-    text: 65636, rodata: 10768, ehFrame: 64, data: 0, bss: 69704,
+    text: 65660, rodata: 10768, ehFrame: 64, data: 0, bss: 69704,
   }), `MicroQuickJS Xtensa ELF sections changed: ${JSON.stringify(target.elfSections)}.`);
   return target;
 }
@@ -227,8 +227,8 @@ try {
     host: { ...host, movingGcAsan },
     target,
     contracts: { fixedCallerHeap: true,
-      packageAbiSha256: "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
-      namedEvents: ["tick.100ms", "tick.1s", "input.fn-bottom-knob", "host.rpc:<id>",
+      packageAbiSha256: "d536c61f83bfb862601af4ea659e32dcc0014ae98e6715b62ff32aae777d6940",
+      namedEvents: ["tick.1ms", "tick.100ms", "tick.1s", "input.fn-bottom-knob", "host.rpc:<id>",
         "input.key.down", "input.key.up", "input.key.hold",
         "input.chord.down", "input.chord.up"],
       nativeApi: ["widget.on", "widget.getInt", "widget.setInt", "widget.commit",

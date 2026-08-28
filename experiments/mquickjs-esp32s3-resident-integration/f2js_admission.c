@@ -264,10 +264,10 @@ static framer_f2js_result validate_events(const uint8_t *bytes,
         uint16_t held_mask = read_u16(record + 8u);
         unsigned int prior;
         if (record[1] != 0u || !bytes_zero(record + 10u, 6u) ||
-            kind < 1u || kind > 6u || kind < last_kind)
+            kind < 1u || kind > 7u || kind < last_kind)
             return FRAMER_F2JS_ERR_EVENT;
         last_kind = kind;
-        if (kind <= 3u) {
+        if (kind <= 3u || kind == 7u) {
             uint8_t bit = (uint8_t)(1u << (kind - 1u));
             if (id != 0u || native_token != 0u || held_mask != 0u ||
                 (singleton_mask & bit) != 0u)
@@ -285,7 +285,7 @@ static framer_f2js_result validate_events(const uint8_t *bytes,
                 if (native_tokens[prior] == native_token)
                     return FRAMER_F2JS_ERR_EVENT;
             native_tokens[found_keys++] = native_token;
-        } else {
+        } else if (kind == 6u) {
             unsigned int count = bit_count_16(held_mask);
             if (id != found_chords || id >= chord_count || native_token != 0u ||
                 (held_mask & (uint16_t)~admitted_mask) != 0u ||
@@ -295,6 +295,8 @@ static framer_f2js_result validate_events(const uint8_t *bytes,
                 if (chord_masks[prior] == held_mask)
                     return FRAMER_F2JS_ERR_EVENT;
             chord_masks[found_chords++] = held_mask;
+        } else {
+            return FRAMER_F2JS_ERR_EVENT;
         }
         output->events[index].kind = kind;
         output->events[index].id = id;

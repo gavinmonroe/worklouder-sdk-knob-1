@@ -14,6 +14,11 @@ export interface SampleEvent {
 
 export const SAMPLE_EVENTS: SampleEvent[] = [
   {
+    label: "tick.1ms",
+    description: "Best-effort millisecond tick; event.value carries elapsed milliseconds.",
+    event: { kind: "tick.1ms", value: 1, displayName: "tick.1ms" },
+  },
+  {
     label: "tick.1s",
     description: "Once-per-second device tick; the most common authoring event.",
     event: { kind: "tick.1s", displayName: "tick.1s" },

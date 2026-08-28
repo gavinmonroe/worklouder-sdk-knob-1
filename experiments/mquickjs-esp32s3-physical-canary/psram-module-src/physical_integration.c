@@ -2183,6 +2183,16 @@ static int widget_declared_host_rpc(const physical_block *block, uint32_t id)
     return 0;
 }
 
+static int widget_declared_event_kind(const physical_block *block, uint8_t kind)
+{
+    const framer_f2js_admission *admission = &block->owner.admission;
+    uint32_t index;
+    for (index = 0u; index < admission->event_count; ++index)
+        if (admission->events[index].kind == kind)
+            return 1;
+    return 0;
+}
+
 static void widget_upload_reply(physical_block *block,
                                 framer_runtime_rpc_context *context,
                                 uint32_t op, uint32_t rc)
@@ -2576,6 +2586,8 @@ static uint32_t owner_boot_widget(physical_block *block)
 static void owner_task(void *opaque)
 {
     physical_block *block = (physical_block *)opaque;
+    uint32_t last_tick1ms;
+    int tick1ms_admitted;
     if (block == (physical_block *)0 || block->magic != PHYSICAL_MAGIC)
         for (;;)
             STOCK_TASK_DELAY(1u);
@@ -2589,6 +2601,8 @@ static void owner_task(void *opaque)
         __atomic_store_n(&block->boot_state, boot_failed == 0u ? 2u : 3u,
                          __ATOMIC_RELEASE);
     }
+    last_tick1ms = now_ms();
+    tick1ms_admitted = widget_declared_event_kind(block, 7u);
     for (;;) {
         uint32_t milliseconds = now_ms();
         uint32_t tick100 = milliseconds / 100u;
@@ -2638,6 +2652,8 @@ static void owner_task(void *opaque)
                 __atomic_store_n(&block->widget_switching, 0u,
                                  __ATOMIC_RELEASE);
                 generation = block->widget_assets.generation;
+                last_tick1ms = now_ms();
+                tick1ms_admitted = widget_declared_event_kind(block, 7u);
             }
         }
         /* HIDE by tick silence (docs/18 §4.2: tick is the ONLY visibility
@@ -2689,6 +2705,13 @@ static void owner_task(void *opaque)
         }
         if (__atomic_load_n(&block->sources_enabled, __ATOMIC_ACQUIRE) != 0u &&
             __atomic_load_n(&block->visible, __ATOMIC_ACQUIRE) != 0u) {
+            if (tick1ms_admitted && milliseconds != last_tick1ms) {
+                uint32_t elapsed = milliseconds - last_tick1ms;
+                if (framer_resident_owner_enqueue(
+                        &block->owner, generation, "tick.1ms",
+                        (int32_t)elapsed, 0))
+                    last_tick1ms = milliseconds;
+            }
             if (tick100 != block->last_tick100) {
                 block->last_tick100 = tick100;
                 (void)framer_resident_owner_enqueue(&block->owner, generation,
@@ -2711,6 +2734,10 @@ static void owner_task(void *opaque)
                     (int32_t)__atomic_load_n(&block->wpm_keys_60s,
                                              __ATOMIC_RELAXED));
             }
+        } else {
+            /* The first visible millisecond tick starts at one, not at the
+             * time the device spent on another screen. */
+            last_tick1ms = milliseconds;
         }
         if (__atomic_load_n(&block->visible, __ATOMIC_ACQUIRE) != 0u &&
             __atomic_load_n(&block->input_enabled, __ATOMIC_ACQUIRE) != 0u &&

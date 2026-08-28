@@ -187,7 +187,7 @@
   "xtensa": {
     "file": "experiments/mquickjs-esp32s3-runtime-proof/build/runtime-proof-core.o",
     "bytes": 31852,
-    "sha256": "b4dab8dd144fb9ce3e2b51edc8a461dd28ce18e493bf7e89bf6f6385a8fdf38e",
+    "sha256": "66e336daa9c872f5fa4c396877bdc005e2a316d4194be344fa05cd020b6b37d2",
     "textBytes": 6233,
     "dataBytes": 0,
     "bssBytes": 0,
@@ -200,7 +200,7 @@
     "failClosed": "PASS_FAIL_CLOSED",
     "host": "runtime_proof rpc=pass receipt=pass keys=space+left-shift chord=0x3 internal=92896 reserve=32768 owner_step_us=8000 delay_ticks=1 visibility=foreground-release-replay flash_runtime=disabled",
     "concurrency": "PASS_TSAN_100000",
-    "abiIdentitySeparation": "PASS_PACKAGE_509_MODULE_AD484_DISTINCT_NO_SWAP",
+    "abiIdentitySeparation": "PASS_PACKAGE_D536_MODULE_6E3B_DISTINCT_NO_SWAP",
     "methodLifetimeTamper": "PASS_4_DISTINCT_BOOT_LIFETIME_COPIES"
   },
   "memory": {
@@ -267,20 +267,20 @@
       "v1;p=3;package=<sha256>;g=<u32hex>",
       "v1;p=4;js=1;host=1;timer=1;key=<0|1>;chord=<0|1>;keyGate=live-2x-du",
       "v1;p=5;packageFormat=framer-render-v2-mquickjs-package-v1",
-      "v1;p=6;packageAbiSha256=5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
+      "v1;p=6;packageAbiSha256=d536c61f83bfb862601af4ea659e32dcc0014ae98e6715b62ff32aae777d6940",
       "v1;p=7;engine=MicroQuickJS;engineCommit=203d5bb79789bc47b74855d9207415dab71661a0",
       "v1;p=8;javascriptProfile=mquickjs-es5-strict-v1;deviceEvaluatesJavaScript=1;deviceRunsJsdom=0",
       "v1;p=9;maxPackageBytes=98304;maxSourceBytes=8192;heapBytes=65536;callbackDeadlineUs=2000",
       "v1;p=10;maxHandlers=16;maxTargets=16;maxKeys=16;maxChords=8",
-      "v1;p=11;moduleAbiSha256=ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb",
+      "v1;p=11;moduleAbiSha256=6e3bfee6c3a167f2e06f7f1c7b063e7c2b31977430d6b9303cfbf31a4c51338d",
       "v1;p=12;screenIds=1,7,26,27,28;methods=0f;wdt=unsubscribed;map=bootlife"
     ],
     "maxOwnedValueBytes": 112,
     "inputLabReconstruction": {
       "renderV2Profile": "framer-f1-render-v2-mquickjs-v1",
       "packageFormat": "framer-render-v2-mquickjs-package-v1",
-      "packageAbiSha256": "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
-      "moduleAbiSha256": "ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb",
+      "packageAbiSha256": "d536c61f83bfb862601af4ea659e32dcc0014ae98e6715b62ff32aae777d6940",
+      "moduleAbiSha256": "6e3bfee6c3a167f2e06f7f1c7b063e7c2b31977430d6b9303cfbf31a4c51338d",
       "engine": "MicroQuickJS",
       "engineCommit": "203d5bb79789bc47b74855d9207415dab71661a0",
       "javascriptProfile": "mquickjs-es5-strict-v1",
@@ -361,7 +361,7 @@
     {
       "file": "runtime_proof.h",
       "bytes": 12274,
-      "sha256": "cfd92dbc9cf1d134980ba1014b6517c3581b272ab57f064f7e38c84cdfb19e6c"
+      "sha256": "a923cd98ed1192dd9bd509e2f2428cf4d8d18bef0b0f5f5670c8e422646dfb7d"
     },
     {
       "file": "runtime_proof.c",
@@ -381,7 +381,7 @@
     {
       "file": "verify.mjs",
       "bytes": 22339,
-      "sha256": "9df777008a00615891f6e518bd4ca04e4cbc2892d6e946bb14f6af4f84cff082"
+      "sha256": "38fe112cb0e87579370005594d25bb692e4f7d03c178259e99681048064fa9e8"
     }
   ],
   "remainingPhysicalGates": [

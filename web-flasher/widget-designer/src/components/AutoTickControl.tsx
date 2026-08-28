@@ -1,6 +1,6 @@
 // The ONE auto-tick vocabulary. The Design-tab stage HUD, the Events tab's
 // Drive card, and the footer readout all render the same rate labels ("Off",
-// "1s", "100ms" — no space before the unit) and the same overline label
+// "1s", "100ms", "1ms" — no space before the unit) and the same overline label
 // treatment, so the identical control never reads as two different features.
 
 import type { AutoTick } from "../designer/store";
@@ -11,6 +11,7 @@ export const AUTO_TICK_ITEMS: { id: AutoTick; label: string }[] = [
   { id: "off", label: "Off" },
   { id: "1s", label: "1s" },
   { id: "100ms", label: "100ms" },
+  { id: "1ms", label: "1ms" },
 ];
 
 /** The one status-readout string: "Auto-tick 1s" / "Auto-tick off". */

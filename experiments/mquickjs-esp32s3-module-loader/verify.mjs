@@ -73,14 +73,14 @@ const healthyReceiptSha256 = "1363d31eabba2b61e068d760d966ab25f8b17d1c635a4c91ba
 const expectedCompilerIdentity =
   "xtensa-esp-elf-gcc (crosstool-NG esp-13.2.0_20240530) 13.2.0";
 const expectedPackageAbiSha256 =
-  "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8";
+  "d536c61f83bfb862601af4ea659e32dcc0014ae98e6715b62ff32aae777d6940";
 // Re-recorded after fixing the -m32 atom/library word-size mismatch in the
 // companion canary's framer-stdlib-gen invocation (mquickjs_atom.h must be
 // generated at the same word size as the library it is paired with).
 const expectedCoreCanarySourceSha256 =
-  "98b92de03542d6fc382a6a293d9041ece7051c5bf4febda5c69f7635f5564e55";
+  "82157e156ba45f0b101d899b18ac77b09fe58e9eeb820dc4cc488e8e57a10406";
 const expectedCoreCanaryTargetRawSha256 =
-  "581e8f6cfbaa1b6cc2e77b7c1ec29506f4d8bbab83a2559d577191c555d095ef";
+  "da1a51d7e107e816b6f7b91711d8126022a44e1b954554380670dea547e32f63";
 
 async function verifyHealthyBase() {
   const [app, receiptBytes, evidence] = await Promise.all([

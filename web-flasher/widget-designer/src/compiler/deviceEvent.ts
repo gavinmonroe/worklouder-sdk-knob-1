@@ -13,6 +13,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const DEVICE_EVENT_NAMES = Object.freeze([
+  "tick.1ms",
   "tick.100ms",
   "tick.1s",
   "input.fn-bottom-knob",
@@ -69,6 +70,7 @@ export function buildDeviceEvent(input: DesignerEventInput): Record<string, unkn
   };
 
   switch (name) {
+    case "tick.1ms":
     case "tick.100ms":
     case "tick.1s":
       return { ...common, value: int32(input.value), auxiliary: int32(input.auxiliary) };

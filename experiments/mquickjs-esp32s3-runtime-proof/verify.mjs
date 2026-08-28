@@ -33,8 +33,8 @@ const expected = Object.freeze({
   appBytes: 2_062_912,
   appSha256: "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
   receiptSha256: "1363d31eabba2b61e068d760d966ab25f8b17d1c635a4c91ba7ecd2a0de238e9",
-  packageAbiSha256: "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
-  moduleAbiSha256: "ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb",
+  packageAbiSha256: "d536c61f83bfb862601af4ea659e32dcc0014ae98e6715b62ff32aae777d6940",
+  moduleAbiSha256: "6e3bfee6c3a167f2e06f7f1c7b063e7c2b31977430d6b9303cfbf31a4c51338d",
 });
 
 const spans = Object.freeze([
@@ -249,7 +249,7 @@ function verifyAbiIdentitySeparation() {
     !pages[6].includes(expected.moduleAbiSha256) &&
     !pages[11].includes(expected.packageAbiSha256),
   "Capability ABI identities were swapped or aliased.");
-  return "PASS_PACKAGE_509_MODULE_AD484_DISTINCT_NO_SWAP";
+  return "PASS_PACKAGE_D536_MODULE_6E3B_DISTINCT_NO_SWAP";
 }
 
 const temporary = await mkdtemp(path.join(os.tmpdir(), "framer-runtime-proof-"));

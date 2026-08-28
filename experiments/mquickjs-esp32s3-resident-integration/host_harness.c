@@ -735,6 +735,11 @@ static void test_tagged_completion_interleave(uint8_t *package,
     mock_control_init(&control);
     owner = boot_owner(&control, package, package_bytes);
     control.now_ms = 100u;
+    require(framer_resident_owner_enqueue(owner, 7u, "tick.1ms", 1, 0) &&
+            !framer_resident_owner_enqueue(owner, 7u, "tick.1ms", 1, 0),
+            "millisecond ticks coalesce while owner work is queued");
+    require(framer_resident_owner_step(owner) >= FRAMER_MQJS_OK,
+            "coalesced millisecond tick dispatches once");
     require(framer_resident_owner_enqueue(owner, 7u, "tick.100ms", 1, 0),
             "ordinary tick admitted before tagged host record");
     require(framer_resident_owner_step(owner) >= FRAMER_MQJS_OK &&

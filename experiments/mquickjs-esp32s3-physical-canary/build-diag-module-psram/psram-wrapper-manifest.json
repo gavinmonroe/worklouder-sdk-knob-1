@@ -3,9 +3,9 @@
   "hardwareTouched": false,
   "generatedFrom": {
     "script": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module.mjs",
-    "sha256": "485191d48327e67abf86296da499f1306ece2076ecf516b6968f12d76bb6690b",
+    "sha256": "96bd74c7decd69c9b136fffb54e2c91e31136f82e2befb714893ce3ec5ab224d",
     "generatedScript": "experiments/mquickjs-esp32s3-physical-canary/build-diag-module-psram.generated.mjs",
-    "generatedSha256": "b076f8f5e0b2ffe103b279fd56a55cb6e4f94e23c0c5a61408a61be2fef1d74f",
+    "generatedSha256": "5da88ccf9cb56d9e49ea45ef3cd2ac6fa3ca3bdde5846097caa356f848d9163f",
     "substitutions": [
       "output directory",
       "module translation unit",
@@ -27,7 +27,7 @@
   },
   "moduleSource": {
     "file": "experiments/mquickjs-esp32s3-physical-canary/psram-module-src/physical_integration.c",
-    "sha256": "608884983140bfb538e229f457c124f168df56baa5295ff25508c1bf61ae2aba",
+    "sha256": "475f4db5b530f8758a039aee7fdf04cd54ecaad240c6260fd8d1132b78fc4d06",
     "baseline": "experiments/mquickjs-esp32s3-physical-canary/physical_integration.c",
     "baselineSha256": "6b79962ae0b38e441eb14de10d2162f02c6d741a29acb4b467e50040b85e9a40"
   },
@@ -83,14 +83,14 @@
   },
   "build": {
     "status": "PASS_PSRAM_MODULE_BUILT_NO_HARDWARE",
-    "textSha256": "29798883e6e8376d2e34359948bcbe49c2601f74a3af46138cff5c2633ddda39",
-    "rodataSha256": "baf9741e2bb52717121f73f0451c288dc924b520d2b064c9af41478e786198c3",
-    "slotSha256": "13811c0d19ae782959c1a14a53403e201bf49b9f7f5e4495dd801ea575f61ac0",
-    "appSha256": "0d8f8119b2fbf9b9bf8c4cc79e008c451f7092dafc8e9197d097df076779a83f",
+    "textSha256": "1ed9e8e48ea70f302561d3ab3559ed38ae5945736aee1f0fe544651bbf072c05",
+    "rodataSha256": "14d82f816fee8e55c67cb260af62c49471b92d7d2c2d949168874551118ad4d0",
+    "slotSha256": "8e5b92fef948e2c588394a843e5b4c361918a37242d4391c64a97cc50c8e9555",
+    "appSha256": "abb145f687aacf897103dc22e9a94cd2f1119e08d6779b9e714fb60e2196cc45",
     "loaderBytes": 5004,
-    "loaderSha256": "c7c4f33faafdc4ab62571e411e577b619a260e546b255a0fa6054383e4db8ed3",
+    "loaderSha256": "914170dbde19389b48807b5f168b66a149a556b71426335c096bf38ff90b0d3a",
     "blockBytes": 31952,
-    "startupVaddr": "0x423e58fc",
+    "startupVaddr": "0x423e59c0",
     "keyWrapper": "0x4211e64c",
     "lastErrorOffset": 8216,
     "customAssets": false,

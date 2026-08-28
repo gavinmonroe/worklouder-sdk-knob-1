@@ -78,7 +78,7 @@ The current exported values are:
 | Package magic/version | `F2JS` / `1` |
 | JavaScript profile | `mquickjs-es5-strict-v1` |
 | Engine commit | `203d5bb79789bc47b74855d9207415dab71661a0` |
-| Package ABI SHA-256 | `5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8` |
+| Package ABI SHA-256 | `d536c61f83bfb862601af4ea659e32dcc0014ae98e6715b62ff32aae777d6940` |
 | Required source prefix | exact bytes `"use strict";\n` |
 | Source transport | canonical UTF-8 source plus one NUL; never bytecode |
 
@@ -190,7 +190,7 @@ second RPC or an ordering guess.
 
 ## Events and callback fields
 
-The exact admitted event-name set is `tick.100ms`, `tick.1s`,
+The exact admitted event-name set is `tick.1ms`, `tick.100ms`, `tick.1s`,
 `input.fn-bottom-knob`, `host.rpc:<1..65535>`, `input.key.down`,
 `input.key.up`, `input.key.hold`, `input.chord.down`, and `input.chord.up`.
 The angle-bracket form describes the allowed host-ID range; source registers a
@@ -210,6 +210,7 @@ Event-specific fields are:
 
 | Subscription | `event.type` | Additional fields |
 | --- | --- | --- |
+| `tick.1ms` | `tick.1ms` | `value` (elapsed milliseconds since the previous delivered 1 ms tick), `auxiliary` |
 | `tick.100ms` | `tick.100ms` | `value`, `auxiliary` (signed int32 adapter payloads) |
 | `tick.1s` | `tick.1s` | `value`, `auxiliary` (signed int32 adapter payloads) |
 | `input.fn-bottom-knob` | `input.fn-bottom-knob` | `delta` (signed detents), `fn` (`true`), `auxiliary` |
@@ -220,8 +221,12 @@ Event-specific fields are:
 | `input.chord.down` | `input.chord.down` | `chord`, `reason` |
 | `input.chord.up` | `input.chord.up` | `chord`, `reason` |
 
-Do not assign undocumented meaning to tick or `auxiliary` values. The physical
-adapter must define them in its capability contract first. A host RPC handler
+`tick.1ms` is a best-effort, coalesced logical clock, not a guarantee that the
+VM or display repaints 1,000 times per second. Its elapsed `value` is normally
+1 and can be greater when work delays delivery; advance motion by this value so
+it remains time-correct without queue growth. Do not assign undocumented
+meaning to other tick or `auxiliary` values. The physical adapter must define
+them in its capability contract first. A host RPC handler
 subscribes with its ID (`host.rpc:28673` or `host.rpc:0x7001`) but sees the
 general type `host.rpc` plus `event.id`.
 
@@ -361,7 +366,7 @@ the string representation of numeric limits:
 const capability = {
   renderV2Profile: "framer-f1-render-v2-mquickjs-v1",
   packageFormat: "framer-render-v2-mquickjs-package-v1",
-  packageAbiSha256: "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
+  packageAbiSha256: "d536c61f83bfb862601af4ea659e32dcc0014ae98e6715b62ff32aae777d6940",
   engineCommit: "203d5bb79789bc47b74855d9207415dab71661a0",
   javascriptProfile: "mquickjs-es5-strict-v1",
   deviceEvaluatesJavaScript: true,

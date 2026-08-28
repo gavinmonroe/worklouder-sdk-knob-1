@@ -24,7 +24,7 @@ The verifier proves all of the following without touching hardware:
   `eval`, timer, console, wall-clock, random, or module-loader surface.
 - The only widget natives are `widget.on`, `widget.getInt`, `widget.setInt`,
   `widget.commit`, and `widget.isHeld`.
-- Named events are `tick.100ms`, `tick.1s`, `input.fn-bottom-knob`, declared
+- Named events are `tick.1ms`, `tick.100ms`, `tick.1s`, `input.fn-bottom-knob`, declared
   `host.rpc:<1..65535>`, `input.key.down`, `input.key.up`, `input.key.hold`,
   `input.chord.down`, and `input.chord.up`.
 - Every callback receives an immutable-by-contract event snapshot with

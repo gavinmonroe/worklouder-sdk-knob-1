@@ -55,6 +55,8 @@ static const char widget_source[] =
     " typeof setTimeout !== 'undefined' || typeof Framer !== 'undefined')"
     " throw 'unsafe native surface';"
     "widget.on('tick.100ms', function(event) {});"
+    "widget.on('tick.1ms', function(event) {"
+    " if (event.type !== 'tick.1ms' || event.value < 1) throw 'bad 1ms tick'; });"
     "widget.on('tick.1s', function(event) { widget.setInt(0, widget.getInt(0) + event.value); widget.commit(); });"
     "widget.on('input.fn-bottom-knob', function(event) { if (!event.fn) throw 'missing fn';"
     " if (widget.isHeld(event, 0)) widget.setInt(14, widget.getInt(14) + 1);"
@@ -168,6 +170,7 @@ int main(void)
                             sizeof(sloppy_global_source) - 1u, 1) ==
            FRAMER_MQJS_ERR_EXCEPTION);
 
+    assert(framer_mqjs_dispatch(&runtime, "tick.1ms", 3, 0) == FRAMER_MQJS_OK);
     assert(framer_mqjs_dispatch(&runtime, "tick.100ms", 1, 0) == FRAMER_MQJS_OK);
     assert(platform.mailbox_publishes == 0u);
     assert(framer_mqjs_dispatch(&runtime, "tick.1s", 1, 0) == FRAMER_MQJS_OK);
@@ -296,10 +299,10 @@ int main(void)
     assert(telemetry.max_input_events_per_drain > 0u &&
            telemetry.max_input_events_per_drain <=
                FRAMER_MQJS_INPUT_MAX_EVENTS_PER_DRAIN);
-    assert(telemetry.last_event_sequence == 36u && telemetry.held_key_mask == 0u);
+    assert(telemetry.last_event_sequence == 37u && telemetry.held_key_mask == 0u);
     assert(platform.mailbox_slots[3] == 6 && platform.mailbox_slots[4] == 7 &&
            platform.mailbox_slots[5] == 3 && platform.mailbox_slots[6] == 2 &&
-           platform.mailbox_slots[7] == 2 && platform.mailbox_slots[8] == 36 &&
+           platform.mailbox_slots[7] == 2 && platform.mailbox_slots[8] == 37 &&
            platform.mailbox_slots[9] == 0 && platform.mailbox_slots[10] == 2 &&
            platform.mailbox_slots[15] == 2002);
     assert(telemetry.heap_capacity_bytes == sizeof(heap.bytes));

@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// Event reference rail — in-editor documentation for all nine event kinds.
+// Event reference rail — in-editor documentation for all ten event kinds.
 //
 // Docked inside the editor frame (a flex sibling of the CodeMirror body), so
 // writing a handler is learnable WITHOUT leaving the JS buffer: each row is

@@ -166,11 +166,13 @@ framer_mqjs_result framer_mqjs_load(framer_mqjs_runtime *runtime,
                                     size_t source_len,
                                     int admitted);
 
-/* Exact event names are "tick.100ms", "tick.1s",
+/* Exact event names are "tick.1ms", "tick.100ms", "tick.1s",
  * "input.fn-bottom-knob", "host.rpc:<1..65535>" (decimal or 0x hex),
  * "input.key.down", "input.key.up", "input.key.hold",
  * "input.chord.down", and "input.chord.up".
- * Calls must originate on the configured VM-owner task. Every callback gets
+ * tick.1ms is best-effort: event.value is elapsed milliseconds (normally 1),
+ * so a busy owner can coalesce missed intervals without losing time. Calls
+ * must originate on the configured VM-owner task. Every callback gets
  * one event snapshot object; widget.isHeld(event, keyId) reads its heldMask.
  * If older staged input consumes the three-attempt owner-iteration budget, the
  * event is retained FIFO and INPUT_MORE_PENDING is returned. */

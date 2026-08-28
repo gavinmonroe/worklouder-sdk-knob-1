@@ -39,7 +39,7 @@ const expected = Object.freeze({
   rodataSha256: "72a2a26cb9cb0c0c52ab0ee897ad5d59b0a3c9765d3f495bfe96565b305a8c43",
   slotSha256: "b1104134b37c9b6726e96f852b28e1eb971ba3aa4870d44543cfd1c5e8c6a6c1",
   loaderSha256: "cd0e352b46d23193d07c696355442ee2a68311c44ad3a901692627560fbde97c",
-  moduleAbi: "ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb",
+  moduleAbi: "6e3bfee6c3a167f2e06f7f1c7b063e7c2b31977430d6b9303cfbf31a4c51338d",
   startupVaddr: 0x423e3510, id28IdentityVaddr: 0x423e5d8c, keySinkVaddr: 0x423e3390,
   textUsedBytes: 91856, blockBytes: 95568,
 });

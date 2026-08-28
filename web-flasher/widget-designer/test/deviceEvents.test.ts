@@ -19,6 +19,7 @@ function record(event) {
 }
 widget.on("tick.100ms", record);
 widget.on("tick.1s", record);
+widget.on("tick.1ms", record);
 widget.on("input.fn-bottom-knob", record);
 widget.on("host.rpc:0xB201", record);
 widget.on("input.key.down", record);
@@ -39,8 +40,16 @@ function makeRecorder() {
 }
 
 describe("device event contract", () => {
-  it("covers all nine kinds the firmware delivers", () => {
-    expect(DEVICE_EVENT_NAMES).toHaveLength(9);
+  it("covers all ten kinds the firmware delivers", () => {
+    expect(DEVICE_EVENT_NAMES).toHaveLength(10);
+  });
+
+  it("preserves coalesced elapsed time on the millisecond tick", () => {
+    expect(buildDeviceEvent({ kind: "tick.1ms", value: 4 })).toMatchObject({
+      type: "tick.1ms",
+      value: 4,
+      auxiliary: 0,
+    });
   });
 
   it("builds the knob event with delta and fn, never value", () => {
@@ -85,6 +94,7 @@ describe("device event contract", () => {
   it("dispatches every kind through the simulator and each handler fires", () => {
     const sim = createMquickjsSimulator(RECORDER_SOURCE);
     const inputs = [
+      { kind: "tick.1ms", value: 1 },
       { kind: "tick.100ms" },
       { kind: "tick.1s" },
       { kind: "input.fn-bottom-knob", delta: 1 },
@@ -101,9 +111,9 @@ describe("device event contract", () => {
       if (result.handled) handled += 1;
       expect(result.handled, `${input.kind} must reach its handler`).toBe(true);
     }
-    expect(handled).toBe(9);
+    expect(handled).toBe(10);
     // The recorder commits slot 0 = number of events seen.
-    expect(sim.dispatch({ kind: "tick.1s" } as any).slots[0]).toBe(10);
+    expect(sim.dispatch({ kind: "tick.1s" } as any).slots[0]).toBe(11);
   });
 
   it("delivers device-shaped objects through the simulator (spot checks)", () => {

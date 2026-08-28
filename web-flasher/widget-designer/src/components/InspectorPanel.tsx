@@ -365,6 +365,7 @@ export function InspectorPanel({
 }
 
 const SUPPORTED_KINDS = [
+  "tick.1ms",
   "tick.100ms",
   "tick.1s",
   "input.fn-bottom-knob",

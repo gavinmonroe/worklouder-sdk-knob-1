@@ -132,17 +132,17 @@ const wordDefines = (prefix, values) => values.map((value, index) =>
 const expected = Object.freeze({
   appSha256: "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
   receiptSha256: "1363d31eabba2b61e068d760d966ab25f8b17d1c635a4c91ba7ecd2a0de238e9",
-  packageAbi: "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
-  moduleAbi: "ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb",
+  packageAbi: "d536c61f83bfb862601af4ea659e32dcc0014ae98e6715b62ff32aae777d6940",
+  moduleAbi: "6e3bfee6c3a167f2e06f7f1c7b063e7c2b31977430d6b9303cfbf31a4c51338d",
   moduleAdapterSourceSha256: "f1df175e69d41d1678e386e077011995df29e6f58e1d88235a5f0ac6d2cb89fc",
   // Re-recorded: this is the module-loader's own freshly rebuilt manifest
   // digest, which shifted because the -m32 atom/library word-size fix
   // changed the module-loader build's generated atom header content.
-  moduleLoaderManifestSha256: "2c53815a97b178572dacc9c513bc15b4101ede55ee9d0dad8c5abd398fa181fb",
+  moduleLoaderManifestSha256: "d78f6763787d07223b811d6cf5071b2f047b866fe8c37819c2f7974b4d93f027",
   // Re-recorded: sourceClosurePaths includes framer_mquickjs_canary.c/.h and
   // loader_entry.c, which this change intentionally edits (load-deadline fix
   // and 16-byte alignment / IROM byte-read fixes).
-  sourceClosureSha256: "af41e343b452ec1ef4fb5987d0169e20d2946e85673eace90b8a408cf447eef3",
+  sourceClosureSha256: "666be918b8da884c6eb5fcfe1c21f50e4805c8004c4abf3914c33570fea2288e",
   baseSha256: "2f8263490c50631c3cdb7f992efde976ac794d8a3e599cc785a1e81bfa0e5c68",
   canonicalWeatherSourceSha256:
     "68db9d61fa38b0a396e46e88076d75d262a486f2ec4b41b4d398454d7d713e9b",
@@ -151,11 +151,11 @@ const expected = Object.freeze({
   // Re-recorded: this is the concatenated-source digest of the canary files
   // this change intentionally edits (see sourceClosureSha256 above); same
   // fix, same new value as module-loader/verify.mjs's expectedCoreCanarySourceSha256.
-  engineSourceSha256: "ea0e19d73f927c8540c901b1845bf664542a96527fdd00ac172bcc8fde8ac9d6",
-  runtimeManifestSha256: "b3b3ce77a91bbb0c7ae5d0a7e7a5c86a8888a5d25cab3fdef0c8947f9e101ed4",
-  runtimeObjectSha256: "fa372a35c3a4196b5d89155be8728465bd94ca1309b830be40a160335e964676",
-  residentManifestSha256: "6fb1a0782973ceb51d0853816a173dda4b02ec2b64036a55f74a7f9558b71d28",
-  residentObjectSha256: "426c21185c418b758427335a5743c96415c06d68ed3a7112b8b30a9b73fccd21",
+  engineSourceSha256: "82157e156ba45f0b101d899b18ac77b09fe58e9eeb820dc4cc488e8e57a10406",
+  runtimeManifestSha256: "972856d62a7bfda5a1e7fb39f6cab4bcf450c00c34761947651951b43393d305",
+  runtimeObjectSha256: "66e336daa9c872f5fa4c396877bdc005e2a316d4194be344fa05cd020b6b37d2",
+  residentManifestSha256: "33dc9e0516b288f0c79b25edc8156e946c14942a41428fa503cb503714a552c7",
+  residentObjectSha256: "ad5dc93b85ecacbfd0fbc52a18648b44a4ab7ca583971b33bfd1666e46e1055c",
   stockBridgeManifestSha256: "0afdc47b8009010fb59ad1308353945a15fa7f9d4e8812354701bea747b64e28",
   stockBridgeObjectSha256: "0406f9e8341f79d5f6cc602460c1bf405508c5aff4a4be5fa97244beacc4c676",
   acceptedRpcSourceSha256: "9267dfe3819574bfcd407db851d9810739af8f7868bde68bbf037f1bcc91f728",
@@ -583,13 +583,14 @@ function proveStackUsage(records) {
   };
   const maximum = Math.max(...Object.values(chains));
   invariant(shim === 32 && chains.cap === 240 && chains.telemetry === 256 &&
-    chains.event === 352 && chains.receipt === 192 && maximum <= 384,
+    chains.event === 336 && chains.receipt === 192 && maximum <= 384,
   `RPC callback stack non-regression changed: ${JSON.stringify(chains)}.`);
   const uiModuleChainBytes = frame("physical.o", "proxy_tick") +
     frame("target.o", "framer_tf_render") +
     frame("target.o", "render_internal") +
     frame("target.o", "target_pixels") + frame("target.o", "glyph_index");
-  invariant(uiModuleChainBytes === 816, "UI module callback chain changed.");
+  invariant(uiModuleChainBytes === 848,
+    `UI module callback chain changed: ${uiModuleChainBytes}.`);
   return { compilerFlag: "-fstack-usage", allFramesStatic: true,
     rpc: { chains, maximumModuleOwnedChainBytes: maximum,
       acceptedSceneHandlerModuleFrameCeilingBytes: 384,

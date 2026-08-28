@@ -61,6 +61,7 @@ import {
 import { F2TF_CANVAS } from "../compiler/f2tfPackage";
 import { isPendingEditorDirty, matchesAnyPreset, saveSourceDraft } from "./sourceDraft";
 import { retireWidgetUploadDiagnostics } from "./diagnosticLifecycle";
+import { applyDesignerMeta } from "./meta";
 import {
   importWidgetImageAsset,
   referencedWidgetAssetIds,
@@ -75,7 +76,7 @@ export type EventDrivenPackage = RenderV2Package & {
   bindings: F2epBuildResult["bindings"];
 };
 
-export type AutoTick = "off" | "1s" | "100ms";
+export type AutoTick = "off" | "1s" | "100ms" | "1ms";
 
 export interface DesignerState {
   // Source
@@ -401,7 +402,7 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
   }, []);
 
   const setMeta = useCallback<DesignerActions["setMeta"]>((next) => {
-    setWidget((prev) => ({ ...prev, ...next }));
+    setWidget((prev) => applyDesignerMeta(prev, next));
   }, []);
 
   const setHtml = useCallback<DesignerActions["setHtml"]>((v) => setSource({ html: v }), [setSource]);
@@ -559,9 +560,14 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
       return;
     }
     setSimState("running");
-    const ms = autoTick === "1s" ? 1000 : 100;
+    const ms = autoTick === "1s" ? 1000 : autoTick === "100ms" ? 100 : 1;
+    let lastTickAt = performance.now();
     tickHandleRef.current = window.setInterval(() => {
-      dispatchEvent({ kind: autoTick === "1s" ? "tick.1s" : "tick.100ms", displayName: "auto", description: "auto" });
+      const now = performance.now();
+      const elapsed = Math.max(1, Math.round(now - lastTickAt));
+      lastTickAt = now;
+      const kind = autoTick === "1s" ? "tick.1s" : autoTick === "100ms" ? "tick.100ms" : "tick.1ms";
+      dispatchEvent({ kind, value: kind === "tick.1ms" ? elapsed : 0, displayName: "auto", description: "auto" });
     }, ms);
     return () => {
       if (tickHandleRef.current != null) {
@@ -581,7 +587,8 @@ export function useDesignerStore(): { state: DesignerState; actions: DesignerAct
     const eventsPayload: any = {};
     const hostRpcIds: number[] = [];
     for (const h of inferred.handlers) {
-      if (h.kind === "tick.100ms") eventsPayload["tick.100ms"] = true;
+      if (h.kind === "tick.1ms") eventsPayload["tick.1ms"] = true;
+      else if (h.kind === "tick.100ms") eventsPayload["tick.100ms"] = true;
       else if (h.kind === "tick.1s") eventsPayload["tick.1s"] = true;
       else if (h.kind === "input.fn-bottom-knob") eventsPayload["input.fn-bottom-knob"] = true;
       else if (h.kind.startsWith("host.rpc:")) {
@@ -1145,7 +1152,7 @@ async function awaitPreviewIframe(
 }
 
 function prettyEvent(e: SimulatedEvent): string {
-  if (e.kind === "tick.100ms" || e.kind === "tick.1s") return e.kind;
+  if (e.kind === "tick.1ms" || e.kind === "tick.100ms" || e.kind === "tick.1s") return e.kind;
   if (e.kind === "input.fn-bottom-knob") return `input.fn-bottom-knob ${e.delta >= 0 ? "+" : ""}${e.delta}`;
   if (e.kind === "host.rpc") return `host.rpc id=0x${e.id.toString(16).toUpperCase()} v=${e.value}`;
   if (e.kind === "input.key.down" || e.kind === "input.key.up") return `${e.kind} id=${e.id}`;

@@ -8,7 +8,8 @@ import { SavedPreviewStore } from "../lib/saved-previews.mjs";
 import { createInputLabProject } from "../lib/browser-project.mjs";
 import { assessInputLabMQuickJsPushGate, buildInputLabMQuickJsPackage,
   createInputLabDeterministicWeatherSnapshot, extractInputLabMQuickJsRasterBase,
-  INPUT_LAB_MQUICKJS_PACKAGE_FORMAT, InputLabMQuickJsCanarySession } from
+  INPUT_LAB_MQUICKJS_PACKAGE_ABI_SHA256, INPUT_LAB_MQUICKJS_PACKAGE_FORMAT,
+  InputLabMQuickJsCanarySession } from
   "../lib/mquickjs-canary.mjs";
 
 const timerSourceUrl = new URL("../../examples/render-v2-mquickjs-canary/canary-widget.js", import.meta.url);
@@ -42,7 +43,8 @@ test("browser canary packer emits strict packages accepted by the exact frozen S
 test("physical-but-unproven canary is display-compatible while Package Push stays blocked", () => {
   const exact = { renderV2Profile: RENDER_V2_MQUICKJS_PROFILE.id,
     packageFormat: RENDER_V2_MQUICKJS_PROFILE.packageFormat,
-    packageAbiSha256: RENDER_V2_MQUICKJS_PROFILE.packageAbiSha256,
+    // Input Lab intentionally targets the frozen pre-tick.1ms canary ABI.
+    packageAbiSha256: INPUT_LAB_MQUICKJS_PACKAGE_ABI_SHA256,
     engine: RENDER_V2_MQUICKJS_PROFILE.engine, engineCommit: RENDER_V2_MQUICKJS_PROFILE.engineCommit,
     javascriptProfile: RENDER_V2_MQUICKJS_PROFILE.javascriptProfile,
     deviceEvaluatesJavaScript: true, deviceRunsJsdom: false,

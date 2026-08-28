@@ -42,6 +42,7 @@ typedef enum {
     EVENT_KEY_HOLD = 7,
     EVENT_CHORD_DOWN = 8,
     EVENT_CHORD_UP = 9,
+    EVENT_TICK_1MS = 10,
 } event_id;
 
 #define MAX_EVENT_HANDLERS FRAMER_MQJS_MAX_BINDINGS
@@ -272,7 +273,9 @@ static int event_from_name(const char *name, event_selector *selector)
     if (name == NULL || selector == NULL)
         return 0;
     selector->id = 0;
-    if (strcmp(name, "tick.100ms") == 0)
+    if (strcmp(name, "tick.1ms") == 0)
+        selector->kind = EVENT_TICK_1MS;
+    else if (strcmp(name, "tick.100ms") == 0)
         selector->kind = EVENT_TICK_100MS;
     else if (strcmp(name, "tick.1s") == 0)
         selector->kind = EVENT_TICK_1S;
@@ -562,7 +565,8 @@ static framer_mqjs_result evaluate(runtime_state *state,
         record_failure(state, status);
         return status;
     }
-    if (find_handler(state, &(event_selector){ EVENT_TICK_100MS, 0 }) == NULL &&
+    if (find_handler(state, &(event_selector){ EVENT_TICK_1MS, 0 }) == NULL &&
+        find_handler(state, &(event_selector){ EVENT_TICK_100MS, 0 }) == NULL &&
         find_handler(state, &(event_selector){ EVENT_TICK_1S, 0 }) == NULL &&
         find_handler(state, &(event_selector){ EVENT_FN_BOTTOM_KNOB, 0 }) == NULL) {
         int found = 0;
@@ -731,6 +735,7 @@ framer_mqjs_result framer_mqjs_load(framer_mqjs_runtime *runtime,
 
 static const char *event_type_name(uint8_t kind)
 {
+    if (kind == EVENT_TICK_1MS) return "tick.1ms";
     if (kind == EVENT_TICK_100MS) return "tick.100ms";
     if (kind == EVENT_TICK_1S) return "tick.1s";
     if (kind == EVENT_FN_BOTTOM_KNOB) return "input.fn-bottom-knob";
@@ -773,7 +778,8 @@ static int create_event_object(runtime_state *state,
                            JS_NewInt32(ctx, event->held_mask)) ||
         set_event_property(ctx, *object_root, "synthetic",
                            JS_NewBool(event->synthetic));
-    if (!failed && (event->selector.kind == EVENT_TICK_100MS ||
+    if (!failed && (event->selector.kind == EVENT_TICK_1MS ||
+                    event->selector.kind == EVENT_TICK_100MS ||
                     event->selector.kind == EVENT_TICK_1S)) {
         failed = set_event_property(ctx, *object_root, "value", JS_NewInt32(ctx, event->value)) ||
             set_event_property(ctx, *object_root, "auxiliary",
@@ -982,7 +988,8 @@ framer_mqjs_result framer_mqjs_dispatch(framer_mqjs_runtime *runtime,
     }
     memset(&event, 0, sizeof(event));
     if (!event_from_name(event_name, &event.selector) ||
-        event.selector.kind >= EVENT_KEY_DOWN)
+        (event.selector.kind >= EVENT_KEY_DOWN &&
+         event.selector.kind <= EVENT_CHORD_UP))
         return FRAMER_MQJS_ERR_ARGUMENT;
     now_us = state->config.now_us(state->config.opaque);
     event.timestamp_ms = (uint32_t)(now_us / 1000u);

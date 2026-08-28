@@ -40,7 +40,7 @@
   "candidateApp": {
     "file": "experiments/mquickjs-esp32s3-physical-canary/build/framer-0.4.1-mqjs-id28-canary-NO-GO-app.bin",
     "bytes": 2062912,
-    "sha256": "1d32e68a3445031d685fb5c85304e96321a785eb17fb229638f78cf3e68746a4",
+    "sha256": "25ab1b8808ce1269c364dd88a89d3502e77f4cc3ae6bfe64c894036c7aa31e10",
     "addedScreenId": 28,
     "deterministicRebuilds": 2,
     "segmentCount": 6,
@@ -56,23 +56,23 @@
         "address": "0x42041568",
         "bytes": 4,
         "beforePointer": "0x4206eae0",
-        "afterPointer": "0x4211e580"
+        "afterPointer": "0x4211e578"
       },
       {
         "range": [
           "0x4211e460",
-          "0x4211ef18"
+          "0x4211ef10"
         ],
-        "bytes": 2744,
+        "bytes": 2736,
         "beforeAllZero": true,
-        "sha256": "62cc763a20feb7abbabf7f6af4d7c6199a9feb0b1fdfa04aad12fc0ce19e80be"
+        "sha256": "acb2663013065cbb3d47e2ffe6234039c70d52ae4cbe861f32d849c43fb3d033"
       }
     ]
   },
   "module": {
     "abiVersion": 3,
-    "moduleAbiSha256": "ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb",
-    "packageAbiSha256": "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8",
+    "moduleAbiSha256": "6e3bfee6c3a167f2e06f7f1c7b063e7c2b31977430d6b9303cfbf31a4c51338d",
+    "packageAbiSha256": "d536c61f83bfb862601af4ea659e32dcc0014ae98e6715b62ff32aae777d6940",
     "identitySeparation": "descriptor/loader use module ABI3; F2JS package uses package ABI1",
     "slotA": {
       "range": [
@@ -80,58 +80,58 @@
         "0x240000"
       ],
       "bytes": 196608,
-      "sha256": "ca4bc1b997f42812e3b99cff911252cf9d4bbe88ea7548f4f860c1fa939c368c",
+      "sha256": "2e67c2c1cfaab716bf7e3846229d2ab0bfe7b947f9259a0d5654b874e64ab8a5",
       "identitySemantics": "SHA-256 of padded text[0x20000] concatenated with padded rodata[0x10000]; binary digest is embedded only in resident loader and passed to startup"
     },
     "text": {
       "paddr": "0x210000",
       "vaddr": "0x423d0000",
-      "usedBytes": 91936,
+      "usedBytes": 93104,
       "capacityBytes": 131072,
-      "sha256": "542b89fe2f178c37c4ef04f46f2058cdba17320a85bdd9bc64763b6053b4ac6f"
+      "sha256": "453e72ca1c1051dd6e16764dbde8ab86b666003eb1ff959a7852bd6836c4ce41"
     },
     "rodata": {
       "paddr": "0x230000",
       "vaddr": "0x3c3f0000",
-      "usedBytes": 23536,
+      "usedBytes": 23568,
       "capacityBytes": 65536,
-      "sha256": "9a7137b404adc23636404cd98ad50a12e3c7d062de694dc8912f8a18523f4034"
+      "sha256": "b10c15b32862067581d8245a971ee6515f3425132bd871b8e611eb16877b6120"
     },
     "relocations": 0,
     "undefinedSymbols": 0,
     "writableStaticBytes": 0,
-    "residentBlockBytes": 95568,
-    "startupVaddr": "0x423e3598",
-    "id28IdentityVaddr": "0x423e5ddc",
-    "keySinkVaddr": "0x423e3418",
+    "residentBlockBytes": 95920,
+    "startupVaddr": "0x423e3950",
+    "id28IdentityVaddr": "0x423e626c",
+    "keySinkVaddr": "0x423e37cc",
     "deterministicRebuilds": 2,
     "stackUsage": {
       "file": "experiments/mquickjs-esp32s3-physical-canary/build/module-stack-usage.json",
-      "sha256": "92c1e0a9982e64ebce6123ef4902872adba3201db5505b822f56a98676e4c8e1",
+      "sha256": "c54a086b55238d7ab53ab64d6ef4484dae8d37f2f2dc7c0b1d456822ab5bd566",
       "compilerFlag": "-fstack-usage",
       "allFramesStatic": true,
       "rpc": {
         "chains": {
           "cap": 240,
           "telemetry": 256,
-          "event": 352,
+          "event": 336,
           "receipt": 192
         },
-        "maximumModuleOwnedChainBytes": 352,
+        "maximumModuleOwnedChainBytes": 336,
         "acceptedSceneHandlerModuleFrameCeilingBytes": 384,
         "comparator": "relative accepted-app non-regression; not absolute task headroom",
         "asmReadIntegerFrameBytes": 32
       },
       "ui": {
-        "moduleOwnedRenderChainBytes": 816,
+        "moduleOwnedRenderChainBytes": 848,
         "physicalHeadroomClaimed": false
       }
     },
     "loader": {
       "file": "experiments/mquickjs-esp32s3-physical-canary/build/mqjs-id28-resident-loader.bin",
-      "bytes": 2744,
-      "sha256": "62cc763a20feb7abbabf7f6af4d7c6199a9feb0b1fdfa04aad12fc0ce19e80be",
-      "preMapAdmissionBytes": 132432,
+      "bytes": 2736,
+      "sha256": "acb2663013065cbb3d47e2ffe6234039c70d52ae4cbe861f32d849c43fb3d033",
+      "preMapAdmissionBytes": 132784,
       "allocationBeforeFirstMap": true,
       "startupAdoptsExactBlock": true,
       "rollbackBeforeOwnerTask": "map failure frees the owned block but a failed internal cleanup may retain a mapping handle until reset; successful-map/startup-failure attempts unmap then frees exactly once; any unmap failure is a reset/rollback hardware gate",
@@ -212,17 +212,17 @@
   "runtime": {
     "allocation": {
       "placement": "INTERNAL|8BIT only",
-      "bytes": 95568,
+      "bytes": 95920,
       "count": 1,
       "embeddedProxyBytes": 144,
       "psramFallback": false,
       "startupPreflight": {
-        "freeMinimumBytes": 128336,
-        "largestMinimumBytes": 95568
+        "freeMinimumBytes": 128688,
+        "largestMinimumBytes": 95920
       },
       "loaderPreMapPreflight": {
-        "freeMinimumBytes": 132432,
-        "largestMinimumBytes": 95568
+        "freeMinimumBytes": 132784,
+        "largestMinimumBytes": 95920
       },
       "ordering": "loader allocates and validates exact block before first map; module adopts only at owner-task commit; map/startup failures free the block once, but any failed MMU cleanup is fail-closed and requires reset/rollback rather than an unconditional cleanup claim"
     },
@@ -679,7 +679,7 @@
     "identity": {
       "baseAppSha256": "363170139a06f306be1e894b6f203a9bf03bf4d70d21194aaccdd1c42f760c32",
       "baseAppMeaning": "accepted healthy ancestry, not final candidate app SHA",
-      "moduleSlotSha256": "ca4bc1b997f42812e3b99cff911252cf9d4bbe88ea7548f4f860c1fa939c368c",
+      "moduleSlotSha256": "2e67c2c1cfaab716bf7e3846229d2ab0bfe7b947f9259a0d5654b874e64ab8a5",
       "packageSha256": "7aeeecde59bd686b3455feadc74b4b7705ca0c8ea933f9b0669cb8dc656c284e"
     },
     "eventFields": [
@@ -746,7 +746,7 @@
       "chordDown": 3,
       "chordUp": 3
     },
-    "engineSourceSha256": "ea0e19d73f927c8540c901b1845bf664542a96527fdd00ac172bcc8fde8ac9d6",
+    "engineSourceSha256": "82157e156ba45f0b101d899b18ac77b09fe58e9eeb820dc4cc488e8e57a10406",
     "physicalSourceOrdering": {
       "publicationOrder": "registry-postcondition-addNavigation-navPublished-boot7-rpcReady",
       "focusCleanup": "nonterminal-seq-cst-gate-epoch-owner-drain",
@@ -755,20 +755,20 @@
     },
     "runtimeProofManifest": {
       "file": "experiments/mquickjs-esp32s3-runtime-proof/build/runtime-proof-manifest.json",
-      "sha256": "b3b3ce77a91bbb0c7ae5d0a7e7a5c86a8888a5d25cab3fdef0c8947f9e101ed4",
-      "objectSha256": "fa372a35c3a4196b5d89155be8728465bd94ca1309b830be40a160335e964676"
+      "sha256": "972856d62a7bfda5a1e7fb39f6cab4bcf450c00c34761947651951b43393d305",
+      "objectSha256": "66e336daa9c872f5fa4c396877bdc005e2a316d4194be344fa05cd020b6b37d2"
     },
     "moduleLoaderProofManifest": {
       "file": "experiments/mquickjs-esp32s3-module-loader/build/module-loader-manifest.json",
-      "sha256": "2c53815a97b178572dacc9c513bc15b4101ede55ee9d0dad8c5abd398fa181fb",
+      "sha256": "d78f6763787d07223b811d6cf5071b2f047b866fe8c37819c2f7974b4d93f027",
       "moduleAdapterSourceSha256": "f1df175e69d41d1678e386e077011995df29e6f58e1d88235a5f0ac6d2cb89fc",
       "publicAbiVersion": 3,
-      "publicAbiSha256": "ad484a3a8b438c51f6bbcda6ea871110735b3460e39e4c2853a4e636f5f728cb"
+      "publicAbiSha256": "6e3bfee6c3a167f2e06f7f1c7b063e7c2b31977430d6b9303cfbf31a4c51338d"
     },
     "residentProofManifest": {
       "file": "experiments/mquickjs-esp32s3-resident-integration/build/resident-integration-manifest.json",
-      "sha256": "6fb1a0782973ceb51d0853816a173dda4b02ec2b64036a55f74a7f9558b71d28",
-      "objectSha256": "426c21185c418b758427335a5743c96415c06d68ed3a7112b8b30a9b73fccd21"
+      "sha256": "33dc9e0516b288f0c79b25edc8156e946c14942a41428fa503cb503714a552c7",
+      "objectSha256": "ad5dc93b85ecacbfd0fbc52a18648b44a4ab7ca583971b33bfd1666e46e1055c"
     },
     "stockBridgeProofManifest": {
       "file": "experiments/mquickjs-esp32s3-stock-bridge/build/stock-bridge-manifest.json",
@@ -777,7 +777,7 @@
     },
     "sourceClosure": {
       "format": "framer-mquickjs-physical-source-closure-v1",
-      "sha256": "af41e343b452ec1ef4fb5987d0169e20d2946e85673eace90b8a408cf447eef3",
+      "sha256": "666be918b8da884c6eb5fcfe1c21f50e4805c8004c4abf3914c33570fea2288e",
       "files": [
         {
           "file": "custom-firmware/lib/esp-app-image.mjs",
@@ -786,13 +786,13 @@
         },
         {
           "file": "experiments/mquickjs-esp32s3-canary/framer_mquickjs_canary.c",
-          "bytes": 59996,
-          "sha256": "102f13cc9f5ecf831248d89180396243f5e97d8dcb645ac1d138268814e850c5"
+          "bytes": 60652,
+          "sha256": "d201d9cab3bc1b30659db2cc62b256f20481b8cc21222de1617443d4ad9bdf1a"
         },
         {
           "file": "experiments/mquickjs-esp32s3-canary/framer_mquickjs_canary.h",
-          "bytes": 10067,
-          "sha256": "c2bf8c086fd3fb873b8ebe4092ae320289cf6a9592ec40b95a1f337c82e2f99a"
+          "bytes": 10227,
+          "sha256": "b1ec9fee605ebe04a097b0ccc9185df8b3110386b917c6e154b1974bcf6da4ca"
         },
         {
           "file": "experiments/mquickjs-esp32s3-canary/framer_stdlib_gen.c",
@@ -801,8 +801,8 @@
         },
         {
           "file": "experiments/mquickjs-esp32s3-canary/host_harness.c",
-          "bytes": 31561,
-          "sha256": "b10a98ba8610ea1e8617448480e1b0521533f6836fb40258cc7aaf4ede8813e5"
+          "bytes": 33065,
+          "sha256": "041000ec871d431aeb97b78f9b48265e0f7ed994065a6c6d92b968045dcf7112"
         },
         {
           "file": "experiments/mquickjs-esp32s3-canary/vendor/mquickjs/cutils.c",
@@ -956,8 +956,8 @@
         },
         {
           "file": "experiments/mquickjs-esp32s3-physical-canary/rpc_shims.S",
-          "bytes": 846,
-          "sha256": "24ab8d3fdfe5fc81e550e2071e5a5c1bc946456fdc7d63a942fa23b8d2caea40"
+          "bytes": 2267,
+          "sha256": "6959b2826f876f817b96aee2a55c84953c6f94b8bb736de82a2000d02b3d4ae7"
         },
         {
           "file": "experiments/mquickjs-esp32s3-physical-canary/tail_trampoline.S",
@@ -971,8 +971,8 @@
         },
         {
           "file": "experiments/mquickjs-esp32s3-resident-integration/f2js_admission.c",
-          "bytes": 22088,
-          "sha256": "f896aa3c632baf293e0167e1ea5734cc591465b41afd52ab612d7825564a7084"
+          "bytes": 22177,
+          "sha256": "d6c0bc92ea358417c6919ef9f15670fd37215aa9802a57cd4e9fb9d3c2dd1888"
         },
         {
           "file": "experiments/mquickjs-esp32s3-resident-integration/f2js_admission.h",
@@ -981,38 +981,38 @@
         },
         {
           "file": "experiments/mquickjs-esp32s3-resident-integration/resident_integration.c",
-          "bytes": 59281,
-          "sha256": "b2a2cabd01be41bb1964d924fbaa8e98c7ad00386554ee6e7d38282e9a0752e9"
+          "bytes": 61206,
+          "sha256": "349d8dcde200bfaa1ac18837f917c2d3733b71dbf76f174f37ef12651a5fc895"
         },
         {
           "file": "experiments/mquickjs-esp32s3-resident-integration/resident_integration.h",
-          "bytes": 12943,
-          "sha256": "b6b623e6ccba95811815d89e01788335f5963fcae94454a16fedc785ae597413"
+          "bytes": 13635,
+          "sha256": "2fb180bde5299cbcb009bf3dd377e96ec9fdd4b7295303d4da3730133abe730d"
         },
         {
           "file": "experiments/mquickjs-esp32s3-runtime-proof/runtime_proof.c",
-          "bytes": 27274,
-          "sha256": "513aeb257c027d6852db8fa56d4b840626cf56d808e3cfb7b4650165ec037093"
+          "bytes": 27389,
+          "sha256": "466973fa194a31554b1d62113d30e136261628767699a987c66a8396251e7a29"
         },
         {
           "file": "experiments/mquickjs-esp32s3-runtime-proof/runtime_proof.h",
-          "bytes": 12026,
-          "sha256": "3ce2f4b00e434c223bedb9f93182a47f0699843ba42fbe26ca995c11aa99fe35"
+          "bytes": 12274,
+          "sha256": "a923cd98ed1192dd9bd509e2f2428cf4d8d18bef0b0f5f5670c8e422646dfb7d"
         },
         {
           "file": "experiments/mquickjs-target-facade/contract.mjs",
-          "bytes": 28068,
-          "sha256": "e1b27503bfade10db950e917dead5ada4da1d956e61232356d277eb84487d2fb"
+          "bytes": 37134,
+          "sha256": "4be23e7def6d9091f6f8f872ccdc2c23fe9c17e10775e3bbf0a436df0b62b48d"
         },
         {
           "file": "experiments/mquickjs-target-facade/target_facade.c",
-          "bytes": 30299,
-          "sha256": "86aa138caa8a2c1376ce77a54cbe5b785f55456d5d497f05f49573b932e716cd"
+          "bytes": 38012,
+          "sha256": "b291a0364fe22de3029d5f9296d493c4618b46189f572a7c5ed5b49083ddc859"
         },
         {
           "file": "experiments/mquickjs-target-facade/target_facade.h",
-          "bytes": 4151,
-          "sha256": "2b14bd3fe7de6205f92d7562c1f9fb6f2916b5c8eb124e7ab8b700ab0a67a552"
+          "bytes": 4609,
+          "sha256": "9ed91b7002c361a1120ffa7fb78c9a9adc46e74a98c1ce36f9e2088290c56598"
         },
         {
           "file": "f1-widget-sdk/examples/render-v2-mquickjs-weather-canary/protocol.mjs",
@@ -1026,8 +1026,8 @@
         },
         {
           "file": "f1-widget-sdk/src/render-v2/mquickjs.mjs",
-          "bytes": 26360,
-          "sha256": "9e3773a29677337f90ef99dc0e0ffcaa3812994f6090a355aadc65a1a229307a"
+          "bytes": 26775,
+          "sha256": "914d27b9afb6f4d1382fd80c514f3f2b7f547fb817afcba58b47b94d39e40f99"
         }
       ]
     },
@@ -1056,16 +1056,16 @@
         "chains": {
           "cap": 240,
           "telemetry": 256,
-          "event": 352,
+          "event": 336,
           "receipt": 192
         },
-        "maximumModuleOwnedChainBytes": 352,
+        "maximumModuleOwnedChainBytes": 336,
         "acceptedSceneHandlerModuleFrameCeilingBytes": 384,
         "comparator": "relative accepted-app non-regression; not absolute task headroom",
         "asmReadIntegerFrameBytes": 32
       },
       "ui": {
-        "moduleOwnedRenderChainBytes": 816,
+        "moduleOwnedRenderChainBytes": 848,
         "physicalHeadroomClaimed": false
       }
     },

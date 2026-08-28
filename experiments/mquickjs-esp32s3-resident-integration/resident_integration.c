@@ -459,8 +459,9 @@ static int admission_needs_event_sources(const framer_f2js_admission *admission)
 {
     unsigned int i;
     for (i = 0u; i < admission->event_count; ++i)
-        if (admission->events[i].kind >= 1u &&
-            admission->events[i].kind <= 4u)
+        if ((admission->events[i].kind >= 1u &&
+             admission->events[i].kind <= 4u) ||
+            admission->events[i].kind == 7u)
             return 1;
     return 0;
 }
@@ -726,6 +727,14 @@ static int owner_enqueue_admitted(framer_resident_owner *owner,
     }
     head = __atomic_load_n(&owner->queue_head, __ATOMIC_ACQUIRE);
     tail = __atomic_load_n(&owner->queue_tail, __ATOMIC_RELAXED);
+    /* The millisecond timer is a logical clock, not permission to starve the
+     * finite owner queue. Keep at most one queued high-rate tick; the physical
+     * scheduler carries the skipped elapsed time in the next event.value. */
+    if (kind == 7u && tail != head) {
+        __atomic_store_n(&owner->queue_producer_lock, 0u, __ATOMIC_RELEASE);
+        owner_ingress_leave(owner);
+        return 0;
+    }
     if (tail - head >= FRAMER_RESIDENT_EVENT_QUEUE_RECORDS) {
         __atomic_add_fetch(&owner->telemetry.queue_overflows, 1u,
                            __ATOMIC_RELAXED);
@@ -755,7 +764,9 @@ int framer_resident_owner_enqueue(framer_resident_owner *owner,
     uint8_t kind = 0u;
     if (owner == (framer_resident_owner *)0)
         return 0;
-    if (string_equal(event_name, "tick.100ms"))
+    if (string_equal(event_name, "tick.1ms"))
+        kind = 7u;
+    else if (string_equal(event_name, "tick.100ms"))
         kind = 1u;
     else if (string_equal(event_name, "tick.1s"))
         kind = 2u;

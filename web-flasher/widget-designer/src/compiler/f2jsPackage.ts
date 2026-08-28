@@ -48,6 +48,7 @@ interface BuildOptions {
   source: string;
   generation?: number;
   events?: {
+    "tick.1ms"?: boolean;
     "tick.100ms"?: boolean;
     "tick.1s"?: boolean;
     "input.fn-bottom-knob"?: boolean;
@@ -124,6 +125,11 @@ function normalizeEvents(events: BuildOptions["events"] = {}): NormalizedEvents 
     masks.add(heldMask);
     records.push({ kind: RENDER_V2_MQUICKJS_EVENT_KINDS.chord, id, nativeToken: 0, heldMask });
   });
+  // Keep kind-order canonical: the additive millisecond timer is kind 7, so
+  // it follows the existing kind-6 chord records.
+  if (events["tick.1ms"] === true) {
+    records.push({ kind: RENDER_V2_MQUICKJS_EVENT_KINDS["tick.1ms"], id: 0, nativeToken: 0, heldMask: 0 });
+  }
   if (records.length > MQUICKJS_LIMITS.eventRecords) throw new RangeError("Too many event records.");
   return { records, keyCount: keys.length, chordCount: chords.length };
 }

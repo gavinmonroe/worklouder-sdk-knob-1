@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// The in-editor event reference: all nine device event kinds, the exact fields
+// The in-editor event reference: all ten device event kinds, the exact fields
 // each event object carries, and an insertable idiomatic handler for each.
 //
 // FIELDS ARE DERIVED, NEVER HAND-LISTED. buildDeviceEvent (compiler/
@@ -54,6 +54,7 @@ export interface EventReferenceEntry {
 // ── Representative inputs (one per kind, payload fields populated) ──────────
 
 const REPRESENTATIVE: Record<DeviceEventName, DesignerEventInput> = {
+  "tick.1ms": { kind: "tick.1ms", value: 1 },
   "tick.100ms": { kind: "tick.100ms" },
   "tick.1s": { kind: "tick.1s" },
   "input.fn-bottom-knob": { kind: "input.fn-bottom-knob", delta: 1 },
@@ -87,6 +88,10 @@ const FIELD_DOCS: Record<string, string> = {
 };
 
 const KIND_FIELD_DOCS: Record<string, Record<string, string>> = {
+  "tick.1ms": {
+    value: "Elapsed milliseconds since the prior delivery — normally 1; larger when busy work was coalesced.",
+    auxiliary: "Reserved — always 0 on ticks.",
+  },
   "tick.100ms": {
     value: "Reserved — always 0 on ticks.",
     auxiliary: "Reserved — always 0 on ticks.",
@@ -143,6 +148,16 @@ const ENTRY_META: Record<
   DeviceEventName,
   { blurb: string; snippet: string; prelude?: string; sampleLabel: string; sample: SimulatedEvent }
 > = {
+  "tick.1ms": {
+    blurb: "Provides a best-effort millisecond timebase while the widget is on screen. Missed intervals coalesce instead of flooding input; event.value tells you how many milliseconds elapsed.",
+    prelude: "var elapsed = 0;",
+    snippet: `widget.on("tick.1ms", function (event) {
+  elapsed = mod(elapsed + event.value, 1000);
+  document.querySelector("#value").textContent = digits(elapsed, 3);
+});`,
+    sampleLabel: "tick.1ms",
+    sample: { kind: "tick.1ms", value: 1, displayName: "tick.1ms" },
+  },
   "tick.100ms": {
     blurb: "Fires 10× per second while the widget is on screen — the high-cadence timer for animation and fast counters.",
     prelude: "var spin = 0;",

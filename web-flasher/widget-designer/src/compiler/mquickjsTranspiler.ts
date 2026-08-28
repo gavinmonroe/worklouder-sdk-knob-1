@@ -115,6 +115,7 @@ export interface TranspiledWidget {
   digitTargets: Record<string, { count: number; slot: number }>;
   /** Ready for buildF2JSPackage's `events` option. */
   events: {
+    "tick.1ms"?: boolean;
     "tick.100ms"?: boolean;
     "tick.1s"?: boolean;
     "input.fn-bottom-knob"?: boolean;
@@ -735,6 +736,7 @@ export function transpileWidgetScript(dslSource: string): TranspiledWidget {
   const handlerRecords: EmittedHandler[] = [];
   let tickRecord: EmittedHandler | null = null;
   const seenKeys = new Set<string>();
+  let tick1ms = false;
   let tick100 = false;
   let tick1s = false;
   let knob = false;
@@ -760,6 +762,7 @@ export function transpileWidgetScript(dslSource: string): TranspiledWidget {
     }
     seenKeys.add(info.dedupeKey);
     switch (info.kind) {
+      case "tick1ms": tick1ms = true; break;
       case "tick100": tick100 = true; break;
       case "tick1s": tick1s = true; break;
       case "knob": knob = true; break;
@@ -876,7 +879,7 @@ export function transpileWidgetScript(dslSource: string): TranspiledWidget {
   // from boot until the first event arrives — the single most confusing thing
   // a new widget can do, and invisible in the Designer (where the simulator
   // paints immediately). Warn, do not block: some widgets legitimately wait.
-  if (!tick1s && !tick100 && emittedHandlers.length > 0) {
+  if (!tick1s && !tick100 && !tick1ms && emittedHandlers.length > 0) {
     diagnostics.push({
       severity: "warning",
       message:
@@ -887,6 +890,7 @@ export function transpileWidgetScript(dslSource: string): TranspiledWidget {
   }
 
   const events: TranspiledWidget["events"] = {};
+  if (tick1ms) events["tick.1ms"] = true;
   if (tick100) events["tick.100ms"] = true;
   if (tick1s) events["tick.1s"] = true;
   if (knob) events["input.fn-bottom-knob"] = true;
@@ -1102,13 +1106,14 @@ interface SelectorInfo {
   canonical: string;
   /** host.rpc dedupes by numeric id, matching the simulator's keyFor(). */
   dedupeKey: string;
-  kind: "tick100" | "tick1s" | "knob" | "host" | "key" | "chord";
+  kind: "tick1ms" | "tick100" | "tick1s" | "knob" | "host" | "key" | "chord";
   hostId?: number;
   /** Set for feed.<name> selectors: the slug the designer wrote. */
   feedSlug?: string;
 }
 
 function normalizeSelector(selector: string): SelectorInfo | null {
+  if (selector === "tick.1ms") return { canonical: selector, dedupeKey: selector, kind: "tick1ms" };
   if (selector === "tick.100ms") return { canonical: selector, dedupeKey: selector, kind: "tick100" };
   if (selector === "tick.1s") return { canonical: selector, dedupeKey: selector, kind: "tick1s" };
   if (selector === "input.fn-bottom-knob" || selector === "fn-bottom-knob") {

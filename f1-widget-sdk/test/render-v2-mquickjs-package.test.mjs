@@ -33,6 +33,7 @@ function options(overrides = {}) {
     source: SOURCE,
     generation: 7,
     events: {
+      "tick.1ms": true,
       "tick.100ms": true,
       "input.fn-bottom-knob": true,
       hostRpcIds: [0x1234, 0xb201],
@@ -71,7 +72,7 @@ test("F2JS packages are deterministic, immutable, and preserve declared key/chor
   assert.equal(first.execution.deviceEvaluatesJavaScript, true);
   assert.equal(first.execution.deviceRunsJsdom, false);
   assert.equal(RENDER_V2_MQUICKJS_PACKAGE_ABI_SHA256,
-    "5091736403d809078cbbf12a1b593fbabaff53474a0935a7e00ce81dc8bd67f8");
+    "d536c61f83bfb862601af4ea659e32dcc0014ae98e6715b62ff32aae777d6940");
   assert.equal(first.source, `${RENDER_V2_MQUICKJS_SOURCE_PREFIX}${SOURCE}`);
   const alreadyStrict = buildRenderV2MQuickJsPackage(options({
     source: `${RENDER_V2_MQUICKJS_SOURCE_PREFIX}${SOURCE}`,
@@ -85,6 +86,8 @@ test("F2JS packages are deterministic, immutable, and preserve declared key/chor
     { id: 1, nativeToken: 0xaabbccdd }]);
   assert.deepEqual(first.events.find(({ kind }) => kind === 6),
     { kind: 6, id: 0, nativeToken: 0, heldMask: 3 });
+  assert.deepEqual(first.events.find(({ kind }) => kind === 7),
+    { kind: 7, id: 0, nativeToken: 0, heldMask: 0 });
   assert.deepEqual(first.targets[0].writes, ["textContent", "color", "hidden"]);
 
   const callerBytes = first.binary;
