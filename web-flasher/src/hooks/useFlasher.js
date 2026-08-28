@@ -5,6 +5,8 @@ import { framerLayout, framerModelName } from "../lib/device-identity.js";
 import { formatRegionAddress, loadFlashPlan } from "../lib/firmware.js";
 import {
   FramerHidClient,
+  HID_WRITE_BLOCKED_BUSY,
+  HID_WRITE_BLOCKED_MACOS,
   openWritableFramer,
   requestFramerHid,
   resolveFramerIdentity,
@@ -64,6 +66,9 @@ export function useFlasher() {
   const [version, setVersion] = useState(null);
   const [phase, setPhase] = useState("idle");
   const [bootloaderReady, setBootloaderReady] = useState(false);
+  // True when this computer refuses every HID write to the keyboard. Identity and the
+  // serial write path still work; only bootloader entry from the browser does not.
+  const [writeBlocked, setWriteBlocked] = useState(false);
   const [writeStarted, setWriteStarted] = useState(false);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
@@ -84,9 +89,11 @@ export function useFlasher() {
   const identify = useCallback(async (existingDevice) => {
     setError("");
     setPhase("identifying");
+    setWriteBlocked(false);
     let client;
+    let picked;
     try {
-      const picked = existingDevice ?? (await requestFramerHid());
+      picked = existingDevice ?? (await requestFramerHid());
       // Chrome can hand back an entry for this keyboard that it will not let us
       // write to (a Knob 1 exposes several). Take whichever interface actually
       // answers, and report Chrome's own verdict per report id when none does.
@@ -110,6 +117,50 @@ export function useFlasher() {
         appendLog("Chrome did not expose the HID serial. Single-device confirmation is required before bootloader entry.");
       }
     } catch (cause) {
+      // Some hosts refuse every HID write to this keyboard -- on macOS every report id
+      // is denied for a device whose vendor collection shares the keyboard's interface.
+      // Identity does not depend on writing: it comes from the USB descriptor, and the
+      // serial it yields is the same MAC the bootloader reports, so the strongest check
+      // still holds. Carry on in a reduced mode where the user enters the bootloader by
+      // hand and the write goes over serial, which is not blocked.
+      const writeRefused =
+        cause?.code === HID_WRITE_BLOCKED_MACOS ||
+        cause?.code === HID_WRITE_BLOCKED_BUSY ||
+        cause?.code === "no-writable-interface";
+      if (writeRefused && picked) {
+        try {
+          const fallbackIdentity = await resolveFramerIdentity(picked);
+          setDevice(picked);
+          setNormalIdentity(fallbackIdentity);
+          setSingleDeviceConfirmed(false);
+          setVersion(null);
+          setBootloaderReady(false);
+          setWriteStarted(false);
+          setWriteBlocked(true);
+          setPhase("identified");
+          appendLog(
+            `Identified ${framerModelName(picked.productId)} ${framerLayout(picked.productId)} ` +
+              "from its USB descriptor. This computer will not let the browser send it " +
+              "messages, so the firmware version could not be read and the keyboard cannot " +
+              "be put into update mode from here.",
+          );
+          appendLog(
+            fallbackIdentity.mode === "hid-serial"
+              ? "The bootloader will still be checked against this keyboard's serial number, " +
+                  "so writing to the wrong device remains impossible."
+              : "Chrome did not expose the HID serial, so confirm only one keyboard is " +
+                  "connected before writing.",
+          );
+          appendLog(
+            "Put the keyboard in update mode yourself, then choose its port: on a Knob 1 " +
+              "press both small buttons beside the spacebar, release only the bottom one, " +
+              "wait a moment, then release the top one.",
+          );
+          return;
+        } catch {
+          /* fall through to the original error, which is the more useful one */
+        }
+      }
       setPhase("error");
       setError(errorMessage(cause));
     } finally {
@@ -151,6 +202,25 @@ export function useFlasher() {
         appendLog(`Firmware SHA-256 verified: ${prepared.validation.digest}.`);
       }
 
+      if (writeBlocked) {
+        // Every HID write to this keyboard is refused here, so it cannot be asked to
+        // reboot. The firmware above is still fully verified, and the write itself goes
+        // over serial, which is not blocked -- so the only missing step is one the user
+        // can perform by hand.
+        appendLog(
+          "This computer will not let the browser send the keyboard messages, so it " +
+            "cannot be put into update mode from here.",
+        );
+        appendLog(
+          "Put it in update mode yourself: on a Knob 1 press both small buttons beside " +
+            "the spacebar, release only the bottom one, wait a moment, then release the " +
+            "top one. Then choose its port below.",
+        );
+        setBootloaderReady(true);
+        setPhase("bootloader-ready");
+        return;
+      }
+
       const client = new FramerHidClient(device);
       await client.open();
       try {
@@ -167,7 +237,7 @@ export function useFlasher() {
       setPhase("error");
       setError(errorMessage(cause));
     }
-  }, [appendLog, device, normalIdentity, selected, singleDeviceConfirmed]);
+  }, [appendLog, device, normalIdentity, selected, singleDeviceConfirmed, writeBlocked]);
 
   const flash = useCallback(async () => {
     const prepared = preparedRef.current;
@@ -429,6 +499,7 @@ export function useFlasher() {
     version,
     phase,
     bootloaderReady,
+    writeBlocked,
     canExitBootloader: phase === "error" && bootloaderReady && !writeStarted,
     progress,
     error,

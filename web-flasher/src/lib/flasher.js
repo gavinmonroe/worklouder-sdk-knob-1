@@ -171,7 +171,16 @@ export async function flashRegions({ port, regions, normalIdentity, onProgress, 
   try {
     await loader.main();
     const state = await readBootloaderState(loader);
-    assertBootloaderIdentity({ ...state, normalIdentity });
+    // Mirror exitBootloaderWithoutWrite: a caller that has no normal-mode identity to
+    // offer still gets the chip/flash/security gate. Asserting the identity
+    // unconditionally rejected every such caller -- including the Designer, which passes
+    // normalIdentity: null -- with "Normal-mode Framer identity is unavailable" after the
+    // bootloader had already passed every hardware check.
+    if (normalIdentity) {
+      assertBootloaderIdentity({ ...state, normalIdentity });
+    } else {
+      assertBootloaderRecoveryTarget(state);
+    }
 
     onWriteStart?.(plan);
     await loader.writeFlash({
