@@ -15,7 +15,8 @@ test("buildTelemetryPollScript reads telemetry pages 6 and 7 and disconnects in 
   assert.match(script, /page6status/u);
   assert.match(script, /page7status/u);
   assert.match(script, /comm\.disconnect\(\)/u);
-  assert.match(script, /findWLDevices\(\[sdk\.DeviceType\.KnobF1\]\)/u);
+  // Both Knob variants run the same 0.4.1 image, so discovery accepts both.
+  assert.match(script, /findWLDevices\(\[sdk\.DeviceType\.KnobF1, sdk\.DeviceType\.Knob\]\)/u);
   assert.match(script, /Expected exactly one USB Framer F1/u);
 });
 

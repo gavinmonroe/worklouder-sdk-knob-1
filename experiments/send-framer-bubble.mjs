@@ -21,9 +21,9 @@ const expression = `
     "/Applications/input.app/Contents/Resources/app.asar/dist-electron/main/index.js"
   );
   const sdk = requireFromInput("@worklouder/wl-device-kit");
-  const devices = new sdk.WLDeviceDiscovery().findWLDevices([sdk.DeviceType.KnobF1]);
+  const devices = new sdk.WLDeviceDiscovery().findWLDevices([sdk.DeviceType.KnobF1, sdk.DeviceType.Knob]);
   if (devices.length !== 1) {
-    throw new Error("Expected exactly one Framer F1; found " + devices.length);
+    throw new Error("Expected exactly one Framer F1 / Knob1; found " + devices.length);
   }
   const comm = new sdk.WLDeviceCommImpl();
   try {

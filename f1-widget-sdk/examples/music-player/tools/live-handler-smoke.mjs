@@ -18,9 +18,9 @@ const expression = String.raw`
     "/Applications/input.app/Contents/Resources/app.asar/dist-electron/main/index.js"
   );
   const sdk = requireFromInput("@worklouder/wl-device-kit");
-  const devices = new sdk.WLDeviceDiscovery().findWLDevices([sdk.DeviceType.KnobF1]);
+  const devices = new sdk.WLDeviceDiscovery().findWLDevices([sdk.DeviceType.KnobF1, sdk.DeviceType.Knob]);
   if (devices.length !== 1 || !devices[0].isUsbConnection) {
-    throw new Error("Expected exactly one USB Framer F1");
+    throw new Error("Expected exactly one USB Framer F1 / Knob1");
   }
 
   const comm = new sdk.WLDeviceCommImpl();

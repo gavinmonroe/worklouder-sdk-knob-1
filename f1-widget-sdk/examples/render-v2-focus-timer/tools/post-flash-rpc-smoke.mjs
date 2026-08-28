@@ -47,9 +47,9 @@ export function buildPostFlashSmokeExpression({ hostSeconds = null } = {}) {
     "/Applications/input.app/Contents/Resources/app.asar/dist-electron/main/index.js"
   );
   const sdk = requireFromInput("@worklouder/wl-device-kit");
-  const devices = new sdk.WLDeviceDiscovery().findWLDevices([sdk.DeviceType.KnobF1]);
+  const devices = new sdk.WLDeviceDiscovery().findWLDevices([sdk.DeviceType.KnobF1, sdk.DeviceType.Knob]);
   if (devices.length !== 1 || !devices[0].isUsbConnection) {
-    throw new Error("Expected exactly one USB Framer F1");
+    throw new Error("Expected exactly one USB Framer F1 / Knob1");
   }
   const comm = new sdk.WLDeviceCommImpl();
   await comm.connect(devices[0]);
@@ -57,7 +57,7 @@ export function buildPostFlashSmokeExpression({ hostSeconds = null } = {}) {
     const api = new sdk.WLRPCApi(comm);
     const client = new sdk.WLRPCClient(comm);
     const rawVersion = await api.getFirmwareVersion();
-    const version = rawVersion?.version ?? rawVersion;
+    const version = rawVersion?.version ?? rawVersion?.value ?? rawVersion;
     if (version !== "0.4.1") throw new Error("Framer firmware is not exact 0.4.1");
     const status = await api.getDeviceStatus();
     const decode = (value) => JSON.parse(Buffer.from(value, "base64").toString("utf8"));

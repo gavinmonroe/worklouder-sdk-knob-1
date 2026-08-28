@@ -29,21 +29,28 @@ export function buildInputWlrpcExpression(method, params) {
     "/Applications/input.app/Contents/Resources/app.asar/dist-electron/main/index.js"
   );
   const sdk = requireFromInput("@worklouder/wl-device-kit");
-  const devices = new sdk.WLDeviceDiscovery().findWLDevices([sdk.DeviceType.KnobF1]);
+  // Both Knob variants run the same firmware image: the 0.4.1 app carries the
+  // "Framer F1" and "knob1" identity strings side by side, and Input maps
+  // DeviceType.Knob and DeviceType.KnobF1 to one release channel with identical
+  // feature flags. The firmware-version check below is the real gate.
+  const devices = new sdk.WLDeviceDiscovery().findWLDevices([
+    sdk.DeviceType.KnobF1,
+    sdk.DeviceType.Knob,
+  ]);
   if (devices.length !== 1 || !devices[0].isUsbConnection) {
-    throw new Error("Expected exactly one USB Framer F1");
+    throw new Error("Expected exactly one USB Framer F1 / Knob1");
   }
   const comm = new sdk.WLDeviceCommImpl();
   await comm.connect(devices[0]);
   try {
     const api = new sdk.WLRPCApi(comm);
     const rawVersion = await api.getFirmwareVersion();
-    const version = rawVersion?.version ?? rawVersion;
+    const version = rawVersion?.version ?? rawVersion?.value ?? rawVersion;
     if (version !== "0.4.1") throw new Error("Framer firmware is not 0.4.1");
     const request = JSON.parse(Buffer.from(${JSON.stringify(envelope)}, "base64").toString("utf8"));
     const response = await new sdk.WLRPCClient(comm).sendRpcCall(request);
     return {
-      target: { deviceFamily: "knob_f1", firmware: version, usb: true },
+      target: { deviceFamily: "knob_f1", deviceType: devices[0].deviceType, firmware: version, usb: true },
       response,
     };
   } finally {
