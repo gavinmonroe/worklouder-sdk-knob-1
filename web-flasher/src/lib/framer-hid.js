@@ -7,6 +7,7 @@ import {
   WORK_LOUDER_USB_VENDOR_ID,
   assertNormalFramerDevice,
   createNormalFramerIdentity,
+  describeUsbDevice,
   normalizeSerial,
   serialMatchesMac,
 } from "./device-identity.js";
@@ -14,7 +15,6 @@ import {
 const REPORT_ID = 0x06;
 const CHANNEL_RPC = 2;
 const REPORT_DATA_BYTES = 63;
-const MAX_PAYLOAD_BYTES = 61;
 const RPC_TIMEOUT_MS = 10_000;
 
 export const framerHidFilters = FRAMER_F1_PRODUCT_IDS.map((productId) => ({
@@ -22,6 +22,41 @@ export const framerHidFilters = FRAMER_F1_PRODUCT_IDS.map((productId) => ({
   productId,
   usagePage: FRAMER_USAGE_PAGE,
 }));
+
+/**
+ * Which output report to write, read from the device's own HID descriptor.
+ *
+ * The Framer F1 declares report 0x06 carrying 63 data bytes, and that pair was
+ * hardcoded — so a Work Louder keyboard whose vendor collection declares
+ * anything else failed on the very first write with WebHID's opaque "Failed to
+ * write the report", after connecting successfully. Ask the device instead:
+ * the vendor collection (usage page 0xff00) names its output report id, and the
+ * report's items give its size in bits.
+ *
+ * Falls back to the F1's numbers when a device declares no usable output
+ * report, which keeps every already-working keyboard on exactly its current
+ * behaviour.
+ */
+export function resolveVendorOutputReport(device) {
+  const vendorCollections = (device?.collections ?? []).filter(
+    (collection) => collection.usagePage === FRAMER_USAGE_PAGE,
+  );
+  for (const collection of vendorCollections) {
+    for (const report of collection.outputReports ?? []) {
+      const bits = (report.items ?? []).reduce(
+        (total, item) => total + (item.reportCount ?? 0) * (item.reportSize ?? 0),
+        0,
+      );
+      const dataBytes = Math.floor(bits / 8);
+      // Two bytes are the channel and length header, so anything smaller than
+      // three could not carry a single payload byte.
+      if (dataBytes >= 3 && Number.isInteger(report.reportId)) {
+        return { reportId: report.reportId, dataBytes };
+      }
+    }
+  }
+  return { reportId: REPORT_ID, dataBytes: REPORT_DATA_BYTES };
+}
 
 function randomRpcId() {
   return crypto.getRandomValues(new Uint16Array(1))[0] % 999;
@@ -58,11 +93,12 @@ export class FramerHidClient {
   }
 
   onInputReport(event) {
-    if (event.reportId !== REPORT_ID || event.data.byteLength < 2) return;
+    const expectedReportId = this.outputReport().reportId;
+    if (event.reportId !== expectedReportId || event.data.byteLength < 2) return;
     const bytes = new Uint8Array(event.data.buffer, event.data.byteOffset, event.data.byteLength);
     const channel = bytes[0];
     const length = bytes[1];
-    if (channel !== CHANNEL_RPC || length > MAX_PAYLOAD_BYTES || 2 + length > bytes.length) return;
+    if (channel !== CHANNEL_RPC || 2 + length > bytes.length) return;
 
     this.rpcBuffer += this.decoder.decode(bytes.slice(2, 2 + length), { stream: true });
     const lines = this.rpcBuffer.split(/\r?\n/u);
@@ -86,15 +122,35 @@ export class FramerHidClient {
     else pending.resolve(response.result);
   }
 
+  /** The output report this device actually declares on its vendor collection.
+   *  Cached per client: the descriptor cannot change while the device is open. */
+  outputReport() {
+    if (this.cachedReport) return this.cachedReport;
+    this.cachedReport = resolveVendorOutputReport(this.device);
+    return this.cachedReport;
+  }
+
   async sendMessage(message) {
+    const { reportId, dataBytes } = this.outputReport();
+    const maxPayload = dataBytes - 2;
     const encoded = new TextEncoder().encode(message);
-    for (let offset = 0; offset < encoded.length; offset += MAX_PAYLOAD_BYTES) {
-      const chunk = encoded.slice(offset, offset + MAX_PAYLOAD_BYTES);
-      const report = new Uint8Array(REPORT_DATA_BYTES);
+    for (let offset = 0; offset < encoded.length; offset += maxPayload) {
+      const chunk = encoded.slice(offset, offset + maxPayload);
+      const report = new Uint8Array(dataBytes);
       report[0] = CHANNEL_RPC;
       report[1] = chunk.length;
       report.set(chunk, 2);
-      await this.device.sendReport(REPORT_ID, report);
+      try {
+        await this.device.sendReport(reportId, report);
+      } catch (cause) {
+        // WebHID's own message ("Failed to write the report") names nothing a
+        // person can act on. Say which device refused, and what we sent it.
+        throw new Error(
+          `${describeUsbDevice(this.device)} refused the ${dataBytes}-byte report ` +
+            `0x${reportId.toString(16)} this app speaks. If this is a keyboard variant ` +
+            `we haven't seen, send those numbers to the project. (${(cause && cause.message) || cause})`,
+        );
+      }
     }
   }
 
@@ -136,7 +192,7 @@ export class FramerHidClient {
 
 export async function requestFramerHid() {
   const devices = await navigator.hid.requestDevice({
-    filters: [{ vendorId: WORK_LOUDER_USB_VENDOR_ID }],
+    filters: [{ vendorId: WORK_LOUDER_USB_VENDOR_ID, usagePage: FRAMER_USAGE_PAGE }],
   });
   if (devices.length !== 1) throw new Error("Select exactly one Framer F1 in the Chrome device chooser.");
   return assertNormalFramerDevice(devices[0]);
