@@ -18,7 +18,7 @@ Pomodoro that runs on the keyboard and survives disconnecting the Mac.
 | Save official Framer 0.4.1 and identify its layout | Verified offline | SHA-256-pinned merged and app images |
 | Inspect the attached F1's chip and boot security | Verified live | ESP32-S3, 16 MiB flash, security disabled |
 | Capture the complete live 16 MiB flash | Verified live | 16,777,216 bytes, SHA-256 `aa604231…8fdd`; 17/17 saved-file hashes verify |
-| Verify bootloader entry without a working app | Pending recovery gate | Normal firmware exposes custom HID but no F1 serial port, so filtered `usb-reset` failed; locate and test PCB GPIO0/BOOT plus reset/EN |
+| Verify bootloader entry without a working app | Live verified on Knob 1; still pending for the F1 | Two buttons beside the Knob 1 spacebar reach ROM download mode with no app involvement, and `sys.bootloader` works without an Input install ([docs/22](./22-app-independent-bootloader-entry.md)). No F1 pad or button is identified yet. |
 | Build a persistent stage-1 `Timer` to `Pomo` firmware patch | Verified offline | Tests plus valid ESP checksum and appended digest |
 | Flash/read back/boot stage 1 on the F1 | Verified live; heading path later confirmed visually | App-only write and 1,960,000-byte read-back match; the unchanged Stage-1 `Pomo` heading was user-confirmed on the live Stage-3B derivative |
 | Build and independently audit native 25/5 ×4 bridge | Static GO; runtime pending | All 9 guarded ranges, control flow, field adapters, and hashes verified; no static crash defect found |
